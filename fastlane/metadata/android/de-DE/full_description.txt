@@ -1,0 +1,16 @@
+Sehr einfache Karteikarten-App.
+
+App-Aufbau
+Sammlungen -> Stapel -> Karteikarten
+
+Sammlungen können einzeln oder komplett als Backup gespeichert werden und wieder importiert werden.
+
+Die Stapel einer Sammlung enthalten die Karteikarten. Sie können vier Farbvarianten für die Stapel nutzen.
+
+Die Karteikarten eines Stapels bieten eine Vorderseite und eine Rückseite sowie optional Notizen. Der Lernfortschritt wird als Zahlenwert gespeichert.
+
+HINWEIS
+Diese App richtet sich an alle, denen umfängliche und funktionsreiche Apps zu komplex sind. Es existiert kein Abfragemodus. Die App setzt bewusst auf eine simple Oberfläche.
+
+HAFTUNGSAUSSCHLUSS
+Diese App kommt ohne jede  Gewährleistung. Sichern Sie stets Ihre Daten vor dem Einspielen eines Updates. Die Entwicklung der App kann jederzeit eingestellt werden.

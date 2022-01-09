@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="dia_view" parent="android:Theme.Dialog">
+        <item name="android:windowTitleStyle">@style/dia_view_title</item>
+    </style>
+
+    <style name="dia_view_title" parent="android:Widget.TextView">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:gravity">center</item>
+        <item name="android:background">@color/background</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/warn_red</item>
+    </style>
+</resources>

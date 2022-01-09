@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="licenses">Lizenzen</string>
+    <string name="yes">Ja</string>
+    <string name="no">Nein</string>
+    <string name="error">Fehler</string>
+    <string name="wait">Bitte warten</string>
+    <string name="add">Einfügen</string>
+    <string name="edit">Bearbeiten</string>
+    <string name="save_changes">Änderungen speichern</string>
+    <string name="delete">Löschen</string>
+    <string name="welcome_collection">Willkommen. Nun ist es an der Zeit, eine neue Sammlung zu erstellen oder ein Sammlungs-Backup zu importieren.</string>
+    <string name="welcome_pack">Willkommen. Nun ist es an der Zeit, einen neuen Stapel zu erstellen.</string>
+    <string name="welcome_card">Noch sind keine Karten in diesem Stapel vorhanden.</string>
+    <string name="all_cards">Alle Karten</string>
+    <string name="export_all">Alle Sammlungen als Backup exportieren</string>
+    <string name="export_cards">Sammlung als Backup exportieren</string>
+    <string name="import_cards">Sammlung(en) von Backup importieren</string>
+    <string name="import_warn">Nicht alle Daten konnten importiert werden</string>
+    <string name="import_okay">Erfolgreich beendet</string>
+    <string name="edit_collection">Sammlung bearbeiten</string>
+    <string name="edit_pack">Stapel bearbeiten</string>
+    <string name="edit_card">Karte bearbeiten</string>
+    <string name="delete_pack_with_cards">Dieser Stapel enthält Karten. Wenn Sie das Löschen fortsetzen, werden auch die enthaltenen Karten gelöscht. Trotzdem löschen?</string>
+    <string name="delete_collection_with_packs">Diese Sammlung enthält Stapel. Wenn Sie das Löschen fortsetzen, werden auch die enthaltenen Stapel samt Karten gelöscht. Trotzdem löschen?</string>
+    <string name="collection_or_pack_name">Name</string>
+    <string name="collection_or_pack_desc">Beschreibung</string>
+    <string name="new_collection">Neue Sammlung</string>
+    <string name="new_pack">Neuer Stapel</string>
+    <string name="new_card">Neue Karte</string>
+    <string name="new_card_front">Vorderseite</string>
+    <string name="new_card_back">Rückseite</string>
+    <string name="new_card_notes">Notizen</string>
+    <string name="change_front_back">Rückseite anzeigen</string>
+    <string name="change_back_front">Vorderseite anzeigen</string>
+    <string name="sort_random">Zufallssortierung</string>
+    <string name="sort_normal">Normale Sortierung</string>
+    <string name="sort_alphabetical">Alphabetische Sortierung</string>
+    <string name="collection_details">Sammlungsdetails</string>
+    <string name="pack_details">Stapeldetails</string>
+    <string name="card_plus">Gewusst</string>
+    <string name="card_minus">Falsch gedacht</string>
+    <string name="card_known">Fortschritt</string>
+    <string name="color">Farbe</string>
+</resources>

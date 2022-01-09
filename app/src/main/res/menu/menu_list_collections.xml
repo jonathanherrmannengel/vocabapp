@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/startNewCollection"
+        android:icon="@drawable/outline_add_24"
+        android:orderInCategory="100"
+        app:showAsAction="ifRoom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:title="@string/add"
+        android:onClick="startNewCollection"
+        />
+
+    <item
+        android:id="@+id/importCards"
+        android:icon="@drawable/outline_file_download_24"
+        android:orderInCategory="200"
+        app:showAsAction="ifRoom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:title="@string/import_cards"
+        android:onClick="importCards"
+        />
+    <item
+        android:id="@+id/exportAll"
+        android:orderInCategory="200"
+        app:showAsAction="never"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:title="@string/export_all"
+        android:onClick="exportAll"
+        />
+    <item
+        android:id="@+id/aboutApp"
+        android:orderInCategory="200"
+        app:showAsAction="never"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:title="@string/licenses"
+        android:onClick="startAboutApp"
+        />
+
+</menu>

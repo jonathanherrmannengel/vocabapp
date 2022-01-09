@@ -1,0 +1,46 @@
+<resources>
+    <string name="app_name" translatable="false">ReallyBasicVocab</string>
+    <string name="app_name_short" translatable="false">R5B4 Vocab</string>
+    <string name="licenses">Licenses</string>
+    <string name="yes">yes</string>
+    <string name="no">no</string>
+    <string name="error">error</string>
+    <string name="wait">please wait</string>
+    <string name="add">add</string>
+    <string name="edit">edit</string>
+    <string name="save_changes">save changes</string>
+    <string name="delete">delete</string>
+    <string name="welcome_collection">Welcome. Create a new collection or import a collection backup.</string>
+    <string name="welcome_pack">Welcome. Create a new pack.</string>
+    <string name="welcome_card">There are no cards in this pack.</string>
+    <string name="all_cards">All cards</string>
+    <string name="export_all">Export all collections as backup</string>
+    <string name="export_cards">Export collection as backup</string>
+    <string name="import_cards">Import collection(s) from backup</string>
+    <string name="import_warn">Import not complete</string>
+    <string name="import_okay">Import success</string>
+    <string name="edit_collection">Edit collection</string>
+    <string name="edit_pack">Edit pack</string>
+    <string name="edit_card">Edit card</string>
+    <string name="delete_pack_with_cards">This pack contains cards. If you proceed these cards will also be deleted. Delete anyway?</string>
+    <string name="delete_collection_with_packs">This collection contains packs. If you proceed these packs and their cards will also be deleted. Delete anyway?</string>
+    <string name="collection_or_pack_name">name</string>
+    <string name="collection_or_pack_desc">description</string>
+    <string name="new_collection">New collection</string>
+    <string name="new_pack">New pack</string>
+    <string name="new_card">New card</string>
+    <string name="new_card_front">front</string>
+    <string name="new_card_back">back</string>
+    <string name="new_card_notes">notes</string>
+    <string name="change_front_back">show back</string>
+    <string name="change_back_front">show front</string>
+    <string name="sort_random">sort random</string>
+    <string name="sort_normal">sort normal</string>
+    <string name="sort_alphabetical">sort alphabetical</string>
+    <string name="collection_details">collection details</string>
+    <string name="pack_details">pack details</string>
+    <string name="card_plus">got it right</string>
+    <string name="card_minus">got it wrong</string>
+    <string name="card_known">progress</string>
+    <string name="color">color</string>
+</resources>

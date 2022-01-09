@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="app/src/main/res/layout/activity_default_rec.xml" value="0.34148550724637683" />
+        <entry key="app/src/main/res/layout/activity_edit_card.xml" value="0.34148550724637683" />
+        <entry key="app/src/main/res/layout/activity_edit_collection.xml" value="0.3351449275362319" />
+        <entry key="app/src/main/res/layout/activity_edit_pack.xml" value="0.1921875" />
+        <entry key="app/src/main/res/layout/activity_list_cards.xml" value="0.34148550724637683" />
+        <entry key="app/src/main/res/layout/activity_list_collections.xml" value="0.34739583333333335" />
+        <entry key="app/src/main/res/layout/activity_new_collection.xml" value="0.2033514492753623" />
+        <entry key="app/src/main/res/layout/activity_new_pack.xml" value="0.2033514492753623" />
+        <entry key="app/src/main/res/layout/activity_view_collection_or_pack.xml" value="0.34148550724637683" />
+        <entry key="app/src/main/res/layout/activity_view_pack.xml" value="0.2033514492753623" />
+        <entry key="app/src/main/res/menu/menu_list_collections.xml" value="0.34739583333333335" />
+        <entry key="app/src/main/res/menu/menu_view_collection.xml" value="0.34739583333333335" />
+        <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.20729166666666668" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <array name="pack_color_main">
+        <item>@color/ijblue</item>
+        <item>#550000</item>
+        <item>#104422</item>
+        <item>#c7a700</item>
+    </array>
+
+    <array name="pack_color_background">
+        <item>@color/background</item>
+        <item>#ffcccc</item>
+        <item>#bbddbb</item>
+        <item>#ffffbb</item>
+    </array>
+
+    <array name="pack_color_background_light">
+        <item>@color/light_grey</item>
+        <item>#ffd0d0</item>
+        <item>#bfdfbf</item>
+        <item>#fefeaf</item>
+    </array>
+
+    <array name="pack_color_list">
+        <item>#000020</item>
+        <item>#5a0000</item>
+        <item>#003a00</item>
+        <item>#503f00</item>
+    </array>
+
+</resources>

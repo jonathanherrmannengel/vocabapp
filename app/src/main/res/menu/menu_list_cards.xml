@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/startNewCard"
+        android:icon="@drawable/outline_add_24"
+        android:orderInCategory="100"
+        app:showAsAction="ifRoom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:title="@string/add"
+        android:onClick="startNewCard"
+        />
+
+    <item
+        android:id="@+id/packDetails"
+        android:icon="@drawable/outline_info_24"
+        android:orderInCategory="200"
+        app:showAsAction="ifRoom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:title="@string/pack_details"
+        android:onClick="packDetails"
+        />
+
+    <item
+        android:id="@+id/changeFrontBack"
+        android:icon="@drawable/outline_info_24"
+        android:orderInCategory="200"
+        app:showAsAction="never"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:title="@string/change_front_back"
+        android:onClick="changeFrontBack"
+        />
+
+    <item
+        android:id="@+id/sortRandom"
+        android:icon="@drawable/outline_info_24"
+        android:orderInCategory="200"
+        app:showAsAction="never"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:title="@string/sort_random"
+        android:onClick="sort"
+        />
+</menu>

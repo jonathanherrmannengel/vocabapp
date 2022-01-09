@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<licenses>
+<item>
+    <identifier>Apache-2.0</identifier>
+    <projectName>App</projectName>
+    <projectDev>Jonathan Herrmann-Engel</projectDev>
+</item>
+<item>
+    <identifier>Apache-2.0</identifier>
+    <projectName>Material Icons</projectName>
+    <projectDev>Google</projectDev>
+    <projectUrl>https://fonts.google.com/icons?selected=Material+Icons</projectUrl>
+</item>
+<item>
+    <identifier>Apache-2.0</identifier>
+    <projectName>OpenCSV (com.opencsv)</projectName>
+    <projectUrl>http://opencsv.sourceforge.net/</projectUrl>
+</item>
+<item>
+    <identifier>Apache-2.0</identifier>
+    <projectDev>Google</projectDev>
+    <projectName>AndroidX (AppCompat [androidx.appcompat], ConstraintLayout [androidx.constraintlayout], Core [androidx.core], Room [androidx.room])</projectName>
+</item>
+<item>
+    <identifier>Apache-2.0</identifier>
+    <projectDev>Google</projectDev>
+    <projectName>Google Android Material (com.google.android.material)</projectName>
+</item>
+<item>
+    <identifier>Apache-2.0</identifier>
+    <projectDev>JetBrains</projectDev>
+    <projectName>JetBrains Kotlin, JetBrains Kotlinx (org.jetbrains.kotlin, org.jetbrains.kotlinx)</projectName>
+</item>
+</licenses>

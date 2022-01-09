@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="de.herrmann_engel.rbv">
+
+    <uses-permission android:name="READ_EXTERNAL_STORAGE" />
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.RBV">
+        <activity
+            android:name=".AppLicenses"
+            android:label="@string/licenses" />
+        <activity
+            android:name=".EditCollection"
+            android:label="@string/edit_collection" />
+        <activity
+            android:name=".EditPack"
+            android:label="@string/edit_pack" />
+        <activity
+            android:name=".EditCard"
+            android:label="@string/edit_card" />
+        <activity
+            android:name=".ViewCollection"  />
+        <activity
+            android:name=".ViewPack" />
+        <activity
+            android:name=".ViewCard" />
+        <activity
+            android:name=".NewCollection"
+            android:label="@string/new_collection" />
+        <activity
+            android:name=".NewPack"
+            android:label="@string/new_pack" />
+        <activity
+            android:name=".NewCard"
+            android:label="@string/new_card" />
+        <activity android:name=".ListPacks" />
+        <activity android:name=".ListCards" />
+        <activity
+            android:name=".ListCollections"
+            android:label="@string/app_name_short"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <provider
+        android:name="androidx.core.content.FileProvider"
+        android:authorities="${applicationId}.fileprovider"
+        android:grantUriPermissions="true"
+        android:exported="false">
+        <meta-data
+            android:name="android.support.FILE_PROVIDER_PATHS"
+            android:resource="@xml/filepaths" />
+    </provider>
+    </application>
+
+</manifest>

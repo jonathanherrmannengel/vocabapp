@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="light_grey">#ededff</color>
+    <color name="dark_grey">#555577</color>
+    <color name="button">#000044</color>
+    <color name="background">#f1f1ff</color>
+    <color name="light_black">#343455</color>
+    <color name="icon">#46BB7A</color>
+    <color name="warn_red">#ff00ee</color>
+    <color name="ijblue">#1b2c66</color>
+    <color name="darkRed">#550000</color>
+    <color name="darkGreen">#005500</color>
+</resources>
