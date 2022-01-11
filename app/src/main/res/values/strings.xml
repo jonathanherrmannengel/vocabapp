@@ -7,9 +7,11 @@
     <string name="error">error</string>
     <string name="wait">please wait</string>
     <string name="add">add</string>
+    <string name="start">start</string>
     <string name="edit">edit</string>
     <string name="save_changes">save changes</string>
     <string name="delete">delete</string>
+    <string name="options">options</string>
     <string name="welcome_collection">Welcome. Create a new collection or import a collection backup.</string>
     <string name="welcome_pack">Welcome. Create a new pack.</string>
     <string name="welcome_card">There are no cards in this pack.</string>
@@ -19,6 +21,7 @@
     <string name="import_cards">Import collection(s) from backup</string>
     <string name="import_warn">Import not complete</string>
     <string name="import_okay">Import success</string>
+    <string name="import_ignore_duplicates">Skip same-named and nameless collections</string>
     <string name="edit_collection">Edit collection</string>
     <string name="edit_pack">Edit pack</string>
     <string name="edit_card">Edit card</string>

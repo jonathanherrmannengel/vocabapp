@@ -30,15 +30,17 @@ public class Export {
         this.context = context;
     }
 
-    private boolean exportCSV(String name, String filename, Cursor cursor, boolean append){
+    private boolean exportCSV(String name, String filename, Cursor cursor, boolean isFirst, boolean append){
         try {
             File file = new File(context.getCacheDir(), filename);
             CSVWriter csvWrite = new CSVWriter(new FileWriter(file, append));
             String[] columns = cursor.getColumnNames();
-            String[] schema = new String[columns.length+1];
-            schema[0] = name + "_schema";
-            System.arraycopy(columns, 0, schema, 1, columns.length);
-            csvWrite.writeNext(schema);
+            if(isFirst) {
+                String[] schema = new String[columns.length + 1];
+                schema[0] = name + "_schema";
+                System.arraycopy(columns, 0, schema, 1, columns.length);
+                csvWrite.writeNext(schema);
+            }
             if(cursor.moveToFirst()) {
                 while(!cursor.isAfterLast()) {
                     String[] row = new String[columns.length+1];
@@ -57,8 +59,8 @@ public class Export {
         }
         return true;
     }
-    private boolean exportCSV(String name, String filename, Cursor cursor) {
-        return exportCSV(name, filename, cursor, true);
+    private boolean exportCSV(String name, String filename, Cursor cursor, boolean isFirst) {
+        return exportCSV(name, filename, cursor, isFirst, true);
     }
     public boolean exportFile() {
         try {
@@ -75,11 +77,11 @@ public class Export {
                 collectionNos = dbHelperExport.getAllCollectionIDs();
                 index =  "all";
             }
-            File file = new File(context.getCacheDir(), String.format("%s_%s.%s", Globals.EXPORT_FILENAME, index, Globals.EXPORT_FILEEXTENSION));
+            File file = new File(context.getCacheDir(), String.format("%s_%s.%s", Globals.EXPORT_FILE_NAME, index, Globals.EXPORT_FILE_EXTENSION));
             boolean isFirst = true;
             for(int i = 0; i < collectionNos.size(); i++) {
                 int currentCollectionNo = collectionNos.get(i);
-                if (!exportCSV("collection", file.getName(), dbHelperExport.getSingleCollection(currentCollectionNo), !isFirst) || !exportCSV("packs", file.getName(), dbHelperExport.getAllPacksByCollection(currentCollectionNo)) || !exportCSV("cards", file.getName(), dbHelperExport.getAllCardsByCollection(currentCollectionNo))) {
+                if (!exportCSV("collection", file.getName(), dbHelperExport.getSingleCollection(currentCollectionNo), isFirst, !isFirst) || !exportCSV("packs", file.getName(), dbHelperExport.getAllPacksByCollection(currentCollectionNo), isFirst) || !exportCSV("cards", file.getName(), dbHelperExport.getAllCardsByCollection(currentCollectionNo), isFirst)) {
                     return false;
                 }
                 isFirst = false;

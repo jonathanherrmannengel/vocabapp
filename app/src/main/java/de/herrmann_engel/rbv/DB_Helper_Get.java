@@ -39,6 +39,10 @@ public class DB_Helper_Get {
     List<DB_Collection> getAllCollections() {
         return dbHelper.collection_dao.getAll();
     }
+    List<DB_Collection> getAllCollectionsByName(String name) {
+        return dbHelper.collection_dao.getAllByName(name);
+    }
+
     List<DB_Pack> getAllPacksByCollection(int collection) {
         return dbHelper.pack_dao.getAll(collection);
     }
@@ -65,6 +69,7 @@ public class DB_Helper_Get {
         });
         return list;
     }
+
     List<DB_Card> getAllCardsByCollection(int collection, int sort) {
 
         List<DB_Pack> packs = getAllPacksByCollection(collection);
