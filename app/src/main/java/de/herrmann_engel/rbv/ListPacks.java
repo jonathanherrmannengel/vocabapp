@@ -1,22 +1,15 @@
 package de.herrmann_engel.rbv;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.opencsv.CSVWriter;
-
-import java.io.File;
-
-import java.io.FileWriter;
 import java.util.List;
 
 public class ListPacks extends AppCompatActivity {

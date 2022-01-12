@@ -13,8 +13,6 @@ import android.view.MenuItem;
 import android.view.Window;
 import android.widget.Toast;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 

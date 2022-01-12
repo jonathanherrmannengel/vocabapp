@@ -21,7 +21,10 @@
     <string name="import_warn">Nicht alle Daten konnten importiert werden</string>
     <string name="import_okay">Erfolgreich beendet</string>
     <string name="edit_collection">Sammlung bearbeiten</string>
-    <string name="import_ignore_duplicates">Gleichnamige und namenslose Sammlungen überspringen</string>
+    <string name="import_mode">Bei gleichnamigen und namenslosen Sammlungen:</string>
+    <string name="import_mode_skip">Import überspringen</string>
+    <string name="import_mode_duplicates">Als neuen Eintrag anlegen</string>
+    <string name="import_mode_integrate">In die erste gleichnamige integrieren</string>
     <string name="edit_pack">Stapel bearbeiten</string>
     <string name="edit_card">Karte bearbeiten</string>
     <string name="delete_pack_with_cards">Dieser Stapel enthält Karten. Wenn Sie das Löschen fortsetzen, werden auch die enthaltenen Karten gelöscht. Trotzdem löschen?</string>

@@ -1,0 +1,1 @@
+backup import: Add option to skip or integrate same-named collections

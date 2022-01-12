@@ -6,10 +6,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class AsyncImport internal constructor(private val context: Context, private val listener : AsyncImportFinish, private val uri: Uri, private val ignoreDuplicates : Boolean) {
+class AsyncImport internal constructor(private val context: Context, private val listener : AsyncImportFinish, private val uri: Uri, private val mode : Int) {
     fun execute() {
-        CoroutineScope(Dispatchers.Main).launch() {
-            withContext(Dispatchers.IO){AsyncImportWorker(context, listener, uri, ignoreDuplicates).execute()}
+        CoroutineScope(Dispatchers.Main).launch {
+            withContext(Dispatchers.IO){AsyncImportWorker(context, listener, uri, mode).execute()}
         }
     }
 }

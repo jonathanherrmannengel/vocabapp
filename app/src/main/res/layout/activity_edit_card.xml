@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
@@ -20,6 +19,7 @@
                 android:layout_marginBottom="10dp"
                 android:gravity="center"
                 android:textColor="@color/light_black"
+                android:labelFor="@id/edit_card_front"
                 android:text="@string/new_card_front" />
 
             <EditText
@@ -38,6 +38,7 @@
                 android:layout_marginBottom="10dp"
                 android:gravity="center"
                 android:textColor="@color/light_black"
+                android:labelFor="@id/edit_card_back"
                 android:text="@string/new_card_back" />
 
             <EditText
@@ -56,6 +57,7 @@
                 android:layout_marginBottom="10dp"
                 android:gravity="center"
                 android:textColor="@color/light_black"
+                android:labelFor="@id/edit_card_notes"
                 android:text="@string/new_card_notes" />
 
             <EditText

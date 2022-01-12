@@ -46,6 +46,10 @@ public class DB_Helper_Get {
     List<DB_Pack> getAllPacksByCollection(int collection) {
         return dbHelper.pack_dao.getAll(collection);
     }
+    List<DB_Pack> getAllPacksByCollectionAndNameAndDesc(int collection, String name, String desc) {
+        return dbHelper.pack_dao.getAllByCollectionAndNameAndDesc(collection, name, desc);
+    }
+
     List<DB_Card> sortCards(List<DB_Card> list, int sort) {
         if (sort == Globals.SORT_ALPHABETICAL) {
             list.sort((a, b) ->  {
@@ -69,9 +73,7 @@ public class DB_Helper_Get {
         });
         return list;
     }
-
     List<DB_Card> getAllCardsByCollection(int collection, int sort) {
-
         List<DB_Pack> packs = getAllPacksByCollection(collection);
         List<DB_Card> list = new ArrayList<>();
         packs.forEach((currentPack) -> list.addAll(getAllCardsByPack(currentPack.uid, sort)));
@@ -85,6 +87,9 @@ public class DB_Helper_Get {
     }
     List<DB_Card> getAllCardsByPack(int pack) {
         return getAllCardsByPack(pack, Globals.SORT_DEFAULT);
+    }
+    List<DB_Card> getAllCardsByPackAndFrontAndBackAndNotes(int pack, String front, String back, String notes) {
+        return sortCards(dbHelper.card_dao.getAllByPackAndFrontAndBackAndNotes(pack, front, back, notes), Globals.SORT_DEFAULT);
     }
 
 }

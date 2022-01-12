@@ -4,10 +4,10 @@ import android.content.Context;
 
 public class DB_Helper {
 
-    public DB_Collection_DAO collection_dao;
-    public DB_Pack_DAO pack_dao;
-    public DB_Card_DAO card_dao;
-    public Context context;
+    public final DB_Collection_DAO collection_dao;
+    public final DB_Pack_DAO pack_dao;
+    public final DB_Card_DAO card_dao;
+    public final Context context;
 
     public DB_Helper(Context context){
         this.context = context;

@@ -41,7 +41,7 @@ public class AppLicenses extends AppCompatActivity {
             String licenseIdentifierTmp = "";
             String projectNameTmp = "";
             String projectDevTmp = "";
-            String porjectUrlTmp = "";
+            String projectUrlTmp = "";
 
             while (eventType != XmlPullParser.END_DOCUMENT) {
                 if(eventType == XmlPullParser.START_TAG) {
@@ -54,12 +54,12 @@ public class AppLicenses extends AppCompatActivity {
                     currentTag = "";
                     if(xmlPullParser.getName().equals("item") && projectRunning){
                         projectRunning = false;
-                        project = new OSS_Project(projectNameTmp,projectDevTmp,porjectUrlTmp);
+                        project = new OSS_Project(projectNameTmp,projectDevTmp,projectUrlTmp);
                         licenses.add(new OSS_Licenses(licenseIdentifierTmp,project));
                         licenseIdentifierTmp = "";
                         projectNameTmp = "";
                         projectDevTmp = "";
-                        porjectUrlTmp = "";
+                        projectUrlTmp = "";
                     }
                 } else if(eventType == XmlPullParser.TEXT) {
                     switch (currentTag) {
@@ -73,7 +73,7 @@ public class AppLicenses extends AppCompatActivity {
                             projectDevTmp = xmlPullParser.getText();
                             break;
                         case "projectUrl":
-                            porjectUrlTmp = xmlPullParser.getText();
+                            projectUrlTmp = xmlPullParser.getText();
                             break;
                     }
                 }

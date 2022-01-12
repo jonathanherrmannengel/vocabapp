@@ -3,7 +3,6 @@
 xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/startNewCollection"
         android:icon="@drawable/outline_add_24"
         android:orderInCategory="100"
         app:showAsAction="ifRoom"
@@ -14,7 +13,6 @@ xmlns:app="http://schemas.android.com/apk/res-auto">
         />
 
     <item
-        android:id="@+id/importCards"
         android:icon="@drawable/outline_file_download_24"
         android:orderInCategory="200"
         app:showAsAction="ifRoom"
@@ -33,7 +31,6 @@ xmlns:app="http://schemas.android.com/apk/res-auto">
         android:onClick="exportAll"
         />
     <item
-        android:id="@+id/aboutApp"
         android:orderInCategory="200"
         app:showAsAction="never"
         android:layout_width="match_parent"

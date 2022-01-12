@@ -1,19 +1,11 @@
 package de.herrmann_engel.rbv;
 
 import android.content.Intent;
-import android.content.res.TypedArray;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
-import android.view.Window;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-
-import java.util.Objects;
 
 public class EditCollection extends AppCompatActivity {
 

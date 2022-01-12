@@ -13,17 +13,17 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
-import com.google.android.material.checkbox.MaterialCheckBox;
-
 import java.util.List;
+import java.util.Objects;
 
 public class ListCollections extends AppCompatActivity implements AsyncImportFinish {
 
     private ActivityResultLauncher<Intent> launcherImportFile;
     private MenuItem exportAllMenuItem;
-    private boolean ignoreDuplicates;
+    private int importMode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +36,7 @@ public class ListCollections extends AppCompatActivity implements AsyncImportFin
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
                     if (result.getResultCode() == Activity.RESULT_OK) {
-                        new AsyncImport(this, this, result.getData().getData(), ignoreDuplicates).execute();
+                        new AsyncImport(this, this, Objects.requireNonNull(result.getData()).getData(), importMode).execute();
                         Toast.makeText(this, R.string.wait, Toast.LENGTH_LONG).show();
                     } else {
                         Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show();
@@ -77,9 +77,15 @@ public class ListCollections extends AppCompatActivity implements AsyncImportFin
         startImportDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
 
         Button startImportButton = startImportDialog.findViewById(R.id.dia_import_start);
-        MaterialCheckBox startImportIgnoreDuplicatesCheckBox = startImportDialog.findViewById(R.id.dia_import_checkbox);
+        RadioGroup startImportMode = startImportDialog.findViewById(R.id.dia_import_radio);
         startImportButton.setOnClickListener(v -> {
-            ignoreDuplicates = startImportIgnoreDuplicatesCheckBox.isChecked();
+            if(startImportMode.getCheckedRadioButtonId()== R.id.dia_import_radio_integrate) {
+                importMode = Globals.IMPORT_MODE_INTEGRATE;
+            } else if (startImportMode.getCheckedRadioButtonId()== R.id.dia_import_radio_duplicates) {
+                importMode = Globals.IMPORT_MODE_DUPLICATES;
+            } else {
+                importMode = Globals.IMPORT_MODE_SKIP;
+            }
             Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
             intent.addCategory(Intent.CATEGORY_OPENABLE);
             intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);

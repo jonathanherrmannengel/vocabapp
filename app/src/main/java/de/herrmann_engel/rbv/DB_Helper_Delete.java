@@ -23,7 +23,7 @@ public class DB_Helper_Delete {
         List<DB_Pack> packs = dbHelperGet.getAllPacksByCollection(collection.uid);
         boolean containsPacks = packs.size() > 0;
         if(containsPacks && force) {
-            packs.forEach(pack -> deletePack(pack, force));
+            packs.forEach(pack -> deletePack(pack, true));
         } else if (containsPacks) {
             return false;
         }

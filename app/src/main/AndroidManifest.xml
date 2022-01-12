@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="de.herrmann_engel.rbv">
-
-    <uses-permission android:name="READ_EXTERNAL_STORAGE" />
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -11,35 +9,50 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.RBV">
         <activity
+            android:configChanges="orientation|screenSize|screenLayout"
             android:name=".AppLicenses"
             android:label="@string/licenses" />
         <activity
+            android:configChanges="orientation|screenSize|screenLayout"
             android:name=".EditCollection"
             android:label="@string/edit_collection" />
         <activity
+            android:configChanges="orientation|screenSize|screenLayout"
             android:name=".EditPack"
             android:label="@string/edit_pack" />
         <activity
+            android:configChanges="orientation|screenSize|screenLayout"
             android:name=".EditCard"
             android:label="@string/edit_card" />
         <activity
+            android:configChanges="orientation|screenSize|screenLayout"
             android:name=".ViewCollection"  />
         <activity
+            android:configChanges="orientation|screenSize|screenLayout"
             android:name=".ViewPack" />
         <activity
+            android:configChanges="orientation|screenSize|screenLayout"
             android:name=".ViewCard" />
         <activity
+            android:configChanges="orientation|screenSize|screenLayout"
             android:name=".NewCollection"
             android:label="@string/new_collection" />
         <activity
+            android:configChanges="orientation|screenSize|screenLayout"
             android:name=".NewPack"
             android:label="@string/new_pack" />
         <activity
+            android:configChanges="orientation|screenSize|screenLayout"
             android:name=".NewCard"
             android:label="@string/new_card" />
-        <activity android:name=".ListPacks" />
-        <activity android:name=".ListCards" />
         <activity
+            android:configChanges="orientation|screenSize|screenLayout"
+            android:name=".ListPacks" />
+        <activity
+            android:configChanges="orientation|screenSize|screenLayout"
+            android:name=".ListCards" />
+        <activity
+            android:configChanges="orientation|screenSize|screenLayout"
             android:name=".ListCollections"
             android:label="@string/app_name_short"
             android:exported="true">

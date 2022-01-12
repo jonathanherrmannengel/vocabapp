@@ -21,7 +21,10 @@
     <string name="import_cards">Import collection(s) from backup</string>
     <string name="import_warn">Import not complete</string>
     <string name="import_okay">Import success</string>
-    <string name="import_ignore_duplicates">Skip same-named and nameless collections</string>
+    <string name="import_mode">on same-named and nameless collections:</string>
+    <string name="import_mode_skip">Skip import</string>
+    <string name="import_mode_duplicates">Create new entry</string>
+    <string name="import_mode_integrate">Integrate to first same-named</string>
     <string name="edit_collection">Edit collection</string>
     <string name="edit_pack">Edit pack</string>
     <string name="edit_card">Edit card</string>
