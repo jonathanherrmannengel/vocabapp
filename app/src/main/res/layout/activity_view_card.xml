@@ -74,7 +74,7 @@
                         android:onClick="card_plus"
                         android:src="@drawable/outline_done_24"
                         android:background="@android:color/transparent"
-                        app:tint="@color/darkGreen"
+                        app:tint="@color/dark_green"
                         android:contentDescription="@string/card_plus"
                         android:tooltipText="@string/card_plus"/>
                     <TextView

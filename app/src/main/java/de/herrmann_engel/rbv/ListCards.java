@@ -41,13 +41,13 @@ public class ListCards extends AppCompatActivity {
         reverse = getIntent().getExtras().getBoolean("reverse");
         sort = getIntent().getExtras().getInt("sort");
         if(packNo == -1) {
-            MenuItem startNewCard = menu.findItem(R.id.startNewCard);
+            MenuItem startNewCard = menu.findItem(R.id.start_new_card);
             startNewCard.setVisible(false);
-            MenuItem packDetails = menu.findItem(R.id.packDetails);
+            MenuItem packDetails = menu.findItem(R.id.pack_details);
             packDetails.setVisible(false);
         }
-        changeFrontBackItem = menu.findItem(R.id.changeFrontBack);
-        sortRandomItem = menu.findItem(R.id.sortRandom);
+        changeFrontBackItem = menu.findItem(R.id.change_front_back);
+        sortRandomItem = menu.findItem(R.id.sort_random);
         dbHelperGet = new DB_Helper_Get(this);
         try {
             if(packNo == -1) {

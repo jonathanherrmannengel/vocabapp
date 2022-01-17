@@ -89,7 +89,7 @@ public class ViewCard extends AppCompatActivity {
     private void card_known_update() {
         knownText.setText(Integer.toString(known));
         knownMinus.setColorFilter(Color.argb(255, 255, 255, 255));
-        knownMinus.setColorFilter(ContextCompat.getColor(this, known > 0 ? R.color.darkRed: R.color.dark_grey), android.graphics.PorterDuff.Mode.MULTIPLY);
+        knownMinus.setColorFilter(ContextCompat.getColor(this, known > 0 ? R.color.dark_red: R.color.dark_grey), android.graphics.PorterDuff.Mode.MULTIPLY);
     }
     public void card_plus (View v) {
         known++;

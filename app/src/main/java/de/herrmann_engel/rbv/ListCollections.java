@@ -48,7 +48,7 @@ public class ListCollections extends AppCompatActivity implements AsyncImportFin
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_list_collections, menu);
-        exportAllMenuItem = menu.findItem(R.id.exportAll);
+        exportAllMenuItem = menu.findItem(R.id.export_all);
         updateContent();
         return true;
     }

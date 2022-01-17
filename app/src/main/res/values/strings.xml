@@ -16,7 +16,7 @@
     <string name="welcome_pack">Welcome. Create a new pack.</string>
     <string name="welcome_card">There are no cards in this pack.</string>
     <string name="all_cards">All cards</string>
-    <string name="export_all">Export all collections as backup</string>
+    <string name="export_all">Export collections as backup</string>
     <string name="export_cards">Export collection as backup</string>
     <string name="import_cards">Import collection(s) from backup</string>
     <string name="import_warn">Import not complete</string>

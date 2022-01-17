@@ -22,7 +22,7 @@ xmlns:app="http://schemas.android.com/apk/res-auto">
         android:onClick="importCards"
         />
     <item
-        android:id="@+id/exportAll"
+        android:id="@+id/export_all"
         android:orderInCategory="200"
         app:showAsAction="never"
         android:layout_width="match_parent"
