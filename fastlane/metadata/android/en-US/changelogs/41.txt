@@ -1,0 +1,3 @@
+Flashcard list keeps position after viewing card (does not work with random sort).
+Setting: Default sort
+Minor UX improvements

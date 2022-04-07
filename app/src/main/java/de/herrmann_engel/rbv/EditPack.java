@@ -2,12 +2,15 @@ package de.herrmann_engel.rbv;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.Window;
+import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -21,35 +24,38 @@ public class EditPack extends AppCompatActivity {
     private int packNo;
     private boolean reverse;
     private int sort;
+    private int cardPosition;
+
+    private DB_Pack pack;
+    private TextView packName;
+    private TextView packDesc;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_pack);
         TextView packEdit = findViewById(R.id.edit_pack_go);
-        TextView packName = findViewById(R.id.edit_pack_name);
-        TextView packDesc = findViewById(R.id.edit_pack_desc);
+        packName = findViewById(R.id.edit_pack_name);
+        packDesc = findViewById(R.id.edit_pack_desc);
+        packDesc.setHint(String.format(getString(R.string.optional), getString(R.string.collection_or_pack_desc)));
         collectionNo = getIntent().getExtras().getInt("collection");
         packNo = getIntent().getExtras().getInt("pack");
         reverse = getIntent().getExtras().getBoolean("reverse");
         sort = getIntent().getExtras().getInt("sort");
+        cardPosition = getIntent().getExtras().getInt("cardPosition");
         DB_Helper_Get dbHelperGet = new DB_Helper_Get(this);
         DB_Helper_Update dbHelperUpdate = new DB_Helper_Update(this);
         try {
-            DB_Pack pack = dbHelperGet.getSinglePack(packNo);
+            pack = dbHelperGet.getSinglePack(packNo);
             packName.setText(pack.name);
             packDesc.setText(pack.desc);
             packEdit.setOnClickListener(v -> {
                 pack.name = packName.getText().toString();
                 pack.desc = packDesc.getText().toString();
                 if(dbHelperUpdate.updatePack(pack)) {
-                    Intent intent = new Intent(getApplicationContext(), ViewPack.class);
-                    intent.putExtra("collection", collectionNo);
-                    intent.putExtra("pack", packNo);
-                    intent.putExtra("reverse", reverse);
-                    intent.putExtra("sort", sort);
-                    startActivity(intent);
+                    startViewPack();
                 } else {
-                    Toast.makeText(getApplicationContext(), R.string.error, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), R.string.error_values, Toast.LENGTH_SHORT).show();
                 }
             });
             LinearLayout colorPicker = findViewById(R.id.color_picker);
@@ -92,15 +98,33 @@ public class EditPack extends AppCompatActivity {
 
     }
 
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
+    private void startViewPack(){
         Intent intent = new Intent(getApplicationContext(), ViewPack.class);
         intent.putExtra("collection", collectionNo);
         intent.putExtra("pack", packNo);
         intent.putExtra("reverse", reverse);
         intent.putExtra("sort", sort);
+        intent.putExtra("cardPosition", cardPosition);
         startActivity(intent);
         this.finish();
+    }
+
+    @Override
+    public void onBackPressed() {
+        String name = packName.getText().toString();
+        String desc = packDesc.getText().toString();
+        if(pack == null || (pack.name.equals(name) && pack.desc.equals(desc))) {
+            startViewPack();
+        } else {
+            Dialog confirmCancel = new Dialog(this, R.style.dia_view);
+            confirmCancel.setContentView(R.layout.dia_confirm);
+            confirmCancel.setTitle(getResources().getString(R.string.discard_changes));
+            confirmCancel.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
+            Button confirmCancelY = confirmCancel.findViewById(R.id.dia_confirm_yes);
+            Button confirmCancelN = confirmCancel.findViewById(R.id.dia_confirm_no);
+            confirmCancelY.setOnClickListener(v -> startViewPack());
+            confirmCancelN.setOnClickListener(v -> confirmCancel.dismiss());
+            confirmCancel.show();
+        }
     }
 }

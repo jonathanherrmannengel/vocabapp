@@ -7,6 +7,8 @@ public class Globals {
     public static final String EXPORT_FILE_NAME = "rbv_backup";
     public static final String EXPORT_FILE_EXTENSION = "csv";
 
+    public static final String SETTINGS_NAME = "rbv_settings";
+
     public static final int IMPORT_ERROR_LEVEL_OKAY = 0;
     public static final int IMPORT_ERROR_LEVEL_WARN = 1;
     public static final int IMPORT_ERROR_LEVEL_ERROR = 2;

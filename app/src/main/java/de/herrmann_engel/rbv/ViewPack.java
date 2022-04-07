@@ -26,6 +26,8 @@ public class ViewPack extends AppCompatActivity {
     private int collectionNo;
     private boolean reverse;
     private int sort;
+    private int cardPosition;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,6 +37,7 @@ public class ViewPack extends AppCompatActivity {
         packNo = getIntent().getExtras().getInt("pack");
         reverse = getIntent().getExtras().getBoolean("reverse");
         sort = getIntent().getExtras().getInt("sort");
+        cardPosition = getIntent().getExtras().getInt("cardPosition");
         dbHelperGet = new DB_Helper_Get(this);
         try {
             pack = dbHelperGet.getSinglePack(packNo);
@@ -76,20 +79,21 @@ public class ViewPack extends AppCompatActivity {
         intent.putExtra("pack", packNo);
         intent.putExtra("reverse", reverse);
         intent.putExtra("sort", sort);
+        intent.putExtra("cardPosition", cardPosition);
         startActivity(intent);
         this.finish();
     }
     public void deletePack(boolean forceDelete) {
         Dialog confirmDelete = new Dialog(this, R.style.dia_view);
-        confirmDelete.setContentView(R.layout.dia_del);
+        confirmDelete.setContentView(R.layout.dia_confirm);
         confirmDelete.setTitle(getResources().getString(R.string.delete));
         confirmDelete.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
 
-        Button confirmDeleteY = confirmDelete.findViewById(R.id.dia_del_yes);
-        Button confirmDeleteN = confirmDelete.findViewById(R.id.dia_del_no);
+        Button confirmDeleteY = confirmDelete.findViewById(R.id.dia_confirm_yes);
+        Button confirmDeleteN = confirmDelete.findViewById(R.id.dia_confirm_no);
 
         if(dbHelperGet.getAllCardsByPack(pack.uid).size() > 0 && !forceDelete) {
-            TextView confirmDeleteDesc = confirmDelete.findViewById(R.id.dia_del_desc);
+            TextView confirmDeleteDesc = confirmDelete.findViewById(R.id.dia_confirm_desc);
             confirmDeleteDesc.setText(R.string.delete_pack_with_cards);
             confirmDeleteDesc.setVisibility(View.VISIBLE);
         }
@@ -115,12 +119,12 @@ public class ViewPack extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
         Intent intent = new Intent(getApplicationContext(), ListCards.class);
         intent.putExtra("collection", collectionNo);
         intent.putExtra("pack", packNo);
         intent.putExtra("reverse", reverse);
         intent.putExtra("sort", sort);
+        intent.putExtra("cardPosition", cardPosition);
         startActivity(intent);
         this.finish();
     }

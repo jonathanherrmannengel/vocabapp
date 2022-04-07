@@ -58,6 +58,7 @@ class AdapterCards(
                 intent.putExtra("card", extra)
                 intent.putExtra("reverse", reverse)
                 intent.putExtra("sort", sort)
+                intent.putExtra("cardPosition", viewHolder.adapterPosition)
                 c.startActivity(intent)
                 (c as ListCards).finish()
             }

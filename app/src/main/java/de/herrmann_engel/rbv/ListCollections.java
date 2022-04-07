@@ -66,6 +66,10 @@ public class ListCollections extends AppCompatActivity implements AsyncImportFin
         this.startActivity(new Intent(getApplicationContext(),NewCollection.class));
         this.finish();
     }
+    public void startSettings(MenuItem menuItem) {
+        this.startActivity(new Intent(getApplicationContext(), Settings.class));
+        this.finish();
+    }
     public void startAboutApp(MenuItem menuItem) {
         this.startActivity(new Intent(getApplicationContext(), AppLicenses.class));
         this.finish();

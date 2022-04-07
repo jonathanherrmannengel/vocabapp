@@ -2,14 +2,18 @@
     <string name="app_name" translatable="false">ReallyBasicVocab</string>
     <string name="app_name_short" translatable="false">R5B4 Vocab</string>
     <string name="licenses">Licenses</string>
+    <string name="settings">Settings</string>
     <string name="yes">yes</string>
     <string name="no">no</string>
     <string name="error">error</string>
+    <string name="error_values">error – did you fill all required fields?</string>
     <string name="wait">please wait</string>
     <string name="add">add</string>
     <string name="start">start</string>
     <string name="edit">edit</string>
+    <string name="optional">%1$s (optional)</string>
     <string name="save_changes">save changes</string>
+    <string name="discard_changes">discard changes</string>
     <string name="delete">delete</string>
     <string name="options">options</string>
     <string name="welcome_collection">Welcome. Create a new collection or import a collection backup.</string>
@@ -49,4 +53,5 @@
     <string name="card_minus">got it wrong</string>
     <string name="card_known">progress</string>
     <string name="color">color</string>
+    <string name="settings_default_sort">List cards: default sort</string>
 </resources>

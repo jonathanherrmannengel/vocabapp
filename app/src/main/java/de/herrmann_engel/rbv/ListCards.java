@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -24,9 +25,12 @@ public class ListCards extends AppCompatActivity {
     private int packNo;
     private boolean reverse;
     private int sort;
+    private int cardPosition;
 
     MenuItem changeFrontBackItem;
     MenuItem sortRandomItem;
+
+    RecyclerView recyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,10 +40,12 @@ public class ListCards extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_list_cards, menu);
+        SharedPreferences settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE);
         collectionNo = getIntent().getExtras().getInt("collection");
         packNo = getIntent().getExtras().getInt("pack");
         reverse = getIntent().getExtras().getBoolean("reverse");
-        sort = getIntent().getExtras().getInt("sort");
+        sort = getIntent().getExtras().getInt("sort", settings.getInt("default_sort", Globals.SORT_DEFAULT));
+        cardPosition = getIntent().getExtras().getInt("cardPosition");
         if(packNo == -1) {
             MenuItem startNewCard = menu.findItem(R.id.start_new_card);
             startNewCard.setVisible(false);
@@ -48,6 +54,9 @@ public class ListCards extends AppCompatActivity {
         }
         changeFrontBackItem = menu.findItem(R.id.change_front_back);
         sortRandomItem = menu.findItem(R.id.sort_random);
+
+        recyclerView = this.findViewById(R.id.rec_default);
+
         dbHelperGet = new DB_Helper_Get(this);
         try {
             if(packNo == -1) {
@@ -67,6 +76,7 @@ public class ListCards extends AppCompatActivity {
         intent.putExtra("pack", packNo);
         intent.putExtra("reverse", reverse);
         intent.putExtra("sort", sort);
+        intent.putExtra("cardPosition", ((LinearLayoutManager) Objects.requireNonNull(recyclerView.getLayoutManager())).findFirstVisibleItemPosition());
         this.startActivity(intent);
         this.finish();
     }
@@ -76,6 +86,7 @@ public class ListCards extends AppCompatActivity {
     }
     public void sort(MenuItem menuItem) {
         sort++;
+        cardPosition = 0;
         setRecView();
     }
 
@@ -85,6 +96,7 @@ public class ListCards extends AppCompatActivity {
         intent.putExtra("pack", packNo);
         intent.putExtra("reverse", reverse);
         intent.putExtra("sort", sort);
+        intent.putExtra("cardPosition", ((LinearLayoutManager) Objects.requireNonNull(recyclerView.getLayoutManager())).findFirstVisibleItemPosition());
         this.startActivity(intent);
         this.finish();
     }
@@ -127,15 +139,16 @@ public class ListCards extends AppCompatActivity {
         if(cardsList.size() <= 1) {
             sortRandomItem.setVisible(false);
         }
-        RecyclerView recyclerView = this.findViewById(R.id.rec_default);
         AdapterCards adapter = new AdapterCards(cardsList,this, reverse, sort, packNo, collectionNo);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        if(sort != Globals.SORT_RANDOM) {
+            recyclerView.scrollToPosition(Math.min(cardPosition, Objects.requireNonNull(recyclerView.getAdapter()).getItemCount() - 1));
+        }
     }
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
         Intent intent = new Intent(getApplicationContext(), ListPacks.class);
         intent.putExtra("collection", collectionNo);
         startActivity(intent);

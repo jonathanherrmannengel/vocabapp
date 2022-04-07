@@ -35,6 +35,14 @@ xmlns:app="http://schemas.android.com/apk/res-auto">
         app:showAsAction="never"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:title="@string/settings"
+        android:onClick="startSettings"
+        />
+    <item
+        android:orderInCategory="200"
+        app:showAsAction="never"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:title="@string/licenses"
         android:onClick="startAboutApp"
         />

@@ -14,6 +14,10 @@
             android:label="@string/licenses" />
         <activity
             android:configChanges="orientation|screenSize|screenLayout"
+            android:name=".Settings"
+            android:label="@string/settings" />
+        <activity
+            android:configChanges="orientation|screenSize|screenLayout"
             android:name=".EditCollection"
             android:label="@string/edit_collection" />
         <activity

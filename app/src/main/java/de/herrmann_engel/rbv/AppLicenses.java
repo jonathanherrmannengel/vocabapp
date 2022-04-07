@@ -91,7 +91,6 @@ public class AppLicenses extends AppCompatActivity {
     }
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
         Intent intent = new Intent(getApplicationContext(), ListCollections.class);
         startActivity(intent);
         this.finish();

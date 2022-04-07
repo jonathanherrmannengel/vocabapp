@@ -1,0 +1,3 @@
+Karteikartenliste behält Position nach Aufruf einer Karte bei (Funktioniert nicht bei aktivierter Zufallssortierung).
+Einstellung: Standardsortierung
+Kleinere Verbesserungen bei der Handhabung

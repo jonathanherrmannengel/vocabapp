@@ -7,5 +7,9 @@
         <item name="colorOnPrimary">@color/white</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">@color/ijblue</item>
+        <!-- Default background color. -->
+        <item name = "android:windowBackground">@color/background</item>
+        <!-- No animations. -->
+        <item name="android:windowAnimationStyle">@null</item>
     </style>
 </resources>

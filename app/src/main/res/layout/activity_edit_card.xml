@@ -30,7 +30,8 @@
                 android:ems="10"
                 android:textColor="@color/light_black"
                 android:textColorHint="@color/light_black"
-                android:inputType="text"/>
+                android:inputType="text"
+                android:hint="@string/new_card_front"/>
 
             <TextView
                 android:layout_width="match_parent"
@@ -49,7 +50,8 @@
                 android:ems="10"
                 android:textColor="@color/light_black"
                 android:textColorHint="@color/light_black"
-                android:inputType="text"/>
+                android:inputType="text"
+                android:hint="@string/new_card_back"/>
 
             <TextView
                 android:layout_width="match_parent"
@@ -68,7 +70,8 @@
                 android:ems="10"
                 android:textColor="@color/light_black"
                 android:textColorHint="@color/light_black"
-                android:inputType="textMultiLine"/>
+                android:inputType="textMultiLine"
+                android:hint="@string/new_card_notes"/>
 
             <TextView
                 android:id="@+id/edit_card_go"

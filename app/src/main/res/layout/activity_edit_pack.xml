@@ -30,7 +30,8 @@
                 android:ems="10"
                 android:textColor="@color/light_black"
                 android:textColorHint="@color/light_black"
-                android:inputType="text"/>
+                android:inputType="text"
+                android:hint="@string/collection_or_pack_name"/>
 
             <TextView
                 android:layout_width="match_parent"
@@ -49,7 +50,8 @@
                 android:ems="10"
                 android:textColor="@color/light_black"
                 android:textColorHint="@color/light_black"
-                android:inputType="text"/>
+                android:inputType="text"
+                android:hint="@string/collection_or_pack_desc"/>
 
             <TextView
                 android:layout_width="match_parent"

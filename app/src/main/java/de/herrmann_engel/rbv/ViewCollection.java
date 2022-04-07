@@ -57,14 +57,14 @@ public class ViewCollection extends AppCompatActivity {
     }
     public void deleteCollection(boolean forceDelete) {
         Dialog confirmDelete = new Dialog(this, R.style.dia_view);
-        confirmDelete.setContentView(R.layout.dia_del);
+        confirmDelete.setContentView(R.layout.dia_confirm);
         confirmDelete.setTitle(getResources().getString(R.string.delete));
         confirmDelete.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
 
-        Button confirmDeleteY = confirmDelete.findViewById(R.id.dia_del_yes);
-        Button confirmDeleteN = confirmDelete.findViewById(R.id.dia_del_no);
+        Button confirmDeleteY = confirmDelete.findViewById(R.id.dia_confirm_yes);
+        Button confirmDeleteN = confirmDelete.findViewById(R.id.dia_confirm_no);
         if(dbHelperGet.getAllPacksByCollection(collection.uid).size() > 0 && !forceDelete) {
-            TextView confirmDeleteDesc = confirmDelete.findViewById(R.id.dia_del_desc);
+            TextView confirmDeleteDesc = confirmDelete.findViewById(R.id.dia_confirm_desc);
             confirmDeleteDesc.setText(R.string.delete_collection_with_packs);
             confirmDeleteDesc.setVisibility(View.VISIBLE);
         }
@@ -89,7 +89,6 @@ public class ViewCollection extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
         Intent intent = new Intent(getApplicationContext(), ListPacks.class);
         intent.putExtra("collection", collectionNo);
         startActivity(intent);

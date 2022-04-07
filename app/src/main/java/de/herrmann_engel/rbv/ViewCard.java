@@ -31,6 +31,8 @@ public class ViewCard extends AppCompatActivity {
     private int cardNo;
     private boolean reverse;
     private int sort;
+    private int cardPosition;
+
     TextView knownText;
     ImageButton knownMinus;
 
@@ -43,6 +45,7 @@ public class ViewCard extends AppCompatActivity {
         cardNo = getIntent().getExtras().getInt("card");
         reverse = getIntent().getExtras().getBoolean("reverse");
         sort = getIntent().getExtras().getInt("sort");
+        cardPosition = getIntent().getExtras().getInt("cardPosition");
         DB_Helper_Get dbHelperGet = new DB_Helper_Get(this);
         dbHelperUpdate = new DB_Helper_Update(this);
         try {
@@ -110,17 +113,18 @@ public class ViewCard extends AppCompatActivity {
         intent.putExtra("card", cardNo);
         intent.putExtra("reverse", reverse);
         intent.putExtra("sort", sort);
+        intent.putExtra("cardPosition", cardPosition);
         startActivity(intent);
         this.finish();
     }
     public void deleteCard(MenuItem menuItem) {
         Dialog confirmDelete = new Dialog(this, R.style.dia_view);
-        confirmDelete.setContentView(R.layout.dia_del);
+        confirmDelete.setContentView(R.layout.dia_confirm);
         confirmDelete.setTitle(getResources().getString(R.string.delete));
         confirmDelete.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
 
-        Button confirmDeleteY = confirmDelete.findViewById(R.id.dia_del_yes);
-        Button confirmDeleteN = confirmDelete.findViewById(R.id.dia_del_no);
+        Button confirmDeleteY = confirmDelete.findViewById(R.id.dia_confirm_yes);
+        Button confirmDeleteN = confirmDelete.findViewById(R.id.dia_confirm_no);
         confirmDeleteY.setOnClickListener(v -> {
             DB_Helper_Delete dbHelperDelete = new DB_Helper_Delete(this);
             dbHelperDelete.deleteCard(card);
@@ -129,6 +133,7 @@ public class ViewCard extends AppCompatActivity {
             intent.putExtra("pack", packNo);
             intent.putExtra("reverse", reverse);
             intent.putExtra("sort", sort);
+            intent.putExtra("cardPosition", cardPosition);
             startActivity(intent);
             this.finish();
         });
@@ -138,12 +143,12 @@ public class ViewCard extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
         Intent intent = new Intent(getApplicationContext(), ListCards.class);
         intent.putExtra("collection", collectionNo);
         intent.putExtra("pack", packNo);
         intent.putExtra("reverse", reverse);
         intent.putExtra("sort", sort);
+        intent.putExtra("cardPosition", cardPosition);
         startActivity(intent);
         this.finish();
     }
