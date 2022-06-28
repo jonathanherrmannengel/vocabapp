@@ -26,9 +26,19 @@
         android:layout_height="wrap_content"
         android:textSize="20sp"
         android:textColor="@color/light_black"
+        android:text="@string/import_mode_integrate"
+        android:id="@+id/dia_import_radio_integrate"
+        android:buttonTint="@color/ijblue"
+        android:checked="true"/>
+    <RadioButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:textColor="@color/light_black"
         android:text="@string/import_mode_skip"
         android:id="@+id/dia_import_radio_skip"
-        android:checked="true"/>
+        android:buttonTint="@color/ijblue"
+        android:checked="false"/>
     <RadioButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -36,14 +46,7 @@
         android:textColor="@color/light_black"
         android:text="@string/import_mode_duplicates"
         android:id="@+id/dia_import_radio_duplicates"
-        android:checked="false"/>
-    <RadioButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:textColor="@color/light_black"
-        android:text="@string/import_mode_integrate"
-        android:id="@+id/dia_import_radio_integrate"
+        android:buttonTint="@color/ijblue"
         android:checked="false"/>
 </RadioGroup>
 

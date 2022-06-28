@@ -25,10 +25,10 @@
     <string name="import_warn">Nicht alle Daten konnten importiert werden</string>
     <string name="import_okay">Erfolgreich beendet</string>
     <string name="edit_collection">Sammlung bearbeiten</string>
-    <string name="import_mode">Bei gleichnamigen und namenslosen Sammlungen:</string>
-    <string name="import_mode_skip">Import überspringen</string>
-    <string name="import_mode_duplicates">Als neuen Eintrag anlegen</string>
-    <string name="import_mode_integrate">In die erste gleichnamige integrieren</string>
+    <string name="import_mode">Handhabung von namensgleichen Sammlungen:</string>
+    <string name="import_mode_skip">Nicht importieren</string>
+    <string name="import_mode_duplicates">Als neuen namensgleichen Eintrag hinzufügen</string>
+    <string name="import_mode_integrate">Mit erster namensgleichen Sammlung zusammenführen</string>
     <string name="edit_pack">Stapel bearbeiten</string>
     <string name="edit_card">Karte bearbeiten</string>
     <string name="delete_pack_with_cards">Dieser Stapel enthält Karten. Wenn Sie das Löschen fortsetzen, werden auch die enthaltenen Karten gelöscht. Trotzdem löschen?</string>
@@ -44,7 +44,7 @@
     <string name="change_front_back">Rückseite anzeigen</string>
     <string name="change_back_front">Vorderseite anzeigen</string>
     <string name="sort_random">Zufallssortierung</string>
-    <string name="sort_normal">Normale Sortierung</string>
+    <string name="sort_normal">Sortierung nach Lernfortschritt</string>
     <string name="sort_alphabetical">Alphabetische Sortierung</string>
     <string name="collection_details">Sammlungsdetails</string>
     <string name="pack_details">Stapeldetails</string>

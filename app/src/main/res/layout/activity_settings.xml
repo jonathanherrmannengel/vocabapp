@@ -19,7 +19,7 @@
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
                 android:text="@string/settings_default_sort"
-                android:textColor="@color/dark_grey"/>
+                android:textColor="@android:color/black"/>
 
             <RadioGroup
                 android:orientation="vertical"
@@ -30,23 +30,29 @@
                 <RadioButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textSize="16sp"
                     android:text="@string/sort_normal"
                     android:onClick="setSortNormal"
                     android:id="@+id/settings_sort_normal"
+                    android:buttonTint="@color/ijblue"
                     android:textColor="@color/light_black"/>
                 <RadioButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textSize="16sp"
                     android:text="@string/sort_random"
                     android:onClick="setSortRandom"
                     android:id="@+id/settings_sort_random"
+                    android:buttonTint="@color/ijblue"
                     android:textColor="@color/light_black"/>
                 <RadioButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textSize="16sp"
                     android:text="@string/sort_alphabetical"
                     android:onClick="setSortAlphabetical"
                     android:id="@+id/settings_sort_alphabetical"
+                    android:buttonTint="@color/ijblue"
                     android:textColor="@color/light_black" />
 
             </RadioGroup>
