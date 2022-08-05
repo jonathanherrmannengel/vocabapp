@@ -12,14 +12,21 @@ import java.util.List;
 
 @Dao
 public interface DB_Pack_DAO {
+        @Query("SELECT * FROM db_pack ORDER BY name ASC, uid DESC")
+        List<DB_Pack> getAll();
+
         @Query("SELECT * FROM db_pack WHERE collection=:cid ORDER BY name ASC, uid DESC")
         List<DB_Pack> getAll(int cid);
+
         @Query("SELECT * FROM db_pack WHERE collection=:cid AND name=:name AND `desc`=:desc ORDER BY name ASC, uid DESC")
         List<DB_Pack> getAllByCollectionAndNameAndDesc(int cid, String name, String desc);
+
         @Query("SELECT uid FROM db_pack WHERE collection=:cid ORDER BY name ASC, uid DESC")
         List<Integer> getAllIDs(int cid);
+
         @Query("SELECT * FROM db_pack WHERE uid=:pid")
         List<DB_Pack> getOne(int pid);
+
         @Query("SELECT * FROM db_pack WHERE collection=:cid")
         Cursor getAllExportByCollection(int cid);
 

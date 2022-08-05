@@ -1,30 +1,29 @@
 package de.herrmann_engel.rbv
 
 import android.content.Context
-import androidx.recyclerview.widget.RecyclerView
-import android.widget.TextView
-import android.view.ViewGroup
-import android.view.LayoutInflater
 import android.content.Intent
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
 import java.lang.Exception
 
 class AdapterCards(
-    private val cards: List<DB_Card>,
-    private val c: Context,
-    private val reverse: Boolean,
-    private val sort: Int,
-    private val packNo: Int,
-    private val collectionNo: Int
+        private val cards: List<DB_Card>,
+        private val c: Context,
+        private val reverse: Boolean,
+        private val sort: Int,
+        private val packNo: Int,
+        private val collectionNo: Int
 ) : RecyclerView.Adapter<AdapterCards.ViewHolder>() {
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val textView: TextView = view.findViewById(R.id.rec_name)
-
     }
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(viewGroup.context)
-            .inflate(R.layout.rec_view, viewGroup, false)
+        val view =
+                LayoutInflater.from(viewGroup.context).inflate(R.layout.rec_view, viewGroup, false)
         return ViewHolder(view)
     }
 
@@ -32,11 +31,13 @@ class AdapterCards(
         if (cards.isEmpty()) {
             viewHolder.textView.text = c.resources.getString(R.string.welcome_card)
         } else {
-            viewHolder.textView.text = String.format(
-                "%s (%d)",
-                if (reverse) cards[position].back else cards[position].front,
-                cards[position].known
-            )
+            var cardText = if (reverse) cards[position].back else cards[position].front
+            cardText = cardText.replace(System.getProperty("line.separator"), " ")
+            val cardTextMaxLength = 50
+            if (cardText.length > cardTextMaxLength) {
+                cardText = cardText.substring(0, cardTextMaxLength - 1) + "…"
+            }
+            viewHolder.textView.text = String.format("%s (%d)", cardText, cards[position].known)
             if (packNo == -1) {
                 val dbHelperGet = DB_Helper_Get(c.applicationContext)
                 try {

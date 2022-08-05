@@ -36,7 +36,8 @@ public class ListCollections extends AppCompatActivity implements AsyncImportFin
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
                     if (result.getResultCode() == Activity.RESULT_OK) {
-                        new AsyncImport(this, this, Objects.requireNonNull(result.getData()).getData(), importMode).execute();
+                        new AsyncImport(this, this, Objects.requireNonNull(result.getData()).getData(), importMode)
+                                .execute();
                         Toast.makeText(this, R.string.wait, Toast.LENGTH_LONG).show();
                     } else {
                         Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show();
@@ -52,40 +53,46 @@ public class ListCollections extends AppCompatActivity implements AsyncImportFin
         updateContent();
         return true;
     }
-    private void updateContent(){
+
+    private void updateContent() {
         DB_Helper_Get dbHelperGet = new DB_Helper_Get(this);
         List<DB_Collection> collections = dbHelperGet.getAllCollections();
         exportAllMenuItem.setVisible(collections.size() > 0);
 
         RecyclerView recyclerView = this.findViewById(R.id.rec_default);
-        AdapterCollections adapter = new AdapterCollections(collections,this);
+        AdapterCollections adapter = new AdapterCollections(collections, this);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
+
     public void startNewCollection(MenuItem menuItem) {
-        this.startActivity(new Intent(getApplicationContext(),NewCollection.class));
+        this.startActivity(new Intent(getApplicationContext(), NewCollection.class));
         this.finish();
     }
+
     public void startSettings(MenuItem menuItem) {
         this.startActivity(new Intent(getApplicationContext(), Settings.class));
         this.finish();
     }
+
     public void startAboutApp(MenuItem menuItem) {
         this.startActivity(new Intent(getApplicationContext(), AppLicenses.class));
         this.finish();
     }
+
     public void importCards(MenuItem menuItem) {
         Dialog startImportDialog = new Dialog(this, R.style.dia_view);
         startImportDialog.setContentView(R.layout.dia_import);
         startImportDialog.setTitle(getResources().getString(R.string.options));
-        startImportDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
+        startImportDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.MATCH_PARENT);
 
         Button startImportButton = startImportDialog.findViewById(R.id.dia_import_start);
         RadioGroup startImportMode = startImportDialog.findViewById(R.id.dia_import_radio);
         startImportButton.setOnClickListener(v -> {
-            if(startImportMode.getCheckedRadioButtonId()== R.id.dia_import_radio_integrate) {
+            if (startImportMode.getCheckedRadioButtonId() == R.id.dia_import_radio_integrate) {
                 importMode = Globals.IMPORT_MODE_INTEGRATE;
-            } else if (startImportMode.getCheckedRadioButtonId()== R.id.dia_import_radio_duplicates) {
+            } else if (startImportMode.getCheckedRadioButtonId() == R.id.dia_import_radio_duplicates) {
                 importMode = Globals.IMPORT_MODE_DUPLICATES;
             } else {
                 importMode = Globals.IMPORT_MODE_SKIP;
@@ -99,25 +106,27 @@ public class ListCollections extends AppCompatActivity implements AsyncImportFin
         });
         startImportDialog.show();
     }
+
     @Override
-    public void importCardsResult(final int result) {runOnUiThread(() -> {
-        if(result < Globals.IMPORT_ERROR_LEVEL_ERROR) {
-            if(result == Globals.IMPORT_ERROR_LEVEL_OKAY) {
-                Toast.makeText(getApplicationContext(), R.string.import_okay, Toast.LENGTH_SHORT).show();
+    public void importCardsResult(final int result) {
+        runOnUiThread(() -> {
+            if (result < Globals.IMPORT_ERROR_LEVEL_ERROR) {
+                if (result == Globals.IMPORT_ERROR_LEVEL_OKAY) {
+                    Toast.makeText(getApplicationContext(), R.string.import_okay, Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), R.string.import_warn, Toast.LENGTH_LONG).show();
+                }
+                updateContent();
             } else {
-                Toast.makeText(getApplicationContext(), R.string.import_warn, Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), R.string.error, Toast.LENGTH_LONG).show();
             }
-            updateContent();
-        } else {
-            Toast.makeText(getApplicationContext(), R.string.error, Toast.LENGTH_LONG).show();
-        }
-    });
+        });
     }
 
     public void exportAll(MenuItem item) {
         Export export = new Export(this);
-        if(!export.exportFile()) {
-            Toast.makeText(this,R.string.error, Toast.LENGTH_LONG).show();
+        if (!export.exportFile()) {
+            Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show();
         }
     }
 }

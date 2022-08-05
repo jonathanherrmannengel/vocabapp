@@ -23,15 +23,14 @@ public class AppLicenses extends AppCompatActivity {
         setContentView(R.layout.activity_default_rec);
 
         try {
-            InputStream inputStream =  getResources().getAssets().open("oss/licenses.xml");
+            InputStream inputStream = getResources().getAssets().open("oss/licenses.xml");
 
             XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
             factory.setNamespaceAware(false);
             XmlPullParser xmlPullParser = factory.newPullParser();
 
-            xmlPullParser.setInput( new InputStreamReader( inputStream) );
+            xmlPullParser.setInput(new InputStreamReader(inputStream));
             int eventType = xmlPullParser.getEventType();
-
 
             List<OSS_Licenses> licenses = new ArrayList<>();
 
@@ -44,24 +43,24 @@ public class AppLicenses extends AppCompatActivity {
             String projectUrlTmp = "";
 
             while (eventType != XmlPullParser.END_DOCUMENT) {
-                if(eventType == XmlPullParser.START_TAG) {
-                    if(xmlPullParser.getName().equals("item") && !projectRunning){
+                if (eventType == XmlPullParser.START_TAG) {
+                    if (xmlPullParser.getName().equals("item") && !projectRunning) {
                         projectRunning = true;
-                    } else if(!xmlPullParser.getName().equals("item") && projectRunning){
+                    } else if (!xmlPullParser.getName().equals("item") && projectRunning) {
                         currentTag = xmlPullParser.getName();
                     }
-                } else if(eventType == XmlPullParser.END_TAG) {
+                } else if (eventType == XmlPullParser.END_TAG) {
                     currentTag = "";
-                    if(xmlPullParser.getName().equals("item") && projectRunning){
+                    if (xmlPullParser.getName().equals("item") && projectRunning) {
                         projectRunning = false;
-                        project = new OSS_Project(projectNameTmp,projectDevTmp,projectUrlTmp);
-                        licenses.add(new OSS_Licenses(licenseIdentifierTmp,project));
+                        project = new OSS_Project(projectNameTmp, projectDevTmp, projectUrlTmp);
+                        licenses.add(new OSS_Licenses(licenseIdentifierTmp, project));
                         licenseIdentifierTmp = "";
                         projectNameTmp = "";
                         projectDevTmp = "";
                         projectUrlTmp = "";
                     }
-                } else if(eventType == XmlPullParser.TEXT) {
+                } else if (eventType == XmlPullParser.TEXT) {
                     switch (currentTag) {
                         case "identifier":
                             licenseIdentifierTmp = xmlPullParser.getText();
@@ -81,7 +80,7 @@ public class AppLicenses extends AppCompatActivity {
             }
 
             RecyclerView recyclerView = this.findViewById(R.id.rec_default);
-            AdapterOSS adapter = new AdapterOSS(licenses,this);
+            AdapterOSS adapter = new AdapterOSS(licenses, this);
             recyclerView.setAdapter(adapter);
             recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -89,6 +88,7 @@ public class AppLicenses extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), R.string.error, Toast.LENGTH_LONG).show();
         }
     }
+
     @Override
     public void onBackPressed() {
         Intent intent = new Intent(getApplicationContext(), ListCollections.class);

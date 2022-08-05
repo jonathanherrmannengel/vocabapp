@@ -39,7 +39,7 @@ public class NewCollection extends AppCompatActivity {
 
     }
 
-    private void startListCollections(){
+    private void startListCollections() {
         Intent intent = new Intent(getApplicationContext(), ListCollections.class);
         startActivity(intent);
         this.finish();
@@ -49,13 +49,14 @@ public class NewCollection extends AppCompatActivity {
     public void onBackPressed() {
         String name = nameTextView.getText().toString();
         String desc = descTextView.getText().toString();
-        if(name.isEmpty() && desc.isEmpty()) {
+        if (name.isEmpty() && desc.isEmpty()) {
             startListCollections();
         } else {
             Dialog confirmCancel = new Dialog(this, R.style.dia_view);
             confirmCancel.setContentView(R.layout.dia_confirm);
             confirmCancel.setTitle(getResources().getString(R.string.discard_changes));
-            confirmCancel.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
+            confirmCancel.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
+                    WindowManager.LayoutParams.MATCH_PARENT);
 
             Button confirmCancelY = confirmCancel.findViewById(R.id.dia_confirm_yes);
             Button confirmCancelN = confirmCancel.findViewById(R.id.dia_confirm_no);

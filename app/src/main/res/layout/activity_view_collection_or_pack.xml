@@ -21,7 +21,7 @@
                 android:textColor="@android:color/black"
                 android:textSize="20sp"
                 android:gravity="center"
-                android:id="@+id/collection_or_pack_name"/>
+                android:id="@+id/collection_or_pack_name" />
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -29,13 +29,13 @@
                 android:textColor="@android:color/black"
                 android:textSize="17sp"
                 android:gravity="center"
-                android:id="@+id/collection_or_pack_desc"/>
+                android:id="@+id/collection_or_pack_desc" />
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textColor="@color/light_black"
                 android:gravity="center"
-                android:id="@+id/collection_or_pack_date"/>
+                android:id="@+id/collection_or_pack_date" />
         </LinearLayout>
     </ScrollView>
 </RelativeLayout>

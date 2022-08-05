@@ -11,16 +11,17 @@ import androidx.appcompat.app.AppCompatActivity;
 public class Settings extends AppCompatActivity {
 
     SharedPreferences settings;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
         settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE);
         int sort = settings.getInt("default_sort", Globals.SORT_DEFAULT);
-        if(sort == Globals.SORT_ALPHABETICAL) {
+        if (sort == Globals.SORT_ALPHABETICAL) {
             RadioButton selectedSort = findViewById(R.id.settings_sort_alphabetical);
             selectedSort.setChecked(true);
-        } else if(sort == Globals.SORT_RANDOM) {
+        } else if (sort == Globals.SORT_RANDOM) {
             RadioButton selectedSort = findViewById(R.id.settings_sort_random);
             selectedSort.setChecked(true);
         } else {
@@ -38,9 +39,11 @@ public class Settings extends AppCompatActivity {
     public void setSortNormal(View view) {
         setSort(Globals.SORT_DEFAULT);
     }
+
     public void setSortRandom(View view) {
         setSort(Globals.SORT_RANDOM);
     }
+
     public void setSortAlphabetical(View view) {
         setSort(Globals.SORT_ALPHABETICAL);
     }

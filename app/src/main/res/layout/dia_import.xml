@@ -4,52 +4,49 @@
     android:layout_height="match_parent"
     android:gravity="center"
     android:background="@color/background">
-
-
-<RadioGroup
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:id="@+id/dia_import_radio"
-    android:layout_centerHorizontal="true"
-    android:layout_gravity="center_horizontal"
-    android:background="@android:color/transparent"
-    android:layout_marginBottom="10dp"
->
-    <TextView
+    <RadioGroup
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:textColor="@color/light_black"
-        android:text="@string/import_mode"/>
-    <RadioButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:textColor="@color/light_black"
-        android:text="@string/import_mode_integrate"
-        android:id="@+id/dia_import_radio_integrate"
-        android:buttonTint="@color/ijblue"
-        android:checked="true"/>
-    <RadioButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:textColor="@color/light_black"
-        android:text="@string/import_mode_skip"
-        android:id="@+id/dia_import_radio_skip"
-        android:buttonTint="@color/ijblue"
-        android:checked="false"/>
-    <RadioButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:textColor="@color/light_black"
-        android:text="@string/import_mode_duplicates"
-        android:id="@+id/dia_import_radio_duplicates"
-        android:buttonTint="@color/ijblue"
-        android:checked="false"/>
-</RadioGroup>
-
+        android:id="@+id/dia_import_radio"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center_horizontal"
+        android:background="@android:color/transparent"
+        android:layout_marginBottom="10dp"
+    >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:textColor="@color/light_black"
+            android:text="@string/import_mode" />
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:textColor="@color/light_black"
+            android:text="@string/import_mode_integrate"
+            android:id="@+id/dia_import_radio_integrate"
+            android:buttonTint="@color/ijblue"
+            android:checked="true" />
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:textColor="@color/light_black"
+            android:text="@string/import_mode_skip"
+            android:id="@+id/dia_import_radio_skip"
+            android:buttonTint="@color/ijblue"
+            android:checked="false" />
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:textColor="@color/light_black"
+            android:text="@string/import_mode_duplicates"
+            android:id="@+id/dia_import_radio_duplicates"
+            android:buttonTint="@color/ijblue"
+            android:checked="false" />
+    </RadioGroup>
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -62,5 +59,4 @@
         android:textColor="@color/light_black"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp" />
-
 </RelativeLayout>

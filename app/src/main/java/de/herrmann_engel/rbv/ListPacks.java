@@ -28,9 +28,19 @@ public class ListPacks extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_list_packs, menu);
         collectionNo = getIntent().getExtras().getInt("collection");
+        if(collectionNo == -1) {
+            MenuItem startNewPack = menu.findItem(R.id.start_new_pack);
+            startNewPack.setVisible(false);
+            MenuItem collectionDetails = menu.findItem(R.id.collection_details);
+            collectionDetails.setVisible(false);
+            MenuItem export = menu.findItem(R.id.export_single);
+            export.setVisible(false);
+        }
         dbHelperGet = new DB_Helper_Get(this);
         try {
-            setTitle(dbHelperGet.getSingleCollection(collectionNo).name);
+            if(collectionNo > -1) {
+                setTitle(dbHelperGet.getSingleCollection(collectionNo).name);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -38,8 +48,12 @@ public class ListPacks extends AppCompatActivity {
         return true;
     }
     private void updateContent(){
-        List<DB_Pack> packs = dbHelperGet.getAllPacksByCollection(collectionNo);
-
+        List<DB_Pack> packs;
+        if(collectionNo == -1){
+            packs = dbHelperGet.getAllPacks();
+        } else{
+            packs = dbHelperGet.getAllPacksByCollection(collectionNo);
+        }
         RecyclerView recyclerView = this.findViewById(R.id.rec_default);
         AdapterPacks adapter = new AdapterPacks(packs,this, collectionNo);
         recyclerView.setAdapter(adapter);

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:app="http://schemas.android.com/apk/res-auto">
-
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:icon="@drawable/outline_add_24"
         android:orderInCategory="100"
@@ -10,8 +9,7 @@ xmlns:app="http://schemas.android.com/apk/res-auto">
         android:layout_height="wrap_content"
         android:title="@string/add"
         android:onClick="startNewCollection"
-        />
-
+    />
     <item
         android:icon="@drawable/outline_file_download_24"
         android:orderInCategory="200"
@@ -20,7 +18,7 @@ xmlns:app="http://schemas.android.com/apk/res-auto">
         android:layout_height="wrap_content"
         android:title="@string/import_cards"
         android:onClick="importCards"
-        />
+    />
     <item
         android:id="@+id/export_all"
         android:orderInCategory="200"
@@ -29,7 +27,7 @@ xmlns:app="http://schemas.android.com/apk/res-auto">
         android:layout_height="wrap_content"
         android:title="@string/export_all"
         android:onClick="exportAll"
-        />
+    />
     <item
         android:orderInCategory="200"
         app:showAsAction="never"
@@ -37,7 +35,7 @@ xmlns:app="http://schemas.android.com/apk/res-auto">
         android:layout_height="wrap_content"
         android:title="@string/settings"
         android:onClick="startSettings"
-        />
+    />
     <item
         android:orderInCategory="200"
         app:showAsAction="never"
@@ -45,6 +43,5 @@ xmlns:app="http://schemas.android.com/apk/res-auto">
         android:layout_height="wrap_content"
         android:title="@string/licenses"
         android:onClick="startAboutApp"
-        />
-
+    />
 </menu>

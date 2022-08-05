@@ -77,7 +77,7 @@ public class NewCard extends AppCompatActivity {
         });
     }
 
-    private void startListCards(){
+    private void startListCards() {
         Intent intent = new Intent(getApplicationContext(), ListCards.class);
         intent.putExtra("collection", collectionNo);
         intent.putExtra("pack", packNo);
@@ -93,13 +93,14 @@ public class NewCard extends AppCompatActivity {
         String front = frontTextView.getText().toString();
         String back = backTextView.getText().toString();
         String notes = notesTextView.getText().toString();
-        if(front.isEmpty() && back.isEmpty() && notes.isEmpty()) {
+        if (front.isEmpty() && back.isEmpty() && notes.isEmpty()) {
             startListCards();
         } else {
             Dialog confirmCancel = new Dialog(this, R.style.dia_view);
             confirmCancel.setContentView(R.layout.dia_confirm);
             confirmCancel.setTitle(getResources().getString(R.string.discard_changes));
-            confirmCancel.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
+            confirmCancel.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
+                    WindowManager.LayoutParams.MATCH_PARENT);
 
             Button confirmCancelY = confirmCancel.findViewById(R.id.dia_confirm_yes);
             Button confirmCancelN = confirmCancel.findViewById(R.id.dia_confirm_no);

@@ -5,16 +5,26 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="8dp"
     >
-    <TextView
-        android:gravity="center"
-        android:layout_margin="8dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:id="@+id/rec_name"
-        android:textColor="@android:color/black"
+        <TextView
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:id="@+id/rec_name"
+            android:textColor="@android:color/black"
         />
+        <TextView
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:layout_marginTop="2dp"
+            android:id="@+id/rec_desc"
+            android:visibility="gone"
+            android:textColor="@color/dark_grey"
+            />
     </LinearLayout>
-
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -14,12 +14,16 @@ import java.util.List;
 public interface DB_Card_DAO {
     @Query("SELECT * FROM db_card WHERE pack=:pid")
     List<DB_Card> getAll(int pid);
+
     @Query("SELECT * FROM db_card WHERE pack=:pid AND front=:front AND back=:back AND notes=:notes")
     List<DB_Card> getAllByPackAndFrontAndBackAndNotes(int pid, String front, String back, String notes);
+
     @Query("SELECT * FROM db_card WHERE uid=:cid")
     List<DB_Card> getOne(int cid);
+
     @Query("SELECT * FROM db_card")
     Cursor getAllExport();
+
     @Query("DELETE FROM db_card WHERE pack=:pid")
     void deleteAllByPack(int pid);
 

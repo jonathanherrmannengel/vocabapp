@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:app="http://schemas.android.com/apk/res-auto">
-
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/start_new_pack"
         android:icon="@drawable/outline_add_24"
         android:orderInCategory="100"
         app:showAsAction="ifRoom"
@@ -10,9 +10,9 @@ xmlns:app="http://schemas.android.com/apk/res-auto">
         android:layout_height="wrap_content"
         android:title="@string/add"
         android:onClick="startNewPack"
-        />
-
+    />
     <item
+        android:id="@+id/collection_details"
         android:icon="@drawable/outline_info_24"
         android:orderInCategory="200"
         app:showAsAction="ifRoom"
@@ -20,9 +20,9 @@ xmlns:app="http://schemas.android.com/apk/res-auto">
         android:layout_height="wrap_content"
         android:title="@string/collection_details"
         android:onClick="collectionDetails"
-        />
-
+    />
     <item
+        android:id="@+id/export_single"
         android:icon="@drawable/outline_file_upload_24"
         android:orderInCategory="200"
         app:showAsAction="ifRoom"
@@ -30,6 +30,5 @@ xmlns:app="http://schemas.android.com/apk/res-auto">
         android:layout_height="wrap_content"
         android:title="@string/export_cards"
         android:onClick="export"
-        />
-
+    />
 </menu>

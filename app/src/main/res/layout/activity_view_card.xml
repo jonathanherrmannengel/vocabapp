@@ -15,7 +15,6 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:gravity="center">
-
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -25,8 +24,7 @@
                 android:textSize="24sp"
                 android:gravity="center"
                 android:textIsSelectable="true"
-                android:id="@+id/card_front"/>
-
+                android:id="@+id/card_front" />
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -35,22 +33,22 @@
                 android:textSize="28sp"
                 android:gravity="center"
                 android:textIsSelectable="true"
-                android:id="@+id/card_back"/>
+                android:id="@+id/card_back" />
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="40dp"
                 android:textColor="@color/light_black"
                 android:gravity="center"
-                android:id="@+id/card_date"/>
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="20dp"
-            android:padding="15dp"
-            android:background="@color/light_grey"
-            android:orientation="vertical"
-            android:id="@+id/card_known_progress">
+                android:id="@+id/card_date" />
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:padding="15dp"
+                android:background="@color/light_grey"
+                android:orientation="vertical"
+                android:id="@+id/card_known_progress">
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -59,7 +57,7 @@
                     android:gravity="center"
                     android:textColor="@android:color/black"
                     android:text="@string/card_known"
-                    />
+                />
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -71,12 +69,12 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_margin="6dp"
-                        android:onClick="card_plus"
+                        android:onClick="updateCardKnownPlus"
                         android:src="@drawable/outline_done_24"
                         android:background="@android:color/transparent"
                         app:tint="@color/dark_green"
                         android:contentDescription="@string/card_plus"
-                        android:tooltipText="@string/card_plus"/>
+                        android:tooltipText="@string/card_plus" />
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -85,20 +83,19 @@
                         android:textSize="26sp"
                         android:gravity="center"
                         android:textColor="@color/button"
-                        android:id="@+id/card_known"/>
+                        android:id="@+id/card_known" />
                     <ImageButton
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_margin="6dp"
-                        android:onClick="card_minus"
+                        android:onClick="updateCardKnownMinus"
                         android:src="@drawable/outline_close_24"
                         android:background="@android:color/transparent"
                         android:contentDescription="@string/card_minus"
                         android:tooltipText="@string/card_minus"
-                        android:id="@+id/card_minus"/>
+                        android:id="@+id/card_minus" />
                 </LinearLayout>
             </LinearLayout>
-
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -109,7 +106,7 @@
                 android:gravity="center"
                 android:textIsSelectable="true"
                 android:autoLink="web"
-                android:id="@+id/card_notes"/>
+                android:id="@+id/card_notes" />
         </LinearLayout>
     </ScrollView>
 </RelativeLayout>

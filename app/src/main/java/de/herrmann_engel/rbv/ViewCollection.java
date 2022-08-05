@@ -32,44 +32,48 @@ public class ViewCollection extends AppCompatActivity {
             TextView nameTextView = findViewById(R.id.collection_or_pack_name);
             nameTextView.setText(collection.name);
             TextView descTextView = findViewById(R.id.collection_or_pack_desc);
-            if(collection.desc.equals("")) {
+            if (collection.desc.equals("")) {
                 descTextView.setVisibility(View.GONE);
             } else {
                 descTextView.setText(collection.desc);
             }
             TextView dateTextView = findViewById(R.id.collection_or_pack_date);
-            dateTextView.setText(new java.util.Date(collection.date*1000).toString());
+            dateTextView.setText(new java.util.Date(collection.date * 1000).toString());
         } catch (Exception e) {
             Toast.makeText(getApplicationContext(), R.string.error, Toast.LENGTH_SHORT).show();
         }
 
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_view_collection, menu);
         return true;
     }
+
     public void editCollection(MenuItem menuItem) {
         Intent intent = new Intent(getApplicationContext(), EditCollection.class);
         intent.putExtra("collection", collectionNo);
         startActivity(intent);
         this.finish();
     }
+
     public void deleteCollection(boolean forceDelete) {
         Dialog confirmDelete = new Dialog(this, R.style.dia_view);
         confirmDelete.setContentView(R.layout.dia_confirm);
         confirmDelete.setTitle(getResources().getString(R.string.delete));
-        confirmDelete.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
+        confirmDelete.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.MATCH_PARENT);
 
         Button confirmDeleteY = confirmDelete.findViewById(R.id.dia_confirm_yes);
         Button confirmDeleteN = confirmDelete.findViewById(R.id.dia_confirm_no);
-        if(dbHelperGet.getAllPacksByCollection(collection.uid).size() > 0 && !forceDelete) {
+        if (dbHelperGet.getAllPacksByCollection(collection.uid).size() > 0 && !forceDelete) {
             TextView confirmDeleteDesc = confirmDelete.findViewById(R.id.dia_confirm_desc);
             confirmDeleteDesc.setText(R.string.delete_collection_with_packs);
             confirmDeleteDesc.setVisibility(View.VISIBLE);
         }
         confirmDeleteY.setOnClickListener(v -> {
-            if(dbHelperGet.getAllPacksByCollection(collection.uid).size() == 0 || forceDelete) {
+            if (dbHelperGet.getAllPacksByCollection(collection.uid).size() == 0 || forceDelete) {
                 DB_Helper_Delete dbHelperDelete = new DB_Helper_Delete(getApplicationContext());
                 dbHelperDelete.deleteCollection(collection, forceDelete);
                 Intent intent = new Intent(getApplicationContext(), ListCollections.class);
@@ -83,6 +87,7 @@ public class ViewCollection extends AppCompatActivity {
         confirmDeleteN.setOnClickListener(v -> confirmDelete.dismiss());
         confirmDelete.show();
     }
+
     public void deleteCollection(MenuItem menuItem) {
         deleteCollection(false);
     }

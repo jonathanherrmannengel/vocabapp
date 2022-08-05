@@ -52,7 +52,7 @@ public class EditPack extends AppCompatActivity {
             packEdit.setOnClickListener(v -> {
                 pack.name = packName.getText().toString();
                 pack.desc = packDesc.getText().toString();
-                if(dbHelperUpdate.updatePack(pack)) {
+                if (dbHelperUpdate.updatePack(pack)) {
                     startViewPack();
                 } else {
                     Toast.makeText(getApplicationContext(), R.string.error_values, Toast.LENGTH_SHORT).show();
@@ -61,26 +61,26 @@ public class EditPack extends AppCompatActivity {
             LinearLayout colorPicker = findViewById(R.id.color_picker);
             TypedArray colors = getResources().obtainTypedArray(R.array.pack_color_main);
             TypedArray colorsBackground = getResources().obtainTypedArray(R.array.pack_color_background);
-            for(int i = 0; i < colors.length() && i < colorsBackground.length(); i++) {
-                int color = colors.getColor(i,0);
-                int colorBackground = colorsBackground.getColor(i,0);
-                if(pack.colors == i) {
-                    setColors(color,colorBackground);
+            for (int i = 0; i < colors.length() && i < colorsBackground.length(); i++) {
+                int color = colors.getColor(i, 0);
+                int colorBackground = colorsBackground.getColor(i, 0);
+                if (pack.colors == i) {
+                    setColors(color, colorBackground);
                 }
                 ImageButton colorView = new ImageButton(this);
                 colorView.setImageDrawable(new ColorDrawable(color));
-                int margin = Math.round(10 * ((float) getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT));
-                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(margin*3,margin*3);
-                lp.setMargins(margin,margin,margin,margin);
+                int margin = Math.round(
+                        10 * ((float) getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT));
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(margin * 3, margin * 3);
+                lp.setMargins(margin, margin, margin, margin);
                 colorView.setLayoutParams(lp);
-                colorView.setPadding(0,0,0,0);
+                colorView.setPadding(0, 0, 0, 0);
                 int finalI = i;
                 colorView.setOnClickListener(
                         v -> {
-                            setColors(color,colorBackground);
+                            setColors(color, colorBackground);
                             pack.colors = finalI;
-                        }
-                );
+                        });
                 colorPicker.addView(colorView);
             }
             colors.recycle();
@@ -98,7 +98,7 @@ public class EditPack extends AppCompatActivity {
 
     }
 
-    private void startViewPack(){
+    private void startViewPack() {
         Intent intent = new Intent(getApplicationContext(), ViewPack.class);
         intent.putExtra("collection", collectionNo);
         intent.putExtra("pack", packNo);
@@ -113,13 +113,14 @@ public class EditPack extends AppCompatActivity {
     public void onBackPressed() {
         String name = packName.getText().toString();
         String desc = packDesc.getText().toString();
-        if(pack == null || (pack.name.equals(name) && pack.desc.equals(desc))) {
+        if (pack == null || (pack.name.equals(name) && pack.desc.equals(desc))) {
             startViewPack();
         } else {
             Dialog confirmCancel = new Dialog(this, R.style.dia_view);
             confirmCancel.setContentView(R.layout.dia_confirm);
             confirmCancel.setTitle(getResources().getString(R.string.discard_changes));
-            confirmCancel.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
+            confirmCancel.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
+                    WindowManager.LayoutParams.MATCH_PARENT);
             Button confirmCancelY = confirmCancel.findViewById(R.id.dia_confirm_yes);
             Button confirmCancelN = confirmCancel.findViewById(R.id.dia_confirm_no);
             confirmCancelY.setOnClickListener(v -> startViewPack());

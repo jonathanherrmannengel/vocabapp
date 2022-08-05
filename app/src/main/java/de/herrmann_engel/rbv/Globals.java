@@ -18,6 +18,6 @@ public class Globals {
 
     public static final int SORT_DEFAULT = 0;
     public static final int SORT_RANDOM = 1;
-    public static final int SORT_ALPHABETICAL= 2;
+    public static final int SORT_ALPHABETICAL = 2;
 
 }

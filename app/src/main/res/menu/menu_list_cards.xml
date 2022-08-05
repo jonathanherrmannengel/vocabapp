@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:app="http://schemas.android.com/apk/res-auto">
-
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/start_new_card"
         android:icon="@drawable/outline_add_24"
@@ -11,8 +10,7 @@ xmlns:app="http://schemas.android.com/apk/res-auto">
         android:layout_height="wrap_content"
         android:title="@string/add"
         android:onClick="startNewCard"
-        />
-
+    />
     <item
         android:id="@+id/pack_details"
         android:icon="@drawable/outline_info_24"
@@ -22,27 +20,25 @@ xmlns:app="http://schemas.android.com/apk/res-auto">
         android:layout_height="wrap_content"
         android:title="@string/pack_details"
         android:onClick="packDetails"
-        />
-
+    />
     <item
         android:id="@+id/change_front_back"
         android:icon="@drawable/outline_info_24"
-        android:orderInCategory="200"
+        android:orderInCategory="300"
         app:showAsAction="never"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:title="@string/change_front_back"
         android:onClick="changeFrontBack"
-        />
-
+    />
     <item
         android:id="@+id/sort_random"
         android:icon="@drawable/outline_info_24"
-        android:orderInCategory="200"
+        android:orderInCategory="400"
         app:showAsAction="never"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:title="@string/sort_random"
         android:onClick="sort"
-        />
+    />
 </menu>

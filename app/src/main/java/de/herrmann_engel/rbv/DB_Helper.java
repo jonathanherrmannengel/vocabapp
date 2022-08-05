@@ -9,7 +9,7 @@ public class DB_Helper {
     public final DB_Card_DAO card_dao;
     public final Context context;
 
-    public DB_Helper(Context context){
+    public DB_Helper(Context context) {
         this.context = context;
         AppDatabase db = (new AppDatabaseBuilder()).get(context);
         collection_dao = db.collectionDAO();

@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -48,16 +49,24 @@ public class EditCard extends AppCompatActivity {
         try {
             card = dbHelperGet.getSingleCard(cardNo);
             frontTextView.setText(card.front);
+            if (card.front.contains(System.getProperty("line.separator"))) {
+                frontTextView.setInputType(InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+                frontTextView.setSingleLine(false);
+            }
             backTextView.setText(card.back);
+            if (card.back.contains(System.getProperty("line.separator"))) {
+                backTextView.setInputType(InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+                backTextView.setSingleLine(false);
+            }
             notesTextView.setText(card.notes);
             notesTextView.setHint(String.format(getString(R.string.optional), getString(R.string.new_card_notes)));
 
             TypedArray colors = getResources().obtainTypedArray(R.array.pack_color_main);
             TypedArray colorsBackground = getResources().obtainTypedArray(R.array.pack_color_background);
             int packColors = dbHelperGet.getSinglePack(card.pack).colors;
-            if(packColors < Math.min(colors.length(), colorsBackground.length()) && packColors >= 0) {
-                int color = colors.getColor(packColors,0);
-                int colorBackground = colorsBackground.getColor(packColors ,0);
+            if (packColors < Math.min(colors.length(), colorsBackground.length()) && packColors >= 0) {
+                int color = colors.getColor(packColors, 0);
+                int colorBackground = colorsBackground.getColor(packColors, 0);
                 Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(new ColorDrawable(color));
                 Window window = this.getWindow();
                 window.setStatusBarColor(color);
@@ -70,7 +79,7 @@ public class EditCard extends AppCompatActivity {
                 card.front = frontTextView.getText().toString();
                 card.back = backTextView.getText().toString();
                 card.notes = notesTextView.getText().toString();
-                if(dbHelperUpdate.updateCard(card)) {
+                if (dbHelperUpdate.updateCard(card)) {
                     startViewCard();
                 } else {
                     Toast.makeText(getApplicationContext(), R.string.error_values, Toast.LENGTH_SHORT).show();
@@ -81,8 +90,7 @@ public class EditCard extends AppCompatActivity {
         }
     }
 
-
-    private void startViewCard(){
+    private void startViewCard() {
         Intent intent = new Intent(getApplicationContext(), ViewCard.class);
         intent.putExtra("collection", collectionNo);
         intent.putExtra("pack", packNo);
@@ -99,13 +107,14 @@ public class EditCard extends AppCompatActivity {
         String front = frontTextView.getText().toString();
         String back = backTextView.getText().toString();
         String notes = notesTextView.getText().toString();
-        if(card == null || (card.front.equals(front) && card.back.equals(back) && card.notes.equals(notes))) {
+        if (card == null || (card.front.equals(front) && card.back.equals(back) && card.notes.equals(notes))) {
             startViewCard();
         } else {
             Dialog confirmCancel = new Dialog(this, R.style.dia_view);
             confirmCancel.setContentView(R.layout.dia_confirm);
             confirmCancel.setTitle(getResources().getString(R.string.discard_changes));
-            confirmCancel.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
+            confirmCancel.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
+                    WindowManager.LayoutParams.MATCH_PARENT);
             Button confirmCancelY = confirmCancel.findViewById(R.id.dia_confirm_yes);
             Button confirmCancelN = confirmCancel.findViewById(R.id.dia_confirm_no);
             confirmCancelY.setOnClickListener(v -> startViewCard());

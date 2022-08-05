@@ -37,6 +37,7 @@ public class ListCards extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_default_rec);
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_list_cards, menu);
@@ -46,7 +47,7 @@ public class ListCards extends AppCompatActivity {
         reverse = getIntent().getExtras().getBoolean("reverse");
         sort = getIntent().getExtras().getInt("sort", settings.getInt("default_sort", Globals.SORT_DEFAULT));
         cardPosition = getIntent().getExtras().getInt("cardPosition");
-        if(packNo == -1) {
+        if (packNo == -1) {
             MenuItem startNewCard = menu.findItem(R.id.start_new_card);
             startNewCard.setVisible(false);
             MenuItem packDetails = menu.findItem(R.id.pack_details);
@@ -59,9 +60,9 @@ public class ListCards extends AppCompatActivity {
 
         dbHelperGet = new DB_Helper_Get(this);
         try {
-            if(packNo == -1) {
+            if (collectionNo > -1 && packNo == -1) {
                 setTitle(dbHelperGet.getSingleCollection(collectionNo).name);
-            } else {
+            } else if (packNo > -1) {
                 setTitle(dbHelperGet.getSinglePack(packNo).name);
             }
         } catch (Exception e) {
@@ -70,20 +71,24 @@ public class ListCards extends AppCompatActivity {
         setRecView();
         return true;
     }
-    public void startNewCard(MenuItem menuItem)  {
+
+    public void startNewCard(MenuItem menuItem) {
         Intent intent = new Intent(this.getApplicationContext(), NewCard.class);
         intent.putExtra("collection", collectionNo);
         intent.putExtra("pack", packNo);
         intent.putExtra("reverse", reverse);
         intent.putExtra("sort", sort);
-        intent.putExtra("cardPosition", ((LinearLayoutManager) Objects.requireNonNull(recyclerView.getLayoutManager())).findFirstVisibleItemPosition());
+        intent.putExtra("cardPosition", ((LinearLayoutManager) Objects.requireNonNull(recyclerView.getLayoutManager()))
+                .findFirstVisibleItemPosition());
         this.startActivity(intent);
         this.finish();
     }
+
     public void changeFrontBack(MenuItem menuItem) {
         reverse = !reverse;
         setRecView();
     }
+
     public void sort(MenuItem menuItem) {
         sort++;
         cardPosition = 0;
@@ -96,12 +101,14 @@ public class ListCards extends AppCompatActivity {
         intent.putExtra("pack", packNo);
         intent.putExtra("reverse", reverse);
         intent.putExtra("sort", sort);
-        intent.putExtra("cardPosition", ((LinearLayoutManager) Objects.requireNonNull(recyclerView.getLayoutManager())).findFirstVisibleItemPosition());
+        intent.putExtra("cardPosition", ((LinearLayoutManager) Objects.requireNonNull(recyclerView.getLayoutManager()))
+                .findFirstVisibleItemPosition());
         this.startActivity(intent);
         this.finish();
     }
+
     public void setRecView() {
-        if(sort == Globals.SORT_RANDOM) {
+        if (sort == Globals.SORT_RANDOM) {
             sortRandomItem.setTitle(R.string.sort_alphabetical);
         } else if (sort == Globals.SORT_ALPHABETICAL) {
             sortRandomItem.setTitle(R.string.sort_normal);
@@ -110,7 +117,9 @@ public class ListCards extends AppCompatActivity {
             sortRandomItem.setTitle(R.string.sort_random);
         }
         List<DB_Card> cardsList;
-        if(packNo == -1) {
+        if (collectionNo == -1 && packNo == -1) {
+            cardsList = dbHelperGet.getAllCards(sort);
+        } else if (packNo == -1) {
             cardsList = dbHelperGet.getAllCardsByCollection(collectionNo, sort);
         } else {
             cardsList = dbHelperGet.getAllCardsByPack(packNo, sort);
@@ -133,17 +142,18 @@ public class ListCards extends AppCompatActivity {
             }
         }
         changeFrontBackItem.setTitle(reverse ? R.string.change_back_front : R.string.change_front_back);
-        if(cardsList.size() == 0) {
+        if (cardsList.size() == 0) {
             changeFrontBackItem.setVisible(false);
         }
-        if(cardsList.size() <= 1) {
+        if (cardsList.size() <= 1) {
             sortRandomItem.setVisible(false);
         }
-        AdapterCards adapter = new AdapterCards(cardsList,this, reverse, sort, packNo, collectionNo);
+        AdapterCards adapter = new AdapterCards(cardsList, this, reverse, sort, packNo, collectionNo);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        if(sort != Globals.SORT_RANDOM) {
-            recyclerView.scrollToPosition(Math.min(cardPosition, Objects.requireNonNull(recyclerView.getAdapter()).getItemCount() - 1));
+        if (sort != Globals.SORT_RANDOM) {
+            recyclerView.scrollToPosition(
+                    Math.min(cardPosition, Objects.requireNonNull(recyclerView.getAdapter()).getItemCount() - 1));
         }
     }
 

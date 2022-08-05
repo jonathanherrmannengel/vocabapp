@@ -2,6 +2,8 @@ package de.herrmann_engel.rbv;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Dialog;
 import android.content.Intent;
@@ -14,15 +16,18 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Adapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.List;
 import java.util.Objects;
 
 public class ViewCard extends AppCompatActivity {
 
+    private DB_Helper_Get dbHelperGet;
     private DB_Helper_Update dbHelperUpdate;
     private DB_Card card;
     private int known;
@@ -46,7 +51,7 @@ public class ViewCard extends AppCompatActivity {
         reverse = getIntent().getExtras().getBoolean("reverse");
         sort = getIntent().getExtras().getInt("sort");
         cardPosition = getIntent().getExtras().getInt("cardPosition");
-        DB_Helper_Get dbHelperGet = new DB_Helper_Get(this);
+        dbHelperGet = new DB_Helper_Get(this);
         dbHelperUpdate = new DB_Helper_Update(this);
         try {
             card = dbHelperGet.getSingleCard(cardNo);
@@ -58,19 +63,37 @@ public class ViewCard extends AppCompatActivity {
             TextView notes = findViewById(R.id.card_notes);
             notes.setText(card.notes);
             TextView date = findViewById(R.id.card_date);
-            date.setText(new java.util.Date(card.date*1000).toString());
+            date.setText(new java.util.Date(card.date * 1000).toString());
             knownText = findViewById(R.id.card_known);
             known = card.known;
             knownMinus = findViewById(R.id.card_minus);
-            card_known_update();
+            updateCardKnown();
+            updateColors();
+        } catch (Exception e) {
+            Toast.makeText(getApplicationContext(), R.string.error, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_view_card, menu);
+        if (packNo == -1) {
+            menu.findItem(R.id.move_card).setVisible(false);
+        }
+        return true;
+    }
+
+    private void updateColors() {
+        try {
             TypedArray colors = getResources().obtainTypedArray(R.array.pack_color_main);
             TypedArray colorsBackground = getResources().obtainTypedArray(R.array.pack_color_background);
             TypedArray colorsBackgroundLight = getResources().obtainTypedArray(R.array.pack_color_background_light);
             int packColors = dbHelperGet.getSinglePack(card.pack).colors;
-            if(packColors < Math.min(Math.min(colors.length(), colorsBackground.length()), colorsBackgroundLight.length()) && packColors >= 0) {
-                int color = colors.getColor(packColors,0);
-                int colorBackground = colorsBackground.getColor(packColors ,0);
-                int colorBackgroundLight = colorsBackgroundLight.getColor(packColors ,0);
+            if (packColors < Math.min(Math.min(colors.length(), colorsBackground.length()),
+                    colorsBackgroundLight.length()) && packColors >= 0) {
+                int color = colors.getColor(packColors, 0);
+                int colorBackground = colorsBackground.getColor(packColors, 0);
+                int colorBackgroundLight = colorsBackgroundLight.getColor(packColors, 0);
                 Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(new ColorDrawable(color));
                 Window window = this.getWindow();
                 window.setStatusBarColor(color);
@@ -84,28 +107,28 @@ public class ViewCard extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), R.string.error, Toast.LENGTH_SHORT).show();
         }
     }
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_view_card, menu);
-        return true;
-    }
-    private void card_known_update() {
+
+    private void updateCardKnown() {
         knownText.setText(Integer.toString(known));
         knownMinus.setColorFilter(Color.argb(255, 255, 255, 255));
-        knownMinus.setColorFilter(ContextCompat.getColor(this, known > 0 ? R.color.dark_red: R.color.dark_grey), android.graphics.PorterDuff.Mode.MULTIPLY);
+        knownMinus.setColorFilter(ContextCompat.getColor(this, known > 0 ? R.color.dark_red : R.color.dark_grey),
+                android.graphics.PorterDuff.Mode.MULTIPLY);
     }
-    public void card_plus (View v) {
+
+    public void updateCardKnownPlus(View v) {
         known++;
         card.known = known;
         dbHelperUpdate.updateCard(card);
-        card_known_update() ;
+        updateCardKnown();
     }
-    public void card_minus (View v) {
-        known = Math.max(0,--known);
+
+    public void updateCardKnownMinus(View v) {
+        known = Math.max(0, --known);
         card.known = known;
         dbHelperUpdate.updateCard(card);
-        card_known_update();
+        updateCardKnown();
     }
+
     public void editCard(MenuItem menuItem) {
         Intent intent = new Intent(getApplicationContext(), EditCard.class);
         intent.putExtra("collection", collectionNo);
@@ -117,11 +140,13 @@ public class ViewCard extends AppCompatActivity {
         startActivity(intent);
         this.finish();
     }
+
     public void deleteCard(MenuItem menuItem) {
         Dialog confirmDelete = new Dialog(this, R.style.dia_view);
         confirmDelete.setContentView(R.layout.dia_confirm);
         confirmDelete.setTitle(getResources().getString(R.string.delete));
-        confirmDelete.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
+        confirmDelete.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.MATCH_PARENT);
 
         Button confirmDeleteY = confirmDelete.findViewById(R.id.dia_confirm_yes);
         Button confirmDeleteN = confirmDelete.findViewById(R.id.dia_confirm_no);
@@ -139,6 +164,37 @@ public class ViewCard extends AppCompatActivity {
         });
         confirmDeleteN.setOnClickListener(v -> confirmDelete.dismiss());
         confirmDelete.show();
+    }
+
+    public void moveCard(MenuItem menuItem) {
+        Dialog moveDialog = new Dialog(this, R.style.dia_view);
+        moveDialog.setContentView(R.layout.dia_rec);
+        moveDialog.setTitle(getResources().getString(R.string.move_card));
+        moveDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.MATCH_PARENT);
+
+        List<DB_Pack> packs;
+        if (collectionNo == -1) {
+            packs = dbHelperGet.getAllPacks();
+        } else {
+            packs = dbHelperGet.getAllPacksByCollection(collectionNo);
+        }
+        RecyclerView recyclerView = moveDialog.findViewById(R.id.dia_rec);
+        AdapterPacksMoveCard adapter = new AdapterPacksMoveCard(packs, collectionNo, this, card, moveDialog);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        moveDialog.show();
+    }
+
+    public void movedPack() {
+        try {
+            card = dbHelperGet.getSingleCard(cardNo);
+            packNo = card.pack;
+            updateColors();
+        } catch (Exception e) {
+            Toast.makeText(getApplicationContext(), R.string.error, Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override

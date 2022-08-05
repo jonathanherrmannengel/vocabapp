@@ -19,14 +19,12 @@
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
                 android:text="@string/settings_default_sort"
-                android:textColor="@android:color/black"/>
-
+                android:textColor="@android:color/black" />
             <RadioGroup
                 android:orientation="vertical"
                 android:padding="10dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
-
                 <RadioButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -35,7 +33,7 @@
                     android:onClick="setSortNormal"
                     android:id="@+id/settings_sort_normal"
                     android:buttonTint="@color/ijblue"
-                    android:textColor="@color/light_black"/>
+                    android:textColor="@color/light_black" />
                 <RadioButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -44,7 +42,7 @@
                     android:onClick="setSortRandom"
                     android:id="@+id/settings_sort_random"
                     android:buttonTint="@color/ijblue"
-                    android:textColor="@color/light_black"/>
+                    android:textColor="@color/light_black" />
                 <RadioButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -54,7 +52,6 @@
                     android:id="@+id/settings_sort_alphabetical"
                     android:buttonTint="@color/ijblue"
                     android:textColor="@color/light_black" />
-
             </RadioGroup>
         </LinearLayout>
     </ScrollView>

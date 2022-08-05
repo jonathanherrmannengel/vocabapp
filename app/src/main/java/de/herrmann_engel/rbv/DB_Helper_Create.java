@@ -6,12 +6,12 @@ public class DB_Helper_Create {
 
     private final DB_Helper dbHelper;
 
-    public DB_Helper_Create(Context context){
+    public DB_Helper_Create(Context context) {
         dbHelper = new DB_Helper(context);
     }
 
     public long createCollection(String name, String desc, long date) throws Exception {
-        if(!name.equals("")) {
+        if (!name.equals("")) {
             DB_Collection collection = new DB_Collection();
             collection.name = name;
             collection.desc = desc;
@@ -20,6 +20,7 @@ public class DB_Helper_Create {
         }
         throw new Exception();
     }
+
     public long createCollection(String name, String desc) throws Exception {
         return createCollection(name, desc, System.currentTimeMillis() / 1000L);
     }
@@ -27,7 +28,7 @@ public class DB_Helper_Create {
     public long createPack(String name, String desc, int collection, int colors, long date) throws Exception {
         DB_Helper_Get dbHelperGet = new DB_Helper_Get(dbHelper.context);
         dbHelperGet.getSingleCollection(collection);
-        if(!name.equals("")) {
+        if (!name.equals("")) {
             DB_Pack pack = new DB_Pack();
             pack.name = name;
             pack.desc = desc;
@@ -38,6 +39,7 @@ public class DB_Helper_Create {
         }
         throw new Exception();
     }
+
     public long createPack(String name, String desc, int collection) throws Exception {
         return createPack(name, desc, collection, 0, System.currentTimeMillis() / 1000L);
     }
@@ -57,6 +59,7 @@ public class DB_Helper_Create {
         }
         throw new Exception();
     }
+
     public long createCard(String front, String back, String notes, int pack) throws Exception {
         return createCard(front, back, notes, pack, 0, System.currentTimeMillis() / 1000L);
     }

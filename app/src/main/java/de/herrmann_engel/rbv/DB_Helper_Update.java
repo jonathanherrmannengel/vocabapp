@@ -6,7 +6,7 @@ public class DB_Helper_Update {
 
     private final DB_Helper dbHelper;
 
-    public DB_Helper_Update(Context context){
+    public DB_Helper_Update(Context context) {
         dbHelper = new DB_Helper(context);
     }
 
@@ -17,7 +17,7 @@ public class DB_Helper_Update {
         } catch (Exception e) {
             return false;
         }
-        if(collection.name.equals("")) {
+        if (collection.name.equals("")) {
             return false;
         }
         dbHelper.collection_dao.update(collection);
@@ -31,7 +31,7 @@ public class DB_Helper_Update {
         } catch (Exception e) {
             return false;
         }
-        if(pack.name.equals("")) {
+        if (pack.name.equals("")) {
             return false;
         }
         dbHelper.pack_dao.update(pack);
@@ -45,7 +45,7 @@ public class DB_Helper_Update {
         } catch (Exception e) {
             return false;
         }
-        if(card.front.equals("") || card.back.equals("")) {
+        if (card.front.equals("") || card.back.equals("")) {
             return false;
         }
         dbHelper.card_dao.update(card);

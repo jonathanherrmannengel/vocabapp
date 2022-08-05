@@ -4,6 +4,7 @@ public class OSS_Licenses {
     public final String licenseLink;
     public final String licenseFilePath;
     public final OSS_Project project;
+
     public OSS_Licenses(String licenseIdentifier, OSS_Project project) {
         this.project = project;
         switch (licenseIdentifier) {

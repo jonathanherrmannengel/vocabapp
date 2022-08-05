@@ -24,11 +24,14 @@ public class AppDatabaseBuilder {
         @Override
         public void migrate(SupportSQLiteDatabase database) {
             database.execSQL("ALTER TABLE db_pack ADD COLUMN collection INTEGER NOT NULL DEFAULT 1");
-            database.execSQL("CREATE TABLE IF NOT EXISTS `db_collection` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT, `desc` TEXT, `date` INTEGER NOT NULL)");
-            database.execSQL("INSERT INTO db_collection (name,`desc`,uid, date) VALUES ('default', 'default', 1, DATETIME())");
+            database.execSQL(
+                    "CREATE TABLE IF NOT EXISTS `db_collection` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT, `desc` TEXT, `date` INTEGER NOT NULL)");
+            database.execSQL(
+                    "INSERT INTO db_collection (name,`desc`,uid, date) VALUES ('default', 'default', 1, DATETIME())");
         }
     };
-    public AppDatabase get(Context context){
+
+    public AppDatabase get(Context context) {
         return Room.databaseBuilder(
                 context,
                 AppDatabase.class, Globals.DB_NAME)

@@ -43,7 +43,7 @@ public class NewPack extends AppCompatActivity {
 
     }
 
-    private void startListPacks(){
+    private void startListPacks() {
         Intent intent = new Intent(getApplicationContext(), ListPacks.class);
         intent.putExtra("collection", collectionNo);
         startActivity(intent);
@@ -54,13 +54,14 @@ public class NewPack extends AppCompatActivity {
     public void onBackPressed() {
         String name = nameTextView.getText().toString();
         String desc = descTextView.getText().toString();
-        if(name.isEmpty() && desc.isEmpty()) {
+        if (name.isEmpty() && desc.isEmpty()) {
             startListPacks();
         } else {
             Dialog confirmCancel = new Dialog(this, R.style.dia_view);
             confirmCancel.setContentView(R.layout.dia_confirm);
             confirmCancel.setTitle(getResources().getString(R.string.discard_changes));
-            confirmCancel.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
+            confirmCancel.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
+                    WindowManager.LayoutParams.MATCH_PARENT);
 
             Button confirmCancelY = confirmCancel.findViewById(R.id.dia_confirm_yes);
             Button confirmCancelN = confirmCancel.findViewById(R.id.dia_confirm_no);

@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey;
 @Entity
 public class DB_Card {
 
-    @PrimaryKey (autoGenerate = true)
+    @PrimaryKey(autoGenerate = true)
     public int uid;
 
     @ColumnInfo(name = "front")
@@ -27,6 +27,5 @@ public class DB_Card {
 
     @ColumnInfo(name = "notes")
     public String notes;
-
 
 }

@@ -19,6 +19,7 @@
     <string name="welcome_collection">Welcome. Create a new collection or import a collection backup.</string>
     <string name="welcome_pack">Welcome. Create a new pack.</string>
     <string name="welcome_card">There are no cards in this pack.</string>
+    <string name="all_packs">All packs</string>
     <string name="all_cards">All cards</string>
     <string name="export_all">Export collections as backup</string>
     <string name="export_cards">Export collection as backup</string>
@@ -34,6 +35,9 @@
     <string name="edit_card">Edit card</string>
     <string name="delete_pack_with_cards">This pack contains cards. If you proceed these cards will also be deleted. Delete anyway?</string>
     <string name="delete_collection_with_packs">This collection contains packs. If you proceed these packs and their cards will also be deleted. Delete anyway?</string>
+    <string name="move">move</string>
+    <string name="move_pack">move pack to another collection</string>
+    <string name="move_card">move card to another pack</string>
     <string name="collection_or_pack_name">name</string>
     <string name="collection_or_pack_desc">description</string>
     <string name="new_collection">New collection</string>
@@ -44,14 +48,14 @@
     <string name="new_card_notes">notes</string>
     <string name="change_front_back">show back</string>
     <string name="change_back_front">show front</string>
-    <string name="sort_random">sort random</string>
+    <string name="sort_random">sort randomly</string>
     <string name="sort_normal">sort by progress</string>
-    <string name="sort_alphabetical">sort alphabetical</string>
+    <string name="sort_alphabetical">sort alphabetical by card front</string>
     <string name="collection_details">collection details</string>
     <string name="pack_details">pack details</string>
     <string name="card_plus">got it right</string>
     <string name="card_minus">got it wrong</string>
     <string name="card_known">progress</string>
     <string name="color">color</string>
-    <string name="settings_default_sort">List cards: default sort</string>
+    <string name="settings_default_sort">Card list: default sort</string>
 </resources>
