@@ -3,6 +3,8 @@ package de.herrmann_engel.rbv;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
@@ -22,31 +24,38 @@ public class EditCollection extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_collection);
-        TextView collectionEdit = findViewById(R.id.edit_collection_go);
         collectionName = findViewById(R.id.edit_collection_name);
         collectionDesc = findViewById(R.id.edit_collection_desc);
         collectionDesc
                 .setHint(String.format(getString(R.string.optional), getString(R.string.collection_or_pack_desc)));
         collectionNo = getIntent().getExtras().getInt("collection");
         DB_Helper_Get dbHelperGet = new DB_Helper_Get(this);
-        DB_Helper_Update dbHelperUpdate = new DB_Helper_Update(this);
         try {
             collection = dbHelperGet.getSingleCollection(collectionNo);
             collectionName.setText(collection.name);
             collectionDesc.setText(collection.desc);
-            collectionEdit.setOnClickListener(v -> {
-                collection.name = collectionName.getText().toString();
-                collection.desc = collectionDesc.getText().toString();
-                if (dbHelperUpdate.updateCollection(collection)) {
-                    startViewCollection();
-                } else {
-                    Toast.makeText(getApplicationContext(), R.string.error_values, Toast.LENGTH_SHORT).show();
-                }
-            });
         } catch (Exception e) {
             Toast.makeText(getApplicationContext(), R.string.error, Toast.LENGTH_SHORT).show();
         }
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_edit, menu);
+        return true;
+    }
+
+    public void saveChanges (MenuItem menuItem) {
+        collection.name = collectionName.getText().toString();
+        collection.desc = collectionDesc.getText().toString();
+        DB_Helper_Update dbHelperUpdate = new DB_Helper_Update(this);
+        if (dbHelperUpdate.updateCollection(collection)) {
+            startViewCollection();
+        } else {
+            Toast.makeText(getApplicationContext(), R.string.error_values, Toast.LENGTH_SHORT).show();
+        }
+    }
+
 
     private void startViewCollection() {
         Intent intent = new Intent(getApplicationContext(), ViewCollection.class);

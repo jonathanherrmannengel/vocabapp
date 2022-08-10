@@ -8,6 +8,8 @@ import android.content.res.TypedArray;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -34,7 +36,6 @@ public class EditPack extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_pack);
-        TextView packEdit = findViewById(R.id.edit_pack_go);
         packName = findViewById(R.id.edit_pack_name);
         packDesc = findViewById(R.id.edit_pack_desc);
         packDesc.setHint(String.format(getString(R.string.optional), getString(R.string.collection_or_pack_desc)));
@@ -44,20 +45,10 @@ public class EditPack extends AppCompatActivity {
         sort = getIntent().getExtras().getInt("sort");
         cardPosition = getIntent().getExtras().getInt("cardPosition");
         DB_Helper_Get dbHelperGet = new DB_Helper_Get(this);
-        DB_Helper_Update dbHelperUpdate = new DB_Helper_Update(this);
         try {
             pack = dbHelperGet.getSinglePack(packNo);
             packName.setText(pack.name);
             packDesc.setText(pack.desc);
-            packEdit.setOnClickListener(v -> {
-                pack.name = packName.getText().toString();
-                pack.desc = packDesc.getText().toString();
-                if (dbHelperUpdate.updatePack(pack)) {
-                    startViewPack();
-                } else {
-                    Toast.makeText(getApplicationContext(), R.string.error_values, Toast.LENGTH_SHORT).show();
-                }
-            });
             LinearLayout colorPicker = findViewById(R.id.color_picker);
             TypedArray colors = getResources().obtainTypedArray(R.array.pack_color_main);
             TypedArray colorsBackground = getResources().obtainTypedArray(R.array.pack_color_background);
@@ -87,6 +78,23 @@ public class EditPack extends AppCompatActivity {
             colorsBackground.recycle();
         } catch (Exception e) {
             Toast.makeText(getApplicationContext(), R.string.error, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_edit, menu);
+        return true;
+    }
+
+    public void saveChanges (MenuItem menuItem) {
+        DB_Helper_Update dbHelperUpdate = new DB_Helper_Update(this);
+        pack.name = packName.getText().toString();
+        pack.desc = packDesc.getText().toString();
+        if (dbHelperUpdate.updatePack(pack)) {
+            startViewPack();
+        } else {
+            Toast.makeText(getApplicationContext(), R.string.error_values, Toast.LENGTH_SHORT).show();
         }
     }
 

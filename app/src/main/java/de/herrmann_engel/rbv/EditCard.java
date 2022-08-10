@@ -8,6 +8,8 @@ import android.content.res.TypedArray;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.InputType;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -34,7 +36,6 @@ public class EditCard extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_card);
-        TextView addTextView = findViewById(R.id.edit_card_go);
         frontTextView = findViewById(R.id.edit_card_front);
         backTextView = findViewById(R.id.edit_card_back);
         notesTextView = findViewById(R.id.edit_card_notes);
@@ -45,7 +46,6 @@ public class EditCard extends AppCompatActivity {
         sort = getIntent().getExtras().getInt("sort");
         cardPosition = getIntent().getExtras().getInt("cardPosition");
         DB_Helper_Get dbHelperGet = new DB_Helper_Get(this);
-        DB_Helper_Update dbHelperUpdate = new DB_Helper_Update(this);
         try {
             card = dbHelperGet.getSingleCard(cardNo);
             frontTextView.setText(card.front);
@@ -74,19 +74,26 @@ public class EditCard extends AppCompatActivity {
             }
             colors.recycle();
             colorsBackground.recycle();
-
-            addTextView.setOnClickListener(v -> {
-                card.front = frontTextView.getText().toString();
-                card.back = backTextView.getText().toString();
-                card.notes = notesTextView.getText().toString();
-                if (dbHelperUpdate.updateCard(card)) {
-                    startViewCard();
-                } else {
-                    Toast.makeText(getApplicationContext(), R.string.error_values, Toast.LENGTH_SHORT).show();
-                }
-            });
         } catch (Exception e) {
             Toast.makeText(getApplicationContext(), R.string.error, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_edit, menu);
+        return true;
+    }
+
+    public void saveChanges (MenuItem menuItem) {
+        card.front = frontTextView.getText().toString();
+        card.back = backTextView.getText().toString();
+        card.notes = notesTextView.getText().toString();
+        DB_Helper_Update dbHelperUpdate = new DB_Helper_Update(this);
+        if (dbHelperUpdate.updateCard(card)) {
+            startViewCard();
+        } else {
+            Toast.makeText(getApplicationContext(), R.string.error_values, Toast.LENGTH_SHORT).show();
         }
     }
 

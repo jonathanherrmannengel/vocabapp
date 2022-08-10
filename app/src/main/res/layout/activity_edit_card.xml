@@ -60,21 +60,11 @@
                 android:id="@+id/edit_card_notes"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
                 android:ems="10"
                 android:textColor="@color/light_black"
                 android:textColorHint="@color/light_black"
                 android:inputType="textMultiLine"
                 android:hint="@string/new_card_notes" />
-            <TextView
-                android:id="@+id/edit_card_go"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="18sp"
-                android:gravity="center"
-                android:background="@android:color/transparent"
-                android:textColor="@color/button"
-                android:text="@string/save_changes" />
         </LinearLayout>
     </ScrollView>
 </RelativeLayout>

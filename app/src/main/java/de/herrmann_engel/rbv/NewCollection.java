@@ -3,6 +3,8 @@ package de.herrmann_engel.rbv;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
@@ -23,20 +25,24 @@ public class NewCollection extends AppCompatActivity {
         nameTextView = findViewById(R.id.new_collection_or_pack_name);
         descTextView = findViewById(R.id.new_collection_or_pack_desc);
         descTextView.setHint(String.format(getString(R.string.optional), getString(R.string.collection_or_pack_desc)));
+    }
 
-        TextView addTextView = findViewById(R.id.new_collection_or_pack_go);
-        addTextView.setOnClickListener(v -> {
-            String name = nameTextView.getText().toString();
-            String desc = descTextView.getText().toString();
-            try {
-                DB_Helper_Create dbHelperCreate = new DB_Helper_Create(getApplicationContext());
-                dbHelperCreate.createCollection(name, desc);
-                startListCollections();
-            } catch (Exception e) {
-                Toast.makeText(getApplicationContext(), R.string.error_values, Toast.LENGTH_SHORT).show();
-            }
-        });
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_add, menu);
+        return true;
+    }
 
+    public void insert (MenuItem menuItem) {
+        String name = nameTextView.getText().toString();
+        String desc = descTextView.getText().toString();
+        try {
+            DB_Helper_Create dbHelperCreate = new DB_Helper_Create(getApplicationContext());
+            dbHelperCreate.createCollection(name, desc);
+            startListCollections();
+        } catch (Exception e) {
+            Toast.makeText(getApplicationContext(), R.string.error_values, Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void startListCollections() {

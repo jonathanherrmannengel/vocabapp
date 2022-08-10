@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -61,20 +63,25 @@ public class NewCard extends AppCompatActivity {
         backTextView = findViewById(R.id.new_card_back);
         notesTextView = findViewById(R.id.new_card_notes);
         notesTextView.setHint(String.format(getString(R.string.optional), getString(R.string.new_card_notes)));
+    }
 
-        TextView addTextView = findViewById(R.id.new_card_go);
-        addTextView.setOnClickListener(v -> {
-            String front = frontTextView.getText().toString();
-            String back = backTextView.getText().toString();
-            String notes = notesTextView.getText().toString();
-            try {
-                DB_Helper_Create dbHelperCreate = new DB_Helper_Create(getApplicationContext());
-                dbHelperCreate.createCard(front, back, notes, packNo);
-                startListCards();
-            } catch (Exception e) {
-                Toast.makeText(getApplicationContext(), R.string.error_values, Toast.LENGTH_SHORT).show();
-            }
-        });
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_add, menu);
+        return true;
+    }
+
+    public void insert (MenuItem menuItem) {
+        String front = frontTextView.getText().toString();
+        String back = backTextView.getText().toString();
+        String notes = notesTextView.getText().toString();
+        try {
+            DB_Helper_Create dbHelperCreate = new DB_Helper_Create(getApplicationContext());
+            dbHelperCreate.createCard(front, back, notes, packNo);
+            startListCards();
+        } catch (Exception e) {
+            Toast.makeText(getApplicationContext(), R.string.error_values, Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void startListCards() {
