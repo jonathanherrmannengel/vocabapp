@@ -32,6 +32,7 @@ public class ListCards extends AppCompatActivity {
 
     MenuItem changeFrontBackItem;
     MenuItem sortRandomItem;
+    MenuItem searchCardsItem;
     MenuItem searchCardsOffItem;
 
     RecyclerView recyclerView;
@@ -73,16 +74,17 @@ public class ListCards extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        MenuItem searchCards = menu.findItem(R.id.search_cards);
+        searchCardsItem = menu.findItem(R.id.search_cards);
         searchCardsOffItem = menu.findItem(R.id.search_cards_off);
-        SearchView searchView = (SearchView) searchCards.getActionView();
+        SearchView searchView = (SearchView) searchCardsItem.getActionView();
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 searchCardsOffItem.setVisible(true);
                 searchQuery = query;
+                cardPosition = 0;
                 setRecView();
-                searchCards.collapseActionView();
+                searchCardsItem.collapseActionView();
                 return true;
             }
 
@@ -101,6 +103,7 @@ public class ListCards extends AppCompatActivity {
     public void searchCardsOff (MenuItem menuItem){
         searchCardsOffItem.setVisible(false);
         searchQuery = "";
+        cardPosition = 0;
         setRecView();
     }
 
@@ -175,12 +178,14 @@ public class ListCards extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), R.string.error, Toast.LENGTH_SHORT).show();
             }
         }
+        searchCardsItem.setVisible(cardsList.size() > 0);
         if(searchQuery != null && !searchQuery.isEmpty()) {
             List<DB_Card> cardsListFiltered = new ArrayList<>(cardsList);
             cardsListFiltered = (new SearchCards(cardsListFiltered, searchQuery, this)).searchCards();
             if(cardsListFiltered.size() == 0){
                 searchCardsOffItem.setVisible(false);
                 searchQuery = "";
+                cardPosition = 0;
                 Toast.makeText(getApplicationContext(), R.string.search_no_results, Toast.LENGTH_LONG).show();
             } else {
                cardsList = cardsListFiltered;

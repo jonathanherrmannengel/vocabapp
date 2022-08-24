@@ -1,0 +1,11 @@
+2.0.0
+
+Einstellung: Fett, kursiv und unterstrichen für Karten-Vorder-/Rück-Seite
+Einstellung: Markdown für Karten-Notizen
+Kartenliste filtern
+
+---
+
+2.0.1
+
+Fix: Kartenposition bei aktiver Suche

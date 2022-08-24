@@ -1,0 +1,11 @@
+2.0.0
+
+Setting: Bold, italic and underline for card front/back
+Setting: Markdown for card notes
+Filter card listn
+
+---
+
+2.0.1
+
+Fix: card position and search

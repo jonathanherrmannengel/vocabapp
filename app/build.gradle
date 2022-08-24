@@ -9,8 +9,8 @@ android {
         applicationId "de.herrmann_engel.rbv"
         minSdk 25
         targetSdk 32
-        versionCode 47
-        versionName '2.0.0'
+        versionCode 49
+        versionName '2.0.1'
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
