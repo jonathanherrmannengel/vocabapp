@@ -25,6 +25,7 @@ public class EditCard extends AppCompatActivity {
     private int cardNo;
     private boolean reverse;
     private int sort;
+    private String searchQuery;
     private int cardPosition;
 
     TextView frontTextView;
@@ -44,6 +45,7 @@ public class EditCard extends AppCompatActivity {
         cardNo = getIntent().getExtras().getInt("card");
         reverse = getIntent().getExtras().getBoolean("reverse");
         sort = getIntent().getExtras().getInt("sort");
+        searchQuery = getIntent().getExtras().getString("searchQuery");
         cardPosition = getIntent().getExtras().getInt("cardPosition");
         DB_Helper_Get dbHelperGet = new DB_Helper_Get(this);
         try {
@@ -104,6 +106,7 @@ public class EditCard extends AppCompatActivity {
         intent.putExtra("card", cardNo);
         intent.putExtra("reverse", reverse);
         intent.putExtra("sort", sort);
+        intent.putExtra("searchQuery", searchQuery);
         intent.putExtra("cardPosition", cardPosition);
         startActivity(intent);
         this.finish();

@@ -11,7 +11,7 @@ public class DB_Helper {
 
     public DB_Helper(Context context) {
         this.context = context;
-        AppDatabase db = (new AppDatabaseBuilder()).get(context);
+        AppDatabase db = AppDatabase.getInstance(context);
         collection_dao = db.collectionDAO();
         pack_dao = db.packDAO();
         card_dao = db.cardDAO();

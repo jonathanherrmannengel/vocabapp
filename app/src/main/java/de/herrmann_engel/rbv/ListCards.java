@@ -1,6 +1,7 @@
 package de.herrmann_engel.rbv;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -14,6 +15,7 @@ import android.view.MenuItem;
 import android.view.Window;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -25,10 +27,12 @@ public class ListCards extends AppCompatActivity {
     private int packNo;
     private boolean reverse;
     private int sort;
+    private String searchQuery;
     private int cardPosition;
 
     MenuItem changeFrontBackItem;
     MenuItem sortRandomItem;
+    MenuItem searchCardsOffItem;
 
     RecyclerView recyclerView;
 
@@ -46,6 +50,7 @@ public class ListCards extends AppCompatActivity {
         packNo = getIntent().getExtras().getInt("pack");
         reverse = getIntent().getExtras().getBoolean("reverse");
         sort = getIntent().getExtras().getInt("sort", settings.getInt("default_sort", Globals.SORT_DEFAULT));
+        searchQuery = getIntent().getExtras().getString("searchQuery");
         cardPosition = getIntent().getExtras().getInt("cardPosition");
         if (packNo == -1) {
             MenuItem startNewCard = menu.findItem(R.id.start_new_card);
@@ -68,8 +73,35 @@ public class ListCards extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        MenuItem searchCards = menu.findItem(R.id.search_cards);
+        searchCardsOffItem = menu.findItem(R.id.search_cards_off);
+        SearchView searchView = (SearchView) searchCards.getActionView();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                searchCardsOffItem.setVisible(true);
+                searchQuery = query;
+                setRecView();
+                searchCards.collapseActionView();
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+        if(searchQuery != null && !searchQuery.isEmpty()) {
+            searchCardsOffItem.setVisible(true);
+        }
         setRecView();
         return true;
+    }
+
+    public void searchCardsOff (MenuItem menuItem){
+        searchCardsOffItem.setVisible(false);
+        searchQuery = "";
+        setRecView();
     }
 
     public void startNewCard(MenuItem menuItem) {
@@ -78,6 +110,7 @@ public class ListCards extends AppCompatActivity {
         intent.putExtra("pack", packNo);
         intent.putExtra("reverse", reverse);
         intent.putExtra("sort", sort);
+        intent.putExtra("searchQuery", searchQuery);
         intent.putExtra("cardPosition", ((LinearLayoutManager) Objects.requireNonNull(recyclerView.getLayoutManager()))
                 .findFirstVisibleItemPosition());
         this.startActivity(intent);
@@ -101,6 +134,7 @@ public class ListCards extends AppCompatActivity {
         intent.putExtra("pack", packNo);
         intent.putExtra("reverse", reverse);
         intent.putExtra("sort", sort);
+        intent.putExtra("searchQuery", searchQuery);
         intent.putExtra("cardPosition", ((LinearLayoutManager) Objects.requireNonNull(recyclerView.getLayoutManager()))
                 .findFirstVisibleItemPosition());
         this.startActivity(intent);
@@ -141,14 +175,21 @@ public class ListCards extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), R.string.error, Toast.LENGTH_SHORT).show();
             }
         }
+        if(searchQuery != null && !searchQuery.isEmpty()) {
+            List<DB_Card> cardsListFiltered = new ArrayList<>(cardsList);
+            cardsListFiltered = (new SearchCards(cardsListFiltered, searchQuery, this)).searchCards();
+            if(cardsListFiltered.size() == 0){
+                searchCardsOffItem.setVisible(false);
+                searchQuery = "";
+                Toast.makeText(getApplicationContext(), R.string.search_no_results, Toast.LENGTH_LONG).show();
+            } else {
+               cardsList = cardsListFiltered;
+            }
+        }
         changeFrontBackItem.setTitle(reverse ? R.string.change_back_front : R.string.change_front_back);
-        if (cardsList.size() == 0) {
-            changeFrontBackItem.setVisible(false);
-        }
-        if (cardsList.size() <= 1) {
-            sortRandomItem.setVisible(false);
-        }
-        AdapterCards adapter = new AdapterCards(cardsList, this, reverse, sort, packNo, collectionNo);
+        changeFrontBackItem.setVisible(cardsList.size() > 0);
+        sortRandomItem.setVisible(cardsList.size() > 1);
+        AdapterCards adapter = new AdapterCards(cardsList, this, reverse, sort, packNo, searchQuery, collectionNo);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         if (sort != Globals.SORT_RANDOM) {

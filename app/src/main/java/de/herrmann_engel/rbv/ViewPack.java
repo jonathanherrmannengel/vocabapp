@@ -29,6 +29,7 @@ public class ViewPack extends AppCompatActivity {
     private int collectionNo;
     private boolean reverse;
     private int sort;
+    private String searchQuery;
     private int cardPosition;
 
     @Override
@@ -40,6 +41,7 @@ public class ViewPack extends AppCompatActivity {
         packNo = getIntent().getExtras().getInt("pack");
         reverse = getIntent().getExtras().getBoolean("reverse");
         sort = getIntent().getExtras().getInt("sort");
+        searchQuery = getIntent().getExtras().getString("searchQuery");
         cardPosition = getIntent().getExtras().getInt("cardPosition");
         dbHelperGet = new DB_Helper_Get(this);
         try {
@@ -87,6 +89,7 @@ public class ViewPack extends AppCompatActivity {
         intent.putExtra("pack", packNo);
         intent.putExtra("reverse", reverse);
         intent.putExtra("sort", sort);
+        intent.putExtra("searchQuery", searchQuery);
         intent.putExtra("cardPosition", cardPosition);
         startActivity(intent);
         this.finish();
@@ -160,6 +163,7 @@ public class ViewPack extends AppCompatActivity {
         intent.putExtra("pack", packNo);
         intent.putExtra("reverse", reverse);
         intent.putExtra("sort", sort);
+        intent.putExtra("searchQuery", searchQuery);
         intent.putExtra("cardPosition", cardPosition);
         startActivity(intent);
         this.finish();

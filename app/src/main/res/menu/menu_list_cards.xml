@@ -2,19 +2,38 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/search_cards"
+        android:icon="@drawable/ic_sharp_search_24"
+        android:orderInCategory="100"
+        app:showAsAction="always|collapseActionView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:actionViewClass="androidx.appcompat.widget.SearchView"
+        android:title="@string/search"/>
+    <item
+        android:id="@+id/search_cards_off"
+        android:icon="@drawable/ic_round_search_off_24"
+        android:orderInCategory="110"
+        app:showAsAction="always"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:title="@string/search_off"
+        android:visible="false"
+        android:onClick="searchCardsOff"/>
+    <item
         android:id="@+id/start_new_card"
         android:icon="@drawable/outline_add_24"
-        android:orderInCategory="100"
+        android:orderInCategory="200"
         app:showAsAction="ifRoom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:title="@string/add"
+        android:title="@string/new_card"
         android:onClick="startNewCard"
     />
     <item
         android:id="@+id/pack_details"
         android:icon="@drawable/outline_info_24"
-        android:orderInCategory="200"
+        android:orderInCategory="300"
         app:showAsAction="ifRoom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -23,8 +42,7 @@
     />
     <item
         android:id="@+id/change_front_back"
-        android:icon="@drawable/outline_info_24"
-        android:orderInCategory="300"
+        android:orderInCategory="400"
         app:showAsAction="never"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -33,8 +51,7 @@
     />
     <item
         android:id="@+id/sort_random"
-        android:icon="@drawable/outline_info_24"
-        android:orderInCategory="400"
+        android:orderInCategory="500"
         app:showAsAction="never"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

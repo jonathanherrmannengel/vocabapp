@@ -19,6 +19,11 @@
 </item>
 <item>
     <identifier>Apache-2.0</identifier>
+    <projectName>Markwon (io.noties.markwon)</projectName>
+    <projectUrl>https://github.com/noties/Markwon/</projectUrl>
+</item>
+<item>
+    <identifier>Apache-2.0</identifier>
     <projectDev>Google</projectDev>
     <projectName>AndroidX (AppCompat [androidx.appcompat], ConstraintLayout [androidx.constraintlayout], Core [androidx.core], Room [androidx.room])</projectName>
 </item>

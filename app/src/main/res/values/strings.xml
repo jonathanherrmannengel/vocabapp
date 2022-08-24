@@ -57,5 +57,13 @@
     <string name="card_minus">got it wrong</string>
     <string name="card_known">progress</string>
     <string name="color">color</string>
+    <string name="info">info</string>
+    <string name="search">search</string>
+    <string name="search_no_results">no search results</string>
+    <string name="search_off">Reset search</string>
     <string name="settings_default_sort">Card list: default sort</string>
+    <string name="settings_format">Formatting</string>
+    <string name="settings_format_cards">Card front/back: Simple formatting</string>
+    <string name="settings_format_cards_info">***Text*** = Bold and italic\n**Text** = Bold\n*Text* = Italic\n_Text_ = Underline</string>
+    <string name="settings_format_card_notes">Card notes: Markdown support</string>
 </resources>

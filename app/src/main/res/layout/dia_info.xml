@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:gravity="center"
+    android:background="@color/background"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:background="@color/background">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/dia_info_text"
+            android:layout_gravity="center"
+            android:background="@android:color/transparent"
+            android:textSize="20sp"
+            android:textColor="@color/light_black"
+            android:gravity="center"
+            android:layout_centerHorizontal="true"
+            android:padding="20dp"
+            />
+    </RelativeLayout>
+</ScrollView>

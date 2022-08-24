@@ -1,6 +1,9 @@
 package de.herrmann_engel.rbv;
 
+import static android.content.Context.MODE_PRIVATE;
+
 import android.content.Context;
+import android.content.SharedPreferences;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -9,9 +12,11 @@ import java.util.List;
 public class DB_Helper_Get {
 
     private final DB_Helper dbHelper;
+    private final Context context;
 
     public DB_Helper_Get(Context context) {
         dbHelper = new DB_Helper(context);
+        this.context = context;
     }
 
     DB_Collection getSingleCollection(int collection) throws Exception {
@@ -58,12 +63,23 @@ public class DB_Helper_Get {
         return dbHelper.pack_dao.getAllByCollectionAndNameAndDesc(collection, name, desc);
     }
 
+    private int compareCardsAlphabetical (String a, String b, boolean formatCards) {
+        if(formatCards) {
+            a = (new FormatString(a)).formatString().toString();
+            b = (new FormatString(b)).formatString().toString();
+        }
+        return a.compareToIgnoreCase(b);
+    }
+
     List<DB_Card> sortCards(List<DB_Card> list, int sort) {
         if (sort == Globals.SORT_ALPHABETICAL) {
+
+            SharedPreferences settings = context.getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE);
+            boolean formatCards = settings.getBoolean("format_cards", false);
             list.sort((a, b) -> {
-                int c0 = a.front.compareTo(b.front);
+                int c0 = compareCardsAlphabetical(a.front, b.front, formatCards);
                 if (c0 == 0) {
-                    return a.back.compareTo(b.back);
+                    return compareCardsAlphabetical(a.back, b.back, formatCards);
                 }
                 return c0;
             });

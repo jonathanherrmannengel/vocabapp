@@ -24,6 +24,7 @@ public class NewCard extends AppCompatActivity {
     private int packNo;
     private boolean reverse;
     private int sort;
+    private String searchQuery;
     private int cardPosition;
 
     TextView frontTextView;
@@ -39,6 +40,7 @@ public class NewCard extends AppCompatActivity {
         packNo = getIntent().getExtras().getInt("pack");
         reverse = getIntent().getExtras().getBoolean("reverse");
         sort = getIntent().getExtras().getInt("sort");
+        searchQuery = getIntent().getExtras().getString("searchQuery");
         cardPosition = getIntent().getExtras().getInt("cardPosition");
         TypedArray colors = getResources().obtainTypedArray(R.array.pack_color_main);
         TypedArray colorsBackground = getResources().obtainTypedArray(R.array.pack_color_background);
@@ -90,6 +92,7 @@ public class NewCard extends AppCompatActivity {
         intent.putExtra("pack", packNo);
         intent.putExtra("reverse", reverse);
         intent.putExtra("sort", sort);
+        intent.putExtra("searchQuery", searchQuery);
         intent.putExtra("cardPosition", cardPosition);
         startActivity(intent);
         this.finish();

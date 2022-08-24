@@ -1,0 +1,3 @@
+Setting: Bold, italic and underline for card front/back
+Setting: Markdown for card notes
+Filter card list

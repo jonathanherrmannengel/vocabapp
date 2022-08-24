@@ -56,5 +56,13 @@
     <string name="card_minus">Falsch gedacht</string>
     <string name="card_known">Fortschritt</string>
     <string name="color">Farbe</string>
+    <string name="info">Infos</string>
+    <string name="search">Suchen</string>
+    <string name="search_no_results">Keine Suchergebnisse</string>
+    <string name="search_off">Suche zurücksetzen</string>
     <string name="settings_default_sort">Kartenliste: Standard-Sortierung</string>
+    <string name="settings_format">Formatierung</string>
+    <string name="settings_format_cards">Karten Vorder-/Rückseite: Einfache Formatierung</string>
+    <string name="settings_format_cards_info">***Text*** = Fett und kursiv\n**Text** = Fett\n*Text* = Kursiv\n_Text_ = Unterstrichen</string>
+    <string name="settings_format_card_notes">Karten-Notizen: Markdown Unterstützung</string>
 </resources>

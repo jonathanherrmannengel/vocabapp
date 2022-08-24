@@ -26,6 +26,7 @@ public class EditPack extends AppCompatActivity {
     private int packNo;
     private boolean reverse;
     private int sort;
+    private String searchQuery;
     private int cardPosition;
 
     private DB_Pack pack;
@@ -43,6 +44,7 @@ public class EditPack extends AppCompatActivity {
         packNo = getIntent().getExtras().getInt("pack");
         reverse = getIntent().getExtras().getBoolean("reverse");
         sort = getIntent().getExtras().getInt("sort");
+        searchQuery = getIntent().getExtras().getString("searchQuery");
         cardPosition = getIntent().getExtras().getInt("cardPosition");
         DB_Helper_Get dbHelperGet = new DB_Helper_Get(this);
         try {
@@ -112,6 +114,7 @@ public class EditPack extends AppCompatActivity {
         intent.putExtra("pack", packNo);
         intent.putExtra("reverse", reverse);
         intent.putExtra("sort", sort);
+        intent.putExtra("searchQuery", searchQuery);
         intent.putExtra("cardPosition", cardPosition);
         startActivity(intent);
         this.finish();

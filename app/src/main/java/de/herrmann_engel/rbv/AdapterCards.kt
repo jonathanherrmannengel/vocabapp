@@ -2,12 +2,12 @@ package de.herrmann_engel.rbv
 
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import java.lang.Exception
 
 class AdapterCards(
         private val cards: List<DB_Card>,
@@ -15,6 +15,7 @@ class AdapterCards(
         private val reverse: Boolean,
         private val sort: Int,
         private val packNo: Int,
+        private val searchQuery: String?,
         private val collectionNo: Int
 ) : RecyclerView.Adapter<AdapterCards.ViewHolder>() {
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -31,7 +32,13 @@ class AdapterCards(
         if (cards.isEmpty()) {
             viewHolder.textView.text = c.resources.getString(R.string.welcome_card)
         } else {
+
+            val settings: SharedPreferences =
+                c.getSharedPreferences(Globals.SETTINGS_NAME, Context.MODE_PRIVATE)
             var cardText = if (reverse) cards[position].back else cards[position].front
+            if(settings.getBoolean("format_cards", false)) {
+                cardText = FormatString(cardText).formatString().toString()
+            }
             cardText = cardText.replace(System.getProperty("line.separator"), " ")
             val cardTextMaxLength = 50
             if (cardText.length > cardTextMaxLength) {
@@ -59,6 +66,7 @@ class AdapterCards(
                 intent.putExtra("card", extra)
                 intent.putExtra("reverse", reverse)
                 intent.putExtra("sort", sort)
+                intent.putExtra("searchQuery", searchQuery)
                 intent.putExtra("cardPosition", viewHolder.adapterPosition)
                 c.startActivity(intent)
                 (c as ListCards).finish()
