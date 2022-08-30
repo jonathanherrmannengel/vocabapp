@@ -2,7 +2,9 @@ package de.herrmann_engel.rbv;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,8 +26,10 @@ public class ViewCollection extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_collection_or_pack);
 
+        SharedPreferences settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE);
         collectionNo = getIntent().getExtras().getInt("collection");
         dbHelperGet = new DB_Helper_Get(this);
+        boolean increaseFontSize = settings.getBoolean("ui_font_size", false);
         try {
             collection = dbHelperGet.getSingleCollection(collectionNo);
             setTitle(collection.name);
@@ -36,6 +40,10 @@ public class ViewCollection extends AppCompatActivity {
                 descTextView.setVisibility(View.GONE);
             } else {
                 descTextView.setText(collection.desc);
+            }
+            if(increaseFontSize){
+                nameTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.details_name_size_big));
+                descTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.details_desc_size_big));
             }
             TextView dateTextView = findViewById(R.id.collection_or_pack_date);
             dateTextView.setText(new java.util.Date(collection.date * 1000).toString());

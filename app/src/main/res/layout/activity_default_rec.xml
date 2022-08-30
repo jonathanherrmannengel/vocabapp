@@ -6,11 +6,20 @@
     android:background="@color/background"
     android:id="@+id/rec_default_root"
     android:gravity="center">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/background_image"
+        android:visibility="gone"
+        android:alpha="0.2"
+        android:scaleType="centerCrop"/>
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/rec_default"
         android:layout_margin="20dp"
+        android:layout_centerInParent="true"
         tools:layout_editor_absoluteX="1dp"
         tools:layout_editor_absoluteY="1dp" />
 </RelativeLayout>

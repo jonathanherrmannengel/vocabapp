@@ -21,7 +21,7 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="20dp"
                 android:textColor="@android:color/black"
-                android:textSize="24sp"
+                android:textSize="@dimen/card_front_size_default"
                 android:gravity="center"
                 android:textIsSelectable="true"
                 android:id="@+id/card_front" />
@@ -30,7 +30,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="40dp"
                 android:textColor="@android:color/black"
-                android:textSize="28sp"
+                android:textSize="@dimen/card_back_size_default"
                 android:gravity="center"
                 android:textIsSelectable="true"
                 android:id="@+id/card_back" />
@@ -102,7 +102,7 @@
                 android:layout_marginTop="40dp"
                 android:layout_marginBottom="20dp"
                 android:textColor="@color/light_black"
-                android:textSize="20sp"
+                android:textSize="@dimen/card_notes_size_default"
                 android:gravity="center"
                 android:textIsSelectable="true"
                 android:autoLink="web"

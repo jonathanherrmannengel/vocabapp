@@ -12,5 +12,5 @@
 
 ## License
 
-* App's license: [Apache-2.0](./LICENSE)
+* App's license: [GNU GPL v3](./LICENSE)
 * Included projects' licenses: [list](./app/src/main/assets/oss/licenses.xml)

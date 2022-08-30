@@ -11,11 +11,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class FormatString {
-    String input;
-
-    public FormatString(String input) {
-        this.input = input;
-    }
 
     private int getTypeface(int i) {
         if(i == 3) {
@@ -29,7 +24,7 @@ public class FormatString {
         }
     }
 
-    public SpannableString formatString(){
+    public SpannableString formatString(String input){
         SpannableStringBuilder output = new SpannableStringBuilder(input);
         StringBuffer modifiedInput = new StringBuffer(input);
         for(int i = 3; i > 0; i--){

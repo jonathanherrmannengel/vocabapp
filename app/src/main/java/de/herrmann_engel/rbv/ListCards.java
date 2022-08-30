@@ -1,6 +1,7 @@
 package de.herrmann_engel.rbv;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -12,7 +13,9 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -41,6 +44,13 @@ public class ListCards extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_default_rec);
+
+        SharedPreferences settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE);
+        if(settings.getBoolean("ui_bg_images", true)) {
+            ImageView backgroundImage = findViewById(R.id.background_image);
+            backgroundImage.setVisibility(View.VISIBLE);
+            backgroundImage.setImageDrawable(AppCompatResources.getDrawable(this,R.drawable.bg_cards));
+        }
     }
 
     @Override
@@ -181,7 +191,8 @@ public class ListCards extends AppCompatActivity {
         searchCardsItem.setVisible(cardsList.size() > 0);
         if(searchQuery != null && !searchQuery.isEmpty()) {
             List<DB_Card> cardsListFiltered = new ArrayList<>(cardsList);
-            cardsListFiltered = (new SearchCards(cardsListFiltered, searchQuery, this)).searchCards();
+            SearchCards searchCards = new SearchCards();
+            cardsListFiltered = searchCards.searchCards(cardsListFiltered, searchQuery);
             if(cardsListFiltered.size() == 0){
                 searchCardsOffItem.setVisible(false);
                 searchQuery = "";

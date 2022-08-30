@@ -18,6 +18,8 @@ public class Settings extends AppCompatActivity {
     SharedPreferences settings;
     CheckBox formatCardsButton;
     CheckBox formatCardNotesButton;
+    CheckBox uiBgImagesButton;
+    CheckBox uiFontSizeButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +43,12 @@ public class Settings extends AppCompatActivity {
         formatCardsButton.setChecked(formatCards);
         formatCardNotesButton = findViewById(R.id.settings_format_card_notes);
         formatCardNotesButton.setChecked(formatCardNotes);
+        boolean uiBgImages = settings.getBoolean("ui_bg_images", true);
+        boolean uiFontSize = settings.getBoolean("ui_font_size", false);
+        uiBgImagesButton = findViewById(R.id.settings_ui_background_images);
+        uiFontSizeButton = findViewById(R.id.settings_ui_increase_font_size);
+        uiBgImagesButton.setChecked(uiBgImages);
+        uiFontSizeButton.setChecked(uiFontSize);
     }
 
     private void setSort(int sort) {
@@ -80,6 +88,18 @@ public class Settings extends AppCompatActivity {
         TextView infoText = info.findViewById(R.id.dia_info_text);
         infoText.setText(R.string.settings_format_cards_info);
         info.show();
+    }
+
+    public void setUIBackground(View view) {
+        SharedPreferences.Editor settingsEdit = settings.edit();
+        settingsEdit.putBoolean("ui_bg_images", uiBgImagesButton.isChecked());
+        settingsEdit.apply();
+    }
+
+    public void setUIFontSize(View view) {
+        SharedPreferences.Editor settingsEdit = settings.edit();
+        settingsEdit.putBoolean("ui_font_size", uiFontSizeButton.isChecked());
+        settingsEdit.apply();
     }
 
     @Override

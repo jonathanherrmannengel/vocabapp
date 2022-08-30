@@ -1,0 +1,4 @@
+Background image at lists
+Change license: Apache2 -> GPL3
+Changed terminology
+Fix: Long loading time in card list

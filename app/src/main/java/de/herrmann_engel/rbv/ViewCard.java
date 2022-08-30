@@ -13,6 +13,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.SpannableString;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -60,16 +61,18 @@ public class ViewCard extends AppCompatActivity {
         dbHelperGet = new DB_Helper_Get(this);
         dbHelperUpdate = new DB_Helper_Update(this);
         boolean formatCards = settings.getBoolean("format_cards", false);
+        boolean increaseFontSize = settings.getBoolean("ui_font_size", false);
         try {
             card = dbHelperGet.getSingleCard(cardNo);
             TextView front = findViewById(R.id.card_front);
             TextView back = findViewById(R.id.card_back);
             String cardFront;
             if(formatCards){
-                SpannableString cardFrontSpannable = (new FormatString(card.front)).formatString();
+                FormatString formatString = new FormatString();
+                SpannableString cardFrontSpannable = formatString.formatString(card.front);
                 cardFront = cardFrontSpannable.toString();
                 front.setText(cardFrontSpannable);
-                back.setText((new FormatString(card.back)).formatString());
+                back.setText(formatString.formatString(card.back));
             } else {
                 cardFront = card.front;
                 front.setText(cardFront);
@@ -82,6 +85,11 @@ public class ViewCard extends AppCompatActivity {
                 markwon.setMarkdown(notes, card.notes);
             } else {
                 notes.setText(card.notes);
+            }
+            if(increaseFontSize){
+                front.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.card_front_size_big));
+                back.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.card_back_size_big));
+                notes.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.card_notes_size_big));
             }
             TextView date = findViewById(R.id.card_date);
             date.setText(new java.util.Date(card.date * 1000).toString());

@@ -2,11 +2,15 @@ package de.herrmann_engel.rbv
 
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.ImageSpan
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 
 class AdapterCards(
@@ -25,20 +29,37 @@ class AdapterCards(
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         val view =
                 LayoutInflater.from(viewGroup.context).inflate(R.layout.rec_view, viewGroup, false)
+        val settings = c.getSharedPreferences(Globals.SETTINGS_NAME, Context.MODE_PRIVATE)
+        if(settings.getBoolean("ui_font_size", false)) {
+            view.findViewById<TextView>(R.id.rec_name).setTextSize(
+                TypedValue.COMPLEX_UNIT_PX,
+                c.resources.getDimension(R.dimen.rec_view_font_size_big)
+            )
+            view.findViewById<TextView>(R.id.rec_desc).setTextSize(
+                TypedValue.COMPLEX_UNIT_PX,
+                c.resources.getDimension(R.dimen.rec_view_font_size_big)
+            )
+        }
         return ViewHolder(view)
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         if (cards.isEmpty()) {
-            viewHolder.textView.text = c.resources.getString(R.string.welcome_card)
-        } else {
-
-            val settings: SharedPreferences =
-                c.getSharedPreferences(Globals.SETTINGS_NAME, Context.MODE_PRIVATE)
-            var cardText = if (reverse) cards[position].back else cards[position].front
-            if(settings.getBoolean("format_cards", false)) {
-                cardText = FormatString(cardText).formatString().toString()
+            if(packNo == -1) {
+                viewHolder.textView.text = c.resources.getString(R.string.welcome_card)
+            } else {
+                val text = String.format("%s %s", c.resources.getString(R.string.welcome_card) , c.resources.getString(R.string.welcome_card_create))
+                val addText = SpannableString(text)
+                val addTextDrawable = ContextCompat.getDrawable(c, R.drawable.outline_add_24)
+                addTextDrawable?.setTint(c.getColor(R.color.light_black))
+                addTextDrawable?.setBounds(0,0,addTextDrawable.intrinsicWidth,addTextDrawable.intrinsicHeight)
+                val addTextImage = addTextDrawable?.let { ImageSpan(it, ImageSpan.ALIGN_BOTTOM) }
+                val index = addText.indexOf("+")
+                addText.setSpan(addTextImage, index, index+1, Spannable.SPAN_INCLUSIVE_EXCLUSIVE)
+                viewHolder.textView.text = addText
             }
+        } else {
+            var cardText = if (reverse) cards[position].back else cards[position].front
             cardText = cardText.replace(System.getProperty("line.separator"), " ")
             val cardTextMaxLength = 50
             if (cardText.length > cardTextMaxLength) {

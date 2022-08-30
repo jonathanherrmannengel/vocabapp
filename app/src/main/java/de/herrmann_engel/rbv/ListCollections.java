@@ -3,16 +3,20 @@ package de.herrmann_engel.rbv;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
@@ -31,6 +35,14 @@ public class ListCollections extends AppCompatActivity implements AsyncImportFin
         setContentView(R.layout.activity_default_rec);
 
         setTitle(R.string.app_name);
+
+
+        SharedPreferences settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE);
+        if(settings.getBoolean("ui_bg_images", true)) {
+            ImageView backgroundImage = findViewById(R.id.background_image);
+            backgroundImage.setVisibility(View.VISIBLE);
+            backgroundImage.setImageDrawable(AppCompatResources.getDrawable(this, R.drawable.bg_collections));
+        }
 
         launcherImportFile = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),

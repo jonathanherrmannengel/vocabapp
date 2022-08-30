@@ -19,7 +19,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="20dp"
                 android:textColor="@android:color/black"
-                android:textSize="20sp"
+                android:textSize="@dimen/details_name_size_default"
                 android:gravity="center"
                 android:id="@+id/collection_or_pack_name" />
             <TextView
@@ -27,7 +27,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="40dp"
                 android:textColor="@android:color/black"
-                android:textSize="17sp"
+                android:textSize="@dimen/details_desc_size_default"
                 android:gravity="center"
                 android:id="@+id/collection_or_pack_desc" />
             <TextView

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <licenses>
 <item>
-    <identifier>Apache-2.0</identifier>
+    <identifier>GPLv3</identifier>
     <projectName>App</projectName>
     <projectDev>Jonathan Herrmann-Engel</projectDev>
     <projectUrl>https://github.com/jonathanherrmannengel/vocabapp</projectUrl>
@@ -36,5 +36,23 @@
     <identifier>Apache-2.0</identifier>
     <projectDev>JetBrains</projectDev>
     <projectName>JetBrains Kotlin, JetBrains Kotlinx (org.jetbrains.kotlin, org.jetbrains.kotlinx)</projectName>
+</item>
+<item>
+    <identifier>CC-BY-SA-4.0</identifier>
+    <projectDev>Bibliothek Wissenschaftspark Albert Einstein</projectDev>
+    <projectName>drawable bg_collections</projectName>
+    <projectUrl>https://commons.wikimedia.org/wiki/File:Card_Index_Art.jpg</projectUrl>
+</item>
+<item>
+    <identifier>CC-BY-SA-4.0</identifier>
+    <projectDev>Scry Photo</projectDev>
+    <projectName>drawable bg_packs</projectName>
+    <projectUrl>https://commons.m.wikimedia.org/wiki/File:General_Society_of_Mechanics_and_Tradesmen_of_the_City_of_New_York_-_7.jpg</projectUrl>
+</item>
+<item>
+    <identifier>public-domain</identifier>
+    <projectDev>Andrew Powers at English Wikipedia</projectDev>
+    <projectName>drawable bg_cards</projectName>
+    <projectUrl>https://commons.wikimedia.org/wiki/File:3x5_Notecard.jpg</projectUrl>
 </item>
 </licenses>

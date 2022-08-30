@@ -6,9 +6,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -37,6 +39,7 @@ public class ViewPack extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_collection_or_pack);
 
+        SharedPreferences settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE);
         collectionNo = getIntent().getExtras().getInt("collection");
         packNo = getIntent().getExtras().getInt("pack");
         reverse = getIntent().getExtras().getBoolean("reverse");
@@ -44,6 +47,7 @@ public class ViewPack extends AppCompatActivity {
         searchQuery = getIntent().getExtras().getString("searchQuery");
         cardPosition = getIntent().getExtras().getInt("cardPosition");
         dbHelperGet = new DB_Helper_Get(this);
+        boolean increaseFontSize = settings.getBoolean("ui_font_size", false);
         try {
             pack = dbHelperGet.getSinglePack(packNo);
             setTitle(pack.name);
@@ -54,6 +58,10 @@ public class ViewPack extends AppCompatActivity {
                 descTextView.setVisibility(View.GONE);
             } else {
                 descTextView.setText(pack.desc);
+            }
+            if(increaseFontSize){
+                nameTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.details_name_size_big));
+                descTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.details_desc_size_big));
             }
             TextView dateTextView = findViewById(R.id.collection_or_pack_date);
             dateTextView.setText(new java.util.Date(pack.date * 1000).toString());

@@ -1,11 +1,11 @@
 Very simple app to manage your flashcards.
 
 app structure
-collections -> packs -> flashcards
+filing boxes -> decks -> flashcards
 
-Collections can be exported as and imported from a backup.
+Filing boxes can be exported as and imported from a backup.
 
-The packs of a collection contain the flashcards.
+The decks of a filing box contain the flashcards.
 
 Flashcard values: front, back, notes (optional) and progress (integer)
 

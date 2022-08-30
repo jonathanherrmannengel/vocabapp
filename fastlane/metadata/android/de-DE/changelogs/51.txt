@@ -1,0 +1,4 @@
+Hintergrundbilder bei Listen
+Lizenzwechsel: Apache2 -> GPL3
+Veränderte Begrifflichkeiten
+Fix: Lange Ladezeit bei Kartenliste

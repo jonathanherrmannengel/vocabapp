@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import io.noties.markwon.Markwon;
+
 public class DB_Helper_Get {
 
     private final DB_Helper dbHelper;
@@ -63,23 +65,32 @@ public class DB_Helper_Get {
         return dbHelper.pack_dao.getAllByCollectionAndNameAndDesc(collection, name, desc);
     }
 
-    private int compareCardsAlphabetical (String a, String b, boolean formatCards) {
-        if(formatCards) {
-            a = (new FormatString(a)).formatString().toString();
-            b = (new FormatString(b)).formatString().toString();
-        }
+    private int compareCardsAlphabetical (String a, String b) {
         return a.compareToIgnoreCase(b);
     }
 
     List<DB_Card> sortCards(List<DB_Card> list, int sort) {
+        SharedPreferences settings = context.getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE);
+        boolean formatCards = settings.getBoolean("format_cards", false);
+        boolean formatCardsNotes = settings.getBoolean("format_card_notes", false);
+        if(formatCards || formatCardsNotes){
+            FormatString formatString = new FormatString();
+            Markwon markwon = Markwon.create(context);
+            list.forEach(l -> {
+                if(formatCards){
+                    l.front = formatString.formatString(l.front).toString();
+                    l.back = formatString.formatString(l.back).toString();
+                }
+                if(formatCardsNotes){
+                    l.notes =  markwon.toMarkdown(l.notes).toString();
+                }
+            });
+        }
         if (sort == Globals.SORT_ALPHABETICAL) {
-
-            SharedPreferences settings = context.getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE);
-            boolean formatCards = settings.getBoolean("format_cards", false);
             list.sort((a, b) -> {
-                int c0 = compareCardsAlphabetical(a.front, b.front, formatCards);
+                int c0 = compareCardsAlphabetical(a.front, b.front);
                 if (c0 == 0) {
-                    return compareCardsAlphabetical(a.back, b.back, formatCards);
+                    return compareCardsAlphabetical(a.back, b.back);
                 }
                 return c0;
             });
@@ -101,14 +112,14 @@ public class DB_Helper_Get {
     List<DB_Card> getAllCards(int sort) {
         List<DB_Pack> packs = getAllPacks();
         List<DB_Card> list = new ArrayList<>();
-        packs.forEach((currentPack) -> list.addAll(getAllCardsByPack(currentPack.uid, sort)));
+        packs.forEach((currentPack) -> list.addAll(getAllCardsByPack(currentPack.uid)));
         return sortCards(list, sort);
     }
 
     List<DB_Card> getAllCardsByCollection(int collection, int sort) {
         List<DB_Pack> packs = getAllPacksByCollection(collection);
         List<DB_Card> list = new ArrayList<>();
-        packs.forEach((currentPack) -> list.addAll(getAllCardsByPack(currentPack.uid, sort)));
+        packs.forEach((currentPack) -> list.addAll(getAllCardsByPack(currentPack.uid)));
         return sortCards(list, sort);
     }
 
@@ -117,12 +128,11 @@ public class DB_Helper_Get {
     }
 
     List<DB_Card> getAllCardsByPack(int pack) {
-        return getAllCardsByPack(pack, Globals.SORT_DEFAULT);
+        return dbHelper.card_dao.getAll(pack);
     }
 
     List<DB_Card> getAllCardsByPackAndFrontAndBackAndNotes(int pack, String front, String back, String notes) {
-        return sortCards(dbHelper.card_dao.getAllByPackAndFrontAndBackAndNotes(pack, front, back, notes),
-                Globals.SORT_DEFAULT);
+        return dbHelper.card_dao.getAllByPackAndFrontAndBackAndNotes(pack, front, back, notes);
     }
 
 }
