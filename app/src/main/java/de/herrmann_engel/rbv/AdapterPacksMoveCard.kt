@@ -35,7 +35,7 @@ class AdapterPacksMoveCard(
             view.findViewById<TextView>(R.id.rec_desc)
                     .setTextSize(
                             TypedValue.COMPLEX_UNIT_PX,
-                            c.resources.getDimension(R.dimen.rec_view_font_size_big)
+                            c.resources.getDimension(R.dimen.rec_view_font_size_below_big)
                     )
         }
         return ViewHolder(view)
