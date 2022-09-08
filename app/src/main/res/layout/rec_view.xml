@@ -25,6 +25,6 @@
             android:id="@+id/rec_desc"
             android:visibility="gone"
             android:textColor="@color/dark_grey"
-            />
+        />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

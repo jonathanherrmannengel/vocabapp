@@ -1,0 +1,4 @@
+Query mode (flashcard list -> play icon button)
+Advanced search (filing boxes list -> menu)
+Behavior change: Open lists do not update order (deactivatable in settings)
+New logo

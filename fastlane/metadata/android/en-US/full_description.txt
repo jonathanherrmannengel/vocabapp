@@ -1,4 +1,4 @@
-Very simple app to manage your flashcards.
+Simple app to manage your flashcards.
 
 app structure
 filing boxes -> decks -> flashcards
@@ -7,10 +7,8 @@ Filing boxes can be exported as and imported from a backup.
 
 The decks of a filing box contain the flashcards.
 
-Flashcard values: front, back, notes (optional) and progress (integer)
+Flashcard values: front, back, notes (optional) and progress (integer).
 
-NOTE
-This app is a very basic app for all who can't handle more complex apps without getting confused. You won't find many features, e.g. there is no query mode.
+You may activate flashcard formatting in the app settings.
 
-DISCLAIMER
-This app is provided on an as is basis. Backup your content before installing updates. Development might be discontinued any time.
+Please backup your content before installing updates.

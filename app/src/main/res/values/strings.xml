@@ -60,12 +60,27 @@
     <string name="pack_details">deck details</string>
     <string name="card_plus">got it right</string>
     <string name="card_minus">got it wrong</string>
+    <string name="card_skip">skip</string>
+    <string name="card_back">back</string>
     <string name="card_known">progress</string>
+    <string name="query_mode">query mode</string>
+    <string name="query_show">show solution</string>
+    <string name="query_notes">show notes</string>
+    <string name="query_notes_title">flashcard notes</string>
+    <string name="query_mode_exit">exit query mode?</string>
     <string name="color">color</string>
     <string name="info">info</string>
     <string name="search">search</string>
     <string name="search_no_results">no search results</string>
     <string name="search_off">Reset search</string>
+    <string name="advanced_search">Advanced search</string>
+    <string name="advanced_search_packs">Decks</string>
+    <string name="advanced_search_packs_all">All decks</string>
+    <string name="advanced_search_packs_select">Select decks</string>
+    <string name="advanced_search_progress">Select progress</string>
+    <string name="advanced_search_progress_greater">greater or equal</string>
+    <string name="advanced_search_progress_less">less or equal</string>
+    <string name="advanced_search_progress_value">progress value</string>
     <string name="settings_default_sort">Flashcard list: default sort</string>
     <string name="settings_format">Formatting</string>
     <string name="settings_format_cards">Flashcard front/back: Simple formatting</string>
@@ -74,4 +89,6 @@
     <string name="settings_ui">Customize UI</string>
     <string name="settings_ui_background_images">Show background images</string>
     <string name="settings_ui_increase_font_size">Increase font size</string>
+    <string name="settings_list">Flashcard list</string>
+    <string name="settings_list_no_update">Don\'t update open lists order</string>
 </resources>

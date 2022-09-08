@@ -18,6 +18,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class EditPack extends AppCompatActivity {
@@ -28,6 +29,7 @@ public class EditPack extends AppCompatActivity {
     private int sort;
     private String searchQuery;
     private int cardPosition;
+    private ArrayList<Integer> savedList;
 
     private DB_Pack pack;
     private TextView packName;
@@ -46,6 +48,7 @@ public class EditPack extends AppCompatActivity {
         sort = getIntent().getExtras().getInt("sort");
         searchQuery = getIntent().getExtras().getString("searchQuery");
         cardPosition = getIntent().getExtras().getInt("cardPosition");
+        savedList = getIntent().getExtras().getIntegerArrayList("savedList");
         DB_Helper_Get dbHelperGet = new DB_Helper_Get(this);
         try {
             pack = dbHelperGet.getSinglePack(packNo);
@@ -89,7 +92,7 @@ public class EditPack extends AppCompatActivity {
         return true;
     }
 
-    public void saveChanges (MenuItem menuItem) {
+    public void saveChanges(MenuItem menuItem) {
         DB_Helper_Update dbHelperUpdate = new DB_Helper_Update(this);
         pack.name = packName.getText().toString();
         pack.desc = packDesc.getText().toString();
@@ -116,6 +119,7 @@ public class EditPack extends AppCompatActivity {
         intent.putExtra("sort", sort);
         intent.putExtra("searchQuery", searchQuery);
         intent.putExtra("cardPosition", cardPosition);
+        intent.putIntegerArrayListExtra("savedList", savedList);
         startActivity(intent);
         this.finish();
     }

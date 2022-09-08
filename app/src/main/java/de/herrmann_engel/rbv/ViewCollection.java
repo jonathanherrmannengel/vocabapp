@@ -41,9 +41,11 @@ public class ViewCollection extends AppCompatActivity {
             } else {
                 descTextView.setText(collection.desc);
             }
-            if(increaseFontSize){
-                nameTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.details_name_size_big));
-                descTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.details_desc_size_big));
+            if (increaseFontSize) {
+                nameTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                        getResources().getDimension(R.dimen.details_name_size_big));
+                descTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                        getResources().getDimension(R.dimen.details_desc_size_big));
             }
             TextView dateTextView = findViewById(R.id.collection_or_pack_date);
             dateTextView.setText(new java.util.Date(collection.date * 1000).toString());

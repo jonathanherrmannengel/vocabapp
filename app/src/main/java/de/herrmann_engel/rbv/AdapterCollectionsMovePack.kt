@@ -23,15 +23,17 @@ class AdapterCollectionsMovePack(
         val view =
                 LayoutInflater.from(viewGroup.context).inflate(R.layout.rec_view, viewGroup, false)
         val settings = c.getSharedPreferences(Globals.SETTINGS_NAME, Context.MODE_PRIVATE)
-        if(settings.getBoolean("ui_font_size", false)) {
-            view.findViewById<TextView>(R.id.rec_name).setTextSize(
-                TypedValue.COMPLEX_UNIT_PX,
-                c.resources.getDimension(R.dimen.rec_view_font_size_big)
-            )
-            view.findViewById<TextView>(R.id.rec_desc).setTextSize(
-                TypedValue.COMPLEX_UNIT_PX,
-                c.resources.getDimension(R.dimen.rec_view_font_size_big)
-            )
+        if (settings.getBoolean("ui_font_size", false)) {
+            view.findViewById<TextView>(R.id.rec_name)
+                    .setTextSize(
+                            TypedValue.COMPLEX_UNIT_PX,
+                            c.resources.getDimension(R.dimen.rec_view_font_size_big)
+                    )
+            view.findViewById<TextView>(R.id.rec_desc)
+                    .setTextSize(
+                            TypedValue.COMPLEX_UNIT_PX,
+                            c.resources.getDimension(R.dimen.rec_view_font_size_big)
+                    )
         }
         return ViewHolder(view)
     }

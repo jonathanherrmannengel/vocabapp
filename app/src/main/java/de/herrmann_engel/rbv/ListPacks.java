@@ -27,9 +27,8 @@ public class ListPacks extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_default_rec);
 
-
         SharedPreferences settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE);
-        if(settings.getBoolean("ui_bg_images", true)) {
+        if (settings.getBoolean("ui_bg_images", true)) {
             ImageView backgroundImage = findViewById(R.id.background_image);
             backgroundImage.setVisibility(View.VISIBLE);
             backgroundImage.setImageDrawable(AppCompatResources.getDrawable(this, R.drawable.bg_packs));
@@ -40,7 +39,7 @@ public class ListPacks extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_list_packs, menu);
         collectionNo = getIntent().getExtras().getInt("collection");
-        if(collectionNo == -1) {
+        if (collectionNo == -1) {
             MenuItem startNewPack = menu.findItem(R.id.start_new_pack);
             startNewPack.setVisible(false);
             MenuItem collectionDetails = menu.findItem(R.id.collection_details);
@@ -50,7 +49,7 @@ public class ListPacks extends AppCompatActivity {
         }
         dbHelperGet = new DB_Helper_Get(this);
         try {
-            if(collectionNo > -1) {
+            if (collectionNo > -1) {
                 setTitle(dbHelperGet.getSingleCollection(collectionNo).name);
             }
         } catch (Exception e) {
@@ -59,15 +58,16 @@ public class ListPacks extends AppCompatActivity {
         updateContent();
         return true;
     }
-    private void updateContent(){
+
+    private void updateContent() {
         List<DB_Pack> packs;
-        if(collectionNo == -1){
+        if (collectionNo == -1) {
             packs = dbHelperGet.getAllPacks();
-        } else{
+        } else {
             packs = dbHelperGet.getAllPacksByCollection(collectionNo);
         }
         RecyclerView recyclerView = this.findViewById(R.id.rec_default);
-        AdapterPacks adapter = new AdapterPacks(packs,this, collectionNo);
+        AdapterPacks adapter = new AdapterPacks(packs, this, collectionNo);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
@@ -85,10 +85,11 @@ public class ListPacks extends AppCompatActivity {
         this.startActivity(intent);
         this.finish();
     }
+
     public void export(MenuItem menuItem) {
-        Export export = new Export(this,collectionNo);
-        if(!export.exportFile()) {
-            Toast.makeText(this,R.string.error, Toast.LENGTH_LONG).show();
+        Export export = new Export(this, collectionNo);
+        if (!export.exportFile()) {
+            Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show();
         }
     }
 

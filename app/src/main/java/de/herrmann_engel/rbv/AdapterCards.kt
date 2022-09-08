@@ -19,8 +19,12 @@ class AdapterCards(
         private val reverse: Boolean,
         private val sort: Int,
         private val packNo: Int,
+        private val packNos: ArrayList<Int>?,
         private val searchQuery: String?,
-        private val collectionNo: Int
+        private val collectionNo: Int,
+        private val progressGreater: Boolean?,
+        private val progressNumber: Int?,
+        private val savedList: ArrayList<Int>?
 ) : RecyclerView.Adapter<AdapterCards.ViewHolder>() {
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val textView: TextView = view.findViewById(R.id.rec_name)
@@ -30,32 +34,44 @@ class AdapterCards(
         val view =
                 LayoutInflater.from(viewGroup.context).inflate(R.layout.rec_view, viewGroup, false)
         val settings = c.getSharedPreferences(Globals.SETTINGS_NAME, Context.MODE_PRIVATE)
-        if(settings.getBoolean("ui_font_size", false)) {
-            view.findViewById<TextView>(R.id.rec_name).setTextSize(
-                TypedValue.COMPLEX_UNIT_PX,
-                c.resources.getDimension(R.dimen.rec_view_font_size_big)
-            )
-            view.findViewById<TextView>(R.id.rec_desc).setTextSize(
-                TypedValue.COMPLEX_UNIT_PX,
-                c.resources.getDimension(R.dimen.rec_view_font_size_big)
-            )
+        if (settings.getBoolean("ui_font_size", false)) {
+            view.findViewById<TextView>(R.id.rec_name)
+                    .setTextSize(
+                            TypedValue.COMPLEX_UNIT_PX,
+                            c.resources.getDimension(R.dimen.rec_view_font_size_big)
+                    )
+            view.findViewById<TextView>(R.id.rec_desc)
+                    .setTextSize(
+                            TypedValue.COMPLEX_UNIT_PX,
+                            c.resources.getDimension(R.dimen.rec_view_font_size_big)
+                    )
         }
         return ViewHolder(view)
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         if (cards.isEmpty()) {
-            if(packNo == -1) {
+            if (packNo < 0) {
                 viewHolder.textView.text = c.resources.getString(R.string.welcome_card)
             } else {
-                val text = String.format("%s %s", c.resources.getString(R.string.welcome_card) , c.resources.getString(R.string.welcome_card_create))
+                val text =
+                        String.format(
+                                "%s %s",
+                                c.resources.getString(R.string.welcome_card),
+                                c.resources.getString(R.string.welcome_card_create)
+                        )
                 val addText = SpannableString(text)
                 val addTextDrawable = ContextCompat.getDrawable(c, R.drawable.outline_add_24)
                 addTextDrawable?.setTint(c.getColor(R.color.light_black))
-                addTextDrawable?.setBounds(0,0,addTextDrawable.intrinsicWidth,addTextDrawable.intrinsicHeight)
+                addTextDrawable?.setBounds(
+                        0,
+                        0,
+                        addTextDrawable.intrinsicWidth,
+                        addTextDrawable.intrinsicHeight
+                )
                 val addTextImage = addTextDrawable?.let { ImageSpan(it, ImageSpan.ALIGN_BOTTOM) }
                 val index = addText.indexOf("+")
-                addText.setSpan(addTextImage, index, index+1, Spannable.SPAN_INCLUSIVE_EXCLUSIVE)
+                addText.setSpan(addTextImage, index, index + 1, Spannable.SPAN_INCLUSIVE_EXCLUSIVE)
                 viewHolder.textView.text = addText
             }
         } else {
@@ -66,7 +82,7 @@ class AdapterCards(
                 cardText = cardText.substring(0, cardTextMaxLength - 1) + "…"
             }
             viewHolder.textView.text = String.format("%s (%d)", cardText, cards[position].known)
-            if (packNo == -1) {
+            if (packNo < 0) {
                 val dbHelperGet = DB_Helper_Get(c.applicationContext)
                 try {
                     val color = dbHelperGet.getSinglePack(cards[position].pack).colors
@@ -84,11 +100,15 @@ class AdapterCards(
                 val intent = Intent(c.applicationContext, ViewCard::class.java)
                 intent.putExtra("collection", collectionNo)
                 intent.putExtra("pack", packNo)
+                intent.putIntegerArrayListExtra("packs", packNos)
                 intent.putExtra("card", extra)
                 intent.putExtra("reverse", reverse)
                 intent.putExtra("sort", sort)
                 intent.putExtra("searchQuery", searchQuery)
                 intent.putExtra("cardPosition", viewHolder.adapterPosition)
+                intent.putExtra("progressGreater", progressGreater)
+                intent.putExtra("progressNumber", progressNumber)
+                intent.putIntegerArrayListExtra("savedList", savedList)
                 c.startActivity(intent)
                 (c as ListCards).finish()
             }

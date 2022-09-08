@@ -23,15 +23,17 @@ class AdapterCollections(private val collection: List<DB_Collection>, private va
         val view =
                 LayoutInflater.from(viewGroup.context).inflate(R.layout.rec_view, viewGroup, false)
         val settings = c.getSharedPreferences(Globals.SETTINGS_NAME, Context.MODE_PRIVATE)
-        if(settings.getBoolean("ui_font_size", false)) {
-            view.findViewById<TextView>(R.id.rec_name).setTextSize(
-                TypedValue.COMPLEX_UNIT_PX,
-                c.resources.getDimension(R.dimen.rec_view_font_size_big)
-            )
-            view.findViewById<TextView>(R.id.rec_desc).setTextSize(
-                TypedValue.COMPLEX_UNIT_PX,
-                c.resources.getDimension(R.dimen.rec_view_font_size_big)
-            )
+        if (settings.getBoolean("ui_font_size", false)) {
+            view.findViewById<TextView>(R.id.rec_name)
+                    .setTextSize(
+                            TypedValue.COMPLEX_UNIT_PX,
+                            c.resources.getDimension(R.dimen.rec_view_font_size_big)
+                    )
+            view.findViewById<TextView>(R.id.rec_desc)
+                    .setTextSize(
+                            TypedValue.COMPLEX_UNIT_PX,
+                            c.resources.getDimension(R.dimen.rec_view_font_size_big)
+                    )
         }
         return ViewHolder(view)
     }
@@ -41,16 +43,39 @@ class AdapterCollections(private val collection: List<DB_Collection>, private va
             val welcomeText = SpannableString(c.resources.getString(R.string.welcome_collection))
             val welcomeTextDrawableAdd = ContextCompat.getDrawable(c, R.drawable.outline_add_24)
             welcomeTextDrawableAdd?.setTint(c.getColor(R.color.light_black))
-            welcomeTextDrawableAdd?.setBounds(0,0,welcomeTextDrawableAdd.intrinsicWidth,welcomeTextDrawableAdd.intrinsicHeight)
-            val welcomeTextImageAdd = welcomeTextDrawableAdd?.let { ImageSpan(it, ImageSpan.ALIGN_BOTTOM) }
+            welcomeTextDrawableAdd?.setBounds(
+                    0,
+                    0,
+                    welcomeTextDrawableAdd.intrinsicWidth,
+                    welcomeTextDrawableAdd.intrinsicHeight
+            )
+            val welcomeTextImageAdd =
+                    welcomeTextDrawableAdd?.let { ImageSpan(it, ImageSpan.ALIGN_BOTTOM) }
             val indexAdd = welcomeText.indexOf("+")
-            welcomeText.setSpan(welcomeTextImageAdd, indexAdd, indexAdd+1, Spannable.SPAN_INCLUSIVE_EXCLUSIVE)
-            val welcomeTextDrawableImport = ContextCompat.getDrawable(c, R.drawable.outline_file_download_24)
+            welcomeText.setSpan(
+                    welcomeTextImageAdd,
+                    indexAdd,
+                    indexAdd + 1,
+                    Spannable.SPAN_INCLUSIVE_EXCLUSIVE
+            )
+            val welcomeTextDrawableImport =
+                    ContextCompat.getDrawable(c, R.drawable.outline_file_download_24)
             welcomeTextDrawableImport?.setTint(c.getColor(R.color.light_black))
-            welcomeTextDrawableImport?.setBounds(0,0,welcomeTextDrawableImport.intrinsicWidth,welcomeTextDrawableImport.intrinsicHeight)
-            val welcomeTextImageImport = welcomeTextDrawableImport?.let { ImageSpan(it, ImageSpan.ALIGN_BOTTOM) }
+            welcomeTextDrawableImport?.setBounds(
+                    0,
+                    0,
+                    welcomeTextDrawableImport.intrinsicWidth,
+                    welcomeTextDrawableImport.intrinsicHeight
+            )
+            val welcomeTextImageImport =
+                    welcomeTextDrawableImport?.let { ImageSpan(it, ImageSpan.ALIGN_BOTTOM) }
             val indexImport = welcomeText.indexOf("↓")
-            welcomeText.setSpan(welcomeTextImageImport, indexImport,indexImport+1, Spannable.SPAN_INCLUSIVE_EXCLUSIVE)
+            welcomeText.setSpan(
+                    welcomeTextImageImport,
+                    indexImport,
+                    indexImport + 1,
+                    Spannable.SPAN_INCLUSIVE_EXCLUSIVE
+            )
             viewHolder.textView.text = welcomeText
         } else if (position == 0) {
             viewHolder.textView.text = c.resources.getString(R.string.all_packs)

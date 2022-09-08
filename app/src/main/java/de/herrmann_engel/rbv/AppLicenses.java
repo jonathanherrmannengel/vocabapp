@@ -1,6 +1,7 @@
 package de.herrmann_engel.rbv;
 
 import android.content.Intent;
+import android.content.res.XmlResourceParser;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -8,11 +9,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserFactory;
-
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,14 +19,8 @@ public class AppLicenses extends AppCompatActivity {
         setContentView(R.layout.activity_default_rec);
 
         try {
-            InputStream inputStream = getResources().getAssets().open("oss/licenses.xml");
-
-            XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
-            factory.setNamespaceAware(false);
-            XmlPullParser xmlPullParser = factory.newPullParser();
-
-            xmlPullParser.setInput(new InputStreamReader(inputStream));
-            int eventType = xmlPullParser.getEventType();
+            XmlResourceParser parser = getResources().getXml(R.xml.licenses);
+            int eventType = parser.getEventType();
 
             List<OSS_Licenses> licenses = new ArrayList<>();
 
@@ -42,16 +32,16 @@ public class AppLicenses extends AppCompatActivity {
             String projectDevTmp = "";
             String projectUrlTmp = "";
 
-            while (eventType != XmlPullParser.END_DOCUMENT) {
-                if (eventType == XmlPullParser.START_TAG) {
-                    if (xmlPullParser.getName().equals("item") && !projectRunning) {
+            while (eventType != XmlResourceParser.END_DOCUMENT) {
+                if (eventType == XmlResourceParser.START_TAG) {
+                    if (parser.getName().equals("item") && !projectRunning) {
                         projectRunning = true;
-                    } else if (!xmlPullParser.getName().equals("item") && projectRunning) {
-                        currentTag = xmlPullParser.getName();
+                    } else if (!parser.getName().equals("item") && projectRunning) {
+                        currentTag = parser.getName();
                     }
-                } else if (eventType == XmlPullParser.END_TAG) {
+                } else if (eventType == XmlResourceParser.END_TAG) {
                     currentTag = "";
-                    if (xmlPullParser.getName().equals("item") && projectRunning) {
+                    if (parser.getName().equals("item") && projectRunning) {
                         projectRunning = false;
                         project = new OSS_Project(projectNameTmp, projectDevTmp, projectUrlTmp);
                         licenses.add(new OSS_Licenses(licenseIdentifierTmp, project));
@@ -60,23 +50,23 @@ public class AppLicenses extends AppCompatActivity {
                         projectDevTmp = "";
                         projectUrlTmp = "";
                     }
-                } else if (eventType == XmlPullParser.TEXT) {
+                } else if (eventType == XmlResourceParser.TEXT) {
                     switch (currentTag) {
                         case "identifier":
-                            licenseIdentifierTmp = xmlPullParser.getText();
+                            licenseIdentifierTmp = parser.getText();
                             break;
                         case "projectName":
-                            projectNameTmp = xmlPullParser.getText();
+                            projectNameTmp = parser.getText();
                             break;
                         case "projectDev":
-                            projectDevTmp = xmlPullParser.getText();
+                            projectDevTmp = parser.getText();
                             break;
                         case "projectUrl":
-                            projectUrlTmp = xmlPullParser.getText();
+                            projectUrlTmp = parser.getText();
                             break;
                     }
                 }
-                eventType = xmlPullParser.next();
+                eventType = parser.next();
             }
 
             RecyclerView recyclerView = this.findViewById(R.id.rec_default);

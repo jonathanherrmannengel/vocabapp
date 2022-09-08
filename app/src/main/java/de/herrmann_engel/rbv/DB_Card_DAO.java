@@ -12,8 +12,15 @@ import java.util.List;
 
 @Dao
 public interface DB_Card_DAO {
+
     @Query("SELECT * FROM db_card WHERE pack=:pid")
     List<DB_Card> getAll(int pid);
+
+    @Query("SELECT * FROM db_card WHERE pack=:pid AND known>=:progress")
+    List<DB_Card> getAllGreaterEqual(int pid, int progress);
+
+    @Query("SELECT * FROM db_card WHERE pack=:pid AND known<=:progress")
+    List<DB_Card> getAllLessEqual(int pid, int progress);
 
     @Query("SELECT * FROM db_card WHERE pack=:pid AND front=:front AND back=:back AND notes=:notes")
     List<DB_Card> getAllByPackAndFrontAndBackAndNotes(int pid, String front, String back, String notes);

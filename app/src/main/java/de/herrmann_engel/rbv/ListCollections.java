@@ -36,9 +36,8 @@ public class ListCollections extends AppCompatActivity implements AsyncImportFin
 
         setTitle(R.string.app_name);
 
-
         SharedPreferences settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE);
-        if(settings.getBoolean("ui_bg_images", true)) {
+        if (settings.getBoolean("ui_bg_images", true)) {
             ImageView backgroundImage = findViewById(R.id.background_image);
             backgroundImage.setVisibility(View.VISIBLE);
             backgroundImage.setImageDrawable(AppCompatResources.getDrawable(this, R.drawable.bg_collections));
@@ -79,6 +78,11 @@ public class ListCollections extends AppCompatActivity implements AsyncImportFin
 
     public void startNewCollection(MenuItem menuItem) {
         this.startActivity(new Intent(getApplicationContext(), NewCollection.class));
+        this.finish();
+    }
+
+    public void startAdvancedSearch(MenuItem menuItem) {
+        this.startActivity(new Intent(getApplicationContext(), AdvancedSearch.class));
         this.finish();
     }
 

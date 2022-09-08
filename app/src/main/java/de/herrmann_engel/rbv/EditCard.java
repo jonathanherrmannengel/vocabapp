@@ -16,17 +16,22 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class EditCard extends AppCompatActivity {
 
     private int collectionNo;
     private int packNo;
+    private ArrayList<Integer> packNos;
     private int cardNo;
     private boolean reverse;
     private int sort;
     private String searchQuery;
     private int cardPosition;
+    private boolean progressGreater;
+    private int progressNumber;
+    private ArrayList<Integer> savedList;
 
     TextView frontTextView;
     TextView backTextView;
@@ -42,11 +47,15 @@ public class EditCard extends AppCompatActivity {
         notesTextView = findViewById(R.id.edit_card_notes);
         collectionNo = getIntent().getExtras().getInt("collection");
         packNo = getIntent().getExtras().getInt("pack");
+        packNos = getIntent().getExtras().getIntegerArrayList("packs");
         cardNo = getIntent().getExtras().getInt("card");
         reverse = getIntent().getExtras().getBoolean("reverse");
         sort = getIntent().getExtras().getInt("sort");
         searchQuery = getIntent().getExtras().getString("searchQuery");
         cardPosition = getIntent().getExtras().getInt("cardPosition");
+        progressGreater = getIntent().getExtras().getBoolean("progressGreater");
+        progressNumber = getIntent().getExtras().getInt("progressNumber");
+        savedList = getIntent().getExtras().getIntegerArrayList("savedList");
         DB_Helper_Get dbHelperGet = new DB_Helper_Get(this);
         try {
             card = dbHelperGet.getSingleCard(cardNo);
@@ -87,7 +96,7 @@ public class EditCard extends AppCompatActivity {
         return true;
     }
 
-    public void saveChanges (MenuItem menuItem) {
+    public void saveChanges(MenuItem menuItem) {
         card.front = frontTextView.getText().toString();
         card.back = backTextView.getText().toString();
         card.notes = notesTextView.getText().toString();
@@ -103,11 +112,15 @@ public class EditCard extends AppCompatActivity {
         Intent intent = new Intent(getApplicationContext(), ViewCard.class);
         intent.putExtra("collection", collectionNo);
         intent.putExtra("pack", packNo);
+        intent.putIntegerArrayListExtra("packs", packNos);
         intent.putExtra("card", cardNo);
         intent.putExtra("reverse", reverse);
         intent.putExtra("sort", sort);
         intent.putExtra("searchQuery", searchQuery);
         intent.putExtra("cardPosition", cardPosition);
+        intent.putExtra("progressGreater", progressGreater);
+        intent.putExtra("progressNumber", progressNumber);
+        intent.putIntegerArrayListExtra("savedList", savedList);
         startActivity(intent);
         this.finish();
     }

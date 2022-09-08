@@ -65,7 +65,7 @@ public class DB_Helper_Get {
         return dbHelper.pack_dao.getAllByCollectionAndNameAndDesc(collection, name, desc);
     }
 
-    private int compareCardsAlphabetical (String a, String b) {
+    private int compareCardsAlphabetical(String a, String b) {
         return a.compareToIgnoreCase(b);
     }
 
@@ -73,16 +73,16 @@ public class DB_Helper_Get {
         SharedPreferences settings = context.getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE);
         boolean formatCards = settings.getBoolean("format_cards", false);
         boolean formatCardsNotes = settings.getBoolean("format_card_notes", false);
-        if(formatCards || formatCardsNotes){
+        if (formatCards || formatCardsNotes) {
             FormatString formatString = new FormatString();
             Markwon markwon = Markwon.create(context);
             list.forEach(l -> {
-                if(formatCards){
+                if (formatCards) {
                     l.front = formatString.formatString(l.front).toString();
                     l.back = formatString.formatString(l.back).toString();
                 }
-                if(formatCardsNotes){
-                    l.notes =  markwon.toMarkdown(l.notes).toString();
+                if (formatCardsNotes) {
+                    l.notes = markwon.toMarkdown(l.notes).toString();
                 }
             });
         }
@@ -116,6 +116,35 @@ public class DB_Helper_Get {
         return sortCards(list, sort);
     }
 
+    List<DB_Card> getAllCardsByIds(ArrayList<Integer> ids) {
+        List<DB_Card> list = new ArrayList<>();
+        ids.forEach(id -> {
+            try {
+                list.add(getSingleCard(id));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        return list;
+    }
+
+    List<DB_Card> getAllCardsByProgress(int sort, boolean progressGreater, int progressNumber) {
+        List<DB_Pack> packs = getAllPacks();
+        List<DB_Card> cards = new ArrayList<>();
+        packs.forEach(pack -> {
+            if (progressNumber >= 0) {
+                if (progressGreater) {
+                    cards.addAll(dbHelper.card_dao.getAllGreaterEqual(pack.uid, progressNumber));
+                } else {
+                    cards.addAll(dbHelper.card_dao.getAllLessEqual(pack.uid, progressNumber));
+                }
+            } else {
+                cards.addAll(dbHelper.card_dao.getAll(pack.uid));
+            }
+        });
+        return sortCards(cards, sort);
+    }
+
     List<DB_Card> getAllCardsByCollection(int collection, int sort) {
         List<DB_Pack> packs = getAllPacksByCollection(collection);
         List<DB_Card> list = new ArrayList<>();
@@ -129,6 +158,23 @@ public class DB_Helper_Get {
 
     List<DB_Card> getAllCardsByPack(int pack) {
         return dbHelper.card_dao.getAll(pack);
+    }
+
+    List<DB_Card> getAllCardsByPacksAndProgress(List<Integer> packs, int sort, boolean progressGreater,
+            int progressNumber) {
+        List<DB_Card> cards = new ArrayList<>();
+        packs.forEach(pack -> {
+            if (progressNumber >= 0) {
+                if (progressGreater) {
+                    cards.addAll(dbHelper.card_dao.getAllGreaterEqual(pack, progressNumber));
+                } else {
+                    cards.addAll(dbHelper.card_dao.getAllLessEqual(pack, progressNumber));
+                }
+            } else {
+                cards.addAll(dbHelper.card_dao.getAll(pack));
+            }
+        });
+        return sortCards(cards, sort);
     }
 
     List<DB_Card> getAllCardsByPackAndFrontAndBackAndNotes(int pack, String front, String back, String notes) {

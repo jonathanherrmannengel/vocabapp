@@ -20,6 +20,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -33,6 +34,7 @@ public class ViewPack extends AppCompatActivity {
     private int sort;
     private String searchQuery;
     private int cardPosition;
+    private ArrayList<Integer> savedList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +48,7 @@ public class ViewPack extends AppCompatActivity {
         sort = getIntent().getExtras().getInt("sort");
         searchQuery = getIntent().getExtras().getString("searchQuery");
         cardPosition = getIntent().getExtras().getInt("cardPosition");
+        savedList = getIntent().getExtras().getIntegerArrayList("savedList");
         dbHelperGet = new DB_Helper_Get(this);
         boolean increaseFontSize = settings.getBoolean("ui_font_size", false);
         try {
@@ -59,9 +62,11 @@ public class ViewPack extends AppCompatActivity {
             } else {
                 descTextView.setText(pack.desc);
             }
-            if(increaseFontSize){
-                nameTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.details_name_size_big));
-                descTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.details_desc_size_big));
+            if (increaseFontSize) {
+                nameTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                        getResources().getDimension(R.dimen.details_name_size_big));
+                descTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                        getResources().getDimension(R.dimen.details_desc_size_big));
             }
             TextView dateTextView = findViewById(R.id.collection_or_pack_date);
             dateTextView.setText(new java.util.Date(pack.date * 1000).toString());
@@ -99,6 +104,7 @@ public class ViewPack extends AppCompatActivity {
         intent.putExtra("sort", sort);
         intent.putExtra("searchQuery", searchQuery);
         intent.putExtra("cardPosition", cardPosition);
+        intent.putIntegerArrayListExtra("savedList", savedList);
         startActivity(intent);
         this.finish();
     }
@@ -173,6 +179,7 @@ public class ViewPack extends AppCompatActivity {
         intent.putExtra("sort", sort);
         intent.putExtra("searchQuery", searchQuery);
         intent.putExtra("cardPosition", cardPosition);
+        intent.putIntegerArrayListExtra("savedList", savedList);
         startActivity(intent);
         this.finish();
     }

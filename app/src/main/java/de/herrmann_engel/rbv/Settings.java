@@ -20,6 +20,7 @@ public class Settings extends AppCompatActivity {
     CheckBox formatCardNotesButton;
     CheckBox uiBgImagesButton;
     CheckBox uiFontSizeButton;
+    CheckBox listNoUpdateButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +50,9 @@ public class Settings extends AppCompatActivity {
         uiFontSizeButton = findViewById(R.id.settings_ui_increase_font_size);
         uiBgImagesButton.setChecked(uiBgImages);
         uiFontSizeButton.setChecked(uiFontSize);
+        boolean listNoUpdate = settings.getBoolean("list_no_update", true);
+        listNoUpdateButton = findViewById(R.id.settings_list_no_update);
+        listNoUpdateButton.setChecked(listNoUpdate);
     }
 
     private void setSort(int sort) {
@@ -74,11 +78,13 @@ public class Settings extends AppCompatActivity {
         settingsEdit.putBoolean("format_cards", formatCardsButton.isChecked());
         settingsEdit.apply();
     }
+
     public void setFormatCardNotes(View view) {
         SharedPreferences.Editor settingsEdit = settings.edit();
         settingsEdit.putBoolean("format_card_notes", formatCardNotesButton.isChecked());
         settingsEdit.apply();
     }
+
     public void infoFormatCards(View view) {
         Dialog info = new Dialog(this, R.style.dia_view);
         info.setContentView(R.layout.dia_info);
@@ -99,6 +105,12 @@ public class Settings extends AppCompatActivity {
     public void setUIFontSize(View view) {
         SharedPreferences.Editor settingsEdit = settings.edit();
         settingsEdit.putBoolean("ui_font_size", uiFontSizeButton.isChecked());
+        settingsEdit.apply();
+    }
+
+    public void setListNoUpdate(View view) {
+        SharedPreferences.Editor settingsEdit = settings.edit();
+        settingsEdit.putBoolean("list_no_update", listNoUpdateButton.isChecked());
         settingsEdit.apply();
     }
 

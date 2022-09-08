@@ -3,7 +3,6 @@
     <style name="dia_view" parent="android:Theme.Dialog">
         <item name="android:windowTitleStyle">@style/dia_view_title</item>
     </style>
-
     <style name="dia_view_title" parent="android:Widget.TextView">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>

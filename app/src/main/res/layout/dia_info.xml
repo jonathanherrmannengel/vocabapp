@@ -20,6 +20,6 @@
             android:gravity="center"
             android:layout_centerHorizontal="true"
             android:padding="20dp"
-            />
+        />
     </RelativeLayout>
 </ScrollView>

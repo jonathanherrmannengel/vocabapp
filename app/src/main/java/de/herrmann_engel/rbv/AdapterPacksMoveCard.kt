@@ -6,7 +6,6 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
@@ -27,15 +26,17 @@ class AdapterPacksMoveCard(
         val view =
                 LayoutInflater.from(viewGroup.context).inflate(R.layout.rec_view, viewGroup, false)
         val settings = c.getSharedPreferences(Globals.SETTINGS_NAME, Context.MODE_PRIVATE)
-        if(settings.getBoolean("ui_font_size", false)) {
-            view.findViewById<TextView>(R.id.rec_name).setTextSize(
-                TypedValue.COMPLEX_UNIT_PX,
-                c.resources.getDimension(R.dimen.rec_view_font_size_big)
-            )
-            view.findViewById<TextView>(R.id.rec_desc).setTextSize(
-                TypedValue.COMPLEX_UNIT_PX,
-                c.resources.getDimension(R.dimen.rec_view_font_size_big)
-            )
+        if (settings.getBoolean("ui_font_size", false)) {
+            view.findViewById<TextView>(R.id.rec_name)
+                    .setTextSize(
+                            TypedValue.COMPLEX_UNIT_PX,
+                            c.resources.getDimension(R.dimen.rec_view_font_size_big)
+                    )
+            view.findViewById<TextView>(R.id.rec_desc)
+                    .setTextSize(
+                            TypedValue.COMPLEX_UNIT_PX,
+                            c.resources.getDimension(R.dimen.rec_view_font_size_big)
+                    )
         }
         return ViewHolder(view)
     }
@@ -51,7 +52,8 @@ class AdapterPacksMoveCard(
         if (collectionNo == -1) {
             try {
                 val collectionNameMaxLength = 50
-                var collectionName = DB_Helper_Get(c).getSingleCollection(pack[position].collection).name
+                var collectionName =
+                        DB_Helper_Get(c).getSingleCollection(pack[position].collection).name
                 if (collectionName.length > collectionNameMaxLength) {
                     collectionName = collectionName.substring(0, collectionNameMaxLength - 1) + "…"
                 }
@@ -65,7 +67,7 @@ class AdapterPacksMoveCard(
             val updateHelper = DB_Helper_Update(c)
             card.pack = pack[position].uid
             updateHelper.updateCard(card)
-            (c as ViewCard).movedPack()
+            (c as ViewCard).movedCard()
             dialog.dismiss()
         }
     }

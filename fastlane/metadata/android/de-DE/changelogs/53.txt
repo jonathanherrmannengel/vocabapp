@@ -1,0 +1,4 @@
+Abfragemodus (Karteikarten-Liste -> Abspielen Icon Schaltfläche)
+Erweitere Suche (Karteikästen-Liste -> Menü)
+Verändertes Verhalten: Reihenfolge in offenen Listen wird nicht aktualisiert (deaktivierbar in Einstellungen)
+Neues Logo

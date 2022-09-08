@@ -13,4 +13,4 @@
 ## License
 
 * App's license: [GNU GPL v3](./LICENSE)
-* Included projects' licenses: [list](./app/src/main/assets/oss/licenses.xml)
+* Included projects' licenses: [list](./app/src/main/res/xml/licenses.xml)

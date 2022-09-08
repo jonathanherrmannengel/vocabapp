@@ -23,7 +23,8 @@ public class NewCollection extends AppCompatActivity {
         setContentView(R.layout.activity_new_collection_or_pack);
 
         nameTextView = findViewById(R.id.new_collection_or_pack_name);
-        nameTextView.setHint(String.format(getString(R.string.collection_or_pack_name_format), getString(R.string.collection_name), getString(R.string.collection_or_pack_name)));
+        nameTextView.setHint(String.format(getString(R.string.collection_or_pack_name_format),
+                getString(R.string.collection_name), getString(R.string.collection_or_pack_name)));
         descTextView = findViewById(R.id.new_collection_or_pack_desc);
         descTextView.setHint(String.format(getString(R.string.optional), getString(R.string.collection_or_pack_desc)));
     }
@@ -34,7 +35,7 @@ public class NewCollection extends AppCompatActivity {
         return true;
     }
 
-    public void insert (MenuItem menuItem) {
+    public void insert(MenuItem menuItem) {
         String name = nameTextView.getText().toString();
         String desc = descTextView.getText().toString();
         try {

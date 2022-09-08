@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class NewCard extends AppCompatActivity {
@@ -26,6 +27,7 @@ public class NewCard extends AppCompatActivity {
     private int sort;
     private String searchQuery;
     private int cardPosition;
+    private ArrayList<Integer> savedList;
 
     TextView frontTextView;
     TextView backTextView;
@@ -42,6 +44,7 @@ public class NewCard extends AppCompatActivity {
         sort = getIntent().getExtras().getInt("sort");
         searchQuery = getIntent().getExtras().getString("searchQuery");
         cardPosition = getIntent().getExtras().getInt("cardPosition");
+        savedList = getIntent().getExtras().getIntegerArrayList("savedList");
         TypedArray colors = getResources().obtainTypedArray(R.array.pack_color_main);
         TypedArray colorsBackground = getResources().obtainTypedArray(R.array.pack_color_background);
         DB_Helper_Get dbHelperGet = new DB_Helper_Get(this);
@@ -73,13 +76,16 @@ public class NewCard extends AppCompatActivity {
         return true;
     }
 
-    public void insert (MenuItem menuItem) {
+    public void insert(MenuItem menuItem) {
         String front = frontTextView.getText().toString();
         String back = backTextView.getText().toString();
         String notes = notesTextView.getText().toString();
         try {
             DB_Helper_Create dbHelperCreate = new DB_Helper_Create(getApplicationContext());
-            dbHelperCreate.createCard(front, back, notes, packNo);
+            long id = dbHelperCreate.createCard(front, back, notes, packNo);
+            if (savedList != null) {
+                savedList.add((int) id);
+            }
             startListCards();
         } catch (Exception e) {
             Toast.makeText(getApplicationContext(), R.string.error_values, Toast.LENGTH_SHORT).show();
@@ -94,6 +100,7 @@ public class NewCard extends AppCompatActivity {
         intent.putExtra("sort", sort);
         intent.putExtra("searchQuery", searchQuery);
         intent.putExtra("cardPosition", cardPosition);
+        intent.putIntegerArrayListExtra("savedList", savedList);
         startActivity(intent);
         this.finish();
     }

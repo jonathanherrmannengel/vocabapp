@@ -24,6 +24,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -37,11 +38,15 @@ public class ViewCard extends AppCompatActivity {
     private int known;
     private int collectionNo;
     private int packNo;
+    private ArrayList<Integer> packNos;
     private int cardNo;
     private boolean reverse;
     private int sort;
     private String searchQuery;
     private int cardPosition;
+    private boolean progressGreater;
+    private int progressNumber;
+    private ArrayList<Integer> savedList;
 
     TextView knownText;
     ImageButton knownMinus;
@@ -53,11 +58,15 @@ public class ViewCard extends AppCompatActivity {
         SharedPreferences settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE);
         collectionNo = getIntent().getExtras().getInt("collection");
         packNo = getIntent().getExtras().getInt("pack");
+        packNos = getIntent().getExtras().getIntegerArrayList("packs");
         cardNo = getIntent().getExtras().getInt("card");
         reverse = getIntent().getExtras().getBoolean("reverse");
         sort = getIntent().getExtras().getInt("sort");
         searchQuery = getIntent().getExtras().getString("searchQuery");
         cardPosition = getIntent().getExtras().getInt("cardPosition");
+        progressGreater = getIntent().getExtras().getBoolean("progressGreater");
+        progressNumber = getIntent().getExtras().getInt("progressNumber");
+        savedList = getIntent().getExtras().getIntegerArrayList("savedList");
         dbHelperGet = new DB_Helper_Get(this);
         dbHelperUpdate = new DB_Helper_Update(this);
         boolean formatCards = settings.getBoolean("format_cards", false);
@@ -67,7 +76,7 @@ public class ViewCard extends AppCompatActivity {
             TextView front = findViewById(R.id.card_front);
             TextView back = findViewById(R.id.card_back);
             String cardFront;
-            if(formatCards){
+            if (formatCards) {
                 FormatString formatString = new FormatString();
                 SpannableString cardFrontSpannable = formatString.formatString(card.front);
                 cardFront = cardFrontSpannable.toString();
@@ -79,14 +88,14 @@ public class ViewCard extends AppCompatActivity {
                 back.setText(card.back);
             }
             TextView notes = findViewById(R.id.card_notes);
-            if(settings.getBoolean("format_card_notes", false)){
+            if (settings.getBoolean("format_card_notes", false)) {
                 final Markwon markwon = Markwon.create(this);
                 notes.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_START);
                 markwon.setMarkdown(notes, card.notes);
             } else {
                 notes.setText(card.notes);
             }
-            if(increaseFontSize){
+            if (increaseFontSize) {
                 front.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.card_front_size_big));
                 back.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.card_back_size_big));
                 notes.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.card_notes_size_big));
@@ -108,7 +117,7 @@ public class ViewCard extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_view_card, menu);
-        if (packNo == -1) {
+        if (packNo < 0) {
             menu.findItem(R.id.move_card).setVisible(false);
         }
         return true;
@@ -164,11 +173,15 @@ public class ViewCard extends AppCompatActivity {
         Intent intent = new Intent(getApplicationContext(), EditCard.class);
         intent.putExtra("collection", collectionNo);
         intent.putExtra("pack", packNo);
+        intent.putIntegerArrayListExtra("packs", packNos);
         intent.putExtra("card", cardNo);
         intent.putExtra("reverse", reverse);
         intent.putExtra("sort", sort);
         intent.putExtra("searchQuery", searchQuery);
         intent.putExtra("cardPosition", cardPosition);
+        intent.putExtra("progressGreater", progressGreater);
+        intent.putExtra("progressNumber", progressNumber);
+        intent.putIntegerArrayListExtra("savedList", savedList);
         startActivity(intent);
         this.finish();
     }
@@ -185,13 +198,20 @@ public class ViewCard extends AppCompatActivity {
         confirmDeleteY.setOnClickListener(v -> {
             DB_Helper_Delete dbHelperDelete = new DB_Helper_Delete(this);
             dbHelperDelete.deleteCard(card);
+            if (savedList != null) {
+                savedList.remove(Integer.valueOf(card.uid));
+            }
             Intent intent = new Intent(getApplicationContext(), ListCards.class);
             intent.putExtra("collection", collectionNo);
             intent.putExtra("pack", packNo);
+            intent.putIntegerArrayListExtra("packs", packNos);
             intent.putExtra("reverse", reverse);
             intent.putExtra("sort", sort);
             intent.putExtra("searchQuery", searchQuery);
             intent.putExtra("cardPosition", cardPosition);
+            intent.putExtra("progressGreater", progressGreater);
+            intent.putExtra("progressNumber", progressNumber);
+            intent.putIntegerArrayListExtra("savedList", savedList);
             startActivity(intent);
             this.finish();
         });
@@ -205,7 +225,6 @@ public class ViewCard extends AppCompatActivity {
         moveDialog.setTitle(getResources().getString(R.string.move_card));
         moveDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.MATCH_PARENT);
-
         List<DB_Pack> packs;
         if (collectionNo == -1) {
             packs = dbHelperGet.getAllPacks();
@@ -216,11 +235,13 @@ public class ViewCard extends AppCompatActivity {
         AdapterPacksMoveCard adapter = new AdapterPacksMoveCard(packs, collectionNo, this, card, moveDialog);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
         moveDialog.show();
     }
 
-    public void movedPack() {
+    public void movedCard() {
+        if (savedList != null) {
+            savedList = null;
+        }
         try {
             card = dbHelperGet.getSingleCard(cardNo);
             packNo = card.pack;
@@ -235,10 +256,14 @@ public class ViewCard extends AppCompatActivity {
         Intent intent = new Intent(getApplicationContext(), ListCards.class);
         intent.putExtra("collection", collectionNo);
         intent.putExtra("pack", packNo);
+        intent.putIntegerArrayListExtra("packs", packNos);
         intent.putExtra("reverse", reverse);
         intent.putExtra("sort", sort);
         intent.putExtra("searchQuery", searchQuery);
         intent.putExtra("cardPosition", cardPosition);
+        intent.putExtra("progressGreater", progressGreater);
+        intent.putExtra("progressNumber", progressNumber);
+        intent.putIntegerArrayListExtra("savedList", savedList);
         startActivity(intent);
         this.finish();
     }

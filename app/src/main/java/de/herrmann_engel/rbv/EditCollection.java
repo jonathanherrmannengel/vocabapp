@@ -45,7 +45,7 @@ public class EditCollection extends AppCompatActivity {
         return true;
     }
 
-    public void saveChanges (MenuItem menuItem) {
+    public void saveChanges(MenuItem menuItem) {
         collection.name = collectionName.getText().toString();
         collection.desc = collectionDesc.getText().toString();
         DB_Helper_Update dbHelperUpdate = new DB_Helper_Update(this);
@@ -55,7 +55,6 @@ public class EditCollection extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), R.string.error_values, Toast.LENGTH_SHORT).show();
         }
     }
-
 
     private void startViewCollection() {
         Intent intent = new Intent(getApplicationContext(), ViewCollection.class);

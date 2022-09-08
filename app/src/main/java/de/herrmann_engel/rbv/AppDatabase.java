@@ -10,13 +10,15 @@ public abstract class AppDatabase extends RoomDatabase {
     private static AppDatabase appDatabase;
 
     public static synchronized AppDatabase getInstance(Context context) {
-        if(appDatabase == null){
+        if (appDatabase == null) {
             appDatabase = (new AppDatabaseBuilder()).get(context);
         }
         return appDatabase;
     }
 
     public abstract DB_Pack_DAO packDAO();
+
     public abstract DB_Card_DAO cardDAO();
+
     public abstract DB_Collection_DAO collectionDAO();
 }

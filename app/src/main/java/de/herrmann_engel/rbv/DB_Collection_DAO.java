@@ -12,6 +12,7 @@ import java.util.List;
 
 @Dao
 public interface DB_Collection_DAO {
+
     @Query("SELECT * FROM db_collection ORDER BY name ASC, uid DESC")
     List<DB_Collection> getAll();
 

@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:actionViewClass="androidx.appcompat.widget.SearchView"
-        android:title="@string/search"/>
+        android:title="@string/search" />
     <item
         android:id="@+id/search_cards_off"
         android:icon="@drawable/ic_round_search_off_24"
@@ -19,7 +19,16 @@
         android:layout_height="wrap_content"
         android:title="@string/search_off"
         android:visible="false"
-        android:onClick="searchCardsOff"/>
+        android:onClick="searchCardsOff" />
+    <item
+        android:id="@+id/start_query"
+        android:icon="@drawable/ic_round_play_arrow_24"
+        android:orderInCategory="150"
+        app:showAsAction="ifRoom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:title="@string/query_mode"
+        android:onClick="startQueryMode" />
     <item
         android:id="@+id/start_new_card"
         android:icon="@drawable/outline_add_24"

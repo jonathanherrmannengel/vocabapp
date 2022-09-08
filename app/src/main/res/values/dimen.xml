@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="rec_view_font_size_default">20sp</dimen>
-    <dimen name="rec_view_font_size_big">26sp</dimen>
+    <dimen name="rec_view_font_size_big">24sp</dimen>
     <dimen name="rec_view_font_size_below_default">12sp</dimen>
     <dimen name="rec_view_font_size_below_big">14sp</dimen>
     <dimen name="card_front_size_default">24sp</dimen>

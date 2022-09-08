@@ -18,6 +18,10 @@
             android:label="@string/settings" />
         <activity
             android:configChanges="orientation|screenSize|screenLayout"
+            android:name=".AdvancedSearch"
+            android:label="@string/advanced_search" />
+        <activity
+            android:configChanges="orientation|screenSize|screenLayout"
             android:name=".EditCollection"
             android:label="@string/edit_collection" />
         <activity

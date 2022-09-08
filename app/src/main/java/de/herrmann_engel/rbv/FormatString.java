@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 public class FormatString {
 
     private int getTypeface(int i) {
-        if(i == 3) {
+        if (i == 3) {
             return Typeface.BOLD_ITALIC;
         } else if (i == 2) {
             return Typeface.BOLD;
@@ -24,10 +24,10 @@ public class FormatString {
         }
     }
 
-    public SpannableString formatString(String input){
+    public SpannableString formatString(String input) {
         SpannableStringBuilder output = new SpannableStringBuilder(input);
         StringBuffer modifiedInput = new StringBuffer(input);
-        for(int i = 3; i > 0; i--){
+        for (int i = 3; i > 0; i--) {
             int offset = 0;
             String regex = String.format("%s%d%s%d%s", "(^|\\s|_)([*]{", i, "}[^\\s*][^\\n]*?(?<![\\s*])[*]{", i, "})");
             Pattern pattern = Pattern.compile(regex);
