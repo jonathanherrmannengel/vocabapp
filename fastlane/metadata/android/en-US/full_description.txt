@@ -11,4 +11,6 @@ Flashcard values: front, back, notes (optional) and progress (integer).
 
 You may activate flashcard formatting in the app settings.
 
+You may use four color variants for filing boxes and decks.
+
 Please backup your content before installing updates.

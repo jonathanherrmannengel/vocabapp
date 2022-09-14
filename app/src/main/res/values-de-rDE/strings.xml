@@ -21,7 +21,10 @@
     <string name="welcome_card">Es sind noch keine Karteikarten in diesem Kartenstapel vorhanden.</string>
     <string name="welcome_card_create">Erstellen Sie eine neue Karteikarte (+).</string>
     <string name="all_packs">Alle Kartenstapel</string>
+    <string name="all_packs_desc">Gesamte Karteikartensammlung nach Kartenstapeln ansehen</string>
     <string name="all_cards">Alle Karteikarten</string>
+    <string name="all_cards_desc">Gesamte Karteikartensammlung aller Kartenstapel ansehen</string>
+    <string name="all_cards_desc_by_pack">Karteikartensammlung dieses Karteikastens ansehen</string>
     <string name="export_all">Karteikästen als Backup exportieren</string>
     <string name="export_cards">Karteikasten als Backup exportieren</string>
     <string name="import_cards">Karteikasten/-kästen von Backup importieren</string>
@@ -42,6 +45,7 @@
     <string name="collection_or_pack_name_format">%2$s %1$s</string>
     <string name="collection_or_pack_name">Name</string>
     <string name="collection_or_pack_desc">Beschreibung</string>
+    <string name="collection_or_pack_emoji">Listen-Vorschau-Icon (einzelnes Emoji)</string>
     <string name="collection_name">des Karteikastens</string>
     <string name="pack_name">des Kartenstapels</string>
     <string name="new_collection">Neuer Karteikasten</string>

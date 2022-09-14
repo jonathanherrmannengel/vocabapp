@@ -69,23 +69,28 @@ public class DB_Helper_Get {
         return a.compareToIgnoreCase(b);
     }
 
-    List<DB_Card> sortCards(List<DB_Card> list, int sort) {
+    List<DB_Card> formatCards(List<DB_Card> list) {
         SharedPreferences settings = context.getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE);
         boolean formatCards = settings.getBoolean("format_cards", false);
         boolean formatCardsNotes = settings.getBoolean("format_card_notes", false);
         if (formatCards || formatCardsNotes) {
-            FormatString formatString = new FormatString();
+            StringTools formatString = new StringTools();
             Markwon markwon = Markwon.create(context);
             list.forEach(l -> {
                 if (formatCards) {
-                    l.front = formatString.formatString(l.front).toString();
-                    l.back = formatString.formatString(l.back).toString();
+                    l.front = formatString.format(l.front).toString();
+                    l.back = formatString.format(l.back).toString();
                 }
                 if (formatCardsNotes) {
                     l.notes = markwon.toMarkdown(l.notes).toString();
                 }
             });
         }
+        return list;
+    }
+
+    List<DB_Card> sortCards(List<DB_Card> list, int sort) {
+        list = formatCards(list);
         if (sort == Globals.SORT_ALPHABETICAL) {
             list.sort((a, b) -> {
                 int c0 = compareCardsAlphabetical(a.front, b.front);
@@ -116,6 +121,13 @@ public class DB_Helper_Get {
         return sortCards(list, sort);
     }
 
+    List<DB_Card> getAllCards() {
+        List<DB_Pack> packs = getAllPacks();
+        List<DB_Card> list = new ArrayList<>();
+        packs.forEach((currentPack) -> list.addAll(getAllCardsByPack(currentPack.uid)));
+        return list;
+    }
+
     List<DB_Card> getAllCardsByIds(ArrayList<Integer> ids) {
         List<DB_Card> list = new ArrayList<>();
         ids.forEach(id -> {
@@ -125,7 +137,7 @@ public class DB_Helper_Get {
                 e.printStackTrace();
             }
         });
-        return list;
+        return formatCards(list);
     }
 
     List<DB_Card> getAllCardsByProgress(int sort, boolean progressGreater, int progressNumber) {
@@ -150,6 +162,13 @@ public class DB_Helper_Get {
         List<DB_Card> list = new ArrayList<>();
         packs.forEach((currentPack) -> list.addAll(getAllCardsByPack(currentPack.uid)));
         return sortCards(list, sort);
+    }
+
+    List<DB_Card> getAllCardsByCollection(int collection) {
+        List<DB_Pack> packs = getAllPacksByCollection(collection);
+        List<DB_Card> list = new ArrayList<>();
+        packs.forEach((currentPack) -> list.addAll(getAllCardsByPack(currentPack.uid)));
+        return list;
     }
 
     List<DB_Card> getAllCardsByPack(int pack, int sort) {

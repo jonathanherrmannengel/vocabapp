@@ -2,6 +2,8 @@ package de.herrmann_engel.rbv
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ImageSpan
@@ -9,6 +11,7 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
@@ -20,24 +23,34 @@ class AdapterPacks(
         private val collection: Int
 ) : RecyclerView.Adapter<AdapterPacks.ViewHolder>() {
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val textView: TextView = view.findViewById(R.id.rec_name)
-        val textViewDesc: TextView = view.findViewById(R.id.rec_desc)
+        val layout: LinearLayout = view.findViewById(R.id.rec_collections_preview_layout)
+        val collectionName: TextView = view.findViewById(R.id.rec_collections_parent)
+        val textView: TextView = view.findViewById(R.id.rec_collections_name)
+        val descView: TextView = view.findViewById(R.id.rec_collections_desc)
+        val previewView: TextView = view.findViewById(R.id.rec_collections_preview_text)
+        val numberText: TextView = view.findViewById(R.id.rec_collections_number_text)
     }
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         val view =
-                LayoutInflater.from(viewGroup.context).inflate(R.layout.rec_view, viewGroup, false)
+                LayoutInflater.from(viewGroup.context)
+                        .inflate(R.layout.rec_view_collection_or_pack, viewGroup, false)
         val settings = c.getSharedPreferences(Globals.SETTINGS_NAME, Context.MODE_PRIVATE)
         if (settings.getBoolean("ui_font_size", false)) {
-            view.findViewById<TextView>(R.id.rec_name)
+            view.findViewById<TextView>(R.id.rec_collections_name)
                     .setTextSize(
                             TypedValue.COMPLEX_UNIT_PX,
                             c.resources.getDimension(R.dimen.rec_view_font_size_big)
                     )
-            view.findViewById<TextView>(R.id.rec_desc)
+            view.findViewById<TextView>(R.id.rec_collections_desc)
                     .setTextSize(
                             TypedValue.COMPLEX_UNIT_PX,
                             c.resources.getDimension(R.dimen.rec_view_font_size_below_big)
+                    )
+            view.findViewById<TextView>(R.id.rec_collections_parent)
+                    .setTextSize(
+                            TypedValue.COMPLEX_UNIT_PX,
+                            c.resources.getDimension(R.dimen.rec_view_font_size_above_big)
                     )
         }
         return ViewHolder(view)
@@ -68,50 +81,109 @@ class AdapterPacks(
                 addText.setSpan(addTextImage, index, index + 1, Spannable.SPAN_INCLUSIVE_EXCLUSIVE)
                 viewHolder.textView.text = addText
             }
-            viewHolder.textViewDesc.visibility = View.GONE
+            viewHolder.collectionName.visibility = View.GONE
+            viewHolder.textView.textAlignment = View.TEXT_ALIGNMENT_CENTER
+            viewHolder.descView.visibility = View.GONE
+            viewHolder.previewView.visibility = View.GONE
+            viewHolder.numberText.visibility = View.GONE
         } else if (position == 0) {
-            viewHolder.textView.text = c.resources.getString(R.string.all_cards)
-            viewHolder.textView.setOnClickListener {
+            viewHolder.layout.setOnClickListener {
                 val intent = Intent(c.applicationContext, ListCards::class.java)
                 intent.putExtra("pack", -1)
                 intent.putExtra("collection", collection)
                 c.startActivity(intent)
                 (c as ListPacks).finish()
             }
-            viewHolder.textViewDesc.visibility = View.GONE
-        } else {
-            val colors = c.resources.obtainTypedArray(R.array.pack_color_list)
-            val color = pack[position - 1].colors
-            if (color < colors.length() && color >= 0) {
-                viewHolder.textView.setTextColor(colors.getColor(color, 0))
-            }
-            colors.recycle()
-            val dbHelperGet = DB_Helper_Get(c.applicationContext)
-            val size = dbHelperGet.getAllCardsByPack(pack[position - 1].uid).size
-            viewHolder.textView.text = String.format("%s (%d)", pack[position - 1].name, size)
-            if (collection == -1) {
-                try {
-                    val collectionNameMaxLength = 50
-                    var collectionName =
-                            DB_Helper_Get(c).getSingleCollection(pack[position - 1].collection).name
-                    if (collectionName.length > collectionNameMaxLength) {
-                        collectionName =
-                                collectionName.substring(0, collectionNameMaxLength - 1) + "…"
+            viewHolder.textView.text = c.resources.getString(R.string.all_cards)
+            viewHolder.descView.visibility = View.VISIBLE
+            viewHolder.descView.text =
+                    if (collection == -1) {
+                        c.resources.getString(R.string.all_cards_desc)
+                    } else {
+                        c.resources.getString(R.string.all_cards_desc_by_pack)
                     }
-                    viewHolder.textViewDesc.visibility = View.VISIBLE
-                    viewHolder.textViewDesc.text = collectionName
-                } catch (e: Exception) {
-                    Toast.makeText(c.applicationContext, R.string.error, Toast.LENGTH_SHORT).show()
-                }
-            }
+            viewHolder.previewView.text = "…"
+            val dbHelperGet = DB_Helper_Get(c.applicationContext)
+            val size =
+                    if (collection == -1) {
+                        dbHelperGet.allCards.size
+                    } else {
+                        dbHelperGet.getAllCardsByCollection(collection).size
+                    }
+            viewHolder.numberText.text = size.toString()
+            viewHolder.collectionName.visibility = View.GONE
+            viewHolder.textView.setTextColor(Color.rgb(0, 0, 0))
+            viewHolder.previewView.setTextColor(Color.rgb(0, 0, 0))
+            viewHolder.previewView.setBackgroundColor(Color.rgb(185, 185, 185))
+            val background = viewHolder.layout.background as GradientDrawable
+            background.mutate()
+            background.setStroke(2, Color.rgb(85, 85, 85))
+            background.setColor(Color.argb(75, 185, 185, 185))
+        } else {
             val extra = pack[position - 1].uid
-            viewHolder.textView.setOnClickListener {
+            viewHolder.layout.setOnClickListener {
                 val intent = Intent(c.applicationContext, ListCards::class.java)
                 intent.putExtra("pack", extra)
                 intent.putExtra("collection", collection)
                 c.startActivity(intent)
                 (c as ListPacks).finish()
             }
+            viewHolder.textView.text = StringTools().shorten(pack[position - 1].name)
+            if (pack[position - 1].desc.isEmpty()) {
+                viewHolder.descView.visibility = View.GONE
+            } else {
+                viewHolder.descView.visibility = View.VISIBLE
+                viewHolder.descView.text = StringTools().shorten(pack[position - 1].desc)
+            }
+            val emojiText = pack[position - 1].emoji
+            viewHolder.previewView.text =
+                    if (emojiText.isNullOrEmpty()) {
+                        val pattern = Regex("^(\\P{M}\\p{M}*+).*")
+                        pack[position - 1].name.replace(pattern, "$1")
+                    } else {
+                        emojiText
+                    }
+            val dbHelperGet = DB_Helper_Get(c.applicationContext)
+            val size = dbHelperGet.getAllCardsByPack(pack[position - 1].uid).size
+            viewHolder.numberText.text = size.toString()
+            if (collection == -1) {
+                try {
+                    val collectionName =
+                            StringTools()
+                                    .shorten(
+                                            DB_Helper_Get(c)
+                                                    .getSingleCollection(
+                                                            pack[position - 1].collection
+                                                    )
+                                                    .name
+                                    )
+                    viewHolder.collectionName.visibility = View.VISIBLE
+                    viewHolder.collectionName.text = collectionName
+                } catch (e: Exception) {
+                    Toast.makeText(c.applicationContext, R.string.error, Toast.LENGTH_SHORT).show()
+                }
+            }
+            val color = pack[position - 1].colors
+            val colors = c.resources.obtainTypedArray(R.array.pack_color_list)
+            val colorsBackground = c.resources.obtainTypedArray(R.array.pack_color_background_light)
+            val colorsBackgroundAlpha =
+                    c.resources.obtainTypedArray(R.array.pack_color_background_light_alpha)
+            if (color < colors.length() &&
+                            color < colorsBackground.length() &&
+                            color < colorsBackgroundAlpha.length() &&
+                            color >= 0
+            ) {
+                viewHolder.textView.setTextColor(colors.getColor(color, 0))
+                viewHolder.previewView.setTextColor(colors.getColor(color, 0))
+                viewHolder.previewView.setBackgroundColor(colorsBackground.getColor(color, 0))
+                val background = viewHolder.layout.background as GradientDrawable
+                background.mutate()
+                background.setStroke(2, colors.getColor(color, 0))
+                background.setColor(colorsBackgroundAlpha.getColor(color, 0))
+            }
+            colors.recycle()
+            colorsBackground.recycle()
+            colorsBackgroundAlpha.recycle()
         }
     }
 

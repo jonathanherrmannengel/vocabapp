@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
+    android:id="@+id/root_new_collection_or_pack"
     android:gravity="center">
     <ScrollView
         android:layout_width="match_parent"

@@ -18,6 +18,12 @@
         <item>#bfdfbf</item>
         <item>#fefeaf</item>
     </array>
+    <array name="pack_color_background_light_alpha">
+        <item>@color/light_grey_alpha</item>
+        <item>#40ffd0d0</item>
+        <item>#40bfdfbf</item>
+        <item>#40fefeaf</item>
+    </array>
     <array name="pack_color_background_highlight">
         <item>#aabbff</item>
         <item>#ff9999</item>

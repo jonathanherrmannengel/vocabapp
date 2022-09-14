@@ -7,6 +7,9 @@ import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.InputFilter;
+import android.text.TextWatcher;
 import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,7 +21,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.vanniktech.emoji.EmojiEditText;
+import com.vanniktech.emoji.EmojiPopup;
+import com.vanniktech.emoji.inputfilters.OnlyEmojisInputFilter;
+
+import java.text.BreakIterator;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Objects;
 
 public class EditPack extends AppCompatActivity {
@@ -34,14 +43,29 @@ public class EditPack extends AppCompatActivity {
     private DB_Pack pack;
     private TextView packName;
     private TextView packDesc;
+    EmojiEditText packEmoji;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_edit_pack);
+        setContentView(R.layout.activity_edit_collection_or_pack);
         packName = findViewById(R.id.edit_pack_name);
         packDesc = findViewById(R.id.edit_pack_desc);
         packDesc.setHint(String.format(getString(R.string.optional), getString(R.string.collection_or_pack_desc)));
+        packEmoji = findViewById(R.id.edit_pack_emoji);
+        packEmoji
+                .setHint(String.format(getString(R.string.optional), getString(R.string.collection_or_pack_emoji)));
+        EmojiPopup emojiPopup = new EmojiPopup(findViewById(R.id.root_edit_pack), packEmoji);
+        packEmoji.setFilters(new InputFilter[] { new OnlyEmojisInputFilter() });
+        packEmoji.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                if (!emojiPopup.isShowing()) {
+                    emojiPopup.show();
+                }
+            } else if (emojiPopup.isShowing()) {
+                emojiPopup.dismiss();
+            }
+        });
         collectionNo = getIntent().getExtras().getInt("collection");
         packNo = getIntent().getExtras().getInt("pack");
         reverse = getIntent().getExtras().getBoolean("reverse");
@@ -54,6 +78,24 @@ public class EditPack extends AppCompatActivity {
             pack = dbHelperGet.getSinglePack(packNo);
             packName.setText(pack.name);
             packDesc.setText(pack.desc);
+            packEmoji.setText(pack.emoji);
+            packEmoji.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    packEmoji.removeTextChangedListener(this);
+                    packEmoji.setText(s.subSequence(start, start + count));
+                    packEmoji.addTextChangedListener(this);
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+
+                }
+            });
             LinearLayout colorPicker = findViewById(R.id.color_picker);
             TypedArray colors = getResources().obtainTypedArray(R.array.pack_color_main);
             TypedArray colorsBackground = getResources().obtainTypedArray(R.array.pack_color_background);
@@ -96,6 +138,14 @@ public class EditPack extends AppCompatActivity {
         DB_Helper_Update dbHelperUpdate = new DB_Helper_Update(this);
         pack.name = packName.getText().toString();
         pack.desc = packDesc.getText().toString();
+        if (packEmoji.getText() != null && !packEmoji.getText().toString().isEmpty()) {
+            BreakIterator iterator = BreakIterator.getCharacterInstance(Locale.ROOT);
+            String emojiText = packEmoji.getText().toString();
+            iterator.setText(emojiText);
+            pack.emoji = emojiText.substring(iterator.first(), iterator.next());
+        } else {
+            pack.emoji = null;
+        }
         if (dbHelperUpdate.updatePack(pack)) {
             startViewPack();
         } else {
@@ -108,7 +158,6 @@ public class EditPack extends AppCompatActivity {
         Window window = this.getWindow();
         window.setStatusBarColor(main);
         findViewById(R.id.root_edit_pack).setBackgroundColor(background);
-
     }
 
     private void startViewPack() {

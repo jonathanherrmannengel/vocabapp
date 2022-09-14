@@ -4,6 +4,8 @@
     <dimen name="rec_view_font_size_big">24sp</dimen>
     <dimen name="rec_view_font_size_below_default">12sp</dimen>
     <dimen name="rec_view_font_size_below_big">14sp</dimen>
+    <dimen name="rec_view_font_size_above_default">14sp</dimen>
+    <dimen name="rec_view_font_size_above_big">16sp</dimen>
     <dimen name="card_front_size_default">24sp</dimen>
     <dimen name="card_front_size_big">28sp</dimen>
     <dimen name="card_back_size_default">28sp</dimen>

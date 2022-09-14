@@ -10,22 +10,25 @@ public class DB_Helper_Create {
         dbHelper = new DB_Helper(context);
     }
 
-    public long createCollection(String name, String desc, long date) throws Exception {
+    public long createCollection(String name, String desc, int colors, String emoji, long date) throws Exception {
         if (!name.equals("")) {
             DB_Collection collection = new DB_Collection();
             collection.name = name;
             collection.desc = desc;
             collection.date = date;
+            collection.colors = colors;
+            collection.emoji = emoji;
             return dbHelper.collection_dao.insert(collection);
         }
         throw new Exception();
     }
 
     public long createCollection(String name, String desc) throws Exception {
-        return createCollection(name, desc, System.currentTimeMillis() / 1000L);
+        return createCollection(name, desc, 0, "", System.currentTimeMillis() / 1000L);
     }
 
-    public long createPack(String name, String desc, int collection, int colors, long date) throws Exception {
+    public long createPack(String name, String desc, int collection, int colors, String emoji, long date)
+            throws Exception {
         DB_Helper_Get dbHelperGet = new DB_Helper_Get(dbHelper.context);
         dbHelperGet.getSingleCollection(collection);
         if (!name.equals("")) {
@@ -34,6 +37,7 @@ public class DB_Helper_Create {
             pack.desc = desc;
             pack.date = date;
             pack.colors = colors;
+            pack.emoji = emoji;
             pack.collection = collection;
             return dbHelper.pack_dao.insert(pack);
         }
@@ -41,7 +45,7 @@ public class DB_Helper_Create {
     }
 
     public long createPack(String name, String desc, int collection) throws Exception {
-        return createPack(name, desc, collection, 0, System.currentTimeMillis() / 1000L);
+        return createPack(name, desc, collection, 0, "", System.currentTimeMillis() / 1000L);
     }
 
     public long createCard(String front, String back, String notes, int pack, int known, long date) throws Exception {

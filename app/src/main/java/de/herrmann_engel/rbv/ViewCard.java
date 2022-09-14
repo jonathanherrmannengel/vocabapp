@@ -77,11 +77,11 @@ public class ViewCard extends AppCompatActivity {
             TextView back = findViewById(R.id.card_back);
             String cardFront;
             if (formatCards) {
-                FormatString formatString = new FormatString();
-                SpannableString cardFrontSpannable = formatString.formatString(card.front);
+                StringTools formatString = new StringTools();
+                SpannableString cardFrontSpannable = formatString.format(card.front);
                 cardFront = cardFrontSpannable.toString();
                 front.setText(cardFrontSpannable);
-                back.setText(formatString.formatString(card.back));
+                back.setText(formatString.format(card.back));
             } else {
                 cardFront = card.front;
                 front.setText(cardFront);

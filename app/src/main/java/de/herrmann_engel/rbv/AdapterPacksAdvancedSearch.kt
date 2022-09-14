@@ -43,12 +43,13 @@ class AdapterPacksAdvancedSearch(
             val size = dbHelperGet.getAllCardsByPack(pack[position].uid).size
             viewHolder.textView.text = String.format("%s (%d)", pack[position].name, size)
             try {
-                val collectionNameMaxLength = 50
-                var collectionName =
-                        DB_Helper_Get(c).getSingleCollection(pack[position].collection).name
-                if (collectionName.length > collectionNameMaxLength) {
-                    collectionName = collectionName.substring(0, collectionNameMaxLength - 1) + "…"
-                }
+                val collectionName =
+                        StringTools()
+                                .shorten(
+                                        DB_Helper_Get(c)
+                                                .getSingleCollection(pack[position].collection)
+                                                .name
+                                )
                 viewHolder.textViewDesc.visibility = View.VISIBLE
                 viewHolder.textViewDesc.text = collectionName
             } catch (e: Exception) {

@@ -22,7 +22,10 @@
     <string name="welcome_card">There are no flashcards in this deck.</string>
     <string name="welcome_card_create">Create a new flashcard (+).</string>
     <string name="all_packs">All decks</string>
+    <string name="all_packs_desc">View the entire flashcard collection by decks</string>
     <string name="all_cards">All flashcards</string>
+    <string name="all_cards_desc">View all flashcards of all decks</string>
+    <string name="all_cards_desc_by_pack">View flashcards of this filing box</string>
     <string name="export_all">Export filing boxes as backup</string>
     <string name="export_cards">Export filing box as backup</string>
     <string name="import_cards">Import filing box(es) from backup</string>
@@ -43,6 +46,7 @@
     <string name="collection_or_pack_name_format">%2$s %1$s</string>
     <string name="collection_or_pack_name">name</string>
     <string name="collection_or_pack_desc">description</string>
+    <string name="collection_or_pack_emoji">list preview icon (single emoji)</string>
     <string name="collection_name">of filing box</string>
     <string name="pack_name">of deck</string>
     <string name="new_collection">New filing box</string>

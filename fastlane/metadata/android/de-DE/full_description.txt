@@ -5,10 +5,12 @@ Karteikästen -> Kartenstapel -> Karteikarten
 
 Karteikästen können einzeln oder komplett als Backup gespeichert werden und wieder importiert werden.
 
-Die Kartenstapel eines Karteikastens enthalten die Karteikarten. Sie können vier Farbvarianten für die Kartenstapel nutzen.
+Die Kartenstapel eines Karteikastens enthalten die Karteikarten.
 
 Die Karteikarten eines Kartenstapels bieten eine Vorderseite und eine Rückseite sowie optional Notizen. Der Lernfortschritt wird als Zahlenwert gespeichert.
 
 Sie können Formatierungsoptionen für die Karteikarten in den App-Einstellungen aktivieren.
+
+Sie können vier Farbvarianten für Karteikästen und Kartenstapel nutzen.
 
 Sichern Sie bitte Ihre Daten vor dem Einspielen eines Updates.

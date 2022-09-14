@@ -7,14 +7,18 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.TypedArray;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import java.util.List;
+import java.util.Objects;
 
 public class ListPacks extends AppCompatActivity {
 
@@ -65,6 +69,26 @@ public class ListPacks extends AppCompatActivity {
             packs = dbHelperGet.getAllPacks();
         } else {
             packs = dbHelperGet.getAllPacksByCollection(collectionNo);
+        }
+
+        if (collectionNo >= 0) {
+            try {
+                int packColors = dbHelperGet.getSingleCollection(collectionNo).colors;
+                TypedArray colors = getResources().obtainTypedArray(R.array.pack_color_main);
+                TypedArray colorsBackground = getResources().obtainTypedArray(R.array.pack_color_background);
+                if (packColors < Math.min(colors.length(), colorsBackground.length()) && packColors >= 0) {
+                    int color = colors.getColor(packColors, 0);
+                    int colorBackground = colorsBackground.getColor(packColors, 0);
+                    Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(new ColorDrawable(color));
+                    Window window = this.getWindow();
+                    window.setStatusBarColor(color);
+                    findViewById(R.id.rec_default_root).setBackgroundColor(colorBackground);
+                }
+                colors.recycle();
+                colorsBackground.recycle();
+            } catch (Exception e) {
+                Toast.makeText(getApplicationContext(), R.string.error, Toast.LENGTH_SHORT).show();
+            }
         }
         RecyclerView recyclerView = this.findViewById(R.id.rec_default);
         AdapterPacks adapter = new AdapterPacks(packs, this, collectionNo);

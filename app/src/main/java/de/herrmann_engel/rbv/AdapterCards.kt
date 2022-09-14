@@ -77,10 +77,7 @@ class AdapterCards(
         } else {
             var cardText = if (reverse) cards[position].back else cards[position].front
             cardText = cardText.replace(System.getProperty("line.separator"), " ")
-            val cardTextMaxLength = 50
-            if (cardText.length > cardTextMaxLength) {
-                cardText = cardText.substring(0, cardTextMaxLength - 1) + "…"
-            }
+            cardText = StringTools().shorten(cardText)
             viewHolder.textView.text = String.format("%s (%d)", cardText, cards[position].known)
             if (packNo < 0) {
                 val dbHelperGet = DB_Helper_Get(c.applicationContext)

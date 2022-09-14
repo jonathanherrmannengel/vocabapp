@@ -1,5 +1,7 @@
 package de.herrmann_engel.rbv;
 
+import static androidx.room.ColumnInfo.UNICODE;
+
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
@@ -24,5 +26,8 @@ public class DB_Pack {
 
         @ColumnInfo(name = "collection")
         public int collection;
+
+        @ColumnInfo(name = "emoji")
+        public String emoji;
 
 }

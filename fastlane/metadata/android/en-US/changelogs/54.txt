@@ -1,0 +1,3 @@
+Redesign filing box and deck lists
+Colors also for filing boxes
+Optimized logo

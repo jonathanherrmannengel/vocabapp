@@ -1,0 +1,3 @@
+Überarbeitetes Aussehen der Karteikästen- und Kartenstapellisten
+Farben auch für Karteikästen
+Optimiertes Logo

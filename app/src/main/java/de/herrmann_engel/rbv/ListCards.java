@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
@@ -23,7 +22,6 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -69,10 +67,10 @@ public class ListCards extends AppCompatActivity {
 
         settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE);
         saveList = settings.getBoolean("list_no_update", true);
-        if(settings.getBoolean("ui_bg_images", true)) {
+        if (settings.getBoolean("ui_bg_images", true)) {
             ImageView backgroundImage = findViewById(R.id.background_image);
             backgroundImage.setVisibility(View.VISIBLE);
-            backgroundImage.setImageDrawable(AppCompatResources.getDrawable(this,R.drawable.bg_cards));
+            backgroundImage.setImageDrawable(AppCompatResources.getDrawable(this, R.drawable.bg_cards));
         }
     }
 
@@ -131,14 +129,14 @@ public class ListCards extends AppCompatActivity {
                 return false;
             }
         });
-        if(searchQuery != null && !searchQuery.isEmpty()) {
+        if (searchQuery != null && !searchQuery.isEmpty()) {
             searchCardsOffItem.setVisible(true);
         }
         setRecView();
         return true;
     }
 
-    public void searchCardsOff (MenuItem menuItem){
+    public void searchCardsOff(MenuItem menuItem) {
         searchCardsOffItem.setVisible(false);
         searchQuery = "";
         cardPosition = 0;
@@ -152,7 +150,8 @@ public class ListCards extends AppCompatActivity {
 
             try {
                 TypedArray colorsBackground = getResources().obtainTypedArray(R.array.pack_color_background);
-                TypedArray colorsBackgroundHighlight = getResources().obtainTypedArray(R.array.pack_color_background_highlight);
+                TypedArray colorsBackgroundHighlight = getResources()
+                        .obtainTypedArray(R.array.pack_color_background_highlight);
                 int packColors = dbHelperGet.getSinglePack(card.pack).colors;
                 if (packColors < Math.min(colorsBackground.length(),
                         colorsBackgroundHighlight.length()) && packColors >= 0) {
@@ -169,10 +168,10 @@ public class ListCards extends AppCompatActivity {
 
             SpannableString front;
             SpannableString back;
-            FormatString formatString = new FormatString();
+            StringTools formatString = new StringTools();
             if (settings.getBoolean("format_cards", false)) {
-                front = reverse ? formatString.formatString(card.back) : formatString.formatString(card.front);
-                back = reverse ? formatString.formatString(card.front) : formatString.formatString(card.back);
+                front = reverse ? formatString.format(card.back) : formatString.format(card.front);
+                back = reverse ? formatString.format(card.front) : formatString.format(card.back);
             } else {
                 String frontString = reverse ? card.back : card.front;
                 String backString = reverse ? card.front : card.back;
@@ -226,7 +225,7 @@ public class ListCards extends AppCompatActivity {
                 }
             });
             ImageButton previous = queryMode.findViewById(R.id.query_back);
-            if(position == 0) {
+            if (position == 0) {
                 previous.setVisibility(View.INVISIBLE);
             } else {
                 previous.setVisibility(View.VISIBLE);
@@ -280,19 +279,20 @@ public class ListCards extends AppCompatActivity {
         }
     }
 
-    public void startQueryMode (MenuItem menuItem) {
+    public void startQueryMode(MenuItem menuItem) {
         Dialog queryMode = new Dialog(this, R.style.dia_view);
         queryMode.setContentView(R.layout.dia_query);
         queryMode.setTitle(getResources().getString(R.string.query_mode));
         queryMode.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.MATCH_PARENT);
         dbHelperUpdate = new DB_Helper_Update(this);
-        cardPosition = ((LinearLayoutManager) Objects.requireNonNull(recyclerView.getLayoutManager())).findFirstVisibleItemPosition();
+        cardPosition = ((LinearLayoutManager) Objects.requireNonNull(recyclerView.getLayoutManager()))
+                .findFirstVisibleItemPosition();
         cardPosition = Math.min(cardPosition, Objects.requireNonNull(recyclerView.getAdapter()).getItemCount() - 1);
         nextQuery(queryMode);
         queryMode.setOnKeyListener((dialogInterface, keyCode, event) -> {
             if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
-                if(!saveList || savedList == null) {
+                if (!saveList || savedList == null) {
                     Dialog exitQueryModeDialog = new Dialog(ListCards.this, R.style.dia_view);
                     exitQueryModeDialog.setContentView(R.layout.dia_confirm);
                     exitQueryModeDialog.setTitle(getResources().getString(R.string.query_mode_exit));
@@ -321,7 +321,7 @@ public class ListCards extends AppCompatActivity {
         queryMode.show();
     }
 
-        public void startNewCard(MenuItem menuItem) {
+    public void startNewCard(MenuItem menuItem) {
         Intent intent = new Intent(this.getApplicationContext(), NewCard.class);
         intent.putExtra("collection", collectionNo);
         intent.putExtra("pack", packNo);
@@ -330,7 +330,7 @@ public class ListCards extends AppCompatActivity {
         intent.putExtra("searchQuery", searchQuery);
         intent.putExtra("cardPosition", ((LinearLayoutManager) Objects.requireNonNull(recyclerView.getLayoutManager()))
                 .findFirstVisibleItemPosition());
-            intent.putIntegerArrayListExtra("savedList", savedList);
+        intent.putIntegerArrayListExtra("savedList", savedList);
         this.startActivity(intent);
         this.finish();
     }
@@ -343,10 +343,11 @@ public class ListCards extends AppCompatActivity {
     public void sort(MenuItem menuItem) {
         sort++;
         cardPosition = 0;
-        if(saveList && savedList != null) {
-            cardsList = dbHelperGet.sortCards(cardsList, sort);
+        if (saveList && savedList != null) {
+            List<DB_Card> list = dbHelperGet.getAllCardsByIds(savedList);
+            list = dbHelperGet.sortCards(list, sort);
             savedList.clear();
-            cardsList.forEach(card -> {
+            list.forEach(card -> {
                 savedList.add(card.uid);
             });
         }
@@ -376,7 +377,7 @@ public class ListCards extends AppCompatActivity {
             sort = Globals.SORT_DEFAULT;
             sortRandomItem.setTitle(R.string.sort_random);
         }
-        if(saveList && savedList != null) {
+        if (saveList && savedList != null) {
             cardsList = dbHelperGet.getAllCardsByIds(savedList);
         } else if (collectionNo == -1 && packNo == -1) {
             cardsList = dbHelperGet.getAllCards(sort);
@@ -389,13 +390,13 @@ public class ListCards extends AppCompatActivity {
         } else {
             cardsList = dbHelperGet.getAllCardsByPack(packNo, sort);
         }
-        if(saveList && savedList == null) {
+        if (saveList && savedList == null) {
             savedList = new ArrayList<>();
             cardsList.forEach(card -> {
                 savedList.add(card.uid);
             });
         }
-        if(packNo >= 0) {
+        if (packNo >= 0) {
             try {
                 int packColors = dbHelperGet.getSinglePack(packNo).colors;
                 TypedArray colors = getResources().obtainTypedArray(R.array.pack_color_main);
@@ -413,26 +414,45 @@ public class ListCards extends AppCompatActivity {
             } catch (Exception e) {
                 Toast.makeText(getApplicationContext(), R.string.error, Toast.LENGTH_SHORT).show();
             }
+        } else if (collectionNo >= 0) {
+            try {
+                int packColors = dbHelperGet.getSingleCollection(collectionNo).colors;
+                TypedArray colors = getResources().obtainTypedArray(R.array.pack_color_main);
+                TypedArray colorsBackground = getResources().obtainTypedArray(R.array.pack_color_background);
+                if (packColors < Math.min(colors.length(), colorsBackground.length()) && packColors >= 0) {
+                    int color = colors.getColor(packColors, 0);
+                    int colorBackground = colorsBackground.getColor(packColors, 0);
+                    Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(new ColorDrawable(color));
+                    Window window = this.getWindow();
+                    window.setStatusBarColor(color);
+                    findViewById(R.id.rec_default_root).setBackgroundColor(colorBackground);
+                }
+                colors.recycle();
+                colorsBackground.recycle();
+            } catch (Exception e) {
+                Toast.makeText(getApplicationContext(), R.string.error, Toast.LENGTH_SHORT).show();
+            }
         }
         searchCardsItem.setVisible(cardsList.size() > 0);
-        if(searchQuery != null && !searchQuery.isEmpty()) {
+        if (searchQuery != null && !searchQuery.isEmpty()) {
             List<DB_Card> cardsListFiltered = new ArrayList<>(cardsList);
             SearchCards searchCards = new SearchCards();
             cardsListFiltered = searchCards.searchCards(cardsListFiltered, searchQuery);
-            if(cardsListFiltered.size() == 0){
+            if (cardsListFiltered.size() == 0) {
                 searchCardsOffItem.setVisible(false);
                 searchQuery = "";
                 cardPosition = 0;
                 Toast.makeText(getApplicationContext(), R.string.search_no_results, Toast.LENGTH_LONG).show();
             } else {
-               cardsList = cardsListFiltered;
+                cardsList = cardsListFiltered;
             }
         }
         queryModeItem.setVisible(cardsList.size() > 0);
         changeFrontBackItem.setTitle(reverse ? R.string.change_back_front : R.string.change_front_back);
         changeFrontBackItem.setVisible(cardsList.size() > 0);
         sortRandomItem.setVisible(cardsList.size() > 1);
-        AdapterCards adapter = new AdapterCards(cardsList, this, reverse, sort, packNo, packNos, searchQuery, collectionNo, progressGreater, progressNumber, savedList);
+        AdapterCards adapter = new AdapterCards(cardsList, this, reverse, sort, packNo, packNos, searchQuery,
+                collectionNo, progressGreater, progressNumber, savedList);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         if (sort != Globals.SORT_RANDOM || (saveList && savedList != null)) {
@@ -444,10 +464,10 @@ public class ListCards extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         Intent intent;
-        if(packNo == -2 || packNo == -3) {
+        if (packNo == -2 || packNo == -3) {
             intent = new Intent(getApplicationContext(), AdvancedSearch.class);
             intent.putExtra("pack", packNo);
-            if(packNo == -2) {
+            if (packNo == -2) {
                 intent.putIntegerArrayListExtra("packs", packNos);
             }
             intent.putExtra("progressGreater", progressGreater);

@@ -3,17 +3,22 @@ package de.herrmann_engel.rbv;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.TypedArray;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import java.util.Objects;
 
 public class ViewCollection extends AppCompatActivity {
 
@@ -49,6 +54,18 @@ public class ViewCollection extends AppCompatActivity {
             }
             TextView dateTextView = findViewById(R.id.collection_or_pack_date);
             dateTextView.setText(new java.util.Date(collection.date * 1000).toString());
+            TypedArray colors = getResources().obtainTypedArray(R.array.pack_color_main);
+            TypedArray colorsBackground = getResources().obtainTypedArray(R.array.pack_color_background);
+            if (collection.colors < Math.min(colors.length(), colorsBackground.length()) && collection.colors >= 0) {
+                int color = colors.getColor(collection.colors, 0);
+                int colorBackground = colorsBackground.getColor(collection.colors, 0);
+                Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(new ColorDrawable(color));
+                Window window = this.getWindow();
+                window.setStatusBarColor(color);
+                findViewById(R.id.root_view_collection_or_pack).setBackgroundColor(colorBackground);
+            }
+            colors.recycle();
+            colorsBackground.recycle();
         } catch (Exception e) {
             Toast.makeText(getApplicationContext(), R.string.error, Toast.LENGTH_SHORT).show();
         }

@@ -30,13 +30,21 @@ public class AppDatabaseBuilder {
                     "INSERT INTO db_collection (name,`desc`,uid, date) VALUES ('default', 'default', 1, DATETIME())");
         }
     };
+    private final Migration MIGRATION_4_6 = new Migration(4, 6) {
+        @Override
+        public void migrate(SupportSQLiteDatabase database) {
+            database.execSQL("ALTER TABLE db_collection ADD COLUMN colors INTEGER NOT NULL DEFAULT 0");
+            database.execSQL("ALTER TABLE db_pack ADD COLUMN emoji TEXT");
+            database.execSQL("ALTER TABLE db_collection ADD COLUMN emoji TEXT");
+        }
+    };
 
     public AppDatabase get(Context context) {
         return Room.databaseBuilder(
                 context,
                 AppDatabase.class, Globals.DB_NAME)
                 .allowMainThreadQueries()
-                .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
+                .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_6)
                 .build();
     }
 }

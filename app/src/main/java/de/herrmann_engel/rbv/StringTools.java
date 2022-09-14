@@ -10,7 +10,7 @@ import java.lang.reflect.Type;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class FormatString {
+public class StringTools {
 
     private int getTypeface(int i) {
         if (i == 3) {
@@ -24,7 +24,7 @@ public class FormatString {
         }
     }
 
-    public SpannableString formatString(String input) {
+    public SpannableString format(String input) {
         SpannableStringBuilder output = new SpannableStringBuilder(input);
         StringBuffer modifiedInput = new StringBuffer(input);
         for (int i = 3; i > 0; i--) {
@@ -56,6 +56,23 @@ public class FormatString {
             offset++;
         }
         return SpannableString.valueOf(output);
+    }
+
+    public String shorten(String input, int maxLength) {
+        Pattern pattern = Pattern.compile("(\\P{M}\\p{M}*+)");
+        Matcher matcher = pattern.matcher(input);
+        int count = 0;
+        while (matcher.find() && count <= maxLength) {
+            count++;
+        }
+        if (count > maxLength) {
+            return input.replaceAll(String.format("%s%d%s", "^((\\P{M}\\p{M}*+){", maxLength - 1, "}).*$"), "$1…");
+        }
+        return input;
+    }
+
+    public String shorten(String input) {
+        return shorten(input, 50);
     }
 
 }

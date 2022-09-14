@@ -2,15 +2,20 @@ package de.herrmann_engel.rbv;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.res.TypedArray;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import java.util.Objects;
 
 public class NewPack extends AppCompatActivity {
 
@@ -25,6 +30,25 @@ public class NewPack extends AppCompatActivity {
         setContentView(R.layout.activity_new_collection_or_pack);
 
         collectionNo = getIntent().getExtras().getInt("collection");
+
+        TypedArray colors = getResources().obtainTypedArray(R.array.pack_color_main);
+        TypedArray colorsBackground = getResources().obtainTypedArray(R.array.pack_color_background);
+        DB_Helper_Get dbHelperGet = new DB_Helper_Get(this);
+        try {
+            int packColors = dbHelperGet.getSingleCollection(collectionNo).colors;
+            if (packColors < Math.min(colors.length(), colorsBackground.length()) && packColors >= 0) {
+                int color = colors.getColor(packColors, 0);
+                int colorBackground = colorsBackground.getColor(packColors, 0);
+                Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(new ColorDrawable(color));
+                Window window = this.getWindow();
+                window.setStatusBarColor(color);
+                findViewById(R.id.root_new_collection_or_pack).setBackgroundColor(colorBackground);
+            }
+            colors.recycle();
+            colorsBackground.recycle();
+        } catch (Exception e) {
+            Toast.makeText(getApplicationContext(), R.string.error, Toast.LENGTH_SHORT).show();
+        }
 
         nameTextView = findViewById(R.id.new_collection_or_pack_name);
         nameTextView.setHint(String.format(getString(R.string.collection_or_pack_name_format),
