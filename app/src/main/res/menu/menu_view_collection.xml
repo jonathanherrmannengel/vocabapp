@@ -8,8 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:title="@string/edit"
-        android:onClick="editCollection"
-    />
+        android:onClick="editCollection" />
     <item
         android:icon="@drawable/baseline_delete_24"
         android:orderInCategory="200"
@@ -17,6 +16,5 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:title="@string/delete"
-        android:onClick="deleteCollection"
-    />
+        android:onClick="deleteCollection" />
 </menu>

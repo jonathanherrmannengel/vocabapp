@@ -22,11 +22,11 @@ public class AppLicenses extends AppCompatActivity {
             XmlResourceParser parser = getResources().getXml(R.xml.licenses);
             int eventType = parser.getEventType();
 
-            List<OSS_Licenses> licenses = new ArrayList<>();
+            List<OSSLicenses> licenses = new ArrayList<>();
 
             boolean projectRunning = false;
             String currentTag = "";
-            OSS_Project project;
+            OSSProject project;
             String licenseIdentifierTmp = "";
             String projectNameTmp = "";
             String projectDevTmp = "";
@@ -43,8 +43,8 @@ public class AppLicenses extends AppCompatActivity {
                     currentTag = "";
                     if (parser.getName().equals("item") && projectRunning) {
                         projectRunning = false;
-                        project = new OSS_Project(projectNameTmp, projectDevTmp, projectUrlTmp);
-                        licenses.add(new OSS_Licenses(licenseIdentifierTmp, project));
+                        project = new OSSProject(projectNameTmp, projectDevTmp, projectUrlTmp);
+                        licenses.add(new OSSLicenses(licenseIdentifierTmp, project));
                         licenseIdentifierTmp = "";
                         projectNameTmp = "";
                         projectDevTmp = "";

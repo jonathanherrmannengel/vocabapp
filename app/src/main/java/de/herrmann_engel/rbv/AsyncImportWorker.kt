@@ -3,23 +3,23 @@ package de.herrmann_engel.rbv
 import android.content.Context
 import android.net.Uri
 import com.opencsv.CSVReader
-import java.io.*
-import java.lang.Exception
+import java.io.InputStreamReader
 
 class AsyncImportWorker(
-        val context: Context,
-        private val listener: AsyncImportFinish,
-        private val uri: Uri,
-        private val mode: Int
+    val context: Context,
+    private val listener: AsyncImportFinish,
+    private val uri: Uri,
+    private val mode: Int
 ) {
     fun execute() {
         listener.importCardsResult(execute2())
     }
+
     private fun execute2(): Int {
         try {
             var errorLevel = Globals.IMPORT_ERROR_LEVEL_ERROR
             val csvReader =
-                    CSVReader(InputStreamReader(context.contentResolver.openInputStream(uri)))
+                CSVReader(InputStreamReader(context.contentResolver.openInputStream(uri)))
             val helperCreate = DB_Helper_Create(context)
             val helperGet = DB_Helper_Get(context)
             val collectionUidConverter = AsyncImportUidConvert()
@@ -47,20 +47,20 @@ class AsyncImportWorker(
                             val sameNamed = helperGet.getAllCollectionsByName(name)
                             if (sameNamed.size == 0 || mode == Globals.IMPORT_MODE_DUPLICATES) {
                                 val collectionUiNew =
-                                        helperCreate
-                                                .createCollection(name, desc, colors, emoji, date)
-                                                .toInt()
+                                    helperCreate
+                                        .createCollection(name, desc, colors, emoji, date)
+                                        .toInt()
                                 collectionUidConverter.insertPair(collectionUidOld, collectionUiNew)
                             } else if (mode == Globals.IMPORT_MODE_INTEGRATE) {
                                 collectionUidConverter.insertPair(
-                                        collectionUidOld,
-                                        sameNamed[0].uid
+                                    collectionUidOld,
+                                    sameNamed[0].uid
                                 )
                             }
                         }
                         line?.get(0) == "packs" -> {
                             if (collectionUidConverter.getSize() == 0 &&
-                                            mode != Globals.IMPORT_MODE_SKIP
+                                mode != Globals.IMPORT_MODE_SKIP
                             ) {
                                 if (errorLevel == Globals.IMPORT_ERROR_LEVEL_ERROR) {
                                     errorLevel = Globals.IMPORT_ERROR_LEVEL_OKAY
@@ -73,15 +73,15 @@ class AsyncImportWorker(
                                 val sameNamed = helperGet.getAllCollectionsByName(name)
                                 if (sameNamed.size == 0 || mode == Globals.IMPORT_MODE_DUPLICATES) {
                                     val collectionUiNew =
-                                            helperCreate
-                                                    .createCollection(
-                                                            name,
-                                                            desc,
-                                                            colors,
-                                                            emoji,
-                                                            date
-                                                    )
-                                                    .toInt()
+                                        helperCreate
+                                            .createCollection(
+                                                name,
+                                                desc,
+                                                colors,
+                                                emoji,
+                                                date
+                                            )
+                                            .toInt()
                                     collectionUidConverter.insertPair(0, collectionUiNew)
                                 } else {
                                     collectionUidConverter.insertPair(0, sameNamed[0].uid)
@@ -90,9 +90,9 @@ class AsyncImportWorker(
                             var currentCollection = collectionUidConverter.getNewValue(0)
                             if (line!!.size >= 7) {
                                 currentCollection =
-                                        collectionUidConverter.getNewValue(
-                                                Integer.parseInt((line?.get(6) ?: "0"))
-                                        )
+                                    collectionUidConverter.getNewValue(
+                                        Integer.parseInt((line?.get(6) ?: "0"))
+                                    )
                             }
                             if (currentCollection > 0) {
                                 val packUidOld = Integer.parseInt((line?.get(1) ?: "0"))
@@ -105,23 +105,23 @@ class AsyncImportWorker(
                                     emoji = line?.get(7) ?: ""
                                 }
                                 val sameNamed =
-                                        helperGet.getAllPacksByCollectionAndNameAndDesc(
-                                                currentCollection,
-                                                name,
-                                                desc
-                                        )
+                                    helperGet.getAllPacksByCollectionAndNameAndDesc(
+                                        currentCollection,
+                                        name,
+                                        desc
+                                    )
                                 if (sameNamed.size == 0 || mode == Globals.IMPORT_MODE_DUPLICATES) {
                                     val packUidNew =
-                                            helperCreate
-                                                    .createPack(
-                                                            name,
-                                                            desc,
-                                                            currentCollection,
-                                                            colors,
-                                                            emoji,
-                                                            date
-                                                    )
-                                                    .toInt()
+                                        helperCreate
+                                            .createPack(
+                                                name,
+                                                desc,
+                                                currentCollection,
+                                                colors,
+                                                emoji,
+                                                date
+                                            )
+                                            .toInt()
                                     packUidConverter.insertPair(packUidOld, packUidNew)
                                 } else if (mode == Globals.IMPORT_MODE_INTEGRATE) {
                                     packUidConverter.insertPair(packUidOld, sameNamed[0].uid)
@@ -130,9 +130,9 @@ class AsyncImportWorker(
                         }
                         line?.get(0) == "cards" -> {
                             val currentPack =
-                                    packUidConverter.getNewValue(
-                                            Integer.parseInt((line?.get(4) ?: "0"))
-                                    )
+                                packUidConverter.getNewValue(
+                                    Integer.parseInt((line?.get(4) ?: "0"))
+                                )
                             if (currentPack > 0) {
                                 try {
                                     helperGet.getSinglePack(currentPack)
@@ -142,22 +142,22 @@ class AsyncImportWorker(
                                     val date = Integer.parseInt((line?.get(6) ?: "0")).toLong()
                                     val notes = line?.get(7) ?: ""
                                     val sameNamed =
-                                            helperGet.getAllCardsByPackAndFrontAndBackAndNotes(
-                                                    currentPack,
-                                                    front,
-                                                    back,
-                                                    notes
-                                            )
+                                        helperGet.getAllCardsByPackAndFrontAndBackAndNotes(
+                                            currentPack,
+                                            front,
+                                            back,
+                                            notes
+                                        )
                                     if (sameNamed.size == 0 ||
-                                                    mode == Globals.IMPORT_MODE_DUPLICATES
+                                        mode == Globals.IMPORT_MODE_DUPLICATES
                                     ) {
                                         helperCreate.createCard(
-                                                front,
-                                                back,
-                                                notes,
-                                                currentPack,
-                                                known,
-                                                date
+                                            front,
+                                            back,
+                                            notes,
+                                            currentPack,
+                                            known,
+                                            date
                                         )
                                     }
                                 } catch (e: Exception) {

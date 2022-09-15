@@ -8,8 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:title="@string/edit"
-        android:onClick="editCard"
-    />
+        android:onClick="editCard" />
     <item
         android:icon="@drawable/baseline_delete_24"
         android:orderInCategory="200"
@@ -17,8 +16,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:title="@string/delete"
-        android:onClick="deleteCard"
-    />
+        android:onClick="deleteCard" />
     <item
         android:id="@+id/move_card"
         android:orderInCategory="300"
@@ -26,6 +24,5 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:title="@string/move"
-        android:onClick="moveCard"
-    />
+        android:onClick="moveCard" />
 </menu>

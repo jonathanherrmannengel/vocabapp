@@ -31,12 +31,11 @@ import java.util.Objects;
 
 public class EditCollection extends AppCompatActivity {
 
-    private int collectionNo;
-
     DB_Collection collection;
     TextView collectionName;
     TextView collectionDesc;
     EmojiEditText collectionEmoji;
+    private int collectionNo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +50,7 @@ public class EditCollection extends AppCompatActivity {
         collectionEmoji
                 .setHint(String.format(getString(R.string.optional), getString(R.string.collection_or_pack_emoji)));
         EmojiPopup emojiPopup = new EmojiPopup(findViewById(R.id.root_edit_pack), collectionEmoji);
-        collectionEmoji.setFilters(new InputFilter[] { new OnlyEmojisInputFilter() });
+        collectionEmoji.setFilters(new InputFilter[]{new OnlyEmojisInputFilter()});
         collectionEmoji.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
                 if (!emojiPopup.isShowing()) {

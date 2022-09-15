@@ -7,25 +7,30 @@
     android:id="@+id/root_settings"
     android:padding="10dp"
     android:gravity="center">
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:gravity="center">
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
                 android:text="@string/settings_default_sort"
                 android:textColor="@android:color/black" />
+
             <RadioGroup
                 android:orientation="vertical"
                 android:padding="10dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
+
                 <RadioButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -35,6 +40,7 @@
                     android:id="@+id/settings_sort_normal"
                     android:buttonTint="@color/ijblue"
                     android:textColor="@color/light_black" />
+
                 <RadioButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -44,6 +50,7 @@
                     android:id="@+id/settings_sort_random"
                     android:buttonTint="@color/ijblue"
                     android:textColor="@color/light_black" />
+
                 <RadioButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -54,6 +61,7 @@
                     android:buttonTint="@color/ijblue"
                     android:textColor="@color/light_black" />
             </RadioGroup>
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -61,18 +69,21 @@
                 android:textSize="20sp"
                 android:text="@string/settings_format"
                 android:textColor="@android:color/black" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="10dp"
                 android:orientation="horizontal"
                 android:gravity="center_vertical|start">
+
                 <CheckBox
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:id="@+id/settings_format_cards"
                     android:buttonTint="@color/ijblue"
                     android:onClick="setFormatCards" />
+
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -82,26 +93,30 @@
                     android:text="@string/settings_format_cards"
                     android:textColor="@color/light_black"
                     android:layout_weight="2" />
+
                 <ImageButton
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:src="@drawable/outline_info_24"
                     android:background="@android:color/transparent"
                     android:onClick="infoFormatCards"
-                    app:tint="@color/ijblue"></ImageButton>
+                    app:tint="@color/ijblue" />
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="10dp"
                 android:orientation="horizontal"
                 android:gravity="center_vertical|start">
+
                 <CheckBox
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:id="@+id/settings_format_card_notes"
                     android:buttonTint="@color/ijblue"
                     android:onClick="setFormatCardNotes" />
+
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -112,6 +127,7 @@
                     android:textColor="@color/light_black"
                     android:layout_weight="2" />
             </LinearLayout>
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -119,18 +135,21 @@
                 android:textSize="20sp"
                 android:text="@string/settings_ui"
                 android:textColor="@android:color/black" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="10dp"
                 android:orientation="horizontal"
                 android:gravity="center_vertical|start">
+
                 <CheckBox
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:id="@+id/settings_ui_background_images"
                     android:buttonTint="@color/ijblue"
                     android:onClick="setUIBackground" />
+
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -141,18 +160,21 @@
                     android:textColor="@color/light_black"
                     android:layout_weight="2" />
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="10dp"
                 android:orientation="horizontal"
                 android:gravity="center_vertical|start">
+
                 <CheckBox
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:id="@+id/settings_ui_increase_font_size"
                     android:buttonTint="@color/ijblue"
                     android:onClick="setUIFontSize" />
+
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -163,6 +185,7 @@
                     android:textColor="@color/light_black"
                     android:layout_weight="2" />
             </LinearLayout>
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -170,18 +193,21 @@
                 android:textSize="20sp"
                 android:text="@string/settings_list"
                 android:textColor="@android:color/black" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="10dp"
                 android:orientation="horizontal"
                 android:gravity="center_vertical|start">
+
                 <CheckBox
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:id="@+id/settings_list_no_update"
                     android:buttonTint="@color/ijblue"
                     android:onClick="setListNoUpdate" />
+
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"

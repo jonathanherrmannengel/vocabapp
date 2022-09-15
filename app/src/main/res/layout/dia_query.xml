@@ -7,14 +7,17 @@
     android:id="@+id/dia_query_root"
     android:padding="10dp"
     android:gravity="center">
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:gravity="center">
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -25,6 +28,7 @@
                 android:gravity="center"
                 android:textIsSelectable="true"
                 android:id="@+id/query_show" />
+
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -34,6 +38,7 @@
                 android:gravity="center"
                 android:text="@string/query_show"
                 android:id="@+id/query_button_hide" />
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -44,6 +49,7 @@
                 android:textIsSelectable="true"
                 android:padding="15dp"
                 android:id="@+id/query_hide" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -52,6 +58,7 @@
                 android:gravity="center"
                 android:orientation="horizontal"
                 android:id="@+id/query_options">
+
                 <ImageButton
                     android:layout_width="30dp"
                     android:layout_height="30dp"
@@ -61,6 +68,7 @@
                     android:background="@android:color/transparent"
                     app:tint="@color/dark_grey"
                     android:contentDescription="@string/card_back" />
+
                 <ImageButton
                     android:layout_width="30dp"
                     android:layout_height="30dp"
@@ -70,6 +78,7 @@
                     android:background="@android:color/transparent"
                     app:tint="@color/dark_green"
                     android:contentDescription="@string/card_plus" />
+
                 <ImageButton
                     android:layout_width="30dp"
                     android:layout_height="30dp"
@@ -78,8 +87,8 @@
                     android:src="@drawable/outline_close_24"
                     android:background="@android:color/transparent"
                     app:tint="@color/dark_red"
-                    android:contentDescription="@string/card_minus"
-                />
+                    android:contentDescription="@string/card_minus" />
+
                 <ImageButton
                     android:layout_width="30dp"
                     android:layout_height="30dp"
@@ -90,6 +99,7 @@
                     app:tint="@color/dark_grey"
                     android:contentDescription="@string/card_skip" />
             </LinearLayout>
+
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

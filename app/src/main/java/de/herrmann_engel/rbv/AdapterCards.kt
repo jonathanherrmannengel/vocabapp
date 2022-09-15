@@ -14,17 +14,17 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 
 class AdapterCards(
-        private val cards: List<DB_Card>,
-        private val c: Context,
-        private val reverse: Boolean,
-        private val sort: Int,
-        private val packNo: Int,
-        private val packNos: ArrayList<Int>?,
-        private val searchQuery: String?,
-        private val collectionNo: Int,
-        private val progressGreater: Boolean?,
-        private val progressNumber: Int?,
-        private val savedList: ArrayList<Int>?
+    private val cards: List<DB_Card>,
+    private val c: Context,
+    private val reverse: Boolean,
+    private val sort: Int,
+    private val packNo: Int,
+    private val packNos: ArrayList<Int>?,
+    private val searchQuery: String?,
+    private val collectionNo: Int,
+    private val progressGreater: Boolean?,
+    private val progressNumber: Int?,
+    private val savedList: ArrayList<Int>?
 ) : RecyclerView.Adapter<AdapterCards.ViewHolder>() {
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val textView: TextView = view.findViewById(R.id.rec_name)
@@ -32,19 +32,19 @@ class AdapterCards(
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         val view =
-                LayoutInflater.from(viewGroup.context).inflate(R.layout.rec_view, viewGroup, false)
+            LayoutInflater.from(viewGroup.context).inflate(R.layout.rec_view, viewGroup, false)
         val settings = c.getSharedPreferences(Globals.SETTINGS_NAME, Context.MODE_PRIVATE)
         if (settings.getBoolean("ui_font_size", false)) {
             view.findViewById<TextView>(R.id.rec_name)
-                    .setTextSize(
-                            TypedValue.COMPLEX_UNIT_PX,
-                            c.resources.getDimension(R.dimen.rec_view_font_size_big)
-                    )
+                .setTextSize(
+                    TypedValue.COMPLEX_UNIT_PX,
+                    c.resources.getDimension(R.dimen.rec_view_font_size_big)
+                )
             view.findViewById<TextView>(R.id.rec_desc)
-                    .setTextSize(
-                            TypedValue.COMPLEX_UNIT_PX,
-                            c.resources.getDimension(R.dimen.rec_view_font_size_below_big)
-                    )
+                .setTextSize(
+                    TypedValue.COMPLEX_UNIT_PX,
+                    c.resources.getDimension(R.dimen.rec_view_font_size_below_big)
+                )
         }
         return ViewHolder(view)
     }
@@ -55,19 +55,19 @@ class AdapterCards(
                 viewHolder.textView.text = c.resources.getString(R.string.welcome_card)
             } else {
                 val text =
-                        String.format(
-                                "%s %s",
-                                c.resources.getString(R.string.welcome_card),
-                                c.resources.getString(R.string.welcome_card_create)
-                        )
+                    String.format(
+                        "%s %s",
+                        c.resources.getString(R.string.welcome_card),
+                        c.resources.getString(R.string.welcome_card_create)
+                    )
                 val addText = SpannableString(text)
                 val addTextDrawable = ContextCompat.getDrawable(c, R.drawable.outline_add_24)
                 addTextDrawable?.setTint(c.getColor(R.color.light_black))
                 addTextDrawable?.setBounds(
-                        0,
-                        0,
-                        addTextDrawable.intrinsicWidth,
-                        addTextDrawable.intrinsicHeight
+                    0,
+                    0,
+                    addTextDrawable.intrinsicWidth,
+                    addTextDrawable.intrinsicHeight
                 )
                 val addTextImage = addTextDrawable?.let { ImageSpan(it, ImageSpan.ALIGN_BOTTOM) }
                 val index = addText.indexOf("+")

@@ -5,13 +5,16 @@
     android:background="@color/background"
     android:id="@+id/root_edit_card"
     android:gravity="center">
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -20,6 +23,7 @@
                 android:textColor="@color/light_black"
                 android:labelFor="@id/edit_card_front"
                 android:text="@string/new_card_front" />
+
             <EditText
                 android:id="@+id/edit_card_front"
                 android:layout_width="match_parent"
@@ -30,6 +34,7 @@
                 android:textColorHint="@color/light_black"
                 android:inputType="text"
                 android:hint="@string/new_card_front" />
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -38,6 +43,7 @@
                 android:textColor="@color/light_black"
                 android:labelFor="@id/edit_card_back"
                 android:text="@string/new_card_back" />
+
             <EditText
                 android:id="@+id/edit_card_back"
                 android:layout_width="match_parent"
@@ -48,6 +54,7 @@
                 android:textColorHint="@color/light_black"
                 android:inputType="text"
                 android:hint="@string/new_card_back" />
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -56,6 +63,7 @@
                 android:textColor="@color/light_black"
                 android:labelFor="@id/edit_card_notes"
                 android:text="@string/new_card_notes" />
+
             <EditText
                 android:id="@+id/edit_card_notes"
                 android:layout_width="match_parent"

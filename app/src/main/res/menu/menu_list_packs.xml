@@ -9,8 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:title="@string/new_pack"
-        android:onClick="startNewPack"
-    />
+        android:onClick="startNewPack" />
     <item
         android:id="@+id/collection_details"
         android:icon="@drawable/outline_info_24"
@@ -19,8 +18,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:title="@string/collection_details"
-        android:onClick="collectionDetails"
-    />
+        android:onClick="collectionDetails" />
     <item
         android:id="@+id/export_single"
         android:icon="@drawable/outline_file_upload_24"
@@ -29,6 +27,5 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:title="@string/export_cards"
-        android:onClick="export"
-    />
+        android:onClick="export" />
 </menu>

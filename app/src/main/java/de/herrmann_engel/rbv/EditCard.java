@@ -1,7 +1,5 @@
 package de.herrmann_engel.rbv;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.res.TypedArray;
@@ -16,11 +14,17 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import java.util.ArrayList;
 import java.util.Objects;
 
 public class EditCard extends AppCompatActivity {
 
+    TextView frontTextView;
+    TextView backTextView;
+    TextView notesTextView;
+    DB_Card card;
     private int collectionNo;
     private int packNo;
     private ArrayList<Integer> packNos;
@@ -32,11 +36,6 @@ public class EditCard extends AppCompatActivity {
     private boolean progressGreater;
     private int progressNumber;
     private ArrayList<Integer> savedList;
-
-    TextView frontTextView;
-    TextView backTextView;
-    TextView notesTextView;
-    DB_Card card;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

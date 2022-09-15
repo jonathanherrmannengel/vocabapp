@@ -24,8 +24,8 @@
     </item>
     <item>
         <identifier>Apache-2.0</identifier>
-        <projectDev>vanniktech</projectDev>
         <projectName>Emoji (com.vanniktech:emoji-twitter)</projectName>
+        <projectUrl>https://github.com/vanniktech/Emoji</projectUrl>
     </item>
     <item>
         <identifier>Apache-2.0</identifier>

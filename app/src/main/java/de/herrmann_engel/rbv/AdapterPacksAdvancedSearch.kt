@@ -10,9 +10,9 @@ import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 
 class AdapterPacksAdvancedSearch(
-        private val pack: List<DB_Pack>,
-        private val c: Context,
-        private val packList: ArrayList<Int>,
+    private val pack: List<DB_Pack>,
+    private val c: Context,
+    private val packList: ArrayList<Int>,
 ) : RecyclerView.Adapter<AdapterPacksAdvancedSearch.ViewHolder>() {
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val checkBox: CheckBox = view.findViewById(R.id.rec_small_checkbox)
@@ -22,8 +22,8 @@ class AdapterPacksAdvancedSearch(
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         val view =
-                LayoutInflater.from(viewGroup.context)
-                        .inflate(R.layout.rec_view_small, viewGroup, false)
+            LayoutInflater.from(viewGroup.context)
+                .inflate(R.layout.rec_view_small, viewGroup, false)
         return ViewHolder(view)
     }
 
@@ -44,12 +44,12 @@ class AdapterPacksAdvancedSearch(
             viewHolder.textView.text = String.format("%s (%d)", pack[position].name, size)
             try {
                 val collectionName =
-                        StringTools()
-                                .shorten(
-                                        DB_Helper_Get(c)
-                                                .getSingleCollection(pack[position].collection)
-                                                .name
-                                )
+                    StringTools()
+                        .shorten(
+                            DB_Helper_Get(c)
+                                .getSingleCollection(pack[position].collection)
+                                .name
+                        )
                 viewHolder.textViewDesc.visibility = View.VISIBLE
                 viewHolder.textViewDesc.text = collectionName
             } catch (e: Exception) {

@@ -8,8 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:title="@string/edit"
-        android:onClick="editPack"
-    />
+        android:onClick="editPack" />
     <item
         android:icon="@drawable/baseline_delete_24"
         android:orderInCategory="200"
@@ -17,8 +16,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:title="@string/delete"
-        android:onClick="deletePack"
-    />
+        android:onClick="deletePack" />
     <item
         android:id="@+id/move_pack"
         android:orderInCategory="300"
@@ -26,6 +24,5 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:title="@string/move"
-        android:onClick="movePack"
-    />
+        android:onClick="movePack" />
 </menu>

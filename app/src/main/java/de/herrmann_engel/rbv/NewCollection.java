@@ -68,9 +68,7 @@ public class NewCollection extends AppCompatActivity {
 
             Button confirmCancelY = confirmCancel.findViewById(R.id.dia_confirm_yes);
             Button confirmCancelN = confirmCancel.findViewById(R.id.dia_confirm_no);
-            confirmCancelY.setOnClickListener(v -> {
-                startListCollections();
-            });
+            confirmCancelY.setOnClickListener(v -> startListCollections());
             confirmCancelN.setOnClickListener(v -> confirmCancel.dismiss());
             confirmCancel.show();
         }

@@ -17,7 +17,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 
 class AdapterCollections(private val collection: List<DB_Collection>, private val c: Context) :
-        RecyclerView.Adapter<AdapterCollections.ViewHolder>() {
+    RecyclerView.Adapter<AdapterCollections.ViewHolder>() {
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val layout: LinearLayout = view.findViewById(R.id.rec_collections_preview_layout)
         val textView: TextView = view.findViewById(R.id.rec_collections_name)
@@ -28,20 +28,20 @@ class AdapterCollections(private val collection: List<DB_Collection>, private va
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         val view =
-                LayoutInflater.from(viewGroup.context)
-                        .inflate(R.layout.rec_view_collection_or_pack, viewGroup, false)
+            LayoutInflater.from(viewGroup.context)
+                .inflate(R.layout.rec_view_collection_or_pack, viewGroup, false)
         val settings = c.getSharedPreferences(Globals.SETTINGS_NAME, Context.MODE_PRIVATE)
         if (settings.getBoolean("ui_font_size", false)) {
             view.findViewById<TextView>(R.id.rec_collections_name)
-                    .setTextSize(
-                            TypedValue.COMPLEX_UNIT_PX,
-                            c.resources.getDimension(R.dimen.rec_view_font_size_big)
-                    )
+                .setTextSize(
+                    TypedValue.COMPLEX_UNIT_PX,
+                    c.resources.getDimension(R.dimen.rec_view_font_size_big)
+                )
             view.findViewById<TextView>(R.id.rec_collections_desc)
-                    .setTextSize(
-                            TypedValue.COMPLEX_UNIT_PX,
-                            c.resources.getDimension(R.dimen.rec_view_font_size_below_big)
-                    )
+                .setTextSize(
+                    TypedValue.COMPLEX_UNIT_PX,
+                    c.resources.getDimension(R.dimen.rec_view_font_size_below_big)
+                )
         }
         return ViewHolder(view)
     }
@@ -52,37 +52,37 @@ class AdapterCollections(private val collection: List<DB_Collection>, private va
             val welcomeTextDrawableAdd = ContextCompat.getDrawable(c, R.drawable.outline_add_24)
             welcomeTextDrawableAdd?.setTint(c.getColor(R.color.light_black))
             welcomeTextDrawableAdd?.setBounds(
-                    0,
-                    0,
-                    welcomeTextDrawableAdd.intrinsicWidth,
-                    welcomeTextDrawableAdd.intrinsicHeight
+                0,
+                0,
+                welcomeTextDrawableAdd.intrinsicWidth,
+                welcomeTextDrawableAdd.intrinsicHeight
             )
             val welcomeTextImageAdd =
-                    welcomeTextDrawableAdd?.let { ImageSpan(it, ImageSpan.ALIGN_BOTTOM) }
+                welcomeTextDrawableAdd?.let { ImageSpan(it, ImageSpan.ALIGN_BOTTOM) }
             val indexAdd = welcomeText.indexOf("+")
             welcomeText.setSpan(
-                    welcomeTextImageAdd,
-                    indexAdd,
-                    indexAdd + 1,
-                    Spannable.SPAN_INCLUSIVE_EXCLUSIVE
+                welcomeTextImageAdd,
+                indexAdd,
+                indexAdd + 1,
+                Spannable.SPAN_INCLUSIVE_EXCLUSIVE
             )
             val welcomeTextDrawableImport =
-                    ContextCompat.getDrawable(c, R.drawable.outline_file_download_24)
+                ContextCompat.getDrawable(c, R.drawable.outline_file_download_24)
             welcomeTextDrawableImport?.setTint(c.getColor(R.color.light_black))
             welcomeTextDrawableImport?.setBounds(
-                    0,
-                    0,
-                    welcomeTextDrawableImport.intrinsicWidth,
-                    welcomeTextDrawableImport.intrinsicHeight
+                0,
+                0,
+                welcomeTextDrawableImport.intrinsicWidth,
+                welcomeTextDrawableImport.intrinsicHeight
             )
             val welcomeTextImageImport =
-                    welcomeTextDrawableImport?.let { ImageSpan(it, ImageSpan.ALIGN_BOTTOM) }
+                welcomeTextDrawableImport?.let { ImageSpan(it, ImageSpan.ALIGN_BOTTOM) }
             val indexImport = welcomeText.indexOf("↓")
             welcomeText.setSpan(
-                    welcomeTextImageImport,
-                    indexImport,
-                    indexImport + 1,
-                    Spannable.SPAN_INCLUSIVE_EXCLUSIVE
+                welcomeTextImageImport,
+                indexImport,
+                indexImport + 1,
+                Spannable.SPAN_INCLUSIVE_EXCLUSIVE
             )
             viewHolder.textView.text = welcomeText
             viewHolder.textView.textAlignment = View.TEXT_ALIGNMENT_CENTER
@@ -125,12 +125,12 @@ class AdapterCollections(private val collection: List<DB_Collection>, private va
             }
             val emojiText = collection[position - 1].emoji
             viewHolder.previewView.text =
-                    if (emojiText.isNullOrEmpty()) {
-                        val pattern = Regex("^(\\P{M}\\p{M}*+).*")
-                        collection[position - 1].name.replace(pattern, "$1")
-                    } else {
-                        emojiText
-                    }
+                if (emojiText.isNullOrEmpty()) {
+                    val pattern = Regex("^(\\P{M}\\p{M}*+).*")
+                    collection[position - 1].name.replace(pattern, "$1")
+                } else {
+                    emojiText
+                }
             val dbHelperGet = DB_Helper_Get(c.applicationContext)
             val size = dbHelperGet.getAllPacksByCollection(collection[position - 1].uid).size
             viewHolder.numberText.text = size.toString()
@@ -139,11 +139,11 @@ class AdapterCollections(private val collection: List<DB_Collection>, private va
             val colors = c.resources.obtainTypedArray(R.array.pack_color_list)
             val colorsBackground = c.resources.obtainTypedArray(R.array.pack_color_background_light)
             val colorsBackgroundAlpha =
-                    c.resources.obtainTypedArray(R.array.pack_color_background_light_alpha)
+                c.resources.obtainTypedArray(R.array.pack_color_background_light_alpha)
             if (color < colors.length() &&
-                            color < colorsBackground.length() &&
-                            color < colorsBackgroundAlpha.length() &&
-                            color >= 0
+                color < colorsBackground.length() &&
+                color < colorsBackgroundAlpha.length() &&
+                color >= 0
             ) {
                 viewHolder.textView.setTextColor(colors.getColor(color, 0))
                 viewHolder.previewView.setTextColor(colors.getColor(color, 0))

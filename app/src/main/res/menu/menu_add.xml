@@ -8,6 +8,5 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:title="@string/add"
-        android:onClick="insert"
-    />
+        android:onClick="insert" />
 </menu>

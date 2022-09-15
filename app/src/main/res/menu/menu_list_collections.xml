@@ -8,8 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:title="@string/new_collection"
-        android:onClick="startNewCollection"
-    />
+        android:onClick="startNewCollection" />
     <item
         android:icon="@drawable/outline_file_download_24"
         android:orderInCategory="200"
@@ -17,8 +16,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:title="@string/import_cards"
-        android:onClick="importCards"
-    />
+        android:onClick="importCards" />
     <item
         android:id="@+id/export_all"
         android:orderInCategory="200"
@@ -26,30 +24,26 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:title="@string/export_all"
-        android:onClick="exportAll"
-    />
+        android:onClick="exportAll" />
     <item
         android:orderInCategory="200"
         app:showAsAction="never"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:title="@string/advanced_search"
-        android:onClick="startAdvancedSearch"
-    />
+        android:onClick="startAdvancedSearch" />
     <item
         android:orderInCategory="200"
         app:showAsAction="never"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:title="@string/settings"
-        android:onClick="startSettings"
-    />
+        android:onClick="startSettings" />
     <item
         android:orderInCategory="200"
         app:showAsAction="never"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:title="@string/licenses"
-        android:onClick="startAboutApp"
-    />
+        android:onClick="startAboutApp" />
 </menu>

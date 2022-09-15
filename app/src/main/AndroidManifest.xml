@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="de.herrmann_engel.rbv">
+
     <application
         android:name=".RBVApplication"
         android:allowBackup="true"
@@ -10,71 +11,72 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.RBV">
         <activity
-            android:configChanges="orientation|screenSize|screenLayout"
             android:name=".AppLicenses"
+            android:configChanges="orientation|screenSize|screenLayout"
             android:label="@string/licenses" />
         <activity
-            android:configChanges="orientation|screenSize|screenLayout"
             android:name=".Settings"
+            android:configChanges="orientation|screenSize|screenLayout"
             android:label="@string/settings" />
         <activity
-            android:configChanges="orientation|screenSize|screenLayout"
             android:name=".AdvancedSearch"
+            android:configChanges="orientation|screenSize|screenLayout"
             android:label="@string/advanced_search" />
         <activity
-            android:configChanges="orientation|screenSize|screenLayout"
             android:name=".EditCollection"
+            android:configChanges="orientation|screenSize|screenLayout"
             android:label="@string/edit_collection" />
         <activity
-            android:configChanges="orientation|screenSize|screenLayout"
             android:name=".EditPack"
+            android:configChanges="orientation|screenSize|screenLayout"
             android:label="@string/edit_pack" />
         <activity
-            android:configChanges="orientation|screenSize|screenLayout"
             android:name=".EditCard"
+            android:configChanges="orientation|screenSize|screenLayout"
             android:label="@string/edit_card" />
         <activity
-            android:configChanges="orientation|screenSize|screenLayout"
-            android:name=".ViewCollection" />
+            android:name=".ViewCollection"
+            android:configChanges="orientation|screenSize|screenLayout" />
         <activity
-            android:configChanges="orientation|screenSize|screenLayout"
-            android:name=".ViewPack" />
+            android:name=".ViewPack"
+            android:configChanges="orientation|screenSize|screenLayout" />
         <activity
-            android:configChanges="orientation|screenSize|screenLayout"
-            android:name=".ViewCard" />
+            android:name=".ViewCard"
+            android:configChanges="orientation|screenSize|screenLayout" />
         <activity
-            android:configChanges="orientation|screenSize|screenLayout"
             android:name=".NewCollection"
+            android:configChanges="orientation|screenSize|screenLayout"
             android:label="@string/new_collection" />
         <activity
-            android:configChanges="orientation|screenSize|screenLayout"
             android:name=".NewPack"
+            android:configChanges="orientation|screenSize|screenLayout"
             android:label="@string/new_pack" />
         <activity
-            android:configChanges="orientation|screenSize|screenLayout"
             android:name=".NewCard"
+            android:configChanges="orientation|screenSize|screenLayout"
             android:label="@string/new_card" />
         <activity
-            android:configChanges="orientation|screenSize|screenLayout"
-            android:name=".ListPacks" />
+            android:name=".ListPacks"
+            android:configChanges="orientation|screenSize|screenLayout" />
         <activity
-            android:configChanges="orientation|screenSize|screenLayout"
-            android:name=".ListCards" />
+            android:name=".ListCards"
+            android:configChanges="orientation|screenSize|screenLayout" />
         <activity
-            android:configChanges="orientation|screenSize|screenLayout"
             android:name=".ListCollections"
-            android:label="@string/app_name_short"
-            android:exported="true">
+            android:configChanges="orientation|screenSize|screenLayout"
+            android:exported="true"
+            android:label="@string/app_name_short">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
-            android:grantUriPermissions="true"
-            android:exported="false">
+            android:exported="false"
+            android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/filepaths" />

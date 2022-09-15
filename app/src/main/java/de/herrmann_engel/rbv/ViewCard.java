@@ -1,10 +1,5 @@
 package de.herrmann_engel.rbv;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -24,6 +19,11 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -32,6 +32,8 @@ import io.noties.markwon.Markwon;
 
 public class ViewCard extends AppCompatActivity {
 
+    TextView knownText;
+    ImageButton knownMinus;
     private DB_Helper_Get dbHelperGet;
     private DB_Helper_Update dbHelperUpdate;
     private DB_Card card;
@@ -47,9 +49,6 @@ public class ViewCard extends AppCompatActivity {
     private boolean progressGreater;
     private int progressNumber;
     private ArrayList<Integer> savedList;
-
-    TextView knownText;
-    ImageButton knownMinus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

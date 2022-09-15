@@ -61,15 +61,11 @@ public class AdvancedSearch extends AppCompatActivity {
 
         RadioButton progressGreaterButton = findViewById(R.id.advanced_search_progress_greater);
         progressGreaterButton.setChecked(progressGreater);
-        progressGreaterButton.setOnClickListener(v -> {
-            progressGreater = true;
-        });
+        progressGreaterButton.setOnClickListener(v -> progressGreater = true);
 
         RadioButton progressLessButton = findViewById(R.id.advanced_search_progress_less);
         progressLessButton.setChecked(!progressGreater);
-        progressLessButton.setOnClickListener(v -> {
-            progressGreater = false;
-        });
+        progressLessButton.setOnClickListener(v -> progressGreater = false);
 
         EditText progressValueInput = findViewById(R.id.advanced_search_progress_value);
         if (progressNumber >= 0) {

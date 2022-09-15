@@ -7,25 +7,30 @@
     android:id="@+id/root_settings"
     android:padding="10dp"
     android:gravity="center">
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:gravity="center">
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
                 android:text="@string/advanced_search_packs"
                 android:textColor="@android:color/black" />
+
             <RadioGroup
                 android:orientation="vertical"
                 android:padding="10dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
+
                 <RadioButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -34,6 +39,7 @@
                     android:id="@+id/advanced_search_packs_all"
                     android:buttonTint="@color/ijblue"
                     android:textColor="@color/light_black" />
+
                 <RadioButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -43,6 +49,7 @@
                     android:buttonTint="@color/ijblue"
                     android:textColor="@color/light_black" />
             </RadioGroup>
+
             <androidx.recyclerview.widget.RecyclerView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -50,17 +57,20 @@
                 android:layout_margin="20dp"
                 tools:layout_editor_absoluteX="1dp"
                 tools:layout_editor_absoluteY="1dp" />
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
                 android:text="@string/advanced_search_progress"
                 android:textColor="@android:color/black" />
+
             <RadioGroup
                 android:orientation="vertical"
                 android:padding="10dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
+
                 <RadioButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -69,6 +79,7 @@
                     android:id="@+id/advanced_search_progress_less"
                     android:buttonTint="@color/ijblue"
                     android:textColor="@color/light_black" />
+
                 <RadioButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -78,6 +89,7 @@
                     android:buttonTint="@color/ijblue"
                     android:textColor="@color/light_black" />
             </RadioGroup>
+
             <EditText
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -87,6 +99,7 @@
                 android:inputType="number"
                 android:id="@+id/advanced_search_progress_value"
                 android:hint="@string/advanced_search_progress_value" />
+
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

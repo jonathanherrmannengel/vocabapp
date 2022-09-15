@@ -1,3 +1,7 @@
 Überarbeitetes Aussehen der Karteikästen- und Kartenstapellisten
 Farben auch für Karteikästen
+Vorschau-Emojis für Karteikästen und Kartenstapel
 Optimiertes Logo
+
+!Datenbank-Änderungen: Bitte sichern Sie Ihre Inhalte vor dem Einspielen dieses Updates!
+(App öffnen -> Menü oben rechts -> Karteikästen als Backup exportieren)

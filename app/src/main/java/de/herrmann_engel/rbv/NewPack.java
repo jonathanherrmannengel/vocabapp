@@ -19,10 +19,9 @@ import java.util.Objects;
 
 public class NewPack extends AppCompatActivity {
 
-    private int collectionNo;
-
     TextView nameTextView;
     TextView descTextView;
+    private int collectionNo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,9 +96,7 @@ public class NewPack extends AppCompatActivity {
 
             Button confirmCancelY = confirmCancel.findViewById(R.id.dia_confirm_yes);
             Button confirmCancelN = confirmCancel.findViewById(R.id.dia_confirm_no);
-            confirmCancelY.setOnClickListener(v -> {
-                startListPacks();
-            });
+            confirmCancelY.setOnClickListener(v -> startListPacks());
             confirmCancelN.setOnClickListener(v -> confirmCancel.dismiss());
             confirmCancel.show();
         }

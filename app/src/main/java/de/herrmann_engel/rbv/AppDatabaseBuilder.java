@@ -41,8 +41,8 @@ public class AppDatabaseBuilder {
 
     public AppDatabase get(Context context) {
         return Room.databaseBuilder(
-                context,
-                AppDatabase.class, Globals.DB_NAME)
+                        context,
+                        AppDatabase.class, Globals.DB_NAME)
                 .allowMainThreadQueries()
                 .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_6)
                 .build();

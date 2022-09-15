@@ -11,11 +11,11 @@ import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 
 class AdapterPacksMoveCard(
-        private val pack: List<DB_Pack>,
-        private val collectionNo: Int,
-        private val c: Context,
-        private val card: DB_Card,
-        private val dialog: Dialog
+    private val pack: List<DB_Pack>,
+    private val collectionNo: Int,
+    private val c: Context,
+    private val card: DB_Card,
+    private val dialog: Dialog
 ) : RecyclerView.Adapter<AdapterPacksMoveCard.ViewHolder>() {
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val textView: TextView = view.findViewById(R.id.rec_name)
@@ -24,19 +24,19 @@ class AdapterPacksMoveCard(
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         val view =
-                LayoutInflater.from(viewGroup.context).inflate(R.layout.rec_view, viewGroup, false)
+            LayoutInflater.from(viewGroup.context).inflate(R.layout.rec_view, viewGroup, false)
         val settings = c.getSharedPreferences(Globals.SETTINGS_NAME, Context.MODE_PRIVATE)
         if (settings.getBoolean("ui_font_size", false)) {
             view.findViewById<TextView>(R.id.rec_name)
-                    .setTextSize(
-                            TypedValue.COMPLEX_UNIT_PX,
-                            c.resources.getDimension(R.dimen.rec_view_font_size_big)
-                    )
+                .setTextSize(
+                    TypedValue.COMPLEX_UNIT_PX,
+                    c.resources.getDimension(R.dimen.rec_view_font_size_big)
+                )
             view.findViewById<TextView>(R.id.rec_desc)
-                    .setTextSize(
-                            TypedValue.COMPLEX_UNIT_PX,
-                            c.resources.getDimension(R.dimen.rec_view_font_size_below_big)
-                    )
+                .setTextSize(
+                    TypedValue.COMPLEX_UNIT_PX,
+                    c.resources.getDimension(R.dimen.rec_view_font_size_below_big)
+                )
         }
         return ViewHolder(view)
     }
@@ -52,12 +52,12 @@ class AdapterPacksMoveCard(
         if (collectionNo == -1) {
             try {
                 val collectionName =
-                        StringTools()
-                                .shorten(
-                                        DB_Helper_Get(c)
-                                                .getSingleCollection(pack[position].collection)
-                                                .name
-                                )
+                    StringTools()
+                        .shorten(
+                            DB_Helper_Get(c)
+                                .getSingleCollection(pack[position].collection)
+                                .name
+                        )
                 viewHolder.textViewDesc.visibility = View.VISIBLE
                 viewHolder.textViewDesc.text = collectionName
             } catch (e: Exception) {

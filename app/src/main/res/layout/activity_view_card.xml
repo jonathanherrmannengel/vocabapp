@@ -7,14 +7,17 @@
     android:id="@+id/root_view_card"
     android:padding="10dp"
     android:gravity="center">
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:gravity="center">
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -25,6 +28,7 @@
                 android:gravity="center"
                 android:textIsSelectable="true"
                 android:id="@+id/card_front" />
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -34,6 +38,7 @@
                 android:gravity="center"
                 android:textIsSelectable="true"
                 android:id="@+id/card_back" />
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -41,6 +46,7 @@
                 android:textColor="@color/light_black"
                 android:gravity="center"
                 android:id="@+id/card_date" />
+
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -49,6 +55,7 @@
                 android:background="@color/light_grey"
                 android:orientation="vertical"
                 android:id="@+id/card_known_progress">
+
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -56,8 +63,8 @@
                     android:layout_marginBottom="5dp"
                     android:gravity="center"
                     android:textColor="@android:color/black"
-                    android:text="@string/card_known"
-                />
+                    android:text="@string/card_known" />
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -65,6 +72,7 @@
                     android:background="@android:color/transparent"
                     android:gravity="center"
                     android:orientation="horizontal">
+
                     <ImageButton
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -75,6 +83,7 @@
                         app:tint="@color/dark_green"
                         android:contentDescription="@string/card_plus"
                         android:tooltipText="@string/card_plus" />
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -84,6 +93,7 @@
                         android:gravity="center"
                         android:textColor="@color/button"
                         android:id="@+id/card_known" />
+
                     <ImageButton
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -96,6 +106,7 @@
                         android:id="@+id/card_minus" />
                 </LinearLayout>
             </LinearLayout>
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

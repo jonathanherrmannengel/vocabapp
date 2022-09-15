@@ -1,11 +1,5 @@
 package de.herrmann_engel.rbv;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.appcompat.widget.SearchView;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -25,6 +19,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.appcompat.widget.SearchView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -33,12 +33,16 @@ import io.noties.markwon.Markwon;
 
 public class ListCards extends AppCompatActivity {
 
+    SharedPreferences settings;
+    MenuItem changeFrontBackItem;
+    MenuItem sortRandomItem;
+    MenuItem searchCardsItem;
+    MenuItem searchCardsOffItem;
+    MenuItem queryModeItem;
+    RecyclerView recyclerView;
     private DB_Helper_Get dbHelperGet;
     private DB_Helper_Update dbHelperUpdate;
-
-    SharedPreferences settings;
     private boolean saveList;
-
     private int collectionNo;
     private int packNo;
     private ArrayList<Integer> packNos;
@@ -49,16 +53,7 @@ public class ListCards extends AppCompatActivity {
     private boolean progressGreater;
     private int progressNumber;
     private ArrayList<Integer> savedList;
-
     private List<DB_Card> cardsList;
-
-    MenuItem changeFrontBackItem;
-    MenuItem sortRandomItem;
-    MenuItem searchCardsItem;
-    MenuItem searchCardsOffItem;
-    MenuItem queryModeItem;
-
-    RecyclerView recyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -306,9 +301,7 @@ public class ListCards extends AppCompatActivity {
                         exitQueryModeDialog.dismiss();
                         queryMode.dismiss();
                     });
-                    exitQueryModeN.setOnClickListener(v -> {
-                        exitQueryModeDialog.dismiss();
-                    });
+                    exitQueryModeN.setOnClickListener(v -> exitQueryModeDialog.dismiss());
                     exitQueryModeDialog.show();
                 } else {
                     setRecView();
@@ -347,9 +340,7 @@ public class ListCards extends AppCompatActivity {
             List<DB_Card> list = dbHelperGet.getAllCardsByIds(savedList);
             list = dbHelperGet.sortCards(list, sort);
             savedList.clear();
-            list.forEach(card -> {
-                savedList.add(card.uid);
-            });
+            list.forEach(card -> savedList.add(card.uid));
         }
         setRecView();
     }
@@ -392,9 +383,7 @@ public class ListCards extends AppCompatActivity {
         }
         if (saveList && savedList == null) {
             savedList = new ArrayList<>();
-            cardsList.forEach(card -> {
-                savedList.add(card.uid);
-            });
+            cardsList.forEach(card -> savedList.add(card.uid));
         }
         if (packNo >= 0) {
             try {

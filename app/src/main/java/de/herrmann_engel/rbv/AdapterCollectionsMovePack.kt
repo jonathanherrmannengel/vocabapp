@@ -10,10 +10,10 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
 class AdapterCollectionsMovePack(
-        private val collection: List<DB_Collection>,
-        private val pack: DB_Pack,
-        private val c: Context,
-        private val dialog: Dialog
+    private val collection: List<DB_Collection>,
+    private val pack: DB_Pack,
+    private val c: Context,
+    private val dialog: Dialog
 ) : RecyclerView.Adapter<AdapterCollectionsMovePack.ViewHolder>() {
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val textView: TextView = view.findViewById(R.id.rec_name)
@@ -21,19 +21,19 @@ class AdapterCollectionsMovePack(
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         val view =
-                LayoutInflater.from(viewGroup.context).inflate(R.layout.rec_view, viewGroup, false)
+            LayoutInflater.from(viewGroup.context).inflate(R.layout.rec_view, viewGroup, false)
         val settings = c.getSharedPreferences(Globals.SETTINGS_NAME, Context.MODE_PRIVATE)
         if (settings.getBoolean("ui_font_size", false)) {
             view.findViewById<TextView>(R.id.rec_name)
-                    .setTextSize(
-                            TypedValue.COMPLEX_UNIT_PX,
-                            c.resources.getDimension(R.dimen.rec_view_font_size_big)
-                    )
+                .setTextSize(
+                    TypedValue.COMPLEX_UNIT_PX,
+                    c.resources.getDimension(R.dimen.rec_view_font_size_big)
+                )
             view.findViewById<TextView>(R.id.rec_desc)
-                    .setTextSize(
-                            TypedValue.COMPLEX_UNIT_PX,
-                            c.resources.getDimension(R.dimen.rec_view_font_size_below_big)
-                    )
+                .setTextSize(
+                    TypedValue.COMPLEX_UNIT_PX,
+                    c.resources.getDimension(R.dimen.rec_view_font_size_below_big)
+                )
         }
         return ViewHolder(view)
     }

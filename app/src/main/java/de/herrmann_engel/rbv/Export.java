@@ -16,8 +16,8 @@ import java.util.List;
 public class Export {
 
     private final Context context;
-    private int collectionNo;
     private final boolean singleCollection;
+    private int collectionNo;
 
     public Export(Context context) {
         singleCollection = false;
@@ -87,9 +87,9 @@ public class Export {
                 if (!exportCSV("collection", file.getName(), dbHelperExport.getSingleCollection(currentCollectionNo),
                         isFirst, !isFirst)
                         || !exportCSV("packs", file.getName(),
-                                dbHelperExport.getAllPacksByCollection(currentCollectionNo), isFirst)
+                        dbHelperExport.getAllPacksByCollection(currentCollectionNo), isFirst)
                         || !exportCSV("cards", file.getName(),
-                                dbHelperExport.getAllCardsByCollection(currentCollectionNo), isFirst)) {
+                        dbHelperExport.getAllCardsByCollection(currentCollectionNo), isFirst)) {
                     return false;
                 }
                 isFirst = false;

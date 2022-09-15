@@ -1,7 +1,5 @@
 package de.herrmann_engel.rbv;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.res.TypedArray;
@@ -21,6 +19,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.vanniktech.emoji.EmojiEditText;
 import com.vanniktech.emoji.EmojiPopup;
 import com.vanniktech.emoji.inputfilters.OnlyEmojisInputFilter;
@@ -32,6 +32,7 @@ import java.util.Objects;
 
 public class EditPack extends AppCompatActivity {
 
+    EmojiEditText packEmoji;
     private int collectionNo;
     private int packNo;
     private boolean reverse;
@@ -39,11 +40,9 @@ public class EditPack extends AppCompatActivity {
     private String searchQuery;
     private int cardPosition;
     private ArrayList<Integer> savedList;
-
     private DB_Pack pack;
     private TextView packName;
     private TextView packDesc;
-    EmojiEditText packEmoji;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +55,7 @@ public class EditPack extends AppCompatActivity {
         packEmoji
                 .setHint(String.format(getString(R.string.optional), getString(R.string.collection_or_pack_emoji)));
         EmojiPopup emojiPopup = new EmojiPopup(findViewById(R.id.root_edit_pack), packEmoji);
-        packEmoji.setFilters(new InputFilter[] { new OnlyEmojisInputFilter() });
+        packEmoji.setFilters(new InputFilter[]{new OnlyEmojisInputFilter()});
         packEmoji.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
                 if (!emojiPopup.isShowing()) {

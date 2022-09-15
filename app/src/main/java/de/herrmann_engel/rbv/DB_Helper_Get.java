@@ -180,7 +180,7 @@ public class DB_Helper_Get {
     }
 
     List<DB_Card> getAllCardsByPacksAndProgress(List<Integer> packs, int sort, boolean progressGreater,
-            int progressNumber) {
+                                                int progressNumber) {
         List<DB_Card> cards = new ArrayList<>();
         packs.forEach(pack -> {
             if (progressNumber >= 0) {
