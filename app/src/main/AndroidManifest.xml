@@ -11,58 +11,58 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.RBV">
         <activity
-            android:name=".AppLicenses"
+            android:name=".activities.AppLicenses"
             android:configChanges="orientation|screenSize|screenLayout"
             android:label="@string/licenses" />
         <activity
-            android:name=".Settings"
+            android:name=".activities.Settings"
             android:configChanges="orientation|screenSize|screenLayout"
             android:label="@string/settings" />
         <activity
-            android:name=".AdvancedSearch"
+            android:name=".activities.AdvancedSearch"
             android:configChanges="orientation|screenSize|screenLayout"
             android:label="@string/advanced_search" />
         <activity
-            android:name=".EditCollection"
+            android:name=".activities.EditCollection"
             android:configChanges="orientation|screenSize|screenLayout"
             android:label="@string/edit_collection" />
         <activity
-            android:name=".EditPack"
+            android:name=".activities.EditPack"
             android:configChanges="orientation|screenSize|screenLayout"
             android:label="@string/edit_pack" />
         <activity
-            android:name=".EditCard"
+            android:name=".activities.EditCard"
             android:configChanges="orientation|screenSize|screenLayout"
             android:label="@string/edit_card" />
         <activity
-            android:name=".ViewCollection"
+            android:name=".activities.ViewCollection"
             android:configChanges="orientation|screenSize|screenLayout" />
         <activity
-            android:name=".ViewPack"
+            android:name=".activities.ViewPack"
             android:configChanges="orientation|screenSize|screenLayout" />
         <activity
-            android:name=".ViewCard"
+            android:name=".activities.ViewCard"
             android:configChanges="orientation|screenSize|screenLayout" />
         <activity
-            android:name=".NewCollection"
+            android:name=".activities.NewCollection"
             android:configChanges="orientation|screenSize|screenLayout"
             android:label="@string/new_collection" />
         <activity
-            android:name=".NewPack"
+            android:name=".activities.NewPack"
             android:configChanges="orientation|screenSize|screenLayout"
             android:label="@string/new_pack" />
         <activity
-            android:name=".NewCard"
+            android:name=".activities.NewCard"
             android:configChanges="orientation|screenSize|screenLayout"
             android:label="@string/new_card" />
         <activity
-            android:name=".ListPacks"
+            android:name=".activities.ListPacks"
             android:configChanges="orientation|screenSize|screenLayout" />
         <activity
-            android:name=".ListCards"
+            android:name=".activities.ListCards"
             android:configChanges="orientation|screenSize|screenLayout" />
         <activity
-            android:name=".ListCollections"
+            android:name=".activities.ListCollections"
             android:configChanges="orientation|screenSize|screenLayout"
             android:exported="true"
             android:label="@string/app_name_short">

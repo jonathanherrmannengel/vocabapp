@@ -28,8 +28,7 @@
             android:textColor="@color/light_black"
             android:text="@string/import_mode_integrate"
             android:id="@+id/dia_import_radio_integrate"
-            android:buttonTint="@color/ijblue"
-            android:checked="true" />
+            android:buttonTint="@color/ijblue" />
 
         <RadioButton
             android:layout_width="wrap_content"
@@ -38,8 +37,7 @@
             android:textColor="@color/light_black"
             android:text="@string/import_mode_skip"
             android:id="@+id/dia_import_radio_skip"
-            android:buttonTint="@color/ijblue"
-            android:checked="false" />
+            android:buttonTint="@color/ijblue" />
 
         <RadioButton
             android:layout_width="wrap_content"
@@ -48,8 +46,7 @@
             android:textColor="@color/light_black"
             android:text="@string/import_mode_duplicates"
             android:id="@+id/dia_import_radio_duplicates"
-            android:buttonTint="@color/ijblue"
-            android:checked="false" />
+            android:buttonTint="@color/ijblue" />
     </RadioGroup>
 
     <Button
