@@ -2,19 +2,19 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:icon="@drawable/baseline_edit_24"
+        android:onClick="editCollection"
         android:orderInCategory="100"
-        app:showAsAction="ifRoom"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:title="@string/edit"
-        android:onClick="editCollection" />
+        app:showAsAction="ifRoom" />
     <item
-        android:icon="@drawable/baseline_delete_24"
-        android:orderInCategory="200"
-        app:showAsAction="ifRoom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:icon="@drawable/baseline_delete_24"
+        android:onClick="deleteCollection"
+        android:orderInCategory="200"
         android:title="@string/delete"
-        android:onClick="deleteCollection" />
+        app:showAsAction="ifRoom" />
 </menu>

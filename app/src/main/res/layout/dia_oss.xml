@@ -1,69 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:gravity="center"
-    android:background="@color/background"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    android:gravity="center">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:background="@color/background">
+        android:background="@color/background"
+        android:gravity="center">
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:id="@+id/dia_oss_project_dev"
-            android:layout_gravity="center_horizontal"
-            android:background="@android:color/transparent"
-            android:textSize="16sp"
-            android:textColor="@color/light_black"
-            android:gravity="center"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="10dp" />
-
-        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:background="@android:color/transparent"
+            android:gravity="center"
+            android:textColor="@color/light_black"
+            android:textSize="16sp" />
+
+        <TextView
             android:id="@+id/dia_oss_project_url"
-            android:layout_gravity="center_horizontal"
-            android:background="@android:color/transparent"
-            android:textSize="12sp"
-            android:textColor="@color/light_black"
-            android:gravity="center"
-            android:layout_centerHorizontal="true"
-            android:layout_below="@id/dia_oss_project_dev"
-            android:autoLink="web"
-            android:layout_marginTop="10dp" />
-
-        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/dia_oss_license_short"
-            android:layout_gravity="center_horizontal"
-            android:background="@android:color/transparent"
-            android:textSize="12sp"
-            android:textColor="@color/light_black"
-            android:gravity="center"
+            android:layout_below="@id/dia_oss_project_dev"
             android:layout_centerHorizontal="true"
-            android:layout_below="@id/dia_oss_project_url"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
             android:autoLink="web"
-            android:layout_marginTop="10dp" />
+            android:background="@android:color/transparent"
+            android:gravity="center"
+            android:textColor="@color/light_black"
+            android:textSize="12sp" />
 
         <TextView
+            android:id="@+id/dia_oss_license_short"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/dia_oss_project_url"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:autoLink="web"
+            android:background="@android:color/transparent"
+            android:gravity="center"
+            android:textColor="@color/light_black"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/dia_oss_license"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/dia_oss_license"
-            android:layout_gravity="center_horizontal"
-            android:background="@color/white"
-            android:textSize="11sp"
-            android:textColor="@color/light_black"
-            android:gravity="center"
-            android:layout_centerHorizontal="true"
             android:layout_below="@id/dia_oss_license_short"
-            android:textIsSelectable="true"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="20dp"
+            android:background="@color/white"
+            android:gravity="center"
             android:paddingTop="10dp"
-            android:layout_marginTop="20dp" />
+            android:textColor="@color/light_black"
+            android:textIsSelectable="true"
+            android:textSize="11sp" />
     </RelativeLayout>
 </ScrollView>

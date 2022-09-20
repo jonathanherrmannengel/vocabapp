@@ -10,9 +10,9 @@
         android:padding="2dp">
 
         <CheckBox
+            android:id="@+id/rec_small_checkbox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/rec_small_checkbox"
             android:buttonTint="@color/ijblue" />
 
         <LinearLayout
@@ -22,22 +22,22 @@
             android:padding="4dp">
 
             <TextView
-                android:gravity="start"
+                android:id="@+id/rec_small_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="17sp"
-                android:id="@+id/rec_small_name"
-                android:textColor="@android:color/black" />
+                android:gravity="start"
+                android:textColor="@android:color/black"
+                android:textSize="17sp" />
 
             <TextView
-                android:gravity="start"
+                android:id="@+id/rec_small_desc"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="11sp"
                 android:layout_marginTop="2dp"
-                android:id="@+id/rec_small_desc"
-                android:visibility="gone"
-                android:textColor="@color/dark_grey" />
+                android:gravity="start"
+                android:textColor="@color/dark_grey"
+                android:textSize="11sp"
+                android:visibility="gone" />
         </LinearLayout>
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

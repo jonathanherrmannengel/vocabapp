@@ -72,7 +72,7 @@ class Export {
             val index: String
             var collectionNos: MutableList<Int> = ArrayList()
             if (singleCollection) {
-                index = Integer.toString(collectionNo)
+                index = collectionNo.toString()
                 collectionNos.add(collectionNo)
             } else {
                 collectionNos = dbHelperExport.allCollectionIDs

@@ -3,64 +3,64 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/search_cards"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:icon="@drawable/ic_sharp_search_24"
         android:orderInCategory="100"
-        app:showAsAction="always|collapseActionView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:title="@string/search"
         app:actionViewClass="androidx.appcompat.widget.SearchView"
-        android:title="@string/search" />
+        app:showAsAction="always|collapseActionView" />
     <item
         android:id="@+id/search_cards_off"
-        android:icon="@drawable/ic_round_search_off_24"
-        android:orderInCategory="110"
-        app:showAsAction="always"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:icon="@drawable/ic_round_search_off_24"
+        android:onClick="searchCardsOff"
+        android:orderInCategory="110"
         android:title="@string/search_off"
         android:visible="false"
-        android:onClick="searchCardsOff" />
+        app:showAsAction="always" />
     <item
         android:id="@+id/start_query"
-        android:icon="@drawable/ic_round_play_arrow_24"
-        android:orderInCategory="150"
-        app:showAsAction="ifRoom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:icon="@drawable/ic_round_play_arrow_24"
+        android:onClick="startQueryMode"
+        android:orderInCategory="150"
         android:title="@string/query_mode"
-        android:onClick="startQueryMode" />
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/start_new_card"
-        android:icon="@drawable/outline_add_24"
-        android:orderInCategory="200"
-        app:showAsAction="ifRoom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:icon="@drawable/outline_add_24"
+        android:onClick="startNewCard"
+        android:orderInCategory="200"
         android:title="@string/new_card"
-        android:onClick="startNewCard" />
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/pack_details"
-        android:icon="@drawable/outline_info_24"
-        android:orderInCategory="300"
-        app:showAsAction="ifRoom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:icon="@drawable/outline_info_24"
+        android:onClick="packDetails"
+        android:orderInCategory="300"
         android:title="@string/pack_details"
-        android:onClick="packDetails" />
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/change_front_back"
-        android:orderInCategory="400"
-        app:showAsAction="never"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:onClick="changeFrontBack"
+        android:orderInCategory="400"
         android:title="@string/change_front_back"
-        android:onClick="changeFrontBack" />
+        app:showAsAction="never" />
     <item
         android:id="@+id/sort_random"
-        android:orderInCategory="500"
-        app:showAsAction="never"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:onClick="sort"
+        android:orderInCategory="500"
         android:title="@string/sort_random"
-        android:onClick="sort" />
+        app:showAsAction="never" />
 </menu>

@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/dia_query_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
-    android:id="@+id/dia_query_root"
-    android:padding="10dp"
-    android:gravity="center">
+    android:gravity="center"
+    android:padding="10dp">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -15,100 +15,100 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center">
+            android:gravity="center"
+            android:orientation="vertical">
 
             <TextView
+                android:id="@+id/query_show"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="20dp"
-                android:textColor="@android:color/black"
-                android:textSize="@dimen/card_front_size_default"
                 android:gravity="center"
+                android:textColor="@android:color/black"
                 android:textIsSelectable="true"
-                android:id="@+id/query_show" />
+                android:textSize="@dimen/card_front_size_default" />
 
             <Button
+                android:id="@+id/query_button_hide"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
-                android:textColor="@color/button"
-                android:textSize="@dimen/card_back_size_default"
                 android:gravity="center"
                 android:text="@string/query_show"
-                android:id="@+id/query_button_hide" />
+                android:textColor="@color/button"
+                android:textSize="@dimen/card_back_size_default" />
 
             <TextView
+                android:id="@+id/query_hide"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="40dp"
-                android:textColor="@android:color/black"
-                android:textSize="@dimen/card_front_size_default"
                 android:gravity="center"
-                android:textIsSelectable="true"
                 android:padding="15dp"
-                android:id="@+id/query_hide" />
+                android:textColor="@android:color/black"
+                android:textIsSelectable="true"
+                android:textSize="@dimen/card_front_size_default" />
 
             <LinearLayout
+                android:id="@+id/query_options"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
                 android:background="@android:color/transparent"
                 android:gravity="center"
-                android:orientation="horizontal"
-                android:id="@+id/query_options">
+                android:orientation="horizontal">
 
                 <ImageButton
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_margin="6dp"
                     android:id="@+id/query_back"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_margin="6dp"
+                    android:background="@android:color/transparent"
+                    android:contentDescription="@string/card_back"
                     android:src="@drawable/ic_outline_skip_previous_24"
-                    android:background="@android:color/transparent"
-                    app:tint="@color/dark_grey"
-                    android:contentDescription="@string/card_back" />
+                    app:tint="@color/dark_grey" />
 
                 <ImageButton
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_margin="6dp"
                     android:id="@+id/query_plus"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_margin="6dp"
+                    android:background="@android:color/transparent"
+                    android:contentDescription="@string/card_plus"
                     android:src="@drawable/outline_done_24"
-                    android:background="@android:color/transparent"
-                    app:tint="@color/dark_green"
-                    android:contentDescription="@string/card_plus" />
+                    app:tint="@color/dark_green" />
 
                 <ImageButton
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_margin="6dp"
                     android:id="@+id/query_minus"
-                    android:src="@drawable/outline_close_24"
-                    android:background="@android:color/transparent"
-                    app:tint="@color/dark_red"
-                    android:contentDescription="@string/card_minus" />
-
-                <ImageButton
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:layout_margin="6dp"
-                    android:id="@+id/query_skip"
-                    android:src="@drawable/ic_outline_skip_next_24"
                     android:background="@android:color/transparent"
-                    app:tint="@color/dark_grey"
-                    android:contentDescription="@string/card_skip" />
+                    android:contentDescription="@string/card_minus"
+                    android:src="@drawable/outline_close_24"
+                    app:tint="@color/dark_red" />
+
+                <ImageButton
+                    android:id="@+id/query_skip"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_margin="6dp"
+                    android:background="@android:color/transparent"
+                    android:contentDescription="@string/card_skip"
+                    android:src="@drawable/ic_outline_skip_next_24"
+                    app:tint="@color/dark_grey" />
             </LinearLayout>
 
             <Button
+                android:id="@+id/query_button_notes"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
-                android:textColor="@color/button"
-                android:textSize="13sp"
                 android:gravity="center"
                 android:text="@string/query_notes"
-                android:id="@+id/query_button_notes" />
+                android:textColor="@color/button"
+                android:textSize="13sp" />
         </LinearLayout>
     </ScrollView>
 </RelativeLayout>

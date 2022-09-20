@@ -5,64 +5,64 @@
     android:padding="12dp">
 
     <LinearLayout
+        android:id="@+id/rec_collections_preview_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="horizontal"
         android:layout_gravity="center"
-        android:id="@+id/rec_collections_preview_layout"
         android:background="@drawable/rec_view_collection_or_pack_background"
+        android:orientation="horizontal"
         android:padding="12dp">
 
         <com.vanniktech.emoji.EmojiTextView
-            android:gravity="center"
+            android:id="@+id/rec_collections_preview_text"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:textSize="@dimen/rec_view_font_size_default"
-            android:id="@+id/rec_collections_preview_text"
-            android:textColor="@android:color/black"
             android:layout_gravity="center"
-            android:padding="12dp" />
+            android:gravity="center"
+            android:padding="12dp"
+            android:textColor="@android:color/black"
+            android:textSize="@dimen/rec_view_font_size_default" />
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:orientation="vertical"
-            android:padding="12dp"
-            android:layout_weight="1">
+            android:padding="12dp">
 
             <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="@dimen/rec_view_font_size_above_default"
-                android:layout_marginTop="2dp"
                 android:id="@+id/rec_collections_parent"
-                android:visibility="gone"
-                android:textColor="@color/light_black" />
-
-            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="@dimen/rec_view_font_size_default"
-                android:id="@+id/rec_collections_name"
-                android:textColor="@android:color/black" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="@dimen/rec_view_font_size_below_default"
                 android:layout_marginTop="2dp"
+                android:textColor="@color/light_black"
+                android:textSize="@dimen/rec_view_font_size_above_default"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/rec_collections_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/black"
+                android:textSize="@dimen/rec_view_font_size_default" />
+
+            <TextView
                 android:id="@+id/rec_collections_desc"
-                android:textColor="@color/dark_grey" />
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:textColor="@color/dark_grey"
+                android:textSize="@dimen/rec_view_font_size_below_default" />
         </LinearLayout>
 
         <TextView
-            android:gravity="center_vertical|end"
+            android:id="@+id/rec_collections_number_text"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:textSize="@dimen/rec_view_font_size_default"
-            android:id="@+id/rec_collections_number_text"
-            android:textColor="@android:color/black"
             android:layout_gravity="end"
-            android:padding="8dp" />
+            android:gravity="center_vertical|end"
+            android:padding="8dp"
+            android:textColor="@android:color/black"
+            android:textSize="@dimen/rec_view_font_size_default" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

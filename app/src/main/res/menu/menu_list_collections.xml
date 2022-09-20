@@ -2,48 +2,48 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:icon="@drawable/outline_add_24"
+        android:onClick="startNewCollection"
         android:orderInCategory="100"
-        app:showAsAction="ifRoom"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:title="@string/new_collection"
-        android:onClick="startNewCollection" />
+        app:showAsAction="ifRoom" />
     <item
-        android:icon="@drawable/outline_file_download_24"
-        android:orderInCategory="200"
-        app:showAsAction="ifRoom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:icon="@drawable/outline_file_download_24"
+        android:onClick="importCards"
+        android:orderInCategory="200"
         android:title="@string/import_cards"
-        android:onClick="importCards" />
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/export_all"
-        android:orderInCategory="200"
-        app:showAsAction="never"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:onClick="exportAll"
+        android:orderInCategory="200"
         android:title="@string/export_all"
-        android:onClick="exportAll" />
+        app:showAsAction="never" />
     <item
-        android:orderInCategory="200"
-        app:showAsAction="never"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:onClick="startAdvancedSearch"
+        android:orderInCategory="200"
         android:title="@string/advanced_search"
-        android:onClick="startAdvancedSearch" />
+        app:showAsAction="never" />
     <item
-        android:orderInCategory="200"
-        app:showAsAction="never"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:onClick="startSettings"
+        android:orderInCategory="200"
         android:title="@string/settings"
-        android:onClick="startSettings" />
+        app:showAsAction="never" />
     <item
-        android:orderInCategory="200"
-        app:showAsAction="never"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:onClick="startAboutApp"
+        android:orderInCategory="200"
         android:title="@string/licenses"
-        android:onClick="startAboutApp" />
+        app:showAsAction="never" />
 </menu>

@@ -2,11 +2,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:icon="@drawable/round_save_24"
-        android:orderInCategory="100"
-        app:showAsAction="ifRoom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:icon="@drawable/round_save_24"
+        android:onClick="insert"
+        android:orderInCategory="100"
         android:title="@string/add"
-        android:onClick="insert" />
+        app:showAsAction="ifRoom" />
 </menu>

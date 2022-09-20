@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root_edit_pack"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
-    android:id="@+id/root_edit_pack"
     android:gravity="center">
 
     <ScrollView
@@ -20,9 +20,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
                 android:gravity="center"
-                android:textColor="@color/light_black"
                 android:labelFor="@id/edit_pack_name"
-                android:text="@string/collection_or_pack_name" />
+                android:text="@string/collection_or_pack_name"
+                android:textColor="@color/light_black" />
 
             <EditText
                 android:id="@+id/edit_pack_name"
@@ -30,19 +30,19 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="20dp"
                 android:ems="10"
-                android:textColor="@color/light_black"
-                android:textColorHint="@color/light_black"
+                android:hint="@string/collection_or_pack_name"
                 android:inputType="text"
-                android:hint="@string/collection_or_pack_name" />
+                android:textColor="@color/light_black"
+                android:textColorHint="@color/light_black" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
                 android:gravity="center"
-                android:textColor="@color/light_black"
                 android:labelFor="@id/edit_pack_desc"
-                android:text="@string/collection_or_pack_desc" />
+                android:text="@string/collection_or_pack_desc"
+                android:textColor="@color/light_black" />
 
             <EditText
                 android:id="@+id/edit_pack_desc"
@@ -50,30 +50,30 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="20dp"
                 android:ems="10"
-                android:textColor="@color/light_black"
-                android:textColorHint="@color/light_black"
+                android:hint="@string/collection_or_pack_desc"
                 android:inputType="text"
-                android:hint="@string/collection_or_pack_desc" />
+                android:textColor="@color/light_black"
+                android:textColorHint="@color/light_black" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
-                android:textColor="@color/light_black"
                 android:gravity="center"
-                android:text="@string/color" />
+                android:text="@string/color"
+                android:textColor="@color/light_black" />
 
             <HorizontalScrollView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
-                android:layout_gravity="center">
+                android:layout_gravity="center"
+                android:layout_marginBottom="20dp">
 
                 <LinearLayout
+                    android:id="@+id/color_picker"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:id="@+id/color_picker" />
+                    android:orientation="horizontal" />
             </HorizontalScrollView>
 
             <TextView
@@ -81,20 +81,20 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
                 android:gravity="center"
-                android:textColor="@color/light_black"
                 android:labelFor="@id/edit_pack_emoji"
-                android:text="@string/collection_or_pack_emoji" />
+                android:text="@string/collection_or_pack_emoji"
+                android:textColor="@color/light_black" />
 
             <com.vanniktech.emoji.EmojiEditText
                 android:id="@+id/edit_pack_emoji"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="20dp"
-                android:textColor="@color/light_black"
-                android:textColorHint="@color/light_black"
+                android:hint="@string/collection_or_pack_emoji"
                 android:inputType="text"
                 android:longClickable="false"
-                android:hint="@string/collection_or_pack_emoji" />
+                android:textColor="@color/light_black"
+                android:textColorHint="@color/light_black" />
         </LinearLayout>
     </ScrollView>
 </RelativeLayout>

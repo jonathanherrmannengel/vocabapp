@@ -2,45 +2,45 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
-    android:background="@color/background">
+    android:background="@color/background"
+    android:gravity="center">
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:id="@+id/dia_confirm_desc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
         android:layout_gravity="center_horizontal"
+        android:layout_marginTop="10dp"
         android:background="@android:color/transparent"
-        android:textSize="25sp"
-        android:textColor="@color/warn_red"
         android:gravity="center"
-        android:layout_centerHorizontal="true"
-        android:visibility="gone"
-        android:layout_marginTop="10dp" />
+        android:textColor="@color/warn_red"
+        android:textSize="25sp"
+        android:visibility="gone" />
 
     <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/yes"
         android:id="@+id/dia_confirm_yes"
-        android:layout_gravity="center_horizontal"
-        android:background="@android:color/transparent"
-        android:textSize="20sp"
-        android:layout_below="@id/dia_confirm_desc"
-        android:textColor="@color/light_black"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp" />
-
-    <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/no"
-        android:id="@+id/dia_confirm_no"
-        android:layout_gravity="center_horizontal"
-        android:background="@android:color/transparent"
-        android:textSize="20sp"
-        android:layout_below="@id/dia_confirm_yes"
-        android:textColor="@color/light_black"
+        android:layout_below="@id/dia_confirm_desc"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp" />
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="20dp"
+        android:background="@android:color/transparent"
+        android:text="@string/yes"
+        android:textColor="@color/light_black"
+        android:textSize="20sp" />
+
+    <Button
+        android:id="@+id/dia_confirm_no"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/dia_confirm_yes"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="20dp"
+        android:background="@android:color/transparent"
+        android:text="@string/no"
+        android:textColor="@color/light_black"
+        android:textSize="20sp" />
 </RelativeLayout>

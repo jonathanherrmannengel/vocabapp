@@ -7,9 +7,9 @@
     android:gravity="center">
 
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/dia_rec"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/dia_rec"
         android:layout_margin="20dp"
         tools:layout_editor_absoluteX="1dp"
         tools:layout_editor_absoluteY="1dp" />

@@ -110,7 +110,7 @@ class AdapterCards(
                 intent.putExtra("reverse", reverse)
                 intent.putExtra("sort", sort)
                 intent.putExtra("searchQuery", searchQuery)
-                intent.putExtra("cardPosition", viewHolder.adapterPosition)
+                intent.putExtra("cardPosition", viewHolder.bindingAdapterPosition)
                 intent.putExtra("progressGreater", progressGreater)
                 intent.putExtra("progressNumber", progressNumber)
                 intent.putIntegerArrayListExtra("savedList", savedList)

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root_edit_card"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
-    android:id="@+id/root_edit_card"
     android:gravity="center">
 
     <ScrollView
@@ -20,9 +20,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
                 android:gravity="center"
-                android:textColor="@color/light_black"
                 android:labelFor="@id/edit_card_front"
-                android:text="@string/new_card_front" />
+                android:text="@string/new_card_front"
+                android:textColor="@color/light_black" />
 
             <EditText
                 android:id="@+id/edit_card_front"
@@ -30,19 +30,19 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="20dp"
                 android:ems="10"
-                android:textColor="@color/light_black"
-                android:textColorHint="@color/light_black"
+                android:hint="@string/new_card_front"
                 android:inputType="text"
-                android:hint="@string/new_card_front" />
+                android:textColor="@color/light_black"
+                android:textColorHint="@color/light_black" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
                 android:gravity="center"
-                android:textColor="@color/light_black"
                 android:labelFor="@id/edit_card_back"
-                android:text="@string/new_card_back" />
+                android:text="@string/new_card_back"
+                android:textColor="@color/light_black" />
 
             <EditText
                 android:id="@+id/edit_card_back"
@@ -50,29 +50,29 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="20dp"
                 android:ems="10"
-                android:textColor="@color/light_black"
-                android:textColorHint="@color/light_black"
+                android:hint="@string/new_card_back"
                 android:inputType="text"
-                android:hint="@string/new_card_back" />
+                android:textColor="@color/light_black"
+                android:textColorHint="@color/light_black" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
                 android:gravity="center"
-                android:textColor="@color/light_black"
                 android:labelFor="@id/edit_card_notes"
-                android:text="@string/new_card_notes" />
+                android:text="@string/new_card_notes"
+                android:textColor="@color/light_black" />
 
             <EditText
                 android:id="@+id/edit_card_notes"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:textColor="@color/light_black"
-                android:textColorHint="@color/light_black"
+                android:hint="@string/new_card_notes"
                 android:inputType="textMultiLine"
-                android:hint="@string/new_card_notes" />
+                android:textColor="@color/light_black"
+                android:textColorHint="@color/light_black" />
         </LinearLayout>
     </ScrollView>
 </RelativeLayout>

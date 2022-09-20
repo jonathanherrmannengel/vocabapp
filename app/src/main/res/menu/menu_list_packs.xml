@@ -3,29 +3,29 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/start_new_pack"
-        android:icon="@drawable/outline_add_24"
-        android:orderInCategory="100"
-        app:showAsAction="ifRoom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:icon="@drawable/outline_add_24"
+        android:onClick="startNewPack"
+        android:orderInCategory="100"
         android:title="@string/new_pack"
-        android:onClick="startNewPack" />
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/collection_details"
-        android:icon="@drawable/outline_info_24"
-        android:orderInCategory="200"
-        app:showAsAction="ifRoom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:icon="@drawable/outline_info_24"
+        android:onClick="collectionDetails"
+        android:orderInCategory="200"
         android:title="@string/collection_details"
-        android:onClick="collectionDetails" />
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/export_single"
-        android:icon="@drawable/outline_file_upload_24"
-        android:orderInCategory="200"
-        app:showAsAction="ifRoom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:icon="@drawable/outline_file_upload_24"
+        android:onClick="export"
+        android:orderInCategory="200"
         android:title="@string/export_cards"
-        android:onClick="export" />
+        app:showAsAction="ifRoom" />
 </menu>

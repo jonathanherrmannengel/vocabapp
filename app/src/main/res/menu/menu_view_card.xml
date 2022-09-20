@@ -2,27 +2,27 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:icon="@drawable/baseline_edit_24"
+        android:onClick="editCard"
         android:orderInCategory="100"
-        app:showAsAction="ifRoom"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:title="@string/edit"
-        android:onClick="editCard" />
+        app:showAsAction="ifRoom" />
     <item
-        android:icon="@drawable/baseline_delete_24"
-        android:orderInCategory="200"
-        app:showAsAction="ifRoom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:icon="@drawable/baseline_delete_24"
+        android:onClick="deleteCard"
+        android:orderInCategory="200"
         android:title="@string/delete"
-        android:onClick="deleteCard" />
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/move_card"
-        android:orderInCategory="300"
-        app:showAsAction="never"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:onClick="moveCard"
+        android:orderInCategory="300"
         android:title="@string/move"
-        android:onClick="moveCard" />
+        app:showAsAction="never" />
 </menu>

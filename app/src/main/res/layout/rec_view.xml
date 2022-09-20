@@ -10,21 +10,21 @@
         android:padding="8dp">
 
         <TextView
-            android:gravity="center"
+            android:id="@+id/rec_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/rec_view_font_size_default"
-            android:id="@+id/rec_name"
-            android:textColor="@android:color/black" />
+            android:gravity="center"
+            android:textColor="@android:color/black"
+            android:textSize="@dimen/rec_view_font_size_default" />
 
         <TextView
-            android:gravity="center"
+            android:id="@+id/rec_desc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/rec_view_font_size_below_default"
             android:layout_marginTop="2dp"
-            android:id="@+id/rec_desc"
-            android:visibility="gone"
-            android:textColor="@color/dark_grey" />
+            android:gravity="center"
+            android:textColor="@color/dark_grey"
+            android:textSize="@dimen/rec_view_font_size_below_default"
+            android:visibility="gone" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/root_settings"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
-    android:id="@+id/root_settings"
-    android:padding="10dp"
-    android:gravity="center">
+    android:gravity="center"
+    android:padding="10dp">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -15,208 +15,208 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center">
+            android:gravity="center"
+            android:orientation="vertical">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="20sp"
                 android:text="@string/settings_default_sort"
-                android:textColor="@android:color/black" />
+                android:textColor="@android:color/black"
+                android:textSize="20sp" />
 
             <RadioGroup
-                android:orientation="vertical"
-                android:padding="10dp"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="10dp">
 
                 <RadioButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="16sp"
-                    android:text="@string/sort_normal"
-                    android:onClick="setSortNormal"
                     android:id="@+id/settings_sort_normal"
-                    android:buttonTint="@color/ijblue"
-                    android:textColor="@color/light_black" />
-
-                <RadioButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="16sp"
-                    android:text="@string/sort_random"
-                    android:onClick="setSortRandom"
+                    android:buttonTint="@color/ijblue"
+                    android:onClick="setSortNormal"
+                    android:text="@string/sort_normal"
+                    android:textColor="@color/light_black"
+                    android:textSize="16sp" />
+
+                <RadioButton
                     android:id="@+id/settings_sort_random"
-                    android:buttonTint="@color/ijblue"
-                    android:textColor="@color/light_black" />
-
-                <RadioButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="16sp"
-                    android:text="@string/sort_alphabetical"
-                    android:onClick="setSortAlphabetical"
-                    android:id="@+id/settings_sort_alphabetical"
                     android:buttonTint="@color/ijblue"
-                    android:textColor="@color/light_black" />
+                    android:onClick="setSortRandom"
+                    android:text="@string/sort_random"
+                    android:textColor="@color/light_black"
+                    android:textSize="16sp" />
+
+                <RadioButton
+                    android:id="@+id/settings_sort_alphabetical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="@color/ijblue"
+                    android:onClick="setSortAlphabetical"
+                    android:text="@string/sort_alphabetical"
+                    android:textColor="@color/light_black"
+                    android:textSize="16sp" />
             </RadioGroup>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="40dp"
-                android:textSize="20sp"
                 android:text="@string/settings_format"
-                android:textColor="@android:color/black" />
+                android:textColor="@android:color/black"
+                android:textSize="20sp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="10dp"
+                android:gravity="center_vertical|start"
                 android:orientation="horizontal"
-                android:gravity="center_vertical|start">
+                android:padding="10dp">
 
                 <CheckBox
+                    android:id="@+id/settings_format_cards"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:id="@+id/settings_format_cards"
                     android:buttonTint="@color/ijblue"
                     android:onClick="setFormatCards" />
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:textSize="16sp"
+                    android:layout_weight="2"
                     android:paddingStart="5dp"
                     android:paddingEnd="5dp"
                     android:text="@string/settings_format_cards"
                     android:textColor="@color/light_black"
-                    android:layout_weight="2" />
+                    android:textSize="16sp" />
 
                 <ImageButton
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:src="@drawable/outline_info_24"
                     android:background="@android:color/transparent"
                     android:onClick="infoFormatCards"
+                    android:src="@drawable/outline_info_24"
                     app:tint="@color/ijblue" />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="10dp"
+                android:gravity="center_vertical|start"
                 android:orientation="horizontal"
-                android:gravity="center_vertical|start">
+                android:padding="10dp">
 
                 <CheckBox
+                    android:id="@+id/settings_format_card_notes"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:id="@+id/settings_format_card_notes"
                     android:buttonTint="@color/ijblue"
                     android:onClick="setFormatCardNotes" />
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:textSize="16sp"
+                    android:layout_weight="2"
                     android:paddingStart="5dp"
                     android:paddingEnd="5dp"
                     android:text="@string/settings_format_card_notes"
                     android:textColor="@color/light_black"
-                    android:layout_weight="2" />
+                    android:textSize="16sp" />
             </LinearLayout>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="40dp"
-                android:textSize="20sp"
                 android:text="@string/settings_ui"
-                android:textColor="@android:color/black" />
+                android:textColor="@android:color/black"
+                android:textSize="20sp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="10dp"
+                android:gravity="center_vertical|start"
                 android:orientation="horizontal"
-                android:gravity="center_vertical|start">
+                android:padding="10dp">
 
                 <CheckBox
+                    android:id="@+id/settings_ui_background_images"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:id="@+id/settings_ui_background_images"
                     android:buttonTint="@color/ijblue"
                     android:onClick="setUIBackground" />
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:textSize="16sp"
+                    android:layout_weight="2"
                     android:paddingStart="5dp"
                     android:paddingEnd="5dp"
                     android:text="@string/settings_ui_background_images"
                     android:textColor="@color/light_black"
-                    android:layout_weight="2" />
+                    android:textSize="16sp" />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="10dp"
+                android:gravity="center_vertical|start"
                 android:orientation="horizontal"
-                android:gravity="center_vertical|start">
+                android:padding="10dp">
 
                 <CheckBox
+                    android:id="@+id/settings_ui_increase_font_size"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:id="@+id/settings_ui_increase_font_size"
                     android:buttonTint="@color/ijblue"
                     android:onClick="setUIFontSize" />
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:textSize="16sp"
+                    android:layout_weight="2"
                     android:paddingStart="5dp"
                     android:paddingEnd="5dp"
                     android:text="@string/settings_ui_increase_font_size"
                     android:textColor="@color/light_black"
-                    android:layout_weight="2" />
+                    android:textSize="16sp" />
             </LinearLayout>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="40dp"
-                android:textSize="20sp"
                 android:text="@string/settings_list"
-                android:textColor="@android:color/black" />
+                android:textColor="@android:color/black"
+                android:textSize="20sp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="10dp"
+                android:gravity="center_vertical|start"
                 android:orientation="horizontal"
-                android:gravity="center_vertical|start">
+                android:padding="10dp">
 
                 <CheckBox
+                    android:id="@+id/settings_list_no_update"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:id="@+id/settings_list_no_update"
                     android:buttonTint="@color/ijblue"
                     android:onClick="setListNoUpdate" />
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:textSize="16sp"
+                    android:layout_weight="2"
                     android:paddingStart="5dp"
                     android:paddingEnd="5dp"
                     android:text="@string/settings_list_no_update"
                     android:textColor="@color/light_black"
-                    android:layout_weight="2" />
+                    android:textSize="16sp" />
             </LinearLayout>
         </LinearLayout>
     </ScrollView>
