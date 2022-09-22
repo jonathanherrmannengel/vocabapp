@@ -6,13 +6,15 @@ import com.opencsv.CSVReader
 import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Create
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
+import de.herrmann_engel.rbv.utils.StringTools
 import java.io.InputStreamReader
 
 class AsyncImportWorker(
     val context: Context,
     private val listener: AsyncImportFinish,
     private val uri: Uri,
-    private val mode: Int
+    private val mode: Int,
+    private val includeSettings: Boolean
 ) {
     fun execute() {
         listener.importCardsResult(execute2())
@@ -45,9 +47,10 @@ class AsyncImportWorker(
                             if (line!!.size >= 6) {
                                 colors = Integer.parseInt((line?.get(5) ?: "0"))
                             }
-                            var emoji = ""
+                            var emoji: String? = null
                             if (line!!.size >= 7) {
                                 emoji = line?.get(6) ?: ""
+                                emoji = StringTools().firstEmoji(emoji)
                             }
                             val sameNamed = helperGet.getAllCollectionsByName(name)
                             if (sameNamed.size == 0 || mode == Globals.IMPORT_MODE_DUPLICATES) {
@@ -74,7 +77,7 @@ class AsyncImportWorker(
                                 val desc = "_default"
                                 val date = System.currentTimeMillis() / 1000L
                                 val colors = 0
-                                val emoji = ""
+                                val emoji = null
                                 val sameNamed = helperGet.getAllCollectionsByName(name)
                                 if (sameNamed.size == 0 || mode == Globals.IMPORT_MODE_DUPLICATES) {
                                     val collectionUiNew =
@@ -105,9 +108,10 @@ class AsyncImportWorker(
                                 val desc = line?.get(3) ?: ""
                                 val date = Integer.parseInt((line?.get(4) ?: "0")).toLong()
                                 val colors = Integer.parseInt((line?.get(5) ?: "0"))
-                                var emoji = ""
+                                var emoji: String? = null
                                 if (line!!.size >= 8) {
                                     emoji = line?.get(7) ?: ""
+                                    emoji = StringTools().firstEmoji(emoji)
                                 }
                                 val sameNamed =
                                     helperGet.getAllPacksByCollectionAndNameAndDesc(
@@ -170,6 +174,26 @@ class AsyncImportWorker(
                                     errorLevel = Globals.IMPORT_ERROR_LEVEL_WARN
                                 }
                             }
+                        }
+                        line?.get(0) == "app_setting" && includeSettings -> {
+                            val settings =
+                                context.getSharedPreferences(
+                                    Globals.SETTINGS_NAME,
+                                    Context.MODE_PRIVATE
+                                )
+                            val editor = settings.edit()
+                            val name = line?.get(1)
+                            when {
+                                line?.get(2) == "int" -> {
+                                    val value = line?.get(3)!!.toInt()
+                                    editor.putInt(name, value)
+                                }
+                                line?.get(2) == "bool" -> {
+                                    val value = line?.get(3)!!.toBoolean()
+                                    editor.putBoolean(name, value)
+                                }
+                            }
+                            editor.apply()
                         }
                     }
                 } catch (e: Exception) {

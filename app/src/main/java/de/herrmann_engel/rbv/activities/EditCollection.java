@@ -25,14 +25,13 @@ import com.vanniktech.emoji.EmojiEditText;
 import com.vanniktech.emoji.EmojiPopup;
 import com.vanniktech.emoji.inputfilters.OnlyEmojisInputFilter;
 
-import java.text.BreakIterator;
-import java.util.Locale;
 import java.util.Objects;
 
 import de.herrmann_engel.rbv.R;
 import de.herrmann_engel.rbv.db.DB_Collection;
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get;
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Update;
+import de.herrmann_engel.rbv.utils.StringTools;
 
 public class EditCollection extends AppCompatActivity {
 
@@ -130,11 +129,8 @@ public class EditCollection extends AppCompatActivity {
     public void saveChanges(MenuItem menuItem) {
         collection.name = collectionName.getText().toString();
         collection.desc = collectionDesc.getText().toString();
-        if (collectionEmoji.getText() != null && !collectionEmoji.getText().toString().isEmpty()) {
-            BreakIterator iterator = BreakIterator.getCharacterInstance(Locale.ROOT);
-            String emojiText = Objects.requireNonNull(collectionEmoji.getText()).toString();
-            iterator.setText(emojiText);
-            collection.emoji = emojiText.substring(iterator.first(), iterator.next());
+        if (collectionEmoji.getText() != null) {
+            collection.emoji = (new StringTools()).firstEmoji(collectionEmoji.getText().toString());
         } else {
             collection.emoji = null;
         }

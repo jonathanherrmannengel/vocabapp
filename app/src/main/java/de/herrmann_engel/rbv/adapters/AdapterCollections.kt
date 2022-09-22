@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.LayerDrawable
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ImageSpan
@@ -54,7 +55,13 @@ class AdapterCollections(private val collection: List<DB_Collection>, private va
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
+        val backgroundLayerList = viewHolder.layout.background as LayerDrawable
+        val background =
+            backgroundLayerList.findDrawableByLayerId(R.id.rec_view_collection_or_pack_background_main) as GradientDrawable
+        val backgroundBehind =
+            backgroundLayerList.findDrawableByLayerId(R.id.rec_view_collection_or_pack_background_behind) as GradientDrawable
         if (position == 0 && collection.isEmpty()) {
+            viewHolder.layout.background = null;
             val welcomeText = SpannableString(c.resources.getString(R.string.welcome_collection))
             val welcomeTextDrawableAdd = ContextCompat.getDrawable(c, R.drawable.outline_add_24)
             welcomeTextDrawableAdd?.setTint(c.getColor(R.color.light_black))
@@ -112,10 +119,11 @@ class AdapterCollections(private val collection: List<DB_Collection>, private va
             val size = dbHelperGet.allPacks.size
             viewHolder.numberText.text = size.toString()
             viewHolder.previewView.setBackgroundColor(Color.rgb(185, 185, 185))
-            val background = viewHolder.layout.background as GradientDrawable
             background.mutate()
             background.setStroke(2, Color.rgb(85, 85, 85))
             background.setColor(Color.argb(75, 185, 185, 185))
+            backgroundBehind.mutate()
+            backgroundBehind.setStroke(1, Color.rgb(185, 185, 185))
         } else {
             val extra = collection[position - 1].uid
             viewHolder.layout.setOnClickListener {
@@ -144,7 +152,6 @@ class AdapterCollections(private val collection: List<DB_Collection>, private va
                 DB_Helper_Get(c.applicationContext)
             val size = dbHelperGet.getAllPacksByCollection(collection[position - 1].uid).size
             viewHolder.numberText.text = size.toString()
-
             val color = collection[position - 1].colors
             val colors = c.resources.obtainTypedArray(R.array.pack_color_list)
             val colorsBackground = c.resources.obtainTypedArray(R.array.pack_color_background_light)
@@ -158,10 +165,11 @@ class AdapterCollections(private val collection: List<DB_Collection>, private va
                 viewHolder.textView.setTextColor(colors.getColor(color, 0))
                 viewHolder.previewView.setTextColor(colors.getColor(color, 0))
                 viewHolder.previewView.setBackgroundColor(colorsBackground.getColor(color, 0))
-                val background = viewHolder.layout.background as GradientDrawable
                 background.mutate()
                 background.setStroke(2, colors.getColor(color, 0))
                 background.setColor(colorsBackgroundAlpha.getColor(color, 0))
+                backgroundBehind.mutate()
+                backgroundBehind.setStroke(1, colorsBackground.getColor(color, 0))
             }
             colors.recycle()
             colorsBackground.recycle()

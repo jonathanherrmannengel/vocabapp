@@ -28,7 +28,7 @@ public class DB_Helper_Create {
     }
 
     public long createCollection(String name, String desc) throws Exception {
-        return createCollection(name, desc, 0, "", System.currentTimeMillis() / 1000L);
+        return createCollection(name, desc, 0, null, System.currentTimeMillis() / 1000L);
     }
 
     public long createPack(String name, String desc, int collection, int colors, String emoji, long date)
@@ -49,7 +49,7 @@ public class DB_Helper_Create {
     }
 
     public long createPack(String name, String desc, int collection) throws Exception {
-        return createPack(name, desc, collection, 0, "", System.currentTimeMillis() / 1000L);
+        return createPack(name, desc, collection, 0, null, System.currentTimeMillis() / 1000L);
     }
 
     public long createCard(String front, String back, String notes, int pack, int known, long date) throws Exception {

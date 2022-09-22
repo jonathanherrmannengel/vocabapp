@@ -13,7 +13,8 @@ class AsyncImport internal constructor(
     private val context: Context,
     private val listener: AsyncImportFinish,
     private val uri: Uri,
-    private val mode: Int
+    private val mode: Int,
+    private val includeSettings: Boolean
 ) {
     fun execute() {
         CoroutineScope(Dispatchers.Main).launch {
@@ -22,7 +23,8 @@ class AsyncImport internal constructor(
                     context,
                     listener,
                     uri,
-                    mode
+                    mode,
+                    includeSettings
                 ).execute()
             }
         }

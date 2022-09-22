@@ -15,16 +15,26 @@ class Export {
     private val context: Context
     private val singleCollection: Boolean
     private var collectionNo = 0
+    private var includeSettings = false;
 
-    constructor(context: Context) {
+    constructor(context: Context, includeSettings: Boolean) {
         singleCollection = false
         this.context = context
+        this.includeSettings = includeSettings
     }
 
     constructor(context: Context, collectionNo: Int) {
         singleCollection = true
-        this.collectionNo = collectionNo
         this.context = context
+        this.collectionNo = collectionNo
+    }
+
+    private fun exportSetting(name: String, filename: String, type: String, value: String) {
+        val file = File(context.cacheDir, filename)
+        val csvWrite = CSVWriter(FileWriter(file, true))
+        val row = arrayOf("app_setting", name, type, value)
+        csvWrite.writeNext(row)
+        csvWrite.close()
     }
 
     private fun exportCSV(
@@ -109,6 +119,58 @@ class Export {
                     return false
                 }
                 isFirst = false
+            }
+            if (includeSettings) {
+                val settings =
+                    context.getSharedPreferences(Globals.SETTINGS_NAME, Context.MODE_PRIVATE)
+                if (settings.contains("default_sort")) {
+                    exportSetting(
+                        "default_sort",
+                        file.name,
+                        "int",
+                        settings.getInt("default_sort", Globals.SORT_DEFAULT).toString()
+                    );
+                }
+                if (settings.contains("format_cards")) {
+                    exportSetting(
+                        "format_cards",
+                        file.name,
+                        "bool",
+                        settings.getBoolean("format_cards", false).toString()
+                    );
+                }
+                if (settings.contains("format_card_notes")) {
+                    exportSetting(
+                        "format_card_notes",
+                        file.name,
+                        "bool",
+                        settings.getBoolean("format_card_notes", false).toString()
+                    );
+                }
+                if (settings.contains("ui_bg_images")) {
+                    exportSetting(
+                        "ui_bg_images",
+                        file.name,
+                        "bool",
+                        settings.getBoolean("ui_bg_images", true).toString()
+                    );
+                }
+                if (settings.contains("ui_font_size")) {
+                    exportSetting(
+                        "ui_font_size",
+                        file.name,
+                        "bool",
+                        settings.getBoolean("ui_font_size", false).toString()
+                    );
+                }
+                if (settings.contains("list_no_update")) {
+                    exportSetting(
+                        "list_no_update",
+                        file.name,
+                        "bool",
+                        settings.getBoolean("list_no_update", true).toString()
+                    );
+                }
             }
             share.putExtra(
                 Intent.EXTRA_STREAM, FileProvider.getUriForFile(

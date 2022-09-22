@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.LayerDrawable
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ImageSpan
@@ -64,7 +65,13 @@ class AdapterPacks(
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
+        val backgroundLayerList = viewHolder.layout.background as LayerDrawable
+        val background =
+            backgroundLayerList.findDrawableByLayerId(R.id.rec_view_collection_or_pack_background_main) as GradientDrawable
+        val backgroundBehind =
+            backgroundLayerList.findDrawableByLayerId(R.id.rec_view_collection_or_pack_background_behind) as GradientDrawable
         if (position == 0 && pack.isEmpty()) {
+            viewHolder.layout.background = null;
             if (collection == -1) {
                 viewHolder.textView.text = c.resources.getString(R.string.welcome_pack)
             } else {
@@ -123,10 +130,11 @@ class AdapterPacks(
             viewHolder.textView.setTextColor(Color.rgb(0, 0, 0))
             viewHolder.previewView.setTextColor(Color.rgb(0, 0, 0))
             viewHolder.previewView.setBackgroundColor(Color.rgb(185, 185, 185))
-            val background = viewHolder.layout.background as GradientDrawable
             background.mutate()
             background.setStroke(2, Color.rgb(85, 85, 85))
             background.setColor(Color.argb(75, 185, 185, 185))
+            backgroundBehind.mutate()
+            backgroundBehind.setStroke(1, Color.rgb(185, 185, 185))
         } else {
             val extra = pack[position - 1].uid
             viewHolder.layout.setOnClickListener {
@@ -186,10 +194,11 @@ class AdapterPacks(
                 viewHolder.textView.setTextColor(colors.getColor(color, 0))
                 viewHolder.previewView.setTextColor(colors.getColor(color, 0))
                 viewHolder.previewView.setBackgroundColor(colorsBackground.getColor(color, 0))
-                val background = viewHolder.layout.background as GradientDrawable
                 background.mutate()
                 background.setStroke(2, colors.getColor(color, 0))
                 background.setColor(colorsBackgroundAlpha.getColor(color, 0))
+                backgroundBehind.mutate()
+                backgroundBehind.setStroke(1, colorsBackground.getColor(color, 0))
             }
             colors.recycle()
             colorsBackground.recycle()

@@ -35,6 +35,7 @@
     <string name="import_mode_skip">Nicht importieren</string>
     <string name="import_mode_duplicates">Als neuen gleichnamigen Eintrag hinzufügen</string>
     <string name="import_mode_integrate">Mit erstem gleichnamigen Karteikasten zusammenführen</string>
+    <string name="import_export_include_settings">App-Einstellungen einschließen</string>
     <string name="edit_pack">Kartenstapel bearbeiten</string>
     <string name="edit_card">Karteikarte bearbeiten</string>
     <string name="delete_pack_with_cards">Dieser Kartenstapel enthält Karteikarten. Wenn Sie das Löschen fortsetzen, werden auch die enthaltenen Karteikarten gelöscht. Trotzdem löschen?</string>

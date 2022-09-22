@@ -6,6 +6,8 @@ import android.text.SpannableStringBuilder;
 import android.text.style.StyleSpan;
 import android.text.style.UnderlineSpan;
 
+import java.text.BreakIterator;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -64,7 +66,7 @@ public class StringTools {
         while (matcher.find() && count <= maxLength) {
             count++;
         }
-        if (count > maxLength) {
+        if (count > maxLength && maxLength >= 0) {
             return input.replaceAll(String.format("%s%d%s", "^((\\P{M}\\p{M}*+){", maxLength - 1, "}).*$"), "$1…");
         }
         return input;
@@ -72,6 +74,15 @@ public class StringTools {
 
     public String shorten(String input) {
         return shorten(input, 50);
+    }
+
+    public String firstEmoji(String input) {
+        if (input.isEmpty()) {
+            return null;
+        }
+        BreakIterator iterator = BreakIterator.getCharacterInstance(Locale.ROOT);
+        iterator.setText(input);
+        return input.substring(iterator.first(), iterator.next());
     }
 
 }

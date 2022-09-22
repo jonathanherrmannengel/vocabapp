@@ -25,15 +25,14 @@ import com.vanniktech.emoji.EmojiEditText;
 import com.vanniktech.emoji.EmojiPopup;
 import com.vanniktech.emoji.inputfilters.OnlyEmojisInputFilter;
 
-import java.text.BreakIterator;
 import java.util.ArrayList;
-import java.util.Locale;
 import java.util.Objects;
 
 import de.herrmann_engel.rbv.R;
 import de.herrmann_engel.rbv.db.DB_Pack;
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get;
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Update;
+import de.herrmann_engel.rbv.utils.StringTools;
 
 public class EditPack extends AppCompatActivity {
 
@@ -139,17 +138,14 @@ public class EditPack extends AppCompatActivity {
     }
 
     public void saveChanges(MenuItem menuItem) {
-        DB_Helper_Update dbHelperUpdate = new DB_Helper_Update(this);
         pack.name = packName.getText().toString();
         pack.desc = packDesc.getText().toString();
-        if (packEmoji.getText() != null && !packEmoji.getText().toString().isEmpty()) {
-            BreakIterator iterator = BreakIterator.getCharacterInstance(Locale.ROOT);
-            String emojiText = packEmoji.getText().toString();
-            iterator.setText(emojiText);
-            pack.emoji = emojiText.substring(iterator.first(), iterator.next());
+        if (packEmoji.getText() != null) {
+            pack.emoji = (new StringTools()).firstEmoji(packEmoji.getText().toString());
         } else {
             pack.emoji = null;
         }
+        DB_Helper_Update dbHelperUpdate = new DB_Helper_Update(this);
         if (dbHelperUpdate.updatePack(pack)) {
             startViewPack();
         } else {

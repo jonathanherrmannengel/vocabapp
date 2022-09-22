@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -40,6 +41,7 @@ public class ListCollections extends AppCompatActivity implements AsyncImportFin
     private ActivityResultLauncher<Intent> launcherImportFile;
     private MenuItem exportAllMenuItem;
     private int importMode;
+    private boolean includeSettings;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +61,7 @@ public class ListCollections extends AppCompatActivity implements AsyncImportFin
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
                     if (result.getResultCode() == Activity.RESULT_OK) {
-                        new AsyncImport(this, this, Objects.requireNonNull(result.getData()).getData(), importMode)
+                        new AsyncImport(this, this, Objects.requireNonNull(result.getData()).getData(), importMode, includeSettings)
                                 .execute();
                         Toast.makeText(this, R.string.wait, Toast.LENGTH_LONG).show();
                     } else {
@@ -120,12 +122,15 @@ public class ListCollections extends AppCompatActivity implements AsyncImportFin
         RadioButton startImportModeIntegrate = startImportMode.findViewById(R.id.dia_import_radio_integrate);
         RadioButton startImportModeDuplicates = startImportMode.findViewById(R.id.dia_import_radio_duplicates);
         RadioButton startImportModeSkip = startImportMode.findViewById(R.id.dia_import_radio_skip);
+        CheckBox includeSettingsCheckBox = startImportDialog.findViewById(R.id.dia_import_include_settings);
         if (collections.size() > 0) {
             startImportModeIntegrate.setChecked(true);
             startImportModeDuplicates.setChecked(false);
+            includeSettingsCheckBox.setChecked(false);
         } else {
             startImportModeIntegrate.setChecked(false);
             startImportModeDuplicates.setChecked(true);
+            includeSettingsCheckBox.setChecked(true);
         }
         startImportModeSkip.setChecked(false);
         startImportButton.setOnClickListener(v -> {
@@ -136,6 +141,7 @@ public class ListCollections extends AppCompatActivity implements AsyncImportFin
             } else {
                 importMode = Globals.IMPORT_MODE_SKIP;
             }
+            includeSettings = includeSettingsCheckBox.isChecked();
             Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
             intent.addCategory(Intent.CATEGORY_OPENABLE);
             intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
@@ -163,9 +169,20 @@ public class ListCollections extends AppCompatActivity implements AsyncImportFin
     }
 
     public void exportAll(MenuItem item) {
-        Export export = new Export(this);
-        if (!export.exportFile()) {
-            Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show();
-        }
+        Dialog startExportDialog = new Dialog(this, R.style.dia_view);
+        startExportDialog.setContentView(R.layout.dia_export);
+        startExportDialog.setTitle(getResources().getString(R.string.options));
+        startExportDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.MATCH_PARENT);
+        Button startImportButton = startExportDialog.findViewById(R.id.dia_export_start);
+        startImportButton.setOnClickListener(v -> {
+            CheckBox includeSettingsCheckBox = startExportDialog.findViewById(R.id.dia_export_include_settings);
+            Export export = new Export(this, includeSettingsCheckBox.isChecked());
+            if (!export.exportFile()) {
+                Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show();
+            }
+            startExportDialog.dismiss();
+        });
+        startExportDialog.show();
     }
 }

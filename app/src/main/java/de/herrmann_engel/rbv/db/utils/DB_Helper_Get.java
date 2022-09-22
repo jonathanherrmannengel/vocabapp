@@ -120,17 +120,11 @@ public class DB_Helper_Get {
     }
 
     public List<DB_Card> getAllCards(int sort) {
-        List<DB_Pack> packs = getAllPacks();
-        List<DB_Card> list = new ArrayList<>();
-        packs.forEach((currentPack) -> list.addAll(getAllCardsByPack(currentPack.uid)));
-        return sortCards(list, sort);
+        return sortCards(dbHelper.card_dao.getAll(), sort);
     }
 
     public List<DB_Card> getAllCards() {
-        List<DB_Pack> packs = getAllPacks();
-        List<DB_Card> list = new ArrayList<>();
-        packs.forEach((currentPack) -> list.addAll(getAllCardsByPack(currentPack.uid)));
-        return list;
+        return dbHelper.card_dao.getAll();
     }
 
     public List<DB_Card> getAllCardsByIds(ArrayList<Integer> ids) {
@@ -146,19 +140,16 @@ public class DB_Helper_Get {
     }
 
     public List<DB_Card> getAllCardsByProgress(int sort, boolean progressGreater, int progressNumber) {
-        List<DB_Pack> packs = getAllPacks();
         List<DB_Card> cards = new ArrayList<>();
-        packs.forEach(pack -> {
-            if (progressNumber >= 0) {
-                if (progressGreater) {
-                    cards.addAll(dbHelper.card_dao.getAllGreaterEqual(pack.uid, progressNumber));
-                } else {
-                    cards.addAll(dbHelper.card_dao.getAllLessEqual(pack.uid, progressNumber));
-                }
+        if (progressNumber >= 0) {
+            if (progressGreater) {
+                cards.addAll(dbHelper.card_dao.getAllGreaterEqual(progressNumber));
             } else {
-                cards.addAll(dbHelper.card_dao.getAll(pack.uid));
+                cards.addAll(dbHelper.card_dao.getAllLessEqual(progressNumber));
             }
-        });
+        } else {
+            cards.addAll(dbHelper.card_dao.getAll());
+        }
         return sortCards(cards, sort);
     }
 

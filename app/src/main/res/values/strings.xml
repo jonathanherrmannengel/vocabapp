@@ -35,6 +35,7 @@
     <string name="import_mode_skip">Do not import</string>
     <string name="import_mode_duplicates">Add new same-named entry</string>
     <string name="import_mode_integrate">Merge with first same-named filing box</string>
+    <string name="import_export_include_settings">Include app settings</string>
     <string name="edit_collection">Edit filing box</string>
     <string name="edit_pack">Edit deck</string>
     <string name="edit_card">Edit flashcard</string>
