@@ -47,6 +47,7 @@ public class ListCards extends AppCompatActivity {
     MenuItem searchCardsItem;
     MenuItem searchCardsOffItem;
     MenuItem queryModeItem;
+    MenuItem listStatsItem;
     RecyclerView recyclerView;
     private DB_Helper_Get dbHelperGet;
     private DB_Helper_Update dbHelperUpdate;
@@ -100,6 +101,7 @@ public class ListCards extends AppCompatActivity {
         changeFrontBackItem = menu.findItem(R.id.change_front_back);
         sortRandomItem = menu.findItem(R.id.sort_random);
         queryModeItem = menu.findItem(R.id.start_query);
+        listStatsItem = menu.findItem(R.id.show_list_stats);
 
         recyclerView = this.findViewById(R.id.rec_default);
 
@@ -322,6 +324,77 @@ public class ListCards extends AppCompatActivity {
         queryMode.show();
     }
 
+    public void showListStats(MenuItem menuItem) {
+        Dialog listStatsDialog = new Dialog(this, R.style.dia_view);
+        listStatsDialog.setContentView(R.layout.dia_list_stats);
+        listStatsDialog.setTitle(getResources().getString(R.string.list_stats));
+        listStatsDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.MATCH_PARENT);
+
+        TextView statTotalCardsView = listStatsDialog.findViewById(R.id.list_stat_cards_total_content);
+        statTotalCardsView.setText(Integer.toString(cardsList.size()));
+
+        int statTotalProgress = cardsList.stream().mapToInt(c -> c.known).sum();
+        TextView statTotalProgressView = listStatsDialog.findViewById(R.id.list_stat_progress_total_content);
+        statTotalProgressView.setText(Integer.toString(statTotalProgress));
+        int statMaxProgress = cardsList.stream().mapToInt(c -> c.known).max().orElse(0);
+        TextView statMaxProgressView = listStatsDialog.findViewById(R.id.list_stat_progress_max_content);
+        statMaxProgressView.setText(Integer.toString(statMaxProgress));
+        int statMinProgress = cardsList.stream().mapToInt(c -> c.known).min().orElse(0);
+        TextView statMinProgressView = listStatsDialog.findViewById(R.id.list_stat_progress_min_content);
+        statMinProgressView.setText(Integer.toString(statMinProgress));
+        double statAvgProgress = cardsList.stream().mapToInt(c -> c.known).average().orElse(0);
+        statAvgProgress = Math.round(statAvgProgress * 100.0) / 100.0;
+        TextView statAvgProgressView = listStatsDialog.findViewById(R.id.list_stat_progress_avg_content);
+        statAvgProgressView.setText(Double.toString(statAvgProgress));
+
+        int statProgressTableIs0 = (int) cardsList.stream().filter(c -> c.known == 0).count();
+        int statProgressTableIs1 = (int) cardsList.stream().filter(c -> c.known == 1).count();
+        int statProgressTableIs2 = (int) cardsList.stream().filter(c -> c.known == 2).count();
+        int statProgressTableIs3 = (int) cardsList.stream().filter(c -> c.known == 3).count();
+        int statProgressTableIs4 = (int) cardsList.stream().filter(c -> c.known == 4).count();
+        int statProgressTableIs5OrMore = (int) cardsList.stream().filter(c -> c.known >= 5).count();
+        float percentCurrent = statProgressTableIs0 / ((float) cardsList.size());
+        TextView statProgressTableKnown0 = listStatsDialog.findViewById(R.id.list_stat_progress_counter_number_0);
+        TextView statProgressTablePercent0 = listStatsDialog.findViewById(R.id.list_stat_progress_counter_percent_0);
+        statProgressTableKnown0.setText(Integer.toString(statProgressTableIs0));
+        statProgressTablePercent0.setText(Integer.toString(Math.round(percentCurrent * 100)));
+        percentCurrent = statProgressTableIs1 / ((float) cardsList.size());
+        TextView statProgressTableKnown1 = listStatsDialog.findViewById(R.id.list_stat_progress_counter_number_1);
+        TextView statProgressTablePercent1 = listStatsDialog.findViewById(R.id.list_stat_progress_counter_percent_1);
+        statProgressTableKnown1.setText(Integer.toString(statProgressTableIs1));
+        statProgressTablePercent1.setText(Integer.toString(Math.round(percentCurrent * 100)));
+        percentCurrent = statProgressTableIs2 / ((float) cardsList.size());
+        TextView statProgressTableKnown2 = listStatsDialog.findViewById(R.id.list_stat_progress_counter_number_2);
+        TextView statProgressTablePercent2 = listStatsDialog.findViewById(R.id.list_stat_progress_counter_percent_2);
+        statProgressTableKnown2.setText(Integer.toString(statProgressTableIs2));
+        statProgressTablePercent2.setText(Integer.toString(Math.round(percentCurrent * 100)));
+        percentCurrent = statProgressTableIs3 / ((float) cardsList.size());
+        TextView statProgressTableKnown3 = listStatsDialog.findViewById(R.id.list_stat_progress_counter_number_3);
+        TextView statProgressTablePercent3 = listStatsDialog.findViewById(R.id.list_stat_progress_counter_percent_3);
+        statProgressTableKnown3.setText(Integer.toString(statProgressTableIs3));
+        statProgressTablePercent3.setText(Integer.toString(Math.round(percentCurrent * 100)));
+        percentCurrent = statProgressTableIs4 / ((float) cardsList.size());
+        TextView statProgressTableKnown4 = listStatsDialog.findViewById(R.id.list_stat_progress_counter_number_4);
+        TextView statProgressTablePercent4 = listStatsDialog.findViewById(R.id.list_stat_progress_counter_percent_4);
+        statProgressTableKnown4.setText(Integer.toString(statProgressTableIs4));
+        statProgressTablePercent4.setText(Integer.toString(Math.round(percentCurrent * 100)));
+        percentCurrent = statProgressTableIs5OrMore / ((float) cardsList.size());
+        TextView statProgressTableKnown5 = listStatsDialog.findViewById(R.id.list_stat_progress_counter_number_5);
+        TextView statProgressTablePercent5 = listStatsDialog.findViewById(R.id.list_stat_progress_counter_percent_5);
+        statProgressTableKnown5.setText(Integer.toString(statProgressTableIs5OrMore));
+        statProgressTablePercent5.setText(Integer.toString(Math.round(percentCurrent * 100)));
+
+        listStatsDialog.setOnKeyListener((dialogInterface, keyCode, event) -> {
+            if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
+                listStatsDialog.dismiss();
+                return true;
+            }
+            return false;
+        });
+        listStatsDialog.show();
+    }
+
     public void startNewCard(MenuItem menuItem) {
         Intent intent = new Intent(this.getApplicationContext(), NewCard.class);
         intent.putExtra("collection", collectionNo);
@@ -445,6 +518,7 @@ public class ListCards extends AppCompatActivity {
             }
         }
         queryModeItem.setVisible(cardsList.size() > 0);
+        listStatsItem.setVisible(cardsList.size() > 0);
         changeFrontBackItem.setTitle(reverse ? R.string.change_back_front : R.string.change_front_back);
         changeFrontBackItem.setVisible(cardsList.size() > 0);
         sortRandomItem.setVisible(cardsList.size() > 1);

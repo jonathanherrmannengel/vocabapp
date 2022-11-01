@@ -48,11 +48,19 @@
         android:title="@string/pack_details"
         app:showAsAction="ifRoom" />
     <item
+        android:id="@+id/show_list_stats"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="showListStats"
+        android:orderInCategory="400"
+        android:title="@string/list_stats"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/change_front_back"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="changeFrontBack"
-        android:orderInCategory="400"
+        android:orderInCategory="500"
         android:title="@string/change_front_back"
         app:showAsAction="never" />
     <item
@@ -60,7 +68,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="sort"
-        android:orderInCategory="500"
+        android:orderInCategory="600"
         android:title="@string/sort_random"
         app:showAsAction="never" />
 </menu>

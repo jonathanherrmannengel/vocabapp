@@ -73,6 +73,22 @@
     <string name="query_notes">show notes</string>
     <string name="query_notes_title">flashcard notes</string>
     <string name="query_mode_exit">exit query mode?</string>
+    <string name="list_stats">list stats</string>
+    <string name="list_stat_cards">flashcards</string>
+    <string name="list_stat_cards_total">total</string>
+    <string name="list_stat_progress" translatable="false">@string/card_known</string>
+    <string name="list_stat_progress_total" translatable="false">@string/list_stat_cards_total</string>
+    <string name="list_stat_progress_max">max</string>
+    <string name="list_stat_progress_min">min</string>
+    <string name="list_stat_progress_avg">average</string>
+    <string name="list_stat_progress_counter_number" translatable="false">@string/list_stat_cards</string>
+    <string name="list_stat_progress_counter_percent">%</string>
+    <string name="list_stat_progress_counter_known_0">none</string>
+    <string name="list_stat_progress_counter_known_1">1</string>
+    <string name="list_stat_progress_counter_known_2">2</string>
+    <string name="list_stat_progress_counter_known_3">3</string>
+    <string name="list_stat_progress_counter_known_4">4</string>
+    <string name="list_stat_progress_counter_known_5">5+</string>
     <string name="color">color</string>
     <string name="info">info</string>
     <string name="search">search</string>

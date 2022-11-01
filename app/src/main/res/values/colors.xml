@@ -11,4 +11,10 @@
     <color name="ijblue">#1b2c66</color>
     <color name="dark_red">#550000</color>
     <color name="dark_green">#005500</color>
+    <color name="progress0">#ff0000</color>
+    <color name="progress1">#ee5500</color>
+    <color name="progress2">#eecc00</color>
+    <color name="progress3">#ccee00</color>
+    <color name="progress4">#55ee00</color>
+    <color name="progress5">#00ff00</color>
 </resources>
