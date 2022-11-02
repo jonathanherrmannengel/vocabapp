@@ -3,14 +3,14 @@ plugins {
 }
 apply plugin: 'kotlin-android'
 android {
-    compileSdk 32
+    compileSdk 33
 
     defaultConfig {
         applicationId "de.herrmann_engel.rbv"
         minSdk 25
-        targetSdk 32
-        versionCode 56
-        versionName '2.3.1'
+        targetSdk 33
+        versionCode 57
+        versionName '2.3.2'
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -40,7 +40,7 @@ dependencies {
     implementation "androidx.room:room-runtime:$room_version"
     annotationProcessor "androidx.room:room-compiler:$room_version"
     implementation 'androidx.appcompat:appcompat:1.5.1'
-    implementation("androidx.core:core-ktx:1.8.0")
+    implementation("androidx.core:core-ktx:1.9.0")
     implementation 'com.google.android.material:material:1.7.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.3-native-mt'

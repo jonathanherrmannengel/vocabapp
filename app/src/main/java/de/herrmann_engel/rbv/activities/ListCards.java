@@ -385,13 +385,6 @@ public class ListCards extends AppCompatActivity {
         statProgressTableKnown5.setText(Integer.toString(statProgressTableIs5OrMore));
         statProgressTablePercent5.setText(Integer.toString(Math.round(percentCurrent * 100)));
 
-        listStatsDialog.setOnKeyListener((dialogInterface, keyCode, event) -> {
-            if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
-                listStatsDialog.dismiss();
-                return true;
-            }
-            return false;
-        });
         listStatsDialog.show();
     }
 
