@@ -107,6 +107,28 @@
                 </LinearLayout>
             </LinearLayout>
 
+            <Button
+                android:id="@+id/view_card_images"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:background="@android:color/transparent"
+                android:gravity="center"
+                android:text="@string/show_image_media"
+                android:textColor="@color/button"
+                android:textSize="22sp" />
+
+            <Button
+                android:id="@+id/view_card_media"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:background="@android:color/transparent"
+                android:gravity="center"
+                android:text="@string/show_all_media"
+                android:textColor="@color/button"
+                android:textSize="22sp" />
+
             <TextView
                 android:id="@+id/card_notes"
                 android:layout_width="match_parent"
@@ -118,6 +140,7 @@
                 android:textColor="@color/light_black"
                 android:textIsSelectable="true"
                 android:textSize="@dimen/card_notes_size_default" />
+
         </LinearLayout>
     </ScrollView>
 </RelativeLayout>

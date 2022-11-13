@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:padding="2dp">
+
+            <TextView
+                android:id="@+id/rec_media_link_card_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical|start"
+                android:padding="10dp"
+                android:textColor="@android:color/black"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/rec_media_link_card_missing"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical|end"
+                android:padding="2dp"
+                android:textColor="@color/warn_red"
+                android:textSize="14sp"
+                android:textStyle="italic" />
+
+            <Button
+                android:id="@+id/rec_media_link_card_open"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:gravity="center_vertical|end"
+                android:text="@string/open"
+                android:textColor="@color/button"
+                android:textSize="14sp" />
+
+            <Button
+                android:id="@+id/rec_media_link_card_share"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:gravity="center_vertical|end"
+                android:text="@string/share"
+                android:textColor="@color/button"
+                android:textSize="14sp" />
+
+            <Button
+                android:id="@+id/rec_media_link_card_delete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:gravity="center_vertical|end"
+                android:text="@string/delete"
+                android:textColor="@color/button"
+                android:textSize="14sp" />
+        </LinearLayout>
+    </HorizontalScrollView>
+</LinearLayout>

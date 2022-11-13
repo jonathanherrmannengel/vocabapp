@@ -14,7 +14,8 @@ class AsyncImportWorker(
     private val listener: AsyncImportFinish,
     private val uri: Uri,
     private val mode: Int,
-    private val includeSettings: Boolean
+    private val includeSettings: Boolean,
+    private val includeMedia: Boolean
 ) {
     fun execute() {
         listener.importCardsResult(execute2())
@@ -31,6 +32,8 @@ class AsyncImportWorker(
                 DB_Helper_Get(context)
             val collectionUidConverter = AsyncImportUidConvert()
             val packUidConverter = AsyncImportUidConvert()
+            val cardUidConverter = AsyncImportUidConvert()
+            val mediaUidConverter = AsyncImportUidConvert()
             var line: Array<String?>?
             while (csvReader.readNext().also { line = it } != null) {
                 try {
@@ -145,6 +148,7 @@ class AsyncImportWorker(
                             if (currentPack > 0) {
                                 try {
                                     helperGet.getSinglePack(currentPack)
+                                    val cardUidOld = Integer.parseInt((line?.get(1) ?: "0"))
                                     val front = line?.get(2) ?: ""
                                     val back = line?.get(3) ?: ""
                                     val known = Integer.parseInt((line?.get(5) ?: "0"))
@@ -160,19 +164,61 @@ class AsyncImportWorker(
                                     if (sameNamed.size == 0 ||
                                         mode == Globals.IMPORT_MODE_DUPLICATES
                                     ) {
-                                        helperCreate.createCard(
+                                        val cardUidNew = helperCreate.createCard(
                                             front,
                                             back,
                                             notes,
                                             currentPack,
                                             known,
                                             date
-                                        )
+                                        ).toInt()
+                                        cardUidConverter.insertPair(cardUidOld, cardUidNew)
+                                    } else if (mode == Globals.IMPORT_MODE_INTEGRATE) {
+                                        cardUidConverter.insertPair(cardUidOld, sameNamed[0].uid)
                                     }
                                 } catch (e: Exception) {
                                     e.printStackTrace()
                                     errorLevel = Globals.IMPORT_ERROR_LEVEL_WARN
                                 }
+                            }
+                        }
+                        line?.get(0) == "media" && includeMedia -> {
+                            try {
+                                val mediaUidOld = Integer.parseInt((line?.get(1) ?: "0"))
+                                val file = line?.get(2) ?: ""
+                                val mime = line?.get(3) ?: ""
+                                if (file.isNotEmpty() && mime.isNotEmpty()) {
+                                    if (helperGet.existsMedia(file)) {
+                                        val mediaUidNew = helperGet.getSingleMedia(file).uid
+                                        mediaUidConverter.insertPair(mediaUidOld, mediaUidNew)
+                                    } else {
+                                        val mediaUidNew =
+                                            helperCreate.createMedia(file, mime).toInt()
+                                        mediaUidConverter.insertPair(mediaUidOld, mediaUidNew)
+
+                                    }
+                                }
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                                errorLevel = Globals.IMPORT_ERROR_LEVEL_WARN
+                            }
+                        }
+                        line?.get(0) == "media_link_card" && includeMedia -> {
+                            try {
+                                val currentMedia =
+                                    mediaUidConverter.getNewValue(
+                                        Integer.parseInt((line?.get(2) ?: "0"))
+                                    )
+                                val currentCard =
+                                    cardUidConverter.getNewValue(
+                                        Integer.parseInt((line?.get(3) ?: "0"))
+                                    )
+                                if (currentMedia != 0 && currentCard != 0 && !helperGet.existsMediaLinkCard(currentMedia, currentCard)) {
+                                    helperCreate.createMediaLink(currentMedia, currentCard)
+                                }
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                                errorLevel = Globals.IMPORT_ERROR_LEVEL_WARN
                             }
                         }
                         line?.get(0) == "app_setting" && includeSettings -> {

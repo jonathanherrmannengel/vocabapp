@@ -40,13 +40,20 @@ public class AppDatabaseBuilder {
             database.execSQL("ALTER TABLE db_collection ADD COLUMN emoji TEXT");
         }
     };
+    private final Migration MIGRATION_6_7 = new Migration(6, 7) {
+        @Override
+        public void migrate(SupportSQLiteDatabase database) {
+            database.execSQL("CREATE TABLE IF NOT EXISTS `db_media` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `file` TEXT, `mime` TEXT)");
+            database.execSQL("CREATE TABLE IF NOT EXISTS `db_media_link_card` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `fileId` INTEGER NOT NULL, `cardId` INTEGER NOT NULL)");
+        }
+    };
 
     public AppDatabase get(Context context) {
         return Room.databaseBuilder(
                         context,
                         AppDatabase.class, Globals.DB_NAME)
                 .allowMainThreadQueries()
-                .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_6)
+                .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_6, MIGRATION_6_7)
                 .build();
     }
 }

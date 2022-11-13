@@ -44,4 +44,14 @@ public class DB_Helper_Export {
         }
         return cursor;
     }
+
+    public Cursor getAllMedia() {
+        return dbHelper.media_dao.getAllExport();
+    }
+
+
+    public Cursor getAllMediaLinks() {
+        return dbHelper.media_link_card_dao.getAllExport();
+    }
+
 }

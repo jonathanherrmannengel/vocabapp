@@ -9,8 +9,8 @@ android {
         applicationId "de.herrmann_engel.rbv"
         minSdk 25
         targetSdk 33
-        versionCode 57
-        versionName '2.3.2'
+        versionCode 58
+        versionName '3.0.0'
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -46,4 +46,5 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.3-native-mt'
     implementation 'io.noties.markwon:core:4.6.2'
     implementation "com.vanniktech:emoji-twitter:0.15.0"
+    implementation 'com.squareup.picasso:picasso:2.8'
 }

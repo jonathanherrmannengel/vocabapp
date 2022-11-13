@@ -13,6 +13,9 @@ import java.util.List;
 @Dao
 public interface DB_Card_DAO {
 
+    @Query("SELECT EXISTS (SELECT 1 FROM db_card LIMIT 1)")
+    boolean hasCards();
+
     @Query("SELECT * FROM db_card")
     List<DB_Card> getAll();
 

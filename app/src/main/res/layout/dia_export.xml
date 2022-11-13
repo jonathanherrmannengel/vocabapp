@@ -5,41 +5,111 @@
     android:background="@color/background"
     android:gravity="center">
 
-    <LinearLayout
-        android:id="@+id/dia_export_include_settings_layout"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:padding="10dp">
+        android:layout_height="wrap_content">
 
-        <CheckBox
-            android:id="@+id/dia_export_include_settings"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:buttonTint="@color/ijblue" />
-
-        <TextView
-            android:layout_width="wrap_content"
+        <RelativeLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingStart="5dp"
-            android:paddingEnd="5dp"
-            android:text="@string/import_export_include_settings"
-            android:textColor="@color/light_black"
-            android:textSize="16sp" />
-    </LinearLayout>
+            android:background="@color/background">
 
-    <Button
-        android:id="@+id/dia_export_start"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/dia_export_include_settings_layout"
-        android:layout_centerHorizontal="true"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="10dp"
-        android:background="@android:color/transparent"
-        android:text="@string/start"
-        android:textColor="@color/light_black"
-        android:textSize="20sp" />
+            <LinearLayout
+                android:id="@+id/dia_export_include_settings_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:padding="10dp">
+
+                <CheckBox
+                    android:id="@+id/dia_export_include_settings"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:buttonTint="@color/ijblue" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="5dp"
+                    android:paddingEnd="5dp"
+                    android:text="@string/import_export_include_settings"
+                    android:textColor="@color/light_black"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/dia_export_include_media_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/dia_export_include_settings_layout"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="20dp"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="10dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:padding="10dp">
+
+                    <CheckBox
+                        android:id="@+id/dia_export_include_media"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:buttonTint="@color/ijblue" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="5dp"
+                        android:paddingEnd="5dp"
+                        android:text="@string/import_export_include_media"
+                        android:textColor="@color/light_black"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/dia_export_include_media_warn_no_files"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="5dp"
+                    android:text="@string/import_export_include_media_warn_no_files"
+                    android:textAlignment="center"
+                    android:textColor="@color/warn_red"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/dia_export_include_media_warn_all_media"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="5dp"
+                    android:text="@string/import_export_include_media_warn_all_media"
+                    android:textAlignment="center"
+                    android:textColor="@color/warn_red"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/dia_export_start"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/dia_export_include_media_layout"
+                android:layout_centerHorizontal="true"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="10dp"
+                android:background="@android:color/transparent"
+                android:text="@string/start"
+                android:textColor="@color/light_black"
+                android:textSize="20sp" />
+        </RelativeLayout>
+    </ScrollView>
 </RelativeLayout>

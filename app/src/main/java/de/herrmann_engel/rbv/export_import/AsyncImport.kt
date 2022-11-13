@@ -14,7 +14,8 @@ class AsyncImport internal constructor(
     private val listener: AsyncImportFinish,
     private val uri: Uri,
     private val mode: Int,
-    private val includeSettings: Boolean
+    private val includeSettings: Boolean,
+    private val includeMedia: Boolean
 ) {
     fun execute() {
         CoroutineScope(Dispatchers.Main).launch {
@@ -24,7 +25,8 @@ class AsyncImport internal constructor(
                     listener,
                     uri,
                     mode,
-                    includeSettings
+                    includeSettings,
+                    includeMedia
                 ).execute()
             }
         }

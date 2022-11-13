@@ -18,11 +18,18 @@
         android:title="@string/delete"
         app:showAsAction="ifRoom" />
     <item
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="editCardMedia"
+        android:orderInCategory="300"
+        android:title="@string/edit_card_media"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/move_card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="moveCard"
-        android:orderInCategory="300"
+        android:orderInCategory="400"
         android:title="@string/move"
         app:showAsAction="never" />
 </menu>

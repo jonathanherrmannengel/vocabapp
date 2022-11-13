@@ -4,6 +4,8 @@ import android.content.Context;
 
 import de.herrmann_engel.rbv.db.DB_Card;
 import de.herrmann_engel.rbv.db.DB_Collection;
+import de.herrmann_engel.rbv.db.DB_Media;
+import de.herrmann_engel.rbv.db.DB_Media_Link_Card;
 import de.herrmann_engel.rbv.db.DB_Pack;
 
 public class DB_Helper_Create {
@@ -70,5 +72,27 @@ public class DB_Helper_Create {
 
     public long createCard(String front, String back, String notes, int pack) throws Exception {
         return createCard(front, back, notes, pack, 0, System.currentTimeMillis() / 1000L);
+    }
+
+    public long createMedia(String file, String mime) throws Exception {
+        DB_Helper_Get dbHelperGet = new DB_Helper_Get(dbHelper.context);
+        if (!dbHelperGet.existsMedia(file)) {
+            DB_Media media = new DB_Media();
+            media.file = file;
+            media.mime = mime;
+            return dbHelper.media_dao.insert(media);
+        }
+        throw new Exception();
+    }
+
+    public long createMediaLink(int file, int card) throws Exception {
+        DB_Helper_Get dbHelperGet = new DB_Helper_Get(dbHelper.context);
+        if (!dbHelperGet.existsMediaLinkCard(file, card)) {
+            DB_Media_Link_Card mediaLinkCard = new DB_Media_Link_Card();
+            mediaLinkCard.file = file;
+            mediaLinkCard.card = card;
+            return dbHelper.media_link_card_dao.insert(mediaLinkCard);
+        }
+        throw new Exception();
     }
 }

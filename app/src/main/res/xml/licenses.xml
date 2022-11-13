@@ -24,6 +24,11 @@
     </item>
     <item>
         <identifier>Apache-2.0</identifier>
+        <projectName>Picasso (com.squareup.picasso)</projectName>
+        <projectUrl>https://github.com/square/picasso</projectUrl>
+    </item>
+    <item>
+        <identifier>Apache-2.0</identifier>
         <projectName>Emoji (com.vanniktech:emoji-twitter)</projectName>
         <projectUrl>https://github.com/vanniktech/Emoji</projectUrl>
     </item>

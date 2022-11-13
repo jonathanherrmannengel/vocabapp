@@ -14,11 +14,11 @@ import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -35,13 +35,16 @@ import de.herrmann_engel.rbv.export_import.AsyncImport;
 import de.herrmann_engel.rbv.export_import.AsyncImportFinish;
 import de.herrmann_engel.rbv.export_import.Export;
 
-public class ListCollections extends AppCompatActivity implements AsyncImportFinish {
+public class ListCollections extends FileTools implements AsyncImportFinish {
 
     List<DB_Collection> collections;
     private ActivityResultLauncher<Intent> launcherImportFile;
     private MenuItem exportAllMenuItem;
+    private MenuItem startAdvancedSearchMenuItem;
+    private MenuItem startManageMediaMenuItem;
     private int importMode;
     private boolean includeSettings;
+    private boolean includeMedia;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +64,7 @@ public class ListCollections extends AppCompatActivity implements AsyncImportFin
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
                     if (result.getResultCode() == Activity.RESULT_OK) {
-                        new AsyncImport(this, this, Objects.requireNonNull(result.getData()).getData(), importMode, includeSettings)
+                        new AsyncImport(this, this, Objects.requireNonNull(result.getData()).getData(), importMode, includeSettings, includeMedia)
                                 .execute();
                         Toast.makeText(this, R.string.wait, Toast.LENGTH_LONG).show();
                     } else {
@@ -75,6 +78,8 @@ public class ListCollections extends AppCompatActivity implements AsyncImportFin
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_list_collections, menu);
         exportAllMenuItem = menu.findItem(R.id.export_all);
+        startAdvancedSearchMenuItem = menu.findItem(R.id.start_advanced_search);
+        startManageMediaMenuItem = menu.findItem(R.id.start_manage_media);
         updateContent();
         return true;
     }
@@ -83,6 +88,8 @@ public class ListCollections extends AppCompatActivity implements AsyncImportFin
         DB_Helper_Get dbHelperGet = new DB_Helper_Get(this);
         collections = dbHelperGet.getAllCollections();
         exportAllMenuItem.setVisible(collections.size() > 0);
+        startAdvancedSearchMenuItem.setVisible(dbHelperGet.hasCards());
+        startManageMediaMenuItem.setVisible(dbHelperGet.hasMedia());
 
         RecyclerView recyclerView = this.findViewById(R.id.rec_default);
         AdapterCollections adapter = new AdapterCollections(collections, this);
@@ -97,6 +104,11 @@ public class ListCollections extends AppCompatActivity implements AsyncImportFin
 
     public void startAdvancedSearch(MenuItem menuItem) {
         this.startActivity(new Intent(getApplicationContext(), AdvancedSearch.class));
+        this.finish();
+    }
+
+    public void startManageMedia(MenuItem menuItem) {
+        this.startActivity(new Intent(getApplicationContext(), ManageMedia.class));
         this.finish();
     }
 
@@ -123,6 +135,8 @@ public class ListCollections extends AppCompatActivity implements AsyncImportFin
         RadioButton startImportModeDuplicates = startImportMode.findViewById(R.id.dia_import_radio_duplicates);
         RadioButton startImportModeSkip = startImportMode.findViewById(R.id.dia_import_radio_skip);
         CheckBox includeSettingsCheckBox = startImportDialog.findViewById(R.id.dia_import_include_settings);
+        CheckBox includeMediaCheckBox = startImportDialog.findViewById(R.id.dia_import_include_media);
+        TextView includeMediaWarnNoFile = startImportDialog.findViewById(R.id.dia_import_include_media_warn_no_files);
         if (collections.size() > 0) {
             startImportModeIntegrate.setChecked(true);
             startImportModeDuplicates.setChecked(false);
@@ -133,6 +147,14 @@ public class ListCollections extends AppCompatActivity implements AsyncImportFin
             includeSettingsCheckBox.setChecked(true);
         }
         startImportModeSkip.setChecked(false);
+        includeMediaCheckBox.setChecked(true);
+        includeMediaCheckBox.setOnCheckedChangeListener((v, c) -> {
+            if (c) {
+                includeMediaWarnNoFile.setVisibility(View.VISIBLE);
+            } else {
+                includeMediaWarnNoFile.setVisibility(View.GONE);
+            }
+        });
         startImportButton.setOnClickListener(v -> {
             if (startImportMode.getCheckedRadioButtonId() == R.id.dia_import_radio_integrate) {
                 importMode = Globals.IMPORT_MODE_INTEGRATE;
@@ -142,6 +164,7 @@ public class ListCollections extends AppCompatActivity implements AsyncImportFin
                 importMode = Globals.IMPORT_MODE_SKIP;
             }
             includeSettings = includeSettingsCheckBox.isChecked();
+            includeMedia = includeMediaCheckBox.isChecked();
             Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
             intent.addCategory(Intent.CATEGORY_OPENABLE);
             intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
@@ -174,15 +197,39 @@ public class ListCollections extends AppCompatActivity implements AsyncImportFin
         startExportDialog.setTitle(getResources().getString(R.string.options));
         startExportDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.MATCH_PARENT);
-        Button startImportButton = startExportDialog.findViewById(R.id.dia_export_start);
-        startImportButton.setOnClickListener(v -> {
-            CheckBox includeSettingsCheckBox = startExportDialog.findViewById(R.id.dia_export_include_settings);
-            Export export = new Export(this, includeSettingsCheckBox.isChecked());
+        Button startExportButton = startExportDialog.findViewById(R.id.dia_export_start);
+        CheckBox includeSettingsCheckBox = startExportDialog.findViewById(R.id.dia_export_include_settings);
+        CheckBox includeMediaCheckBox = startExportDialog.findViewById(R.id.dia_export_include_media);
+        TextView includeMediaWarnNoFile = startExportDialog.findViewById(R.id.dia_export_include_media_warn_no_files);
+        TextView includeMediaWarnAllMedia = startExportDialog.findViewById(R.id.dia_export_include_media_warn_all_media);
+        includeSettingsCheckBox.setChecked(false);
+        includeMediaCheckBox.setChecked(true);
+        includeMediaWarnNoFile.setVisibility(includeMediaCheckBox.isChecked() ? View.VISIBLE : View.GONE);
+        includeMediaWarnAllMedia.setVisibility(View.GONE);
+        includeMediaCheckBox.setOnCheckedChangeListener((v, c) -> {
+            if (c) {
+                includeMediaWarnNoFile.setVisibility(View.VISIBLE);
+            } else {
+                includeMediaWarnNoFile.setVisibility(View.GONE);
+            }
+        });
+        startExportButton.setOnClickListener(v -> {
+            Export export = new Export(this, includeSettingsCheckBox.isChecked(), includeMediaCheckBox.isChecked());
             if (!export.exportFile()) {
                 Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show();
             }
             startExportDialog.dismiss();
         });
         startExportDialog.show();
+    }
+
+    @Override
+    protected void notifyFolderSet() {
+
+    }
+
+    @Override
+    protected void notifyMissingAction(int id) {
+
     }
 }

@@ -19,7 +19,6 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -32,6 +31,7 @@ import de.herrmann_engel.rbv.Globals;
 import de.herrmann_engel.rbv.R;
 import de.herrmann_engel.rbv.adapters.AdapterPacksMoveCard;
 import de.herrmann_engel.rbv.db.DB_Card;
+import de.herrmann_engel.rbv.db.DB_Media_Link_Card;
 import de.herrmann_engel.rbv.db.DB_Pack;
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Delete;
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get;
@@ -39,7 +39,7 @@ import de.herrmann_engel.rbv.db.utils.DB_Helper_Update;
 import de.herrmann_engel.rbv.utils.StringTools;
 import io.noties.markwon.Markwon;
 
-public class ViewCard extends AppCompatActivity {
+public class ViewCard extends FileTools {
 
     TextView knownText;
     ImageButton knownMinus;
@@ -96,12 +96,16 @@ public class ViewCard extends AppCompatActivity {
                 back.setText(card.back);
             }
             TextView notes = findViewById(R.id.card_notes);
-            if (settings.getBoolean("format_card_notes", false)) {
-                final Markwon markwon = Markwon.create(this);
-                notes.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_START);
-                markwon.setMarkdown(notes, card.notes);
+            if (card.notes != null && !card.notes.isEmpty()) {
+                if (settings.getBoolean("format_card_notes", false)) {
+                    final Markwon markwon = Markwon.create(this);
+                    notes.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_START);
+                    markwon.setMarkdown(notes, card.notes);
+                } else {
+                    notes.setText(card.notes);
+                }
             } else {
-                notes.setText(card.notes);
+                notes.setVisibility(View.GONE);
             }
             if (increaseFontSize) {
                 front.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.card_front_size_big));
@@ -120,6 +124,30 @@ public class ViewCard extends AppCompatActivity {
             e.printStackTrace();
             Toast.makeText(getApplicationContext(), R.string.error, Toast.LENGTH_SHORT).show();
         }
+        setMediaButtons();
+    }
+
+    @Override
+    protected void notifyFolderSet() {
+        setMediaButtons();
+    }
+
+    @Override
+    protected void notifyMissingAction(int id) {
+        Intent intent = new Intent(this.getApplicationContext(), EditCardMedia.class);
+        intent.putExtra("collection", collectionNo);
+        intent.putExtra("pack", packNo);
+        intent.putIntegerArrayListExtra("packs", packNos);
+        intent.putExtra("card", id);
+        intent.putExtra("reverse", reverse);
+        intent.putExtra("sort", sort);
+        intent.putExtra("searchQuery", searchQuery);
+        intent.putExtra("cardPosition", 0);
+        intent.putExtra("progressGreater", progressGreater);
+        intent.putExtra("progressNumber", progressNumber);
+        intent.putIntegerArrayListExtra("savedList", savedList);
+        this.startActivity(intent);
+        this.finish();
     }
 
     @Override
@@ -179,6 +207,23 @@ public class ViewCard extends AppCompatActivity {
 
     public void editCard(MenuItem menuItem) {
         Intent intent = new Intent(getApplicationContext(), EditCard.class);
+        intent.putExtra("collection", collectionNo);
+        intent.putExtra("pack", packNo);
+        intent.putIntegerArrayListExtra("packs", packNos);
+        intent.putExtra("card", cardNo);
+        intent.putExtra("reverse", reverse);
+        intent.putExtra("sort", sort);
+        intent.putExtra("searchQuery", searchQuery);
+        intent.putExtra("cardPosition", cardPosition);
+        intent.putExtra("progressGreater", progressGreater);
+        intent.putExtra("progressNumber", progressNumber);
+        intent.putIntegerArrayListExtra("savedList", savedList);
+        startActivity(intent);
+        this.finish();
+    }
+
+    public void editCardMedia(MenuItem menuItem) {
+        Intent intent = new Intent(getApplicationContext(), EditCardMedia.class);
         intent.putExtra("collection", collectionNo);
         intent.putExtra("pack", packNo);
         intent.putIntegerArrayListExtra("packs", packNos);
@@ -257,6 +302,25 @@ public class ViewCard extends AppCompatActivity {
         } catch (Exception e) {
             Toast.makeText(getApplicationContext(), R.string.error, Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void setMediaButtons() {
+        ArrayList<DB_Media_Link_Card> imageList = (ArrayList<DB_Media_Link_Card>) dbHelperGet.getImageMediaLinksByCard(cardNo);
+        Button showImages = findViewById(R.id.view_card_images);
+        if (imageList.isEmpty()) {
+            showImages.setVisibility(View.GONE);
+        } else {
+            showImages.setVisibility(View.VISIBLE);
+        }
+        showImages.setOnClickListener(v -> showImageListDialog(imageList));
+        ArrayList<DB_Media_Link_Card> mediaList = (ArrayList<DB_Media_Link_Card>) dbHelperGet.getAllMediaLinksByCard(cardNo);
+        Button showAllMedia = findViewById(R.id.view_card_media);
+        if (mediaList.isEmpty()) {
+            showAllMedia.setVisibility(View.GONE);
+        } else {
+            showAllMedia.setVisibility(View.VISIBLE);
+        }
+        showAllMedia.setOnClickListener(v -> showMediaListDialog(mediaList));
     }
 
     @Override

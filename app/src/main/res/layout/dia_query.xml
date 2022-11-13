@@ -101,6 +101,26 @@
             </LinearLayout>
 
             <Button
+                android:id="@+id/query_button_media_image"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:gravity="center"
+                android:text="@string/query_media_image"
+                android:textColor="@color/button"
+                android:textSize="13sp" />
+
+            <Button
+                android:id="@+id/query_button_media_other"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:gravity="center"
+                android:text="@string/query_media_all"
+                android:textColor="@color/button"
+                android:textSize="13sp" />
+
+            <Button
                 android:id="@+id/query_button_notes"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

@@ -7,6 +7,7 @@
     <string name="no">no</string>
     <string name="error">error</string>
     <string name="error_values">error – did you fill all required fields?</string>
+    <string name="success">success</string>
     <string name="wait">please wait</string>
     <string name="add">add</string>
     <string name="start">start</string>
@@ -15,6 +16,8 @@
     <string name="save_changes">save changes</string>
     <string name="discard_changes">discard changes</string>
     <string name="delete">delete</string>
+    <string name="open">open</string>
+    <string name="share">share</string>
     <string name="options">options</string>
     <string name="welcome_collection">Welcome. Create a new filing box (+) or import a filing box backup (↓).</string>
     <string name="welcome_pack">There are no decks in this filing box.</string>
@@ -36,9 +39,36 @@
     <string name="import_mode_duplicates">Add new same-named entry</string>
     <string name="import_mode_integrate">Merge with first same-named filing box</string>
     <string name="import_export_include_settings">Include app settings</string>
+    <string name="import_export_include_media">Include media links</string>
+    <string name="import_export_include_media_warn_no_files">Backup only contains media references, no files. You need to backup and restore them on your own.</string>
+    <string name="import_export_include_media_warn_all_media">Backup contains all media references, also those not used in this filing box.</string>
     <string name="edit_collection">Edit filing box</string>
     <string name="edit_pack">Edit deck</string>
     <string name="edit_card">Edit flashcard</string>
+    <string name="edit_card_media">Manage attached media</string>
+    <string name="edit_card_media_add">Add media</string>
+    <string name="no_media">no media</string>
+    <string name="media_missing">media missing (file not found)</string>
+    <string name="media_missing_db">media missing (no database entry)</string>
+    <string name="media_missing_dialog">media missing</string>
+    <string name="media_missing_dialog_text">Abort and review missing files?</string>
+    <string name="image_media">image media</string>
+    <string name="show_image_media">show images</string>
+    <string name="show_all_media">show all media</string>
+    <string name="all_media">all media</string>
+    <string name="manage_media">Manage media</string>
+    <string name="media_linked_cards">Linked flashcards</string>
+    <string name="media_no_card">No linked flashcards found. Delete medium?</string>
+    <string name="select_folder_title">Select folder</string>
+    <string name="select_folder_help">You need to select a folder for this app to save its media. It is recommended to use a folder exclusive to this app and backup it manually. Select one now?</string>
+    <string name="select_folder_help_reselect">Selected media folder not accessible. Re-select it now?</string>
+    <string name="select_folder_help_db_entries">Database contains media entries, but no folder ist selected. Select the folder now?</string>
+    <string name="file_exists">A file with this name exists in the app media folder. You have the following options:</string>
+    <string name="file_exists_title">file exists</string>
+    <string name="file_exists_action_link">Use existing instead of selected file</string>
+    <string name="file_exists_action_new">rename and copy selected file</string>
+    <string name="delete_file_title">delete file</string>
+    <string name="delete_file_info">Media deleted from database. Also delete file from disk?</string>
     <string name="delete_pack_with_cards">This deck contains flashcards. If you proceed these flashcards will also be deleted. Delete anyway?</string>
     <string name="delete_collection_with_packs">This filing box contains decks. If you proceed these decks and their flashcards will also be deleted. Delete anyway?</string>
     <string name="move">move</string>
@@ -72,6 +102,10 @@
     <string name="query_show">show solution</string>
     <string name="query_notes">show notes</string>
     <string name="query_notes_title">flashcard notes</string>
+    <string name="query_media_all" translatable="false">@string/show_all_media</string>
+    <string name="query_media_all_title">all media files</string>
+    <string name="query_media_image" translatable="false">@string/show_image_media</string>
+    <string name="query_media_image_title">image files</string>
     <string name="query_mode_exit">exit query mode?</string>
     <string name="list_stats">list stats</string>
     <string name="list_stat_cards">flashcards</string>

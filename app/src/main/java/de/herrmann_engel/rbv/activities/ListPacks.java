@@ -1,5 +1,6 @@
 package de.herrmann_engel.rbv.activities;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
@@ -9,7 +10,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -118,10 +124,37 @@ public class ListPacks extends AppCompatActivity {
     }
 
     public void export(MenuItem menuItem) {
-        Export export = new Export(this, collectionNo);
-        if (!export.exportFile()) {
-            Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show();
-        }
+        Dialog startExportDialog = new Dialog(this, R.style.dia_view);
+        startExportDialog.setContentView(R.layout.dia_export);
+        startExportDialog.setTitle(getResources().getString(R.string.options));
+        startExportDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.MATCH_PARENT);
+        Button startExportButton = startExportDialog.findViewById(R.id.dia_export_start);
+        LinearLayout includeSettingsLayout = startExportDialog.findViewById(R.id.dia_export_include_settings_layout);
+        CheckBox includeMediaCheckBox = startExportDialog.findViewById(R.id.dia_export_include_media);
+        TextView includeMediaWarnNoFile = startExportDialog.findViewById(R.id.dia_export_include_media_warn_no_files);
+        TextView includeMediaWarnAllMedia = startExportDialog.findViewById(R.id.dia_export_include_media_warn_all_media);
+        includeSettingsLayout.setVisibility(View.GONE);
+        includeMediaCheckBox.setChecked(true);
+        includeMediaWarnNoFile.setVisibility(includeMediaCheckBox.isChecked() ? View.VISIBLE : View.GONE);
+        includeMediaWarnAllMedia.setVisibility(includeMediaCheckBox.isChecked() ? View.VISIBLE : View.GONE);
+        includeMediaCheckBox.setOnCheckedChangeListener((v, c) -> {
+            if (c) {
+                includeMediaWarnNoFile.setVisibility(View.VISIBLE);
+                includeMediaWarnAllMedia.setVisibility(View.VISIBLE);
+            } else {
+                includeMediaWarnNoFile.setVisibility(View.GONE);
+                includeMediaWarnAllMedia.setVisibility(View.GONE);
+            }
+        });
+        startExportButton.setOnClickListener(v -> {
+            Export export = new Export(this, collectionNo, includeMediaCheckBox.isChecked());
+            if (!export.exportFile()) {
+                Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show();
+            }
+            startExportDialog.dismiss();
+        });
+        startExportDialog.show();
     }
 
     @Override

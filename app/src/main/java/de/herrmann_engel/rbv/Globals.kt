@@ -5,6 +5,7 @@ object Globals {
     const val EXPORT_FILE_NAME = "rbv_backup"
     const val EXPORT_FILE_EXTENSION = "csv"
     const val SETTINGS_NAME = "rbv_settings"
+    const val CONFIG_NAME = "rbv_config"
     const val IMPORT_ERROR_LEVEL_OKAY = 0
     const val IMPORT_ERROR_LEVEL_WARN = 1
     const val IMPORT_ERROR_LEVEL_ERROR = 2

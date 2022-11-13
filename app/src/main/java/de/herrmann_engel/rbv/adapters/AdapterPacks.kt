@@ -71,7 +71,7 @@ class AdapterPacks(
         val backgroundBehind =
             backgroundLayerList.findDrawableByLayerId(R.id.rec_view_collection_or_pack_background_behind) as GradientDrawable
         if (position == 0 && pack.isEmpty()) {
-            viewHolder.layout.background = null;
+            viewHolder.layout.background = null
             if (collection == -1) {
                 viewHolder.textView.text = c.resources.getString(R.string.welcome_pack)
             } else {

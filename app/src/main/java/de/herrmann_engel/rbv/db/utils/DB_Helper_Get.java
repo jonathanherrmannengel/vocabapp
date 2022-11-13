@@ -12,6 +12,8 @@ import java.util.List;
 import de.herrmann_engel.rbv.Globals;
 import de.herrmann_engel.rbv.db.DB_Card;
 import de.herrmann_engel.rbv.db.DB_Collection;
+import de.herrmann_engel.rbv.db.DB_Media;
+import de.herrmann_engel.rbv.db.DB_Media_Link_Card;
 import de.herrmann_engel.rbv.db.DB_Pack;
 import de.herrmann_engel.rbv.utils.StringTools;
 import io.noties.markwon.Markwon;
@@ -24,6 +26,10 @@ public class DB_Helper_Get {
     public DB_Helper_Get(Context context) {
         dbHelper = new DB_Helper(context);
         this.context = context;
+    }
+
+    public boolean hasCards() {
+        return dbHelper.card_dao.hasCards();
     }
 
     public DB_Collection getSingleCollection(int collection) throws Exception {
@@ -194,6 +200,59 @@ public class DB_Helper_Get {
 
     public List<DB_Card> getAllCardsByPackAndFrontAndBackAndNotes(int pack, String front, String back, String notes) {
         return dbHelper.card_dao.getAllByPackAndFrontAndBackAndNotes(pack, front, back, notes);
+    }
+
+    public boolean hasMedia() {
+        return dbHelper.media_dao.hasMedia();
+    }
+
+    public DB_Media getSingleMedia(String file) {
+        return dbHelper.media_dao.getSingleMedia(file);
+    }
+
+    public DB_Media getSingleMedia(int id) {
+        return dbHelper.media_dao.getSingleMedia(id);
+    }
+
+    public List<DB_Media> getAllMedia() {
+        return dbHelper.media_dao.getAll();
+    }
+
+    public List<DB_Media_Link_Card> getAllMediaLinksByCard(int card) {
+        return dbHelper.media_link_card_dao.getAllByCard(card);
+    }
+
+    public List<Integer> getAllMediaLinkFileIdsByCard(int card) {
+        return dbHelper.media_link_card_dao.getAllMediaIdsByCard(card);
+    }
+
+    public List<Integer> getAllMediaLinkCardIdsByMedia(int file) {
+        return dbHelper.media_link_card_dao.getAllCardIdsByMedia(file);
+    }
+
+    public List<DB_Media_Link_Card> getAllMediaLinksByFile(int file) {
+        return dbHelper.media_link_card_dao.getAllByMedia(file);
+    }
+
+    private boolean isPhoto(String mime) {
+        return mime.equals("image/png") || mime.equals("image/jpeg") || mime.equals("image/webp");
+    }
+
+    public List<DB_Media_Link_Card> getImageMediaLinksByCard(int card) {
+        List<DB_Media_Link_Card> list = dbHelper.media_link_card_dao.getAllByCard(card);
+        list.removeIf(l -> {
+            DB_Media file = getSingleMedia(l.file);
+            return file == null || !isPhoto(file.mime);
+        });
+        return list;
+    }
+
+    public boolean existsMedia(String file) {
+        return dbHelper.media_dao.existsMedia(file);
+    }
+
+    public boolean existsMediaLinkCard(int file, int card) {
+        return dbHelper.media_link_card_dao.existsMediaLinkCard(file, card);
     }
 
 }

@@ -26,11 +26,20 @@
         android:title="@string/export_all"
         app:showAsAction="never" />
     <item
+        android:id="@+id/start_advanced_search"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="startAdvancedSearch"
         android:orderInCategory="200"
         android:title="@string/advanced_search"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/start_manage_media"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="startManageMedia"
+        android:orderInCategory="200"
+        android:title="@string/manage_media"
         app:showAsAction="never" />
     <item
         android:layout_width="match_parent"

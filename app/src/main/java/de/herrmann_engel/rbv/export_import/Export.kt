@@ -15,18 +15,21 @@ class Export {
     private val context: Context
     private val singleCollection: Boolean
     private var collectionNo = 0
-    private var includeSettings = false;
+    private var includeSettings = false
+    private var includeMedia: Boolean
 
-    constructor(context: Context, includeSettings: Boolean) {
+    constructor(context: Context, includeSettings: Boolean, includeMedia: Boolean) {
         singleCollection = false
         this.context = context
         this.includeSettings = includeSettings
+        this.includeMedia = includeMedia
     }
 
-    constructor(context: Context, collectionNo: Int) {
+    constructor(context: Context, collectionNo: Int, includeMedia: Boolean) {
         singleCollection = true
         this.context = context
         this.collectionNo = collectionNo
+        this.includeMedia = includeMedia
     }
 
     private fun exportSetting(name: String, filename: String, type: String, value: String) {
@@ -120,6 +123,23 @@ class Export {
                 }
                 isFirst = false
             }
+            if (includeMedia) {
+                if (!exportCSV(
+                        "media",
+                        file.name,
+                        dbHelperExport.allMedia,
+                        true
+                    )
+                    || !exportCSV(
+                        "media_link_card",
+                        file.name,
+                        dbHelperExport.allMediaLinks,
+                        true
+                    )
+                ) {
+                    return false
+                }
+            }
             if (includeSettings) {
                 val settings =
                     context.getSharedPreferences(Globals.SETTINGS_NAME, Context.MODE_PRIVATE)
@@ -129,7 +149,7 @@ class Export {
                         file.name,
                         "int",
                         settings.getInt("default_sort", Globals.SORT_DEFAULT).toString()
-                    );
+                    )
                 }
                 if (settings.contains("format_cards")) {
                     exportSetting(
@@ -137,7 +157,7 @@ class Export {
                         file.name,
                         "bool",
                         settings.getBoolean("format_cards", false).toString()
-                    );
+                    )
                 }
                 if (settings.contains("format_card_notes")) {
                     exportSetting(
@@ -145,7 +165,7 @@ class Export {
                         file.name,
                         "bool",
                         settings.getBoolean("format_card_notes", false).toString()
-                    );
+                    )
                 }
                 if (settings.contains("ui_bg_images")) {
                     exportSetting(
@@ -153,7 +173,7 @@ class Export {
                         file.name,
                         "bool",
                         settings.getBoolean("ui_bg_images", true).toString()
-                    );
+                    )
                 }
                 if (settings.contains("ui_font_size")) {
                     exportSetting(
@@ -161,7 +181,7 @@ class Export {
                         file.name,
                         "bool",
                         settings.getBoolean("ui_font_size", false).toString()
-                    );
+                    )
                 }
                 if (settings.contains("list_no_update")) {
                     exportSetting(
@@ -169,7 +189,7 @@ class Export {
                         file.name,
                         "bool",
                         settings.getBoolean("list_no_update", true).toString()
-                    );
+                    )
                 }
             }
             share.putExtra(

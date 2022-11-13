@@ -19,7 +19,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -33,13 +32,14 @@ import de.herrmann_engel.rbv.Globals;
 import de.herrmann_engel.rbv.R;
 import de.herrmann_engel.rbv.adapters.AdapterCards;
 import de.herrmann_engel.rbv.db.DB_Card;
+import de.herrmann_engel.rbv.db.DB_Media_Link_Card;
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get;
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Update;
 import de.herrmann_engel.rbv.utils.SearchCards;
 import de.herrmann_engel.rbv.utils.StringTools;
 import io.noties.markwon.Markwon;
 
-public class ListCards extends AppCompatActivity {
+public class ListCards extends FileTools {
 
     SharedPreferences settings;
     MenuItem changeFrontBackItem;
@@ -75,6 +75,34 @@ public class ListCards extends AppCompatActivity {
             ImageView backgroundImage = findViewById(R.id.background_image);
             backgroundImage.setVisibility(View.VISIBLE);
             backgroundImage.setImageDrawable(AppCompatResources.getDrawable(this, R.drawable.bg_cards));
+        }
+    }
+
+    @Override
+    protected void notifyFolderSet() {
+        setRecView();
+    }
+
+    @Override
+    protected void notifyMissingAction(int id) {
+        try {
+            Intent intent = new Intent(this.getApplicationContext(), EditCardMedia.class);
+            intent.putExtra("collection", collectionNo);
+            intent.putExtra("pack", packNo);
+            intent.putIntegerArrayListExtra("packs", packNos);
+            intent.putExtra("card", id);
+            intent.putExtra("reverse", reverse);
+            intent.putExtra("sort", sort);
+            intent.putExtra("searchQuery", searchQuery);
+            intent.putExtra("cardPosition", 0);
+            intent.putExtra("progressGreater", progressGreater);
+            intent.putExtra("progressNumber", progressNumber);
+            intent.putIntegerArrayListExtra("savedList", savedList);
+            this.startActivity(intent);
+            this.finish();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(getApplicationContext(), R.string.error, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -189,6 +217,24 @@ public class ListCards extends AppCompatActivity {
             TextView showSolution = queryMode.findViewById(R.id.query_hide);
             showSolution.setText(back);
             showSolution.setVisibility(View.GONE);
+
+            TextView showImageButton = queryMode.findViewById(R.id.query_button_media_image);
+            ArrayList<DB_Media_Link_Card> imageList = (ArrayList<DB_Media_Link_Card>) dbHelperGet.getImageMediaLinksByCard(card.uid);
+            if (imageList.isEmpty()) {
+                showImageButton.setVisibility(View.INVISIBLE);
+            } else {
+                showImageButton.setVisibility(View.VISIBLE);
+                showImageButton.setOnClickListener(v -> showImageListDialog(imageList));
+            }
+
+            TextView showMediaButton = queryMode.findViewById(R.id.query_button_media_other);
+            ArrayList<DB_Media_Link_Card> mediaList = (ArrayList<DB_Media_Link_Card>) dbHelperGet.getAllMediaLinksByCard(card.uid);
+            if (mediaList.isEmpty()) {
+                showMediaButton.setVisibility(View.INVISIBLE);
+            } else {
+                showMediaButton.setVisibility(View.VISIBLE);
+                showMediaButton.setOnClickListener(v -> showMediaListDialog(mediaList));
+            }
 
             TextView showNotesButton = queryMode.findViewById(R.id.query_button_notes);
             if (card.notes == null || card.notes.isEmpty()) {

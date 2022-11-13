@@ -61,7 +61,7 @@ class AdapterCollections(private val collection: List<DB_Collection>, private va
         val backgroundBehind =
             backgroundLayerList.findDrawableByLayerId(R.id.rec_view_collection_or_pack_background_behind) as GradientDrawable
         if (position == 0 && collection.isEmpty()) {
-            viewHolder.layout.background = null;
+            viewHolder.layout.background = null
             val welcomeText = SpannableString(c.resources.getString(R.string.welcome_collection))
             val welcomeTextDrawableAdd = ContextCompat.getDrawable(c, R.drawable.outline_add_24)
             welcomeTextDrawableAdd?.setTint(c.getColor(R.color.light_black))
