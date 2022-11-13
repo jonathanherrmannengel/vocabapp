@@ -124,7 +124,7 @@ public abstract class FileTools extends AppCompatActivity {
         selectFolderInfo.show();
     }
 
-    private void showImageDialog(int id) {
+    public void showImageDialog(int id) {
         Dialog info = new Dialog(this, R.style.dia_view);
         info.setContentView(R.layout.dia_image);
         info.setTitle(getResources().getString(R.string.image_media));
