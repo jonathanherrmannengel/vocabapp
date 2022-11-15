@@ -35,7 +35,7 @@
     <item>
         <identifier>Apache-2.0</identifier>
         <projectDev>Google</projectDev>
-        <projectName>AndroidX (AppCompat [androidx.appcompat], ConstraintLayout [androidx.constraintlayout], Core [androidx.core], Room [androidx.room])</projectName>
+        <projectName>AndroidX (AppCompat [androidx.appcompat], Room [androidx.room])</projectName>
     </item>
     <item>
         <identifier>Apache-2.0</identifier>

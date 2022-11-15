@@ -213,7 +213,11 @@ class AsyncImportWorker(
                                     cardUidConverter.getNewValue(
                                         Integer.parseInt((line?.get(3) ?: "0"))
                                     )
-                                if (currentMedia != 0 && currentCard != 0 && !helperGet.existsMediaLinkCard(currentMedia, currentCard)) {
+                                if (currentMedia != 0 && currentCard != 0 && !helperGet.existsMediaLinkCard(
+                                        currentMedia,
+                                        currentCard
+                                    )
+                                ) {
                                     helperCreate.createMediaLink(currentMedia, currentCard)
                                 }
                             } catch (e: Exception) {
