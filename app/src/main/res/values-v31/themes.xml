@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.RBV" parent="Theme.MaterialComponents.Light.DarkActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/ijblue</item>
+        <item name="colorPrimaryVariant">@color/ijblue</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor">@color/ijblue</item>
+        <!-- Default background color. -->
+        <item name="android:windowBackground">@color/background</item>
+        <!-- No animations. -->
+        <item name="android:windowAnimationStyle">@null</item>
+        <!-- Splash screen. -->
+        <item name="android:windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_foreground</item>
+        <item name="android:windowSplashScreenIconBackgroundColor">@android:color/transparent</item>
+    </style>
+</resources>
