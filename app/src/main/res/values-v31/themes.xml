@@ -15,5 +15,6 @@
         <!-- Splash screen. -->
         <item name="android:windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_foreground</item>
         <item name="android:windowSplashScreenIconBackgroundColor">@android:color/transparent</item>
+        <item name="android:windowSplashScreenBrandingImage">@drawable/rbv_colors</item>
     </style>
 </resources>
