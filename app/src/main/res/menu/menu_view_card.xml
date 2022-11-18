@@ -25,11 +25,18 @@
         android:title="@string/edit_card_media"
         app:showAsAction="never" />
     <item
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="printCard"
+        android:orderInCategory="400"
+        android:title="@string/print"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/move_card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="moveCard"
-        android:orderInCategory="400"
+        android:orderInCategory="500"
         android:title="@string/move"
         app:showAsAction="never" />
 </menu>

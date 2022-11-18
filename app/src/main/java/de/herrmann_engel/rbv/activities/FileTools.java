@@ -138,7 +138,7 @@ public abstract class FileTools extends AppCompatActivity {
     public void showImageListDialog(ArrayList<DB_Media_Link_Card> imageList) {
         if (imageList.size() == 1) {
             showImageDialog(imageList.get(0).file);
-        } else if (imageList.size() > 9) {
+        } else if (imageList.size() > Globals.IMAGE_PREVIEW_MAX) {
             showMediaListDialog(imageList, true, getResources().getString(R.string.query_media_image_title));
         } else {
             Dialog info = new Dialog(this, R.style.dia_view);
@@ -213,6 +213,9 @@ public abstract class FileTools extends AppCompatActivity {
     private DocumentFile getFile(int id) {
         DB_Helper_Get dbHelperGet = new DB_Helper_Get(this);
         DB_Media currentMedia = dbHelperGet.getSingleMedia(id);
+        if (currentMedia == null) {
+            return null;
+        }
         String fileName = currentMedia.file;
         return getFile(fileName);
     }
@@ -283,7 +286,11 @@ public abstract class FileTools extends AppCompatActivity {
 
     public boolean existsMediaFile(int input) {
         DB_Helper_Get dbHelperGet = new DB_Helper_Get(this);
-        String fileName = dbHelperGet.getSingleMedia(input).file;
+        DB_Media currentMedia = dbHelperGet.getSingleMedia(input);
+        if (currentMedia == null) {
+            return false;
+        }
+        String fileName = currentMedia.file;
         return existsMediaFile(fileName);
     }
 

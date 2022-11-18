@@ -35,7 +35,8 @@ android {
 }
 
 dependencies {
-    def room_version = "2.4.3"
+    final def room_version = "2.4.3"
+    implementation "androidx.core:core-ktx:1.9.0"
     implementation "androidx.room:room-runtime:$room_version"
     annotationProcessor "androidx.room:room-compiler:$room_version"
     implementation 'androidx.appcompat:appcompat:1.5.1'
@@ -46,4 +47,6 @@ dependencies {
     implementation 'io.noties.markwon:core:4.6.2'
     implementation "com.vanniktech:emoji-twitter:0.15.0"
     implementation 'com.squareup.picasso:picasso:2.8'
+    implementation 'com.atlassian.commonmark:commonmark:0.13.0'
+    //match Markwon version of commonmark
 }

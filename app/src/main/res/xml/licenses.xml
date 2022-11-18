@@ -23,6 +23,11 @@
         <projectUrl>https://github.com/noties/Markwon/</projectUrl>
     </item>
     <item>
+        <identifier>BSD-2-clause-commonmark</identifier>
+        <projectName>commonmark-java</projectName>
+        <projectUrl>https://github.com/commonmark/commonmark-java</projectUrl>
+    </item>
+    <item>
         <identifier>Apache-2.0</identifier>
         <projectName>Picasso (com.squareup.picasso)</projectName>
         <projectUrl>https://github.com/square/picasso</projectUrl>
@@ -35,7 +40,7 @@
     <item>
         <identifier>Apache-2.0</identifier>
         <projectDev>Google</projectDev>
-        <projectName>AndroidX (AppCompat [androidx.appcompat], Room [androidx.room])</projectName>
+        <projectName>AndroidX (AppCompat [androidx.appcompat], Core [androidx.core], Room [androidx.room])</projectName>
     </item>
     <item>
         <identifier>Apache-2.0</identifier>

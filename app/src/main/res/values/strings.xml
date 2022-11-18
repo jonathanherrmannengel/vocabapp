@@ -19,6 +19,7 @@
     <string name="open">open</string>
     <string name="share">share</string>
     <string name="options">options</string>
+    <string name="print">print</string>
     <string name="welcome_collection">Welcome. Create a new filing box (+) or import a filing box backup (↓).</string>
     <string name="welcome_pack">There are no decks in this filing box.</string>
     <string name="welcome_pack_create">Create a new deck (+).</string>
@@ -83,9 +84,9 @@
     <string name="new_collection">New filing box</string>
     <string name="new_pack">New deck</string>
     <string name="new_card">New flashcard</string>
-    <string name="new_card_front">front</string>
-    <string name="new_card_back">back</string>
-    <string name="new_card_notes">notes</string>
+    <string name="card_front">front</string>
+    <string name="card_back">back</string>
+    <string name="card_notes">notes</string>
     <string name="change_front_back">show back</string>
     <string name="change_back_front">show front</string>
     <string name="sort_random">sort randomly</string>
@@ -95,8 +96,8 @@
     <string name="pack_details">deck details</string>
     <string name="card_plus">got it right</string>
     <string name="card_minus">got it wrong</string>
-    <string name="card_skip">skip</string>
-    <string name="card_back">back</string>
+    <string name="skip">skip</string>
+    <string name="back">back</string>
     <string name="card_known">progress</string>
     <string name="query_mode">query mode</string>
     <string name="query_show">show solution</string>
@@ -123,6 +124,10 @@
     <string name="list_stat_progress_counter_known_3">3</string>
     <string name="list_stat_progress_counter_known_4">4</string>
     <string name="list_stat_progress_counter_known_5">5+</string>
+    <string name="print_include_progress">Include progress</string>
+    <string name="print_include_notes">Include notes</string>
+    <string name="print_include_images">Include images</string>
+    <string name="print_include_media_list">Include media list</string>
     <string name="color">color</string>
     <string name="info">info</string>
     <string name="search">search</string>

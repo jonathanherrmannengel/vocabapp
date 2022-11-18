@@ -20,7 +20,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
                 android:gravity="center"
-                android:text="@string/new_card_front"
+                android:text="@string/card_front"
                 android:textColor="@color/light_black" />
 
             <EditText
@@ -29,7 +29,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="20dp"
                 android:ems="10"
-                android:hint="@string/new_card_front"
+                android:hint="@string/card_front"
                 android:inputType="text"
                 android:textColor="@color/light_black"
                 android:textColorHint="@color/light_black" />
@@ -39,7 +39,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
                 android:gravity="center"
-                android:text="@string/new_card_back"
+                android:text="@string/card_back"
                 android:textColor="@color/light_black" />
 
             <EditText
@@ -48,7 +48,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="20dp"
                 android:ems="10"
-                android:hint="@string/new_card_back"
+                android:hint="@string/card_back"
                 android:inputType="text"
                 android:textColor="@color/light_black"
                 android:textColorHint="@color/light_black" />
@@ -58,7 +58,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
                 android:gravity="center"
-                android:text="@string/new_card_notes"
+                android:text="@string/card_notes"
                 android:textColor="@color/light_black" />
 
             <EditText
@@ -66,7 +66,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:hint="@string/new_card_notes"
+                android:hint="@string/card_notes"
                 android:inputType="textMultiLine"
                 android:textColor="@color/light_black"
                 android:textColorHint="@color/light_black" />

@@ -1,12 +1,17 @@
 package de.herrmann_engel.rbv.activities;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.print.PrintAttributes;
+import android.print.PrintDocumentAdapter;
+import android.print.PrintManager;
 import android.text.SpannableString;
 import android.util.TypedValue;
 import android.view.Menu;
@@ -14,16 +19,27 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;
+import androidx.core.text.HtmlCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.commonmark.node.Node;
+import org.commonmark.parser.Parser;
+import org.commonmark.renderer.html.HtmlRenderer;
+
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -31,6 +47,7 @@ import de.herrmann_engel.rbv.Globals;
 import de.herrmann_engel.rbv.R;
 import de.herrmann_engel.rbv.adapters.AdapterPacksMoveCard;
 import de.herrmann_engel.rbv.db.DB_Card;
+import de.herrmann_engel.rbv.db.DB_Media;
 import de.herrmann_engel.rbv.db.DB_Media_Link_Card;
 import de.herrmann_engel.rbv.db.DB_Pack;
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Delete;
@@ -39,10 +56,14 @@ import de.herrmann_engel.rbv.db.utils.DB_Helper_Update;
 import de.herrmann_engel.rbv.utils.StringTools;
 import io.noties.markwon.Markwon;
 
+
 public class ViewCard extends FileTools {
 
-    TextView knownText;
-    ImageButton knownMinus;
+    private TextView knownText;
+    private TextView frontText;
+    private TextView backText;
+    private TextView notesText;
+    private ImageButton knownMinus;
     private DB_Helper_Get dbHelperGet;
     private DB_Helper_Update dbHelperUpdate;
     private DB_Card card;
@@ -58,6 +79,9 @@ public class ViewCard extends FileTools {
     private boolean progressGreater;
     private int progressNumber;
     private ArrayList<Integer> savedList;
+    private boolean formatCardNotes;
+    private ArrayList<DB_Media_Link_Card> imageList;
+    private ArrayList<DB_Media_Link_Card> mediaList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,42 +103,43 @@ public class ViewCard extends FileTools {
         dbHelperUpdate = new DB_Helper_Update(this);
         boolean formatCards = settings.getBoolean("format_cards", false);
         boolean increaseFontSize = settings.getBoolean("ui_font_size", false);
+        frontText = findViewById(R.id.card_front);
+        backText = findViewById(R.id.card_back);
+        knownText = findViewById(R.id.card_known);
+        notesText = findViewById(R.id.card_notes);
         try {
             card = dbHelperGet.getSingleCard(cardNo);
-            TextView front = findViewById(R.id.card_front);
-            TextView back = findViewById(R.id.card_back);
             String cardFront;
             if (formatCards) {
                 StringTools formatString = new StringTools();
                 SpannableString cardFrontSpannable = formatString.format(card.front);
                 cardFront = cardFrontSpannable.toString();
-                front.setText(cardFrontSpannable);
-                back.setText(formatString.format(card.back));
+                frontText.setText(cardFrontSpannable);
+                backText.setText(formatString.format(card.back));
             } else {
                 cardFront = card.front;
-                front.setText(cardFront);
-                back.setText(card.back);
+                frontText.setText(cardFront);
+                backText.setText(card.back);
             }
-            TextView notes = findViewById(R.id.card_notes);
+            formatCardNotes = settings.getBoolean("format_card_notes", false);
             if (card.notes != null && !card.notes.isEmpty()) {
-                if (settings.getBoolean("format_card_notes", false)) {
+                if (formatCardNotes) {
                     final Markwon markwon = Markwon.create(this);
-                    notes.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_START);
-                    markwon.setMarkdown(notes, card.notes);
+                    notesText.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_START);
+                    markwon.setMarkdown(notesText, card.notes);
                 } else {
-                    notes.setText(card.notes);
+                    notesText.setText(card.notes);
                 }
             } else {
-                notes.setVisibility(View.GONE);
+                notesText.setVisibility(View.GONE);
             }
             if (increaseFontSize) {
-                front.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.card_front_size_big));
-                back.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.card_back_size_big));
-                notes.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.card_notes_size_big));
+                frontText.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.card_front_size_big));
+                backText.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.card_back_size_big));
+                notesText.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.card_notes_size_big));
             }
             TextView date = findViewById(R.id.card_date);
-            date.setText(new java.util.Date(card.date * 1000).toString());
-            knownText = findViewById(R.id.card_known);
+            date.setText(new Date(card.date * 1000).toString());
             known = card.known;
             knownMinus = findViewById(R.id.card_minus);
             updateCardKnown();
@@ -272,6 +297,111 @@ public class ViewCard extends FileTools {
         confirmDelete.show();
     }
 
+    public void printCard(MenuItem menuItem) {
+        Dialog printDialog = new Dialog(this, R.style.dia_view);
+        printDialog.setContentView(R.layout.dia_print);
+        printDialog.setTitle(getResources().getString(R.string.print));
+        printDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.MATCH_PARENT);
+        CheckBox progressCheckBox = printDialog.findViewById(R.id.dia_print_include_progress);
+        LinearLayout notesLayout = printDialog.findViewById(R.id.dia_print_include_notes_layout);
+        CheckBox notesCheckBox = printDialog.findViewById(R.id.dia_print_include_notes);
+        LinearLayout imagesLayout = printDialog.findViewById(R.id.dia_print_include_images_layout);
+        CheckBox imagesCheckBox = printDialog.findViewById(R.id.dia_print_include_images);
+        LinearLayout mediaLayout = printDialog.findViewById(R.id.dia_print_include_media_layout);
+        CheckBox mediaCheckBox = printDialog.findViewById(R.id.dia_print_include_media);
+        Button startPrintButton = printDialog.findViewById(R.id.dia_print_start);
+        if (card.notes == null || card.notes.isEmpty()) {
+            notesLayout.setVisibility(View.GONE);
+            notesCheckBox.setChecked(false);
+        }
+        if (imageList.isEmpty() || imageList.size() > Globals.IMAGE_PREVIEW_MAX) {
+            imagesLayout.setVisibility(View.GONE);
+            imagesCheckBox.setChecked(false);
+        }
+        if (mediaList.isEmpty()) {
+            mediaLayout.setVisibility(View.GONE);
+            mediaCheckBox.setChecked(false);
+        }
+        startPrintButton.setOnClickListener(v -> {
+            Toast.makeText(this, R.string.wait, Toast.LENGTH_LONG).show();
+            printDialog.dismiss();
+            PrintManager printManager = (PrintManager) getSystemService(Context.PRINT_SERVICE);
+            String jobName = "rbv_flashcard_" + cardNo;
+            PrintAttributes.Builder builder = new PrintAttributes.Builder();
+            builder.setMediaSize(PrintAttributes.MediaSize.ISO_A4);
+            PrintAttributes attributes = builder.build();
+            WebView webView = new WebView(this);
+            webView.setWebViewClient(new WebViewClient() {
+                public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                    return false;
+                }
+
+                @Override
+                public void onPageFinished(WebView view, String url) {
+                    PrintDocumentAdapter adapter = webView.createPrintDocumentAdapter(jobName);
+                    printManager.print(jobName, adapter, attributes);
+                }
+            });
+            StringTools stringTools = new StringTools();
+            String htmlDocument = "<!doctype html><html><head><meta charset=\"utf-8\"><title>print</title><style>#main-title{margin-bottom: 30px;}.title{text-align:center;color: #000007;}.title:not(.first-title)::before{margin-bottom:20px;margin-top:30px;display:block;content:' ';width:100%;height:1px;outline:2px solid #555;outline-offset:-1px;}.image-div,.media-div{text-align:center}.image{padding:10px;max-width:30%;max-height:10%;object-fit:contain;}</style></head>";
+            String title = stringTools.shorten(frontText.getText().toString(), 30);
+            if (progressCheckBox.isChecked()) {
+                title += " (" + knownText.getText() + ")";
+            }
+            htmlDocument += "<h1 id=\"main-title\" class=\"title first-title\" dir=\"auto\">" + title + "</h1>";
+            htmlDocument += "<article>";
+            htmlDocument += "<h2 class=\"title first-title\" dir=\"auto\">" + getString(R.string.card_front) + "</h2><div>";
+            htmlDocument += HtmlCompat.toHtml((SpannableString) frontText.getText(), HtmlCompat.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE);
+            htmlDocument += "</div></article>";
+            htmlDocument += "<article>";
+            htmlDocument += "<h2 class=\"title\" dir=\"auto\">" + getString(R.string.card_back) + "</h2><div>";
+            htmlDocument += HtmlCompat.toHtml((SpannableString) backText.getText(), HtmlCompat.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE);
+            htmlDocument += "</div></article>";
+            if (card.notes != null && !card.notes.isEmpty() && notesCheckBox.isChecked()) {
+                htmlDocument += "<article>";
+                htmlDocument += "<h2 class=\"title\" dir=\"auto\">" + getString(R.string.card_notes) + "</h2><div dir=\"auto\">";
+                if (formatCardNotes) {
+                    Parser parser = Parser.builder().build();
+                    Node document = parser.parse(card.notes);
+                    HtmlRenderer renderer = HtmlRenderer.builder().build();
+                    htmlDocument += renderer.render(document);
+                } else {
+                    htmlDocument += HtmlCompat.toHtml((SpannableString) notesText.getText(), HtmlCompat.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE);
+                }
+                htmlDocument += "</div></article>";
+            }
+            if (!imageList.isEmpty() && imagesCheckBox.isChecked()) {
+                htmlDocument += "<article>";
+                htmlDocument += "<h2 class=\"title\" dir=\"auto\">" + getString(R.string.image_media) + "</h2><div>";
+                for (DB_Media_Link_Card i : imageList) {
+                    DB_Media currentMedia = dbHelperGet.getSingleMedia(i.file);
+                    if (currentMedia != null) {
+                        Uri uri = getImageUri(currentMedia.uid);
+                        if (uri != null) {
+                            htmlDocument += "<div class=\"image-div\"><img class=\"image\" alt=\"" + currentMedia.file + "\" src=\"" + uri + "\"></div>";
+                        }
+                    }
+                }
+                htmlDocument += "</div></article>";
+            }
+            if (!mediaList.isEmpty() && mediaCheckBox.isChecked()) {
+                htmlDocument += "<article>";
+                htmlDocument += "<h2 class=\"title\" dir=\"auto\">" + getString(R.string.all_media) + "</h2><div>";
+                for (DB_Media_Link_Card i : mediaList) {
+                    DB_Media currentMedia = dbHelperGet.getSingleMedia(i.file);
+                    if (currentMedia != null) {
+                        htmlDocument += "<div class=\"media-div\">" + currentMedia.file + "</div>";
+                    }
+                }
+                htmlDocument += "</div></article>";
+            }
+            htmlDocument += "</html>";
+            webView.loadDataWithBaseURL(null, htmlDocument, "text/HTML", "UTF-8", null);
+        });
+        printDialog.show();
+    }
+
     public void moveCard(MenuItem menuItem) {
         Dialog moveDialog = new Dialog(this, R.style.dia_view);
         moveDialog.setContentView(R.layout.dia_rec);
@@ -305,7 +435,7 @@ public class ViewCard extends FileTools {
     }
 
     private void setMediaButtons() {
-        ArrayList<DB_Media_Link_Card> imageList = (ArrayList<DB_Media_Link_Card>) dbHelperGet.getImageMediaLinksByCard(cardNo);
+        imageList = (ArrayList<DB_Media_Link_Card>) dbHelperGet.getImageMediaLinksByCard(cardNo);
         Button showImages = findViewById(R.id.view_card_images);
         if (imageList.isEmpty()) {
             showImages.setVisibility(View.GONE);
@@ -313,7 +443,7 @@ public class ViewCard extends FileTools {
             showImages.setVisibility(View.VISIBLE);
         }
         showImages.setOnClickListener(v -> showImageListDialog(imageList));
-        ArrayList<DB_Media_Link_Card> mediaList = (ArrayList<DB_Media_Link_Card>) dbHelperGet.getAllMediaLinksByCard(cardNo);
+        mediaList = (ArrayList<DB_Media_Link_Card>) dbHelperGet.getAllMediaLinksByCard(cardNo);
         Button showAllMedia = findViewById(R.id.view_card_media);
         if (mediaList.isEmpty()) {
             showAllMedia.setVisibility(View.GONE);

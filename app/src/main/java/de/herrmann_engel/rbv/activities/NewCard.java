@@ -69,7 +69,7 @@ public class NewCard extends AppCompatActivity {
         frontTextView = findViewById(R.id.new_card_front);
         backTextView = findViewById(R.id.new_card_back);
         notesTextView = findViewById(R.id.new_card_notes);
-        notesTextView.setHint(String.format(getString(R.string.optional), getString(R.string.new_card_notes)));
+        notesTextView.setHint(String.format(getString(R.string.optional), getString(R.string.card_notes)));
     }
 
     @Override

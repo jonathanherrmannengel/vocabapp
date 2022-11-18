@@ -18,6 +18,7 @@
     <string name="open">Öffnen</string>
     <string name="share">Teilen</string>
     <string name="options">Optionen</string>
+    <string name="print">Drucken</string>
     <string name="welcome_collection">Willkommen. Erstellen Sie einen neuen Karteikasten (+) oder importieren Sie ein Karteikasten-Backup (↓).</string>
     <string name="welcome_pack">Es sind noch keine Kartenstapel in diesem Karteikasten vorhanden.</string>
     <string name="welcome_pack_create">Erstellen Sie einen neuen Kartenstapel (+).</string>
@@ -82,9 +83,9 @@
     <string name="new_collection">Neuer Karteikasten</string>
     <string name="new_pack">Neuer Kartenstapel</string>
     <string name="new_card">Neue Karteikarte</string>
-    <string name="new_card_front">Vorderseite</string>
-    <string name="new_card_back">Rückseite</string>
-    <string name="new_card_notes">Notizen</string>
+    <string name="card_front">Vorderseite</string>
+    <string name="card_back">Rückseite</string>
+    <string name="card_notes">Notizen</string>
     <string name="change_front_back">Rückseite anzeigen</string>
     <string name="change_back_front">Vorderseite anzeigen</string>
     <string name="sort_random">Zufallssortierung</string>
@@ -94,8 +95,8 @@
     <string name="pack_details">Kartenstapel-Details</string>
     <string name="card_plus">Gewusst</string>
     <string name="card_minus">Nicht gewusst</string>
-    <string name="card_skip">Überspringen</string>
-    <string name="card_back">zurück</string>
+    <string name="skip">Überspringen</string>
+    <string name="back">zurück</string>
     <string name="card_known">Fortschritt</string>
     <string name="query_mode">Abfrage-Modus</string>
     <string name="query_show">Lösung anzeigen</string>
@@ -117,6 +118,10 @@
     <string name="list_stat_progress_counter_known_3">3</string>
     <string name="list_stat_progress_counter_known_4">4</string>
     <string name="list_stat_progress_counter_known_5">5+</string>
+    <string name="print_include_progress">Lernfortschritt einschließen</string>
+    <string name="print_include_notes">Notizen einschließen</string>
+    <string name="print_include_images">Bilder einschließen</string>
+    <string name="print_include_media_list">Medienliste einschließen</string>
     <string name="color">Farbe</string>
     <string name="info">Infos</string>
     <string name="search">Suchen</string>

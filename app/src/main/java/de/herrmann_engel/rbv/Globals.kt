@@ -15,4 +15,5 @@ object Globals {
     const val SORT_DEFAULT = 0
     const val SORT_RANDOM = 1
     const val SORT_ALPHABETICAL = 2
+    const val IMAGE_PREVIEW_MAX = 9;
 }

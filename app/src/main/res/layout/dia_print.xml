@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    android:gravity="center">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/background">
+
+            <LinearLayout
+                android:id="@+id/dia_print_include_progress_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:padding="10dp">
+
+                <CheckBox
+                    android:id="@+id/dia_print_include_progress"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:buttonTint="@color/ijblue"
+                    android:checked="true" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="5dp"
+                    android:paddingEnd="5dp"
+                    android:text="@string/print_include_progress"
+                    android:textColor="@color/light_black"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/dia_print_include_notes_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/dia_print_include_progress_layout"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:padding="10dp">
+
+                <CheckBox
+                    android:id="@+id/dia_print_include_notes"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:buttonTint="@color/ijblue"
+                    android:checked="true" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="5dp"
+                    android:paddingEnd="5dp"
+                    android:text="@string/print_include_notes"
+                    android:textColor="@color/light_black"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/dia_print_include_images_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/dia_print_include_notes_layout"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:padding="10dp">
+
+                <CheckBox
+                    android:id="@+id/dia_print_include_images"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:buttonTint="@color/ijblue"
+                    android:checked="true" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="5dp"
+                    android:paddingEnd="5dp"
+                    android:text="@string/print_include_images"
+                    android:textColor="@color/light_black"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/dia_print_include_media_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/dia_print_include_images_layout"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:padding="10dp">
+
+                <CheckBox
+                    android:id="@+id/dia_print_include_media"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:buttonTint="@color/ijblue"
+                    android:checked="true" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="5dp"
+                    android:paddingEnd="5dp"
+                    android:text="@string/print_include_media_list"
+                    android:textColor="@color/light_black"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/dia_print_start"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/dia_print_include_media_layout"
+                android:layout_centerHorizontal="true"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="10dp"
+                android:background="@android:color/transparent"
+                android:text="@string/start"
+                android:textColor="@color/light_black"
+                android:textSize="20sp" />
+        </RelativeLayout>
+    </ScrollView>
+</RelativeLayout>

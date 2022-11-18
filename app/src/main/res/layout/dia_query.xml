@@ -65,7 +65,7 @@
                     android:layout_height="30dp"
                     android:layout_margin="6dp"
                     android:background="@android:color/transparent"
-                    android:contentDescription="@string/card_back"
+                    android:contentDescription="@string/back"
                     android:src="@drawable/ic_outline_skip_previous_24"
                     app:tint="@color/dark_grey" />
 
@@ -95,7 +95,7 @@
                     android:layout_height="30dp"
                     android:layout_margin="6dp"
                     android:background="@android:color/transparent"
-                    android:contentDescription="@string/card_skip"
+                    android:contentDescription="@string/skip"
                     android:src="@drawable/ic_outline_skip_next_24"
                     app:tint="@color/dark_grey" />
             </LinearLayout>

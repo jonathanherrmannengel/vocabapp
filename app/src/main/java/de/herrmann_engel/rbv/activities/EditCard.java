@@ -74,7 +74,7 @@ public class EditCard extends AppCompatActivity {
                 backTextView.setSingleLine(false);
             }
             notesTextView.setText(card.notes);
-            notesTextView.setHint(String.format(getString(R.string.optional), getString(R.string.new_card_notes)));
+            notesTextView.setHint(String.format(getString(R.string.optional), getString(R.string.card_notes)));
 
             TypedArray colors = getResources().obtainTypedArray(R.array.pack_color_main);
             TypedArray colorsBackground = getResources().obtainTypedArray(R.array.pack_color_background);

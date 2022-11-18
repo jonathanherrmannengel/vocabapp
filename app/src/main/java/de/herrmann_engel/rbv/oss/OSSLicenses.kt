@@ -18,6 +18,11 @@ class OSSLicenses(licenseIdentifier: String?, val project: OSSProject) {
                 licenseLink = "https://creativecommons.org/licenses/by-sa/4.0/legalcode"
                 licenseFilePath = "oss/LICENSE-CC-BY-SA-4.0.txt"
             }
+            "BSD-2-clause-commonmark" -> {
+                licenseLink =
+                    "https://raw.githubusercontent.com/commonmark/commonmark-java/main/LICENSE.txt"
+                licenseFilePath = "oss/BSD-2-clause-commonmark.txt"
+            }
             "public-domain" -> {
                 licenseLink = null
                 licenseFilePath = "oss/public-domain.txt"
