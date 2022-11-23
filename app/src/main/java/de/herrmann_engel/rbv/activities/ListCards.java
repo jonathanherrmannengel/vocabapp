@@ -606,6 +606,8 @@ public class ListCards extends FileTools {
         cardPosition = 0;
         if (saveList && savedListSeed != 0) {
             generateSavedListSeed();
+        } else {
+            savedListSeed = 0L;
         }
         boolean hadSavedList = savedList != null;
         savedList = null;
