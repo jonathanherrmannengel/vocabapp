@@ -604,7 +604,7 @@ public class ListCards extends FileTools {
     public void sort(MenuItem menuItem) {
         sort++;
         cardPosition = 0;
-        if (savedListSeed != 0) {
+        if (saveList && savedListSeed != 0) {
             generateSavedListSeed();
         }
         boolean hadSavedList = savedList != null;

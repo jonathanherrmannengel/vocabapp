@@ -53,8 +53,8 @@ public class DB_Helper_Get {
     public int countCardsInCollection(int collection) {
         List<DB_Pack> packs = getAllPacksByCollection(collection);
         int sum = 0;
-        for (int i = 0; i < packs.size(); i++) {
-            sum += countCardsInPack(packs.get(i).uid);
+        for (DB_Pack pack : packs) {
+            sum += countCardsInPack(pack.uid);
         }
         return sum;
     }

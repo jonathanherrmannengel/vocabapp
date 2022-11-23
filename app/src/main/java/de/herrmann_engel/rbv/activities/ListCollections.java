@@ -89,7 +89,6 @@ public class ListCollections extends FileTools implements AsyncImportFinish, Asy
             backgroundImage.setVisibility(View.VISIBLE);
             backgroundImage.setImageDrawable(AppCompatResources.getDrawable(this, R.drawable.bg_collections));
         }
-
     }
 
     @Override
@@ -100,6 +99,24 @@ public class ListCollections extends FileTools implements AsyncImportFinish, Asy
         startManageMediaMenuItem = menu.findItem(R.id.start_manage_media);
         updateContent();
         return true;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        try {
+            File cacheDir = getCacheDir();
+            File[] files = cacheDir.listFiles();
+            if (files != null) {
+                for (File file : files) {
+                    if (file.isFile() && System.currentTimeMillis() - file.lastModified() > 86400000) {
+                        file.delete();
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void updateContent() {
