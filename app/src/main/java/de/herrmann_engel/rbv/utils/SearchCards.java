@@ -1,5 +1,7 @@
 package de.herrmann_engel.rbv.utils;
 
+import static de.herrmann_engel.rbv.Globals.LIST_ACCURATE_SIZE;
+
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -15,8 +17,20 @@ public class SearchCards {
                 .find();
     }
 
+    private boolean compareInaccurate(String source, String query) {
+        if (source == null) {
+            return false;
+        }
+        return source.toLowerCase().contains(query);
+    }
+
     public List<DB_Card> searchCards(List<DB_Card> input, String query) {
-        input.removeIf(l -> !compare(l.front, query) && !compare(l.back, query) && !compare(l.notes, query));
+        if (input.size() > LIST_ACCURATE_SIZE) {
+            String queryLower = query.toLowerCase();
+            input.removeIf(l -> !compareInaccurate(l.front, queryLower) && !compareInaccurate(l.back, queryLower) && !compareInaccurate(l.notes, queryLower));
+        } else {
+            input.removeIf(l -> !compare(l.front, query) && !compare(l.back, query) && !compare(l.notes, query));
+        }
         return input;
     }
 }

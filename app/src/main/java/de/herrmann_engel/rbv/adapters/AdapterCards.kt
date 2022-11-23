@@ -31,11 +31,14 @@ class AdapterCards(
     private val collectionNo: Int,
     private val progressGreater: Boolean?,
     private val progressNumber: Int?,
-    private val savedList: ArrayList<Int>?
+    private val savedList: ArrayList<Int>?,
+    private val savedListSeed: Long?
 ) : RecyclerView.Adapter<AdapterCards.ViewHolder>() {
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val textView: TextView = view.findViewById(R.id.rec_name)
     }
+
+    private val stringTools = StringTools()
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         val view =
@@ -84,7 +87,7 @@ class AdapterCards(
         } else {
             var cardText = if (reverse) cards[position].back else cards[position].front
             cardText = cardText.replace(System.getProperty("line.separator"), " ")
-            cardText = StringTools().shorten(cardText)
+            cardText = stringTools.shorten(cardText)
             viewHolder.textView.text = String.format("%s (%d)", cardText, cards[position].known)
             if (packNo < 0) {
                 val dbHelperGet =
@@ -114,6 +117,7 @@ class AdapterCards(
                 intent.putExtra("progressGreater", progressGreater)
                 intent.putExtra("progressNumber", progressNumber)
                 intent.putIntegerArrayListExtra("savedList", savedList)
+                intent.putExtra("savedListSeed", savedListSeed)
                 c.startActivity(intent)
                 (c as ListCards).finish()
             }

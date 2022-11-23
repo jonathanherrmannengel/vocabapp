@@ -39,6 +39,8 @@ class AdapterPacks(
         val numberText: TextView = view.findViewById(R.id.rec_collections_number_text)
     }
 
+    private val stringTools = StringTools()
+
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         val view =
             LayoutInflater.from(viewGroup.context)
@@ -121,9 +123,9 @@ class AdapterPacks(
                 DB_Helper_Get(c.applicationContext)
             val size =
                 if (collection == -1) {
-                    dbHelperGet.allCards.size
+                    dbHelperGet.countCards()
                 } else {
-                    dbHelperGet.getAllCardsByCollection(collection).size
+                    dbHelperGet.countCardsInCollection(collection)
                 }
             viewHolder.numberText.text = size.toString()
             viewHolder.collectionName.visibility = View.GONE
@@ -144,13 +146,12 @@ class AdapterPacks(
                 c.startActivity(intent)
                 (c as ListPacks).finish()
             }
-            viewHolder.textView.text = StringTools().shorten(pack[position - 1].name)
+            viewHolder.textView.text = stringTools.shorten(pack[position - 1].name)
             if (pack[position - 1].desc.isEmpty()) {
                 viewHolder.descView.visibility = View.GONE
             } else {
                 viewHolder.descView.visibility = View.VISIBLE
-                viewHolder.descView.text = StringTools()
-                    .shorten(pack[position - 1].desc)
+                viewHolder.descView.text = stringTools.shorten(pack[position - 1].desc)
             }
             val emojiText = pack[position - 1].emoji
             viewHolder.previewView.text =
@@ -162,19 +163,18 @@ class AdapterPacks(
                 }
             val dbHelperGet =
                 DB_Helper_Get(c.applicationContext)
-            val size = dbHelperGet.getAllCardsByPack(pack[position - 1].uid).size
+            val size = dbHelperGet.countCardsInPack(pack[position - 1].uid)
             viewHolder.numberText.text = size.toString()
             if (collection == -1) {
                 try {
                     val collectionName =
-                        StringTools()
-                            .shorten(
-                                DB_Helper_Get(c)
-                                    .getSingleCollection(
-                                        pack[position - 1].collection
-                                    )
-                                    .name
-                            )
+                        stringTools.shorten(
+                            DB_Helper_Get(c)
+                                .getSingleCollection(
+                                    pack[position - 1].collection
+                                )
+                                .name
+                        )
                     viewHolder.collectionName.visibility = View.VISIBLE
                     viewHolder.collectionName.text = collectionName
                 } catch (e: Exception) {

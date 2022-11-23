@@ -20,9 +20,11 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.io.File;
 import java.util.List;
 import java.util.Objects;
 
@@ -31,9 +33,11 @@ import de.herrmann_engel.rbv.R;
 import de.herrmann_engel.rbv.adapters.AdapterPacks;
 import de.herrmann_engel.rbv.db.DB_Pack;
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get;
-import de.herrmann_engel.rbv.export_import.Export;
+import de.herrmann_engel.rbv.export_import.AsyncExport;
+import de.herrmann_engel.rbv.export_import.AsyncExportFinish;
+import de.herrmann_engel.rbv.export_import.AsyncExportProgress;
 
-public class ListPacks extends AppCompatActivity {
+public class ListPacks extends AppCompatActivity implements AsyncExportFinish, AsyncExportProgress {
 
     private DB_Helper_Get dbHelperGet;
 
@@ -83,7 +87,6 @@ public class ListPacks extends AppCompatActivity {
         } else {
             packs = dbHelperGet.getAllPacksByCollection(collectionNo);
         }
-
         if (collectionNo >= 0) {
             try {
                 int packColors = dbHelperGet.getSingleCollection(collectionNo).colors;
@@ -123,6 +126,38 @@ public class ListPacks extends AppCompatActivity {
         this.finish();
     }
 
+    @Override
+    public void exportCardsResult(final File file) {
+        runOnUiThread(() -> {
+            if (file == null) {
+                Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show();
+            } else {
+                Intent share = new Intent(Intent.ACTION_SEND);
+                share.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                share.setType("text/csv");
+                share.putExtra(
+                        Intent.EXTRA_STREAM, FileProvider.getUriForFile(
+                                this,
+                                getPackageName() + ".fileprovider", file
+                        )
+                );
+                startActivity(
+                        Intent.createChooser(
+                                share,
+                                getString(R.string.export_cards)
+                        )
+                );
+            }
+        });
+    }
+
+    @Override
+    public void exportCardsProgress(final String progress) {
+        runOnUiThread(() -> {
+            Toast.makeText(this, progress, Toast.LENGTH_SHORT).show();
+        });
+    }
+
     public void export(MenuItem menuItem) {
         Dialog startExportDialog = new Dialog(this, R.style.dia_view);
         startExportDialog.setContentView(R.layout.dia_export);
@@ -148,11 +183,9 @@ public class ListPacks extends AppCompatActivity {
             }
         });
         startExportButton.setOnClickListener(v -> {
-            Export export = new Export(this, collectionNo, includeMediaCheckBox.isChecked());
-            if (!export.exportFile()) {
-                Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show();
-            }
+            new AsyncExport(getApplicationContext(), this, this, collectionNo, includeMediaCheckBox.isChecked()).execute();
             startExportDialog.dismiss();
+            Toast.makeText(this, R.string.wait, Toast.LENGTH_LONG).show();
         });
         startExportDialog.show();
     }

@@ -16,6 +16,12 @@ public interface DB_Card_DAO {
     @Query("SELECT EXISTS (SELECT 1 FROM db_card LIMIT 1)")
     boolean hasCards();
 
+    @Query("SELECT COUNT(*) FROM db_card")
+    int countCards();
+
+    @Query("SELECT COUNT(*) FROM db_card WHERE pack=:pid")
+    int countCardsInPack(int pid);
+
     @Query("SELECT * FROM db_card")
     List<DB_Card> getAll();
 

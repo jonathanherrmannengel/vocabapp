@@ -1,0 +1,7 @@
+Print flashcards.
+Improved performance.
+
+With more than 15.000 flashcards in a list additionally the following compromises in favor of a better performance are applied:
+   - If the setting not to update list order is activated: List order will not always be kept.
+   - If the setting to format flashcards (front/back oder notes) is activated: Search and list display are in some cases inaccurate.
+   - Non-Latin scripts: Search may be inaccurate.

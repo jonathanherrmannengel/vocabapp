@@ -79,6 +79,7 @@ public class ViewCard extends FileTools {
     private boolean progressGreater;
     private int progressNumber;
     private ArrayList<Integer> savedList;
+    private Long savedListSeed;
     private boolean formatCardNotes;
     private ArrayList<DB_Media_Link_Card> imageList;
     private ArrayList<DB_Media_Link_Card> mediaList;
@@ -99,6 +100,7 @@ public class ViewCard extends FileTools {
         progressGreater = getIntent().getExtras().getBoolean("progressGreater");
         progressNumber = getIntent().getExtras().getInt("progressNumber");
         savedList = getIntent().getExtras().getIntegerArrayList("savedList");
+        savedListSeed = getIntent().getExtras().getLong("savedListSeed");
         dbHelperGet = new DB_Helper_Get(this);
         dbHelperUpdate = new DB_Helper_Update(this);
         boolean formatCards = settings.getBoolean("format_cards", false);
@@ -171,6 +173,7 @@ public class ViewCard extends FileTools {
         intent.putExtra("progressGreater", progressGreater);
         intent.putExtra("progressNumber", progressNumber);
         intent.putIntegerArrayListExtra("savedList", savedList);
+        intent.putExtra("savedListSeed", savedListSeed);
         this.startActivity(intent);
         this.finish();
     }
@@ -243,6 +246,7 @@ public class ViewCard extends FileTools {
         intent.putExtra("progressGreater", progressGreater);
         intent.putExtra("progressNumber", progressNumber);
         intent.putIntegerArrayListExtra("savedList", savedList);
+        intent.putExtra("savedListSeed", savedListSeed);
         startActivity(intent);
         this.finish();
     }
@@ -260,6 +264,7 @@ public class ViewCard extends FileTools {
         intent.putExtra("progressGreater", progressGreater);
         intent.putExtra("progressNumber", progressNumber);
         intent.putIntegerArrayListExtra("savedList", savedList);
+        intent.putExtra("savedListSeed", savedListSeed);
         startActivity(intent);
         this.finish();
     }
@@ -279,6 +284,7 @@ public class ViewCard extends FileTools {
             if (savedList != null) {
                 savedList.remove(Integer.valueOf(card.uid));
             }
+            confirmDelete.dismiss();
             Intent intent = new Intent(getApplicationContext(), ListCards.class);
             intent.putExtra("collection", collectionNo);
             intent.putExtra("pack", packNo);
@@ -422,9 +428,8 @@ public class ViewCard extends FileTools {
     }
 
     public void movedCard() {
-        if (savedList != null) {
-            savedList = null;
-        }
+        savedList = null;
+        savedListSeed = null;
         try {
             card = dbHelperGet.getSingleCard(cardNo);
             packNo = card.pack;
@@ -466,6 +471,7 @@ public class ViewCard extends FileTools {
         intent.putExtra("progressGreater", progressGreater);
         intent.putExtra("progressNumber", progressNumber);
         intent.putIntegerArrayListExtra("savedList", savedList);
+        intent.putExtra("savedListSeed", savedListSeed);
         startActivity(intent);
         this.finish();
     }

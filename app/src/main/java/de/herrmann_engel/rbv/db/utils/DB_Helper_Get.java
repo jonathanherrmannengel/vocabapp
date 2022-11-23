@@ -1,12 +1,12 @@
 package de.herrmann_engel.rbv.db.utils;
 
 import static android.content.Context.MODE_PRIVATE;
+import static de.herrmann_engel.rbv.Globals.LIST_ACCURATE_SIZE;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import de.herrmann_engel.rbv.Globals;
@@ -28,10 +28,51 @@ public class DB_Helper_Get {
         this.context = context;
     }
 
+    //Check if has content
     public boolean hasCards() {
         return dbHelper.card_dao.hasCards();
     }
 
+    public boolean hasMedia() {
+        return dbHelper.media_dao.hasMedia();
+    }
+
+    //Count
+    public int countPacks() {
+        return dbHelper.pack_dao.countPacks();
+    }
+
+    public int countPacksInCollection(int collection) {
+        return dbHelper.pack_dao.countPacksInCollection(collection);
+    }
+
+    public int countCards() {
+        return dbHelper.card_dao.countCards();
+    }
+
+    public int countCardsInCollection(int collection) {
+        List<DB_Pack> packs = getAllPacksByCollection(collection);
+        int sum = 0;
+        for (int i = 0; i < packs.size(); i++) {
+            sum += countCardsInPack(packs.get(i).uid);
+        }
+        return sum;
+    }
+
+    public int countCardsInPack(int pack) {
+        return dbHelper.card_dao.countCardsInPack(pack);
+    }
+
+    //Exists Entry?
+    public boolean existsMedia(String file) {
+        return dbHelper.media_dao.existsMedia(file);
+    }
+
+    public boolean existsMediaLinkCard(int file, int card) {
+        return dbHelper.media_link_card_dao.existsMediaLinkCard(file, card);
+    }
+
+    //Get One
     public DB_Collection getSingleCollection(int collection) throws Exception {
         List<DB_Collection> list = dbHelper.collection_dao.getOne(collection);
         if (list.size() == 1) {
@@ -56,6 +97,15 @@ public class DB_Helper_Get {
         throw new Exception();
     }
 
+    public DB_Media getSingleMedia(String file) {
+        return dbHelper.media_dao.getSingleMedia(file);
+    }
+
+    public DB_Media getSingleMedia(int id) {
+        return dbHelper.media_dao.getSingleMedia(id);
+    }
+
+    //Get All: Collections
     public List<DB_Collection> getAllCollections() {
         return dbHelper.collection_dao.getAll();
     }
@@ -64,6 +114,7 @@ public class DB_Helper_Get {
         return dbHelper.collection_dao.getAllByName(name);
     }
 
+    //Get All: Packs
     public List<DB_Pack> getAllPacks() {
         return dbHelper.pack_dao.getAll();
     }
@@ -76,61 +127,41 @@ public class DB_Helper_Get {
         return dbHelper.pack_dao.getAllByCollectionAndNameAndDesc(collection, name, desc);
     }
 
-    private int compareCardsAlphabetical(String a, String b) {
-        return a.compareToIgnoreCase(b);
-    }
-
-    public List<DB_Card> formatCards(List<DB_Card> list) {
+    //Get All: Cards
+    private List<DB_Card> formatCards(List<DB_Card> list) {
         SharedPreferences settings = context.getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE);
         boolean formatCards = settings.getBoolean("format_cards", false);
         boolean formatCardsNotes = settings.getBoolean("format_card_notes", false);
         if (formatCards || formatCardsNotes) {
             StringTools formatString = new StringTools();
-            Markwon markwon = Markwon.create(context);
-            list.forEach(l -> {
-                if (formatCards) {
-                    l.front = formatString.format(l.front).toString();
-                    l.back = formatString.format(l.back).toString();
-                }
-                if (formatCardsNotes) {
-                    l.notes = markwon.toMarkdown(l.notes).toString();
-                }
-            });
-        }
-        return list;
-    }
-
-    public List<DB_Card> sortCards(List<DB_Card> list, int sort) {
-        list = formatCards(list);
-        if (sort == Globals.SORT_ALPHABETICAL) {
-            list.sort((a, b) -> {
-                int c0 = compareCardsAlphabetical(a.front, b.front);
-                if (c0 == 0) {
-                    return compareCardsAlphabetical(a.back, b.back);
-                }
-                return c0;
-            });
-            return list;
-        } else if (sort == Globals.SORT_RANDOM) {
-            Collections.shuffle(list);
-            return list;
-        }
-        list.sort((a, b) -> {
-            int c0 = Integer.compare(a.known, b.known);
-            if (c0 == 0) {
-                return Long.compare(b.date, a.date);
+            if (list.size() > LIST_ACCURATE_SIZE) {
+                list.forEach(l -> {
+                    if (formatCards) {
+                        l.front = formatString.unformat(l.front);
+                        l.back = formatString.unformat(l.back);
+                    }
+                    if (formatCardsNotes) {
+                        l.notes = formatString.unformat(l.notes);
+                    }
+                });
+            } else {
+                Markwon markwon = Markwon.create(context);
+                list.forEach(l -> {
+                    if (formatCards) {
+                        l.front = formatString.format(l.front).toString();
+                        l.back = formatString.format(l.back).toString();
+                    }
+                    if (formatCardsNotes) {
+                        l.notes = markwon.toMarkdown(l.notes).toString();
+                    }
+                });
             }
-            return c0;
-        });
+        }
         return list;
-    }
-
-    public List<DB_Card> getAllCards(int sort) {
-        return sortCards(dbHelper.card_dao.getAll(), sort);
     }
 
     public List<DB_Card> getAllCards() {
-        return dbHelper.card_dao.getAll();
+        return formatCards(dbHelper.card_dao.getAll());
     }
 
     public List<DB_Card> getAllCardsByIds(ArrayList<Integer> ids) {
@@ -145,7 +176,7 @@ public class DB_Helper_Get {
         return formatCards(list);
     }
 
-    public List<DB_Card> getAllCardsByProgress(int sort, boolean progressGreater, int progressNumber) {
+    public List<DB_Card> getAllCardsByProgress(boolean progressGreater, int progressNumber) {
         List<DB_Card> cards = new ArrayList<>();
         if (progressNumber >= 0) {
             if (progressGreater) {
@@ -156,33 +187,21 @@ public class DB_Helper_Get {
         } else {
             cards.addAll(dbHelper.card_dao.getAll());
         }
-        return sortCards(cards, sort);
-    }
-
-    public List<DB_Card> getAllCardsByCollection(int collection, int sort) {
-        List<DB_Pack> packs = getAllPacksByCollection(collection);
-        List<DB_Card> list = new ArrayList<>();
-        packs.forEach((currentPack) -> list.addAll(getAllCardsByPack(currentPack.uid)));
-        return sortCards(list, sort);
+        return formatCards(cards);
     }
 
     public List<DB_Card> getAllCardsByCollection(int collection) {
         List<DB_Pack> packs = getAllPacksByCollection(collection);
         List<DB_Card> list = new ArrayList<>();
         packs.forEach((currentPack) -> list.addAll(getAllCardsByPack(currentPack.uid)));
-        return list;
-    }
-
-    public List<DB_Card> getAllCardsByPack(int pack, int sort) {
-        return sortCards(dbHelper.card_dao.getAll(pack), sort);
+        return formatCards(list);
     }
 
     public List<DB_Card> getAllCardsByPack(int pack) {
-        return dbHelper.card_dao.getAll(pack);
+        return formatCards(dbHelper.card_dao.getAll(pack));
     }
 
-    public List<DB_Card> getAllCardsByPacksAndProgress(List<Integer> packs, int sort, boolean progressGreater,
-                                                       int progressNumber) {
+    public List<DB_Card> getAllCardsByPacksAndProgress(List<Integer> packs, boolean progressGreater, int progressNumber) {
         List<DB_Card> cards = new ArrayList<>();
         packs.forEach(pack -> {
             if (progressNumber >= 0) {
@@ -195,27 +214,21 @@ public class DB_Helper_Get {
                 cards.addAll(dbHelper.card_dao.getAll(pack));
             }
         });
-        return sortCards(cards, sort);
+        return formatCards(cards);
     }
 
     public List<DB_Card> getAllCardsByPackAndFrontAndBackAndNotes(int pack, String front, String back, String notes) {
         return dbHelper.card_dao.getAllByPackAndFrontAndBackAndNotes(pack, front, back, notes);
     }
 
-    public boolean hasMedia() {
-        return dbHelper.media_dao.hasMedia();
-    }
-
-    public DB_Media getSingleMedia(String file) {
-        return dbHelper.media_dao.getSingleMedia(file);
-    }
-
-    public DB_Media getSingleMedia(int id) {
-        return dbHelper.media_dao.getSingleMedia(id);
-    }
-
+    //Get All: Media
     public List<DB_Media> getAllMedia() {
         return dbHelper.media_dao.getAll();
+    }
+
+    //Get All: Media Links
+    private boolean isPhoto(String mime) {
+        return mime.equals("image/png") || mime.equals("image/jpeg") || mime.equals("image/webp");
     }
 
     public List<DB_Media_Link_Card> getAllMediaLinksByCard(int card) {
@@ -234,10 +247,6 @@ public class DB_Helper_Get {
         return dbHelper.media_link_card_dao.getAllByMedia(file);
     }
 
-    private boolean isPhoto(String mime) {
-        return mime.equals("image/png") || mime.equals("image/jpeg") || mime.equals("image/webp");
-    }
-
     public List<DB_Media_Link_Card> getImageMediaLinksByCard(int card) {
         List<DB_Media_Link_Card> list = dbHelper.media_link_card_dao.getAllByCard(card);
         list.removeIf(l -> {
@@ -245,14 +254,6 @@ public class DB_Helper_Get {
             return file == null || !isPhoto(file.mime);
         });
         return list;
-    }
-
-    public boolean existsMedia(String file) {
-        return dbHelper.media_dao.existsMedia(file);
-    }
-
-    public boolean existsMediaLinkCard(int file, int card) {
-        return dbHelper.media_link_card_dao.existsMediaLinkCard(file, card);
     }
 
 }

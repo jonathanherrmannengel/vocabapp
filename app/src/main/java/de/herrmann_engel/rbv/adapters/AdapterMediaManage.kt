@@ -10,11 +10,13 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.activities.FileTools
 import de.herrmann_engel.rbv.db.DB_Media
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Delete
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
+import de.herrmann_engel.rbv.utils.SortCards
 
 
 class AdapterMediaManage(
@@ -37,7 +39,10 @@ class AdapterMediaManage(
         viewHolder.textView.setOnClickListener {
             val dbHelperGet = DB_Helper_Get(c)
             val ids = dbHelperGet.getAllMediaLinkCardIdsByMedia(media[position].uid)
-            val cards = dbHelperGet.getAllCardsByIds(ids as java.util.ArrayList<Int>?)
+            val cards = SortCards().sortCards(
+                dbHelperGet.getAllCardsByIds(ids as java.util.ArrayList<Int>?),
+                Globals.SORT_ALPHABETICAL
+            )
             val dialog = Dialog(c, R.style.dia_view)
             if (cards.isEmpty()) {
                 dialog.setContentView(R.layout.dia_confirm)

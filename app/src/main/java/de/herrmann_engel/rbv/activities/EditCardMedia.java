@@ -47,6 +47,7 @@ public class EditCardMedia extends FileTools {
     private boolean progressGreater;
     private int progressNumber;
     private ArrayList<Integer> savedList;
+    private Long savedListSeed;
     private boolean fromMediaManager;
 
     private DB_Helper_Get dbHelperGet;
@@ -109,6 +110,7 @@ public class EditCardMedia extends FileTools {
         progressGreater = getIntent().getExtras().getBoolean("progressGreater");
         progressNumber = getIntent().getExtras().getInt("progressNumber");
         savedList = getIntent().getExtras().getIntegerArrayList("savedList");
+        savedListSeed = getIntent().getExtras().getLong("savedListSeed");
         fromMediaManager = getIntent().getExtras().getBoolean("fromMediaManager");
         dbHelperGet = new DB_Helper_Get(this);
         try {
@@ -232,6 +234,7 @@ public class EditCardMedia extends FileTools {
             intent.putExtra("progressGreater", progressGreater);
             intent.putExtra("progressNumber", progressNumber);
             intent.putIntegerArrayListExtra("savedList", savedList);
+            intent.putExtra("savedListSeed", savedListSeed);
         }
         startActivity(intent);
         this.finish();

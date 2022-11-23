@@ -43,6 +43,7 @@
     <string name="import_export_include_media">Include media links</string>
     <string name="import_export_include_media_warn_no_files">Backup only contains media references, no files. You need to backup and restore them on your own.</string>
     <string name="import_export_include_media_warn_all_media">Backup contains all media references, also those not used in this filing box.</string>
+    <string name="import_export_lines_progress">~%d lines.</string>
     <string name="edit_collection">Edit filing box</string>
     <string name="edit_pack">Edit deck</string>
     <string name="edit_card">Edit flashcard</string>
@@ -151,4 +152,8 @@
     <string name="settings_ui_increase_font_size">Increase font size</string>
     <string name="settings_list">Flashcard list</string>
     <string name="settings_list_no_update">Don\'t update open lists order</string>
+    <string name="warn_inaccurate">This list contains more than %d flashcards.</string>
+    <string name="warn_inaccurate_saved">Saved list order is not always kept.</string>
+    <string name="warn_inaccurate_format">List display and search results may be inaccurate.</string>
+    <string name="warn_inaccurate_note">This warning will not be shown again.</string>
 </resources>

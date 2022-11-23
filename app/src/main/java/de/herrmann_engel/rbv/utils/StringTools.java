@@ -13,10 +13,13 @@ import java.util.regex.Pattern;
 
 public class StringTools {
 
-   private Pattern formatCardBoldItalicPattern;
-   private Pattern formatCardBoldPattern;
-   private Pattern formatCardItalicPattern;
-   private Pattern formatCardIUnderlinePattern;
+    private Pattern formatCardBoldItalicPattern;
+    private Pattern formatCardBoldPattern;
+    private Pattern formatCardItalicPattern;
+    private Pattern formatCardUnderlinePattern;
+    private Pattern unformatCardPattern;
+    private Pattern shortenDefaultPattern;
+    private Pattern shortenTestPattern;
 
     private int getTypeface(int i) {
         if (i == 3) {
@@ -30,25 +33,25 @@ public class StringTools {
         }
     }
 
-    private Pattern generatePattern(int i) {
-        String regex =  String.format("%s%d%s%d%s", "(^|\\s|_)([*]{", i, "}[^\\s*][^\\n]*?(?<![\\s*])[*]{", i, "})");
+    private Pattern generateTypefacePattern(int i) {
+        String regex = String.format("%s%d%s%d%s", "(^|\\s|_)([*]{", i, "}[^\\s*][^\\n]*?(?<![\\s*])[*]{", i, "})");
         return Pattern.compile(regex);
     }
 
-    private Pattern getPattern(int i) {
+    private Pattern getTypefacePattern(int i) {
         if (i == 3) {
-            if(formatCardBoldItalicPattern == null){
-                formatCardBoldItalicPattern = generatePattern(i);
+            if (formatCardBoldItalicPattern == null) {
+                formatCardBoldItalicPattern = generateTypefacePattern(i);
             }
             return formatCardBoldItalicPattern;
         } else if (i == 2) {
-            if(formatCardBoldPattern == null){
-                formatCardBoldPattern = generatePattern(i);
+            if (formatCardBoldPattern == null) {
+                formatCardBoldPattern = generateTypefacePattern(i);
             }
             return formatCardBoldPattern;
         } else if (i == 1) {
-            if(formatCardItalicPattern == null){
-                formatCardItalicPattern = generatePattern(i);
+            if (formatCardItalicPattern == null) {
+                formatCardItalicPattern = generateTypefacePattern(i);
             }
             return formatCardItalicPattern;
         } else {
@@ -61,8 +64,8 @@ public class StringTools {
         StringBuffer modifiedInput = new StringBuffer(input);
         for (int i = 3; i > 0; i--) {
             int offset = 0;
-            Pattern pattern = getPattern(i);
-            if(pattern != null) {
+            Pattern pattern = getTypefacePattern(i);
+            if (pattern != null) {
                 Matcher matcher = pattern.matcher(modifiedInput);
                 while (matcher.find()) {
                     output.setSpan(new StyleSpan(getTypeface(i)), matcher.start(2) - offset, matcher.end(2) - offset, 0);
@@ -76,11 +79,11 @@ public class StringTools {
             }
         }
         int offset = 0;
-        if(formatCardIUnderlinePattern == null) {
+        if (formatCardUnderlinePattern == null) {
             String regex = "(^|\\s|[*])([_][^\\s_][^\\n]*?(?<![\\s_])[_])";
-            formatCardIUnderlinePattern = Pattern.compile(regex);
+            formatCardUnderlinePattern = Pattern.compile(regex);
         }
-        Matcher matcher = formatCardIUnderlinePattern.matcher(modifiedInput);
+        Matcher matcher = formatCardUnderlinePattern.matcher(modifiedInput);
         while (matcher.find()) {
             output.setSpan(new UnderlineSpan(), matcher.start(2) - offset, matcher.end(2) - offset, 0);
             output.delete(matcher.start(2) - offset, matcher.start(2) - offset + 1);
@@ -93,21 +96,49 @@ public class StringTools {
         return SpannableString.valueOf(output);
     }
 
-    public String shorten(String input, int maxLength) {
-        Pattern pattern = Pattern.compile("(\\P{M}\\p{M}*+)");
-        Matcher matcher = pattern.matcher(input);
+    public String unformat(String input) {
+        if (unformatCardPattern == null) {
+            String regex = "[*_#{}]+";
+            unformatCardPattern = Pattern.compile(regex);
+        }
+        return unformatCardPattern.matcher(input).replaceAll("");
+    }
+
+    private Pattern generateShortenPattern(int maxLength) {
+        return Pattern.compile(String.format("%s%d%s", "^((\\P{M}\\p{M}*+){", maxLength - 1, "}).*$"));
+    }
+
+    private boolean shortenTest(String input, int maxLength) {
+        if (maxLength <= 0) {
+            return false;
+        }
+        if (shortenTestPattern == null) {
+            shortenTestPattern = Pattern.compile("(\\P{M}\\p{M}*+)");
+        }
+        Matcher matcher = shortenTestPattern.matcher(input);
         int count = 0;
         while (matcher.find() && count <= maxLength) {
             count++;
         }
-        if (count > maxLength && maxLength >= 0) {
-            return input.replaceAll(String.format("%s%d%s", "^((\\P{M}\\p{M}*+){", maxLength - 1, "}).*$"), "$1…");
+        return count > maxLength;
+    }
+
+    public String shorten(String input, int maxLength) {
+        if (shortenTest(input, maxLength)) {
+            return generateShortenPattern(maxLength).matcher(input).replaceAll("$1…");
         }
         return input;
     }
 
     public String shorten(String input) {
-        return shorten(input, 50);
+        int maxLength = 50;
+        if (shortenTest(input, maxLength)) {
+            if (shortenDefaultPattern == null) {
+                shortenDefaultPattern = generateShortenPattern(maxLength);
+            }
+            return shortenDefaultPattern.matcher(input).replaceAll("$1…");
+        }
+        return input;
     }
 
     public String firstEmoji(String input) {

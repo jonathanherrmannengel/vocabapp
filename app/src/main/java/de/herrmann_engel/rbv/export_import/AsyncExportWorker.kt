@@ -1,35 +1,27 @@
 package de.herrmann_engel.rbv.export_import
 
 import android.content.Context
-import android.content.Intent
 import android.database.Cursor
-import androidx.core.content.FileProvider
+import android.net.Uri
 import com.opencsv.CSVWriter
 import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Export
-import java.io.File
-import java.io.FileWriter
+import java.io.*
 
-class Export {
-    private val context: Context
-    private val singleCollection: Boolean
-    private var collectionNo = 0
-    private var includeSettings = false
-    private var includeMedia: Boolean
-
-    constructor(context: Context, includeSettings: Boolean, includeMedia: Boolean) {
-        singleCollection = false
-        this.context = context
-        this.includeSettings = includeSettings
-        this.includeMedia = includeMedia
-    }
-
-    constructor(context: Context, collectionNo: Int, includeMedia: Boolean) {
-        singleCollection = true
-        this.context = context
-        this.collectionNo = collectionNo
-        this.includeMedia = includeMedia
+class AsyncExportWorker(
+    val context: Context,
+    private val listener: AsyncExportFinish,
+    private val listenerProgress: AsyncExportProgress,
+    private val singleCollection: Boolean,
+    private val collectionNo: Int,
+    private val includeSettings: Boolean,
+    private val includeMedia: Boolean,
+    private val exportFileUri: Uri?
+) {
+    private var progress = 0;
+    fun execute() {
+        listener.exportCardsResult(exportFile())
     }
 
     private fun exportSetting(name: String, filename: String, type: String, value: String) {
@@ -66,6 +58,15 @@ class Export {
                     }
                     csvWrite.writeNext(row)
                     cursor.moveToNext()
+                    progress++;
+                    if (progress % 1000 == 0) {
+                        listenerProgress.exportCardsProgress(
+                            String.format(
+                                context.getString(R.string.import_export_lines_progress),
+                                progress
+                            )
+                        )
+                    }
                 }
             }
             csvWrite.close()
@@ -76,11 +77,8 @@ class Export {
         return true
     }
 
-    fun exportFile(): Boolean {
+    fun exportFile(): File? {
         try {
-            val share = Intent(Intent.ACTION_SEND)
-            share.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            share.type = "text/csv"
             val dbHelperExport = DB_Helper_Export(context)
             val index: String
             var collectionNos: MutableList<Int> = ArrayList()
@@ -119,7 +117,7 @@ class Export {
                         dbHelperExport.getAllCardsByCollection(currentCollectionNo), isFirst
                     )
                 ) {
-                    return false
+                    return null
                 }
                 isFirst = false
             }
@@ -137,7 +135,7 @@ class Export {
                         true
                     )
                 ) {
-                    return false
+                    return null
                 }
             }
             if (includeSettings) {
@@ -192,22 +190,26 @@ class Export {
                     )
                 }
             }
-            share.putExtra(
-                Intent.EXTRA_STREAM, FileProvider.getUriForFile(
-                    context.applicationContext,
-                    context.packageName + ".fileprovider", file
-                )
-            )
-            context.startActivity(
-                Intent.createChooser(
-                    share,
-                    context.resources.getString(R.string.export_cards)
-                )
-            )
-            return true
+            if (exportFileUri != null) {
+                try {
+                    val inputStream: InputStream = FileInputStream(file)
+                    val outputStream: OutputStream? =
+                        context.applicationContext.contentResolver.openOutputStream(exportFileUri)
+                    val buffer = ByteArray(1024)
+                    var length: Int
+                    while (inputStream.read(buffer).also { length = it } > 0) {
+                        outputStream?.write(buffer, 0, length)
+                    }
+                    inputStream.close()
+                    outputStream?.close()
+                } catch (e: java.lang.Exception) {
+                    e.printStackTrace()
+                }
+            }
+            return file
         } catch (e: Exception) {
             e.printStackTrace()
         }
-        return false
+        return null
     }
 }

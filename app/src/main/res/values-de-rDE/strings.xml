@@ -43,6 +43,7 @@
     <string name="import_export_include_media">Medien-Referenzen einschließen</string>
     <string name="import_export_include_media_warn_no_files">Die Sicherung enthält nur die Medien-Referenzen, nicht die Dateien selbst. Diese müssen Sie selbstständig sichern und wiederherstellen.</string>
     <string name="import_export_include_media_warn_all_media">Die Sicherung enthält alle Medien-Referenzen, auch die nicht in diesem Karteikasten verwendeten.</string>
+    <string name="import_export_lines_progress">~%d Zeilen.</string>
     <string name="edit_pack">Kartenstapel bearbeiten</string>
     <string name="edit_card">Karteikarte bearbeiten</string>
     <string name="edit_card_media">Verknüpfte Medien verwalten</string>
@@ -145,4 +146,9 @@
     <string name="settings_ui_increase_font_size">Schriftgröße erhöhen</string>
     <string name="settings_list">Karteikartenliste</string>
     <string name="settings_list_no_update">Reihenfolge in offenen Listen nicht aktualisieren</string>
+    <string name="warn_inaccurate">Mehr als %d Karteikarten in dieser Liste.</string>
+    <string name="warn_inaccurate_saved">Reihenfolge der gespeicherten Liste wird nicht immer beibehalten.</string>
+    <string name="warn_inaccurate_format">Listendarstellung und Suchergebnisse können ungenau sein.</string>
+    <string name="warn_inaccurate_note">Diese Warnung wird nicht wieder angezeigt.</string>
+
 </resources>

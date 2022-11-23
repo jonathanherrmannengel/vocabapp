@@ -1,6 +1,7 @@
 package de.herrmann_engel.rbv.activities;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
@@ -27,6 +28,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 
 import de.herrmann_engel.rbv.Globals;
 import de.herrmann_engel.rbv.R;
@@ -36,6 +38,7 @@ import de.herrmann_engel.rbv.db.DB_Media_Link_Card;
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get;
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Update;
 import de.herrmann_engel.rbv.utils.SearchCards;
+import de.herrmann_engel.rbv.utils.SortCards;
 import de.herrmann_engel.rbv.utils.StringTools;
 import io.noties.markwon.Markwon;
 
@@ -62,7 +65,10 @@ public class ListCards extends FileTools {
     private boolean progressGreater;
     private int progressNumber;
     private ArrayList<Integer> savedList;
+    private Long savedListSeed;
     private List<DB_Card> cardsList;
+    private List<DB_Card> originalCardsList;
+    private List<DB_Card> currentCardsList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,7 +86,6 @@ public class ListCards extends FileTools {
 
     @Override
     protected void notifyFolderSet() {
-        setRecView();
     }
 
     @Override
@@ -98,6 +103,7 @@ public class ListCards extends FileTools {
             intent.putExtra("progressGreater", progressGreater);
             intent.putExtra("progressNumber", progressNumber);
             intent.putIntegerArrayListExtra("savedList", savedList);
+            intent.putExtra("savedListSeed", savedListSeed);
             this.startActivity(intent);
             this.finish();
         } catch (Exception e) {
@@ -120,6 +126,7 @@ public class ListCards extends FileTools {
         progressGreater = getIntent().getExtras().getBoolean("progressGreater");
         progressNumber = getIntent().getExtras().getInt("progressNumber");
         savedList = getIntent().getExtras().getIntegerArrayList("savedList");
+        savedListSeed = getIntent().getExtras().getLong("savedListSeed");
         if (packNo < 0) {
             MenuItem startNewCard = menu.findItem(R.id.start_new_card);
             startNewCard.setVisible(false);
@@ -165,8 +172,128 @@ public class ListCards extends FileTools {
         if (searchQuery != null && !searchQuery.isEmpty()) {
             searchCardsOffItem.setVisible(true);
         }
+        updateCardList();
+
+        if (cardsList.size() > Globals.LIST_ACCURATE_SIZE) {
+            SharedPreferences config = this.getSharedPreferences(Globals.CONFIG_NAME, Context.MODE_PRIVATE);
+            boolean warnInaccurateSaved = config.getBoolean("inaccurate_warning_saved", true);
+            boolean warnInaccurateFormat = config.getBoolean("inaccurate_warning_format", true);
+            boolean formatCardsOrNotes = settings.getBoolean("format_cards", false) || settings.getBoolean("format_card_notes", false);
+            if ((saveList && warnInaccurateSaved) || (formatCardsOrNotes && warnInaccurateFormat)) {
+                SharedPreferences.Editor configEditor = config.edit();
+                Dialog info = new Dialog(this, R.style.dia_view);
+                info.setContentView(R.layout.dia_info);
+                info.setTitle(getResources().getString(R.string.info));
+                info.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
+                        WindowManager.LayoutParams.MATCH_PARENT);
+                TextView infoText = info.findViewById(R.id.dia_info_text);
+                List<String> warnings = new ArrayList<>();
+                warnings.add(String.format(getResources().getString(R.string.warn_inaccurate), Globals.LIST_ACCURATE_SIZE));
+                if (saveList) {
+                    configEditor.putBoolean("inaccurate_warning_saved", false);
+                    warnings.add(getResources().getString(R.string.warn_inaccurate_saved));
+                }
+                if (formatCardsOrNotes) {
+                    configEditor.putBoolean("inaccurate_warning_format", false);
+                    warnings.add(getResources().getString(R.string.warn_inaccurate_format));
+                }
+                warnings.add(getResources().getString(R.string.warn_inaccurate_note));
+                infoText.setText(String.join(System.getProperty("line.separator") + System.getProperty("line.separator"), warnings));
+                info.show();
+                configEditor.apply();
+            }
+        }
+        if (packNo >= 0) {
+            try {
+                int packColors = dbHelperGet.getSinglePack(packNo).colors;
+                TypedArray colors = getResources().obtainTypedArray(R.array.pack_color_main);
+                TypedArray colorsBackground = getResources().obtainTypedArray(R.array.pack_color_background);
+                if (packColors < Math.min(colors.length(), colorsBackground.length()) && packColors >= 0) {
+                    int color = colors.getColor(packColors, 0);
+                    int colorBackground = colorsBackground.getColor(packColors, 0);
+                    Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(new ColorDrawable(color));
+                    Window window = this.getWindow();
+                    window.setStatusBarColor(color);
+                    findViewById(R.id.rec_default_root).setBackgroundColor(colorBackground);
+                }
+                colors.recycle();
+                colorsBackground.recycle();
+            } catch (Exception e) {
+                Toast.makeText(getApplicationContext(), R.string.error, Toast.LENGTH_SHORT).show();
+            }
+        } else if (collectionNo >= 0) {
+            try {
+                int packColors = dbHelperGet.getSingleCollection(collectionNo).colors;
+                TypedArray colors = getResources().obtainTypedArray(R.array.pack_color_main);
+                TypedArray colorsBackground = getResources().obtainTypedArray(R.array.pack_color_background);
+                if (packColors < Math.min(colors.length(), colorsBackground.length()) && packColors >= 0) {
+                    int color = colors.getColor(packColors, 0);
+                    int colorBackground = colorsBackground.getColor(packColors, 0);
+                    Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(new ColorDrawable(color));
+                    Window window = this.getWindow();
+                    window.setStatusBarColor(color);
+                    findViewById(R.id.rec_default_root).setBackgroundColor(colorBackground);
+                }
+                colors.recycle();
+                colorsBackground.recycle();
+            } catch (Exception e) {
+                Toast.makeText(getApplicationContext(), R.string.error, Toast.LENGTH_SHORT).show();
+            }
+        }
         setRecView();
         return true;
+    }
+
+    private void updateCardList() {
+        if (saveList && savedList != null) {
+            originalCardsList = dbHelperGet.getAllCardsByIds(savedList);
+        } else if (collectionNo == -1 && packNo == -1) {
+            originalCardsList = dbHelperGet.getAllCards();
+        } else if (packNo == -1) {
+            originalCardsList = dbHelperGet.getAllCardsByCollection(collectionNo);
+        } else if (packNo == -2) {
+            originalCardsList = dbHelperGet.getAllCardsByPacksAndProgress(packNos, progressGreater, progressNumber);
+        } else if (packNo == -3) {
+            originalCardsList = dbHelperGet.getAllCardsByProgress(progressGreater, progressNumber);
+        } else {
+            originalCardsList = dbHelperGet.getAllCardsByPack(packNo);
+        }
+        if (saveList && savedList == null && savedListSeed == 0) {
+            cardPosition = 0;
+            if (originalCardsList.size() > Globals.LIST_ACCURATE_SIZE) {
+                generateSavedListSeed();
+                sortList();
+            } else {
+                sortList();
+                generateSavedList();
+            }
+        } else if (!saveList) {
+            cardPosition = 0;
+            sortList();
+        } else {
+            sortList();
+        }
+    }
+
+    private void generateSavedList() {
+        savedList = new ArrayList<>();
+        cardsList.forEach(card -> savedList.add(card.uid));
+    }
+
+    private void generateSavedListSeed() {
+        savedListSeed = new Random().nextLong();
+    }
+
+    private void sortList() {
+        if (savedList != null) {
+            cardsList = originalCardsList;
+        } else if (savedListSeed != 0 && sort == Globals.SORT_RANDOM) {
+            Random random = new Random();
+            random.setSeed(savedListSeed);
+            cardsList = new SortCards().sortCards(originalCardsList, sort, random);
+        } else {
+            cardsList = new SortCards().sortCards(originalCardsList, sort);
+        }
     }
 
     public void searchCardsOff(MenuItem menuItem) {
@@ -178,8 +305,8 @@ public class ListCards extends FileTools {
 
     private void nextQuery(Dialog queryMode) {
         try {
-            int position = Math.min(cardPosition, cardsList.size() - 1);
-            DB_Card card = dbHelperGet.getSingleCard(cardsList.get(position).uid);
+            int position = Math.min(cardPosition, currentCardsList.size() - 1);
+            DB_Card card = dbHelperGet.getSingleCard(currentCardsList.get(position).uid);
 
             try {
                 TypedArray colorsBackground = getResources().obtainTypedArray(R.array.pack_color_background);
@@ -267,8 +394,11 @@ public class ListCards extends FileTools {
             ImageButton skip = queryMode.findViewById(R.id.query_skip);
             skip.setOnClickListener(vv -> {
                 cardPosition++;
-                if (cardPosition >= cardsList.size()) {
+                if (cardPosition >= currentCardsList.size()) {
                     cardPosition = 0;
+                    if (!saveList) {
+                        updateCardList();
+                    }
                     setRecView();
                     queryMode.dismiss();
                 } else {
@@ -284,6 +414,9 @@ public class ListCards extends FileTools {
                     cardPosition--;
                     if (cardPosition < 0) {
                         cardPosition = 0;
+                        if (!saveList) {
+                            updateCardList();
+                        }
                         setRecView();
                         queryMode.dismiss();
                     } else {
@@ -300,11 +433,15 @@ public class ListCards extends FileTools {
                 plus.setVisibility(View.VISIBLE);
                 minus.setVisibility(View.VISIBLE);
                 plus.setOnClickListener(vv -> {
+                    cardsList.stream().filter(i -> i.uid == card.uid).findFirst().get().known++;
                     card.known++;
                     dbHelperUpdate.updateCard(card);
                     cardPosition++;
-                    if (cardPosition >= cardsList.size()) {
+                    if (cardPosition >= currentCardsList.size()) {
                         cardPosition = 0;
+                        if (!saveList) {
+                            updateCardList();
+                        }
                         setRecView();
                         queryMode.dismiss();
                     } else {
@@ -312,11 +449,16 @@ public class ListCards extends FileTools {
                     }
                 });
                 minus.setOnClickListener(vv -> {
-                    card.known = Math.max(0, --card.known);
+                    int known = Math.max(0, --card.known);
+                    cardsList.stream().filter(i -> i.uid == card.uid).findFirst().get().known = known;
+                    card.known = known;
                     dbHelperUpdate.updateCard(card);
                     cardPosition++;
-                    if (cardPosition >= cardsList.size()) {
+                    if (cardPosition >= currentCardsList.size()) {
                         cardPosition = 0;
+                        if (!saveList) {
+                            updateCardList();
+                        }
                         setRecView();
                         queryMode.dismiss();
                     } else {
@@ -330,6 +472,12 @@ public class ListCards extends FileTools {
         }
     }
 
+    private void setCardPosition() {
+        cardPosition = ((LinearLayoutManager) Objects.requireNonNull(recyclerView.getLayoutManager()))
+                .findFirstVisibleItemPosition();
+        cardPosition = Math.min(cardPosition, Objects.requireNonNull(recyclerView.getAdapter()).getItemCount() - 1);
+    }
+
     public void startQueryMode(MenuItem menuItem) {
         Dialog queryMode = new Dialog(this, R.style.dia_view);
         queryMode.setContentView(R.layout.dia_query);
@@ -337,13 +485,11 @@ public class ListCards extends FileTools {
         queryMode.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.MATCH_PARENT);
         dbHelperUpdate = new DB_Helper_Update(this);
-        cardPosition = ((LinearLayoutManager) Objects.requireNonNull(recyclerView.getLayoutManager()))
-                .findFirstVisibleItemPosition();
-        cardPosition = Math.min(cardPosition, Objects.requireNonNull(recyclerView.getAdapter()).getItemCount() - 1);
+        setCardPosition();
         nextQuery(queryMode);
         queryMode.setOnKeyListener((dialogInterface, keyCode, event) -> {
             if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
-                if (!saveList || savedList == null) {
+                if (!saveList || (savedList == null && savedListSeed == 0)) {
                     Dialog exitQueryModeDialog = new Dialog(ListCards.this, R.style.dia_view);
                     exitQueryModeDialog.setContentView(R.layout.dia_confirm);
                     exitQueryModeDialog.setTitle(getResources().getString(R.string.query_mode_exit));
@@ -353,6 +499,7 @@ public class ListCards extends FileTools {
                     Button exitQueryModeN = exitQueryModeDialog.findViewById(R.id.dia_confirm_no);
                     exitQueryModeY.setOnClickListener(v -> {
                         cardPosition = 0;
+                        updateCardList();
                         setRecView();
                         exitQueryModeDialog.dismiss();
                         queryMode.dismiss();
@@ -378,54 +525,54 @@ public class ListCards extends FileTools {
                 WindowManager.LayoutParams.MATCH_PARENT);
 
         TextView statTotalCardsView = listStatsDialog.findViewById(R.id.list_stat_cards_total_content);
-        statTotalCardsView.setText(Integer.toString(cardsList.size()));
+        statTotalCardsView.setText(Integer.toString(currentCardsList.size()));
 
-        int statTotalProgress = cardsList.stream().mapToInt(c -> c.known).sum();
+        int statTotalProgress = currentCardsList.stream().mapToInt(c -> c.known).sum();
         TextView statTotalProgressView = listStatsDialog.findViewById(R.id.list_stat_progress_total_content);
         statTotalProgressView.setText(Integer.toString(statTotalProgress));
-        int statMaxProgress = cardsList.stream().mapToInt(c -> c.known).max().orElse(0);
+        int statMaxProgress = currentCardsList.stream().mapToInt(c -> c.known).max().orElse(0);
         TextView statMaxProgressView = listStatsDialog.findViewById(R.id.list_stat_progress_max_content);
         statMaxProgressView.setText(Integer.toString(statMaxProgress));
-        int statMinProgress = cardsList.stream().mapToInt(c -> c.known).min().orElse(0);
+        int statMinProgress = currentCardsList.stream().mapToInt(c -> c.known).min().orElse(0);
         TextView statMinProgressView = listStatsDialog.findViewById(R.id.list_stat_progress_min_content);
         statMinProgressView.setText(Integer.toString(statMinProgress));
-        double statAvgProgress = cardsList.stream().mapToInt(c -> c.known).average().orElse(0);
+        double statAvgProgress = currentCardsList.stream().mapToInt(c -> c.known).average().orElse(0);
         statAvgProgress = Math.round(statAvgProgress * 100.0) / 100.0;
         TextView statAvgProgressView = listStatsDialog.findViewById(R.id.list_stat_progress_avg_content);
         statAvgProgressView.setText(Double.toString(statAvgProgress));
 
-        int statProgressTableIs0 = (int) cardsList.stream().filter(c -> c.known == 0).count();
-        int statProgressTableIs1 = (int) cardsList.stream().filter(c -> c.known == 1).count();
-        int statProgressTableIs2 = (int) cardsList.stream().filter(c -> c.known == 2).count();
-        int statProgressTableIs3 = (int) cardsList.stream().filter(c -> c.known == 3).count();
-        int statProgressTableIs4 = (int) cardsList.stream().filter(c -> c.known == 4).count();
-        int statProgressTableIs5OrMore = (int) cardsList.stream().filter(c -> c.known >= 5).count();
-        float percentCurrent = statProgressTableIs0 / ((float) cardsList.size());
+        int statProgressTableIs0 = (int) currentCardsList.stream().filter(c -> c.known == 0).count();
+        int statProgressTableIs1 = (int) currentCardsList.stream().filter(c -> c.known == 1).count();
+        int statProgressTableIs2 = (int) currentCardsList.stream().filter(c -> c.known == 2).count();
+        int statProgressTableIs3 = (int) currentCardsList.stream().filter(c -> c.known == 3).count();
+        int statProgressTableIs4 = (int) currentCardsList.stream().filter(c -> c.known == 4).count();
+        int statProgressTableIs5OrMore = (int) currentCardsList.stream().filter(c -> c.known >= 5).count();
+        float percentCurrent = statProgressTableIs0 / ((float) currentCardsList.size());
         TextView statProgressTableKnown0 = listStatsDialog.findViewById(R.id.list_stat_progress_counter_number_0);
         TextView statProgressTablePercent0 = listStatsDialog.findViewById(R.id.list_stat_progress_counter_percent_0);
         statProgressTableKnown0.setText(Integer.toString(statProgressTableIs0));
         statProgressTablePercent0.setText(Integer.toString(Math.round(percentCurrent * 100)));
-        percentCurrent = statProgressTableIs1 / ((float) cardsList.size());
+        percentCurrent = statProgressTableIs1 / ((float) currentCardsList.size());
         TextView statProgressTableKnown1 = listStatsDialog.findViewById(R.id.list_stat_progress_counter_number_1);
         TextView statProgressTablePercent1 = listStatsDialog.findViewById(R.id.list_stat_progress_counter_percent_1);
         statProgressTableKnown1.setText(Integer.toString(statProgressTableIs1));
         statProgressTablePercent1.setText(Integer.toString(Math.round(percentCurrent * 100)));
-        percentCurrent = statProgressTableIs2 / ((float) cardsList.size());
+        percentCurrent = statProgressTableIs2 / ((float) currentCardsList.size());
         TextView statProgressTableKnown2 = listStatsDialog.findViewById(R.id.list_stat_progress_counter_number_2);
         TextView statProgressTablePercent2 = listStatsDialog.findViewById(R.id.list_stat_progress_counter_percent_2);
         statProgressTableKnown2.setText(Integer.toString(statProgressTableIs2));
         statProgressTablePercent2.setText(Integer.toString(Math.round(percentCurrent * 100)));
-        percentCurrent = statProgressTableIs3 / ((float) cardsList.size());
+        percentCurrent = statProgressTableIs3 / ((float) currentCardsList.size());
         TextView statProgressTableKnown3 = listStatsDialog.findViewById(R.id.list_stat_progress_counter_number_3);
         TextView statProgressTablePercent3 = listStatsDialog.findViewById(R.id.list_stat_progress_counter_percent_3);
         statProgressTableKnown3.setText(Integer.toString(statProgressTableIs3));
         statProgressTablePercent3.setText(Integer.toString(Math.round(percentCurrent * 100)));
-        percentCurrent = statProgressTableIs4 / ((float) cardsList.size());
+        percentCurrent = statProgressTableIs4 / ((float) currentCardsList.size());
         TextView statProgressTableKnown4 = listStatsDialog.findViewById(R.id.list_stat_progress_counter_number_4);
         TextView statProgressTablePercent4 = listStatsDialog.findViewById(R.id.list_stat_progress_counter_percent_4);
         statProgressTableKnown4.setText(Integer.toString(statProgressTableIs4));
         statProgressTablePercent4.setText(Integer.toString(Math.round(percentCurrent * 100)));
-        percentCurrent = statProgressTableIs5OrMore / ((float) cardsList.size());
+        percentCurrent = statProgressTableIs5OrMore / ((float) currentCardsList.size());
         TextView statProgressTableKnown5 = listStatsDialog.findViewById(R.id.list_stat_progress_counter_number_5);
         TextView statProgressTablePercent5 = listStatsDialog.findViewById(R.id.list_stat_progress_counter_percent_5);
         statProgressTableKnown5.setText(Integer.toString(statProgressTableIs5OrMore));
@@ -449,6 +596,7 @@ public class ListCards extends FileTools {
     }
 
     public void changeFrontBack(MenuItem menuItem) {
+        setCardPosition();
         reverse = !reverse;
         setRecView();
     }
@@ -456,11 +604,14 @@ public class ListCards extends FileTools {
     public void sort(MenuItem menuItem) {
         sort++;
         cardPosition = 0;
-        if (saveList && savedList != null) {
-            List<DB_Card> list = dbHelperGet.getAllCardsByIds(savedList);
-            list = dbHelperGet.sortCards(list, sort);
-            savedList.clear();
-            list.forEach(card -> savedList.add(card.uid));
+        if (savedListSeed != 0) {
+            generateSavedListSeed();
+        }
+        boolean hadSavedList = savedList != null;
+        savedList = null;
+        sortList();
+        if (saveList && hadSavedList) {
+            generateSavedList();
         }
         setRecView();
     }
@@ -475,11 +626,14 @@ public class ListCards extends FileTools {
         intent.putExtra("cardPosition", ((LinearLayoutManager) Objects.requireNonNull(recyclerView.getLayoutManager()))
                 .findFirstVisibleItemPosition());
         intent.putIntegerArrayListExtra("savedList", savedList);
+        intent.putExtra("savedListSeed", savedListSeed);
         this.startActivity(intent);
         this.finish();
     }
 
     public void setRecView() {
+        currentCardsList = cardsList;
+        //Menu Items
         if (sort == Globals.SORT_RANDOM) {
             sortRandomItem.setTitle(R.string.sort_alphabetical);
         } else if (sort == Globals.SORT_ALPHABETICAL) {
@@ -488,63 +642,15 @@ public class ListCards extends FileTools {
             sort = Globals.SORT_DEFAULT;
             sortRandomItem.setTitle(R.string.sort_random);
         }
-        if (saveList && savedList != null) {
-            cardsList = dbHelperGet.getAllCardsByIds(savedList);
-        } else if (collectionNo == -1 && packNo == -1) {
-            cardsList = dbHelperGet.getAllCards(sort);
-        } else if (packNo == -1) {
-            cardsList = dbHelperGet.getAllCardsByCollection(collectionNo, sort);
-        } else if (packNo == -2) {
-            cardsList = dbHelperGet.getAllCardsByPacksAndProgress(packNos, sort, progressGreater, progressNumber);
-        } else if (packNo == -3) {
-            cardsList = dbHelperGet.getAllCardsByProgress(sort, progressGreater, progressNumber);
-        } else {
-            cardsList = dbHelperGet.getAllCardsByPack(packNo, sort);
-        }
-        if (saveList && savedList == null) {
-            savedList = new ArrayList<>();
-            cardsList.forEach(card -> savedList.add(card.uid));
-        }
-        if (packNo >= 0) {
-            try {
-                int packColors = dbHelperGet.getSinglePack(packNo).colors;
-                TypedArray colors = getResources().obtainTypedArray(R.array.pack_color_main);
-                TypedArray colorsBackground = getResources().obtainTypedArray(R.array.pack_color_background);
-                if (packColors < Math.min(colors.length(), colorsBackground.length()) && packColors >= 0) {
-                    int color = colors.getColor(packColors, 0);
-                    int colorBackground = colorsBackground.getColor(packColors, 0);
-                    Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(new ColorDrawable(color));
-                    Window window = this.getWindow();
-                    window.setStatusBarColor(color);
-                    findViewById(R.id.rec_default_root).setBackgroundColor(colorBackground);
-                }
-                colors.recycle();
-                colorsBackground.recycle();
-            } catch (Exception e) {
-                Toast.makeText(getApplicationContext(), R.string.error, Toast.LENGTH_SHORT).show();
-            }
-        } else if (collectionNo >= 0) {
-            try {
-                int packColors = dbHelperGet.getSingleCollection(collectionNo).colors;
-                TypedArray colors = getResources().obtainTypedArray(R.array.pack_color_main);
-                TypedArray colorsBackground = getResources().obtainTypedArray(R.array.pack_color_background);
-                if (packColors < Math.min(colors.length(), colorsBackground.length()) && packColors >= 0) {
-                    int color = colors.getColor(packColors, 0);
-                    int colorBackground = colorsBackground.getColor(packColors, 0);
-                    Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(new ColorDrawable(color));
-                    Window window = this.getWindow();
-                    window.setStatusBarColor(color);
-                    findViewById(R.id.rec_default_root).setBackgroundColor(colorBackground);
-                }
-                colors.recycle();
-                colorsBackground.recycle();
-            } catch (Exception e) {
-                Toast.makeText(getApplicationContext(), R.string.error, Toast.LENGTH_SHORT).show();
-            }
-        }
-        searchCardsItem.setVisible(cardsList.size() > 0);
+        queryModeItem.setVisible(currentCardsList.size() > 0);
+        listStatsItem.setVisible(currentCardsList.size() > 0);
+        changeFrontBackItem.setTitle(reverse ? R.string.change_back_front : R.string.change_front_back);
+        changeFrontBackItem.setVisible(currentCardsList.size() > 0);
+        sortRandomItem.setVisible(currentCardsList.size() > 1);
+        searchCardsItem.setVisible(currentCardsList.size() > 0);
+        //Search
         if (searchQuery != null && !searchQuery.isEmpty()) {
-            List<DB_Card> cardsListFiltered = new ArrayList<>(cardsList);
+            List<DB_Card> cardsListFiltered = new ArrayList<>(currentCardsList);
             SearchCards searchCards = new SearchCards();
             cardsListFiltered = searchCards.searchCards(cardsListFiltered, searchQuery);
             if (cardsListFiltered.size() == 0) {
@@ -553,22 +659,16 @@ public class ListCards extends FileTools {
                 cardPosition = 0;
                 Toast.makeText(getApplicationContext(), R.string.search_no_results, Toast.LENGTH_LONG).show();
             } else {
-                cardsList = cardsListFiltered;
+                currentCardsList = cardsListFiltered;
             }
         }
-        queryModeItem.setVisible(cardsList.size() > 0);
-        listStatsItem.setVisible(cardsList.size() > 0);
-        changeFrontBackItem.setTitle(reverse ? R.string.change_back_front : R.string.change_front_back);
-        changeFrontBackItem.setVisible(cardsList.size() > 0);
-        sortRandomItem.setVisible(cardsList.size() > 1);
-        AdapterCards adapter = new AdapterCards(cardsList, this, reverse, sort, packNo, packNos, searchQuery,
-                collectionNo, progressGreater, progressNumber, savedList);
+        //Set recycler view
+        AdapterCards adapter = new AdapterCards(currentCardsList, this, reverse, sort, packNo, packNos, searchQuery,
+                collectionNo, progressGreater, progressNumber, savedList, savedListSeed);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        if (sort != Globals.SORT_RANDOM || (saveList && savedList != null)) {
-            recyclerView.scrollToPosition(
-                    Math.min(cardPosition, Objects.requireNonNull(recyclerView.getAdapter()).getItemCount() - 1));
-        }
+        recyclerView.scrollToPosition(
+                Math.min(cardPosition, Objects.requireNonNull(recyclerView.getAdapter()).getItemCount() - 1));
     }
 
     @Override

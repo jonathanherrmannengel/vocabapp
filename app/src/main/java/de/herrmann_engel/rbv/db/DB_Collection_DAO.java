@@ -13,13 +13,13 @@ import java.util.List;
 @Dao
 public interface DB_Collection_DAO {
 
-    @Query("SELECT * FROM db_collection ORDER BY name ASC, uid DESC")
+    @Query("SELECT * FROM db_collection ORDER BY name COLLATE NOCASE ASC, uid DESC")
     List<DB_Collection> getAll();
 
-    @Query("SELECT * FROM db_collection WHERE name=:name ORDER BY name ASC, uid DESC")
+    @Query("SELECT * FROM db_collection WHERE name=:name ORDER BY name COLLATE NOCASE ASC, uid DESC")
     List<DB_Collection> getAllByName(String name);
 
-    @Query("SELECT uid FROM db_collection ORDER BY name ASC, uid DESC")
+    @Query("SELECT uid FROM db_collection ORDER BY name COLLATE NOCASE ASC, uid DESC")
     List<Integer> getAllIDs();
 
     @Query("SELECT * FROM db_collection WHERE uid=:cid")

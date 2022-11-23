@@ -43,6 +43,7 @@ public class ViewPack extends AppCompatActivity {
     private String searchQuery;
     private int cardPosition;
     private ArrayList<Integer> savedList;
+    private Long savedListSeed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +58,7 @@ public class ViewPack extends AppCompatActivity {
         searchQuery = getIntent().getExtras().getString("searchQuery");
         cardPosition = getIntent().getExtras().getInt("cardPosition");
         savedList = getIntent().getExtras().getIntegerArrayList("savedList");
+        savedListSeed = getIntent().getExtras().getLong("savedListSeed");
         dbHelperGet = new DB_Helper_Get(this);
         boolean increaseFontSize = settings.getBoolean("ui_font_size", false);
         try {
@@ -113,6 +115,7 @@ public class ViewPack extends AppCompatActivity {
         intent.putExtra("searchQuery", searchQuery);
         intent.putExtra("cardPosition", cardPosition);
         intent.putIntegerArrayListExtra("savedList", savedList);
+        intent.putExtra("savedListSeed", savedListSeed);
         startActivity(intent);
         this.finish();
     }
@@ -127,13 +130,13 @@ public class ViewPack extends AppCompatActivity {
         Button confirmDeleteY = confirmDelete.findViewById(R.id.dia_confirm_yes);
         Button confirmDeleteN = confirmDelete.findViewById(R.id.dia_confirm_no);
 
-        if (dbHelperGet.getAllCardsByPack(pack.uid).size() > 0 && !forceDelete) {
+        if (dbHelperGet.countCardsInPack(pack.uid) > 0 && !forceDelete) {
             TextView confirmDeleteDesc = confirmDelete.findViewById(R.id.dia_confirm_desc);
             confirmDeleteDesc.setText(R.string.delete_pack_with_cards);
             confirmDeleteDesc.setVisibility(View.VISIBLE);
         }
         confirmDeleteY.setOnClickListener(v -> {
-            if (dbHelperGet.getAllCardsByPack(pack.uid).size() == 0 || forceDelete) {
+            if (dbHelperGet.countCardsInPack(pack.uid) == 0 || forceDelete) {
                 DB_Helper_Delete dbHelperDelete = new DB_Helper_Delete(getApplicationContext());
                 dbHelperDelete.deletePack(pack, forceDelete);
                 Intent intent = new Intent(getApplicationContext(), ListPacks.class);
@@ -188,6 +191,7 @@ public class ViewPack extends AppCompatActivity {
         intent.putExtra("searchQuery", searchQuery);
         intent.putExtra("cardPosition", cardPosition);
         intent.putIntegerArrayListExtra("savedList", savedList);
+        intent.putExtra("savedListSeed", savedListSeed);
         startActivity(intent);
         this.finish();
     }

@@ -41,6 +41,7 @@ public class EditCard extends AppCompatActivity {
     private boolean progressGreater;
     private int progressNumber;
     private ArrayList<Integer> savedList;
+    private Long savedListSeed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +61,7 @@ public class EditCard extends AppCompatActivity {
         progressGreater = getIntent().getExtras().getBoolean("progressGreater");
         progressNumber = getIntent().getExtras().getInt("progressNumber");
         savedList = getIntent().getExtras().getIntegerArrayList("savedList");
+        savedListSeed = getIntent().getExtras().getLong("savedListSeed");
         DB_Helper_Get dbHelperGet = new DB_Helper_Get(this);
         try {
             card = dbHelperGet.getSingleCard(cardNo);
@@ -125,6 +127,7 @@ public class EditCard extends AppCompatActivity {
         intent.putExtra("progressGreater", progressGreater);
         intent.putExtra("progressNumber", progressNumber);
         intent.putIntegerArrayListExtra("savedList", savedList);
+        intent.putExtra("savedListSeed", savedListSeed);
         startActivity(intent);
         this.finish();
     }

@@ -30,6 +30,8 @@ class AdapterPacksMoveCard(
         val textViewDesc: TextView = view.findViewById(R.id.rec_desc)
     }
 
+    private val stringTools = StringTools()
+
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         val view =
             LayoutInflater.from(viewGroup.context).inflate(R.layout.rec_view, viewGroup, false)
@@ -60,12 +62,11 @@ class AdapterPacksMoveCard(
         if (collectionNo == -1) {
             try {
                 val collectionName =
-                    StringTools()
-                        .shorten(
-                            DB_Helper_Get(c)
-                                .getSingleCollection(pack[position].collection)
-                                .name
-                        )
+                    stringTools.shorten(
+                        DB_Helper_Get(c)
+                            .getSingleCollection(pack[position].collection)
+                            .name
+                    )
                 viewHolder.textViewDesc.visibility = View.VISIBLE
                 viewHolder.textViewDesc.text = collectionName
             } catch (e: Exception) {

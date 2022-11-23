@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,9 +21,11 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.io.File;
 import java.util.List;
 import java.util.Objects;
 
@@ -31,20 +34,47 @@ import de.herrmann_engel.rbv.R;
 import de.herrmann_engel.rbv.adapters.AdapterCollections;
 import de.herrmann_engel.rbv.db.DB_Collection;
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get;
+import de.herrmann_engel.rbv.export_import.AsyncExport;
+import de.herrmann_engel.rbv.export_import.AsyncExportFinish;
+import de.herrmann_engel.rbv.export_import.AsyncExportProgress;
 import de.herrmann_engel.rbv.export_import.AsyncImport;
 import de.herrmann_engel.rbv.export_import.AsyncImportFinish;
-import de.herrmann_engel.rbv.export_import.Export;
+import de.herrmann_engel.rbv.export_import.AsyncImportProgress;
 
-public class ListCollections extends FileTools implements AsyncImportFinish {
+public class ListCollections extends FileTools implements AsyncImportFinish, AsyncImportProgress, AsyncExportFinish, AsyncExportProgress {
 
     List<DB_Collection> collections;
-    private ActivityResultLauncher<Intent> launcherImportFile;
     private MenuItem exportAllMenuItem;
     private MenuItem startAdvancedSearchMenuItem;
     private MenuItem startManageMediaMenuItem;
     private int importMode;
-    private boolean includeSettings;
-    private boolean includeMedia;
+    private boolean importIncludeSettings;
+    private boolean importIncludeMedia;
+    private final ActivityResultLauncher<Intent> launcherImportFile = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    new AsyncImport(this, this, this, Objects.requireNonNull(result.getData()).getData(), importMode, importIncludeSettings, importIncludeMedia)
+                            .execute();
+                    Toast.makeText(this, R.string.wait, Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show();
+                }
+            });
+    private boolean exportIncludeSettings;
+    private boolean exportIncludeMedia;
+    private final ActivityResultLauncher<Intent> launcherExportFile = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    Uri uri = Objects.requireNonNull(result.getData()).getData();
+                    getContentResolver().takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                    new AsyncExport(this, this, this, exportIncludeSettings, exportIncludeMedia, uri).execute();
+                    Toast.makeText(this, R.string.wait, Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show();
+                }
+            });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,18 +89,6 @@ public class ListCollections extends FileTools implements AsyncImportFinish {
             backgroundImage.setVisibility(View.VISIBLE);
             backgroundImage.setImageDrawable(AppCompatResources.getDrawable(this, R.drawable.bg_collections));
         }
-
-        launcherImportFile = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                result -> {
-                    if (result.getResultCode() == Activity.RESULT_OK) {
-                        new AsyncImport(this, this, Objects.requireNonNull(result.getData()).getData(), importMode, includeSettings, includeMedia)
-                                .execute();
-                        Toast.makeText(this, R.string.wait, Toast.LENGTH_LONG).show();
-                    } else {
-                        Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show();
-                    }
-                });
 
     }
 
@@ -163,8 +181,8 @@ public class ListCollections extends FileTools implements AsyncImportFinish {
             } else {
                 importMode = Globals.IMPORT_MODE_SKIP;
             }
-            includeSettings = includeSettingsCheckBox.isChecked();
-            includeMedia = includeMediaCheckBox.isChecked();
+            importIncludeSettings = includeSettingsCheckBox.isChecked();
+            importIncludeMedia = includeMediaCheckBox.isChecked();
             Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
             intent.addCategory(Intent.CATEGORY_OPENABLE);
             intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
@@ -191,6 +209,41 @@ public class ListCollections extends FileTools implements AsyncImportFinish {
         });
     }
 
+    @Override
+    public void importCardsProgress(final String progress) {
+        runOnUiThread(() -> Toast.makeText(this, progress, Toast.LENGTH_SHORT).show());
+    }
+
+    @Override
+    public void exportCardsResult(final File file) {
+        runOnUiThread(() -> {
+            if (file == null) {
+                Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show();
+            } else {
+                Intent share = new Intent(Intent.ACTION_SEND);
+                share.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                share.setType("text/csv");
+                share.putExtra(
+                        Intent.EXTRA_STREAM, FileProvider.getUriForFile(
+                                this,
+                                getPackageName() + ".fileprovider", file
+                        )
+                );
+                startActivity(
+                        Intent.createChooser(
+                                share,
+                                getString(R.string.export_cards)
+                        )
+                );
+            }
+        });
+    }
+
+    @Override
+    public void exportCardsProgress(final String progress) {
+        runOnUiThread(() -> Toast.makeText(this, progress, Toast.LENGTH_SHORT).show());
+    }
+
     public void exportAll(MenuItem item) {
         Dialog startExportDialog = new Dialog(this, R.style.dia_view);
         startExportDialog.setContentView(R.layout.dia_export);
@@ -214,10 +267,14 @@ public class ListCollections extends FileTools implements AsyncImportFinish {
             }
         });
         startExportButton.setOnClickListener(v -> {
-            Export export = new Export(this, includeSettingsCheckBox.isChecked(), includeMediaCheckBox.isChecked());
-            if (!export.exportFile()) {
-                Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show();
-            }
+            exportIncludeSettings = includeSettingsCheckBox.isChecked();
+            exportIncludeMedia = includeMediaCheckBox.isChecked();
+            Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+            intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+            intent.setType("text/csv");
+            intent.putExtra(Intent.EXTRA_TITLE, Globals.EXPORT_FILE_NAME + "." + Globals.EXPORT_FILE_EXTENSION);
+            launcherExportFile.launch(intent);
             startExportDialog.dismiss();
         });
         startExportDialog.show();

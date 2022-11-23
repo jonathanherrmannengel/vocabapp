@@ -1,0 +1,7 @@
+Karteikarten drucken.
+Verbesserte Leistung.
+
+Bei über 15.000 Karteikarten in einer Liste werden zusätzlich folgende Kompromisse zugunsten der Leistung eingegangen:
+   - Wenn Einstellung zum Beibehalten der Reihenfolge in offenen Listen aktiviert: Diese bleibt nur bedingt erhalten.
+   - Wenn Karteikarten Formatierung (Vorder-/Rückseite oder Notizen) aktiviert: Suche und Darstellung werden teils ungenau.
+   - Nicht lateinische Schriften: Suche kann ungenau sein.

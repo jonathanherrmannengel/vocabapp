@@ -15,5 +15,6 @@ object Globals {
     const val SORT_DEFAULT = 0
     const val SORT_RANDOM = 1
     const val SORT_ALPHABETICAL = 2
-    const val IMAGE_PREVIEW_MAX = 9;
+    const val IMAGE_PREVIEW_MAX = 9
+    const val LIST_ACCURATE_SIZE = 15000
 }

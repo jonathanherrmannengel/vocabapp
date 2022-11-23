@@ -34,6 +34,8 @@ class AdapterCollections(private val collection: List<DB_Collection>, private va
         val numberText: TextView = view.findViewById(R.id.rec_collections_number_text)
     }
 
+    private val stringTools = StringTools()
+
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         val view =
             LayoutInflater.from(viewGroup.context)
@@ -116,7 +118,7 @@ class AdapterCollections(private val collection: List<DB_Collection>, private va
             viewHolder.previewView.text = "…"
             val dbHelperGet =
                 DB_Helper_Get(c.applicationContext)
-            val size = dbHelperGet.allPacks.size
+            val size = dbHelperGet.countPacks()
             viewHolder.numberText.text = size.toString()
             viewHolder.previewView.setBackgroundColor(Color.rgb(185, 185, 185))
             background.mutate()
@@ -132,12 +134,12 @@ class AdapterCollections(private val collection: List<DB_Collection>, private va
                 c.startActivity(intent)
                 (c as ListCollections).finish()
             }
-            viewHolder.textView.text = StringTools().shorten(collection[position - 1].name)
+            viewHolder.textView.text = stringTools.shorten(collection[position - 1].name)
             if (collection[position - 1].desc.isEmpty()) {
                 viewHolder.descView.visibility = View.GONE
             } else {
                 viewHolder.descView.visibility = View.VISIBLE
-                viewHolder.descView.text = StringTools()
+                viewHolder.descView.text = stringTools
                     .shorten(collection[position - 1].desc)
             }
             val emojiText = collection[position - 1].emoji
@@ -150,7 +152,7 @@ class AdapterCollections(private val collection: List<DB_Collection>, private va
                 }
             val dbHelperGet =
                 DB_Helper_Get(c.applicationContext)
-            val size = dbHelperGet.getAllPacksByCollection(collection[position - 1].uid).size
+            val size = dbHelperGet.countPacksInCollection(collection[position - 1].uid)
             viewHolder.numberText.text = size.toString()
             val color = collection[position - 1].colors
             val colors = c.resources.obtainTypedArray(R.array.pack_color_list)

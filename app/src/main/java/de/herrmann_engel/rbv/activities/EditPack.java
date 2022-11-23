@@ -44,6 +44,7 @@ public class EditPack extends AppCompatActivity {
     private String searchQuery;
     private int cardPosition;
     private ArrayList<Integer> savedList;
+    private Long savedListSeed;
     private DB_Pack pack;
     private TextView packName;
     private TextView packDesc;
@@ -76,6 +77,7 @@ public class EditPack extends AppCompatActivity {
         searchQuery = getIntent().getExtras().getString("searchQuery");
         cardPosition = getIntent().getExtras().getInt("cardPosition");
         savedList = getIntent().getExtras().getIntegerArrayList("savedList");
+        savedListSeed = getIntent().getExtras().getLong("savedListSeed");
         DB_Helper_Get dbHelperGet = new DB_Helper_Get(this);
         try {
             pack = dbHelperGet.getSinglePack(packNo);
@@ -169,6 +171,7 @@ public class EditPack extends AppCompatActivity {
         intent.putExtra("searchQuery", searchQuery);
         intent.putExtra("cardPosition", cardPosition);
         intent.putIntegerArrayListExtra("savedList", savedList);
+        intent.putExtra("savedListSeed", savedListSeed);
         startActivity(intent);
         this.finish();
     }

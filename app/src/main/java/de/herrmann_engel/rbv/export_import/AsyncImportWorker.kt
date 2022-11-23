@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import com.opencsv.CSVReader
 import de.herrmann_engel.rbv.Globals
+import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Create
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.utils.StringTools
@@ -12,11 +13,15 @@ import java.io.InputStreamReader
 class AsyncImportWorker(
     val context: Context,
     private val listener: AsyncImportFinish,
+    private val listenerProgress: AsyncImportProgress,
     private val uri: Uri,
     private val mode: Int,
     private val includeSettings: Boolean,
     private val includeMedia: Boolean
 ) {
+
+    private var progress = 0
+
     fun execute() {
         listener.importCardsResult(execute2())
     }
@@ -245,6 +250,15 @@ class AsyncImportWorker(
                             }
                             editor.apply()
                         }
+                    }
+                    progress++
+                    if (progress % 1000 == 0) {
+                        listenerProgress.importCardsProgress(
+                            String.format(
+                                context.getString(R.string.import_export_lines_progress),
+                                progress
+                            )
+                        )
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()

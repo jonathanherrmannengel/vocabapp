@@ -25,6 +25,8 @@ class AdapterPacksAdvancedSearch(
         val textViewDesc: TextView = view.findViewById(R.id.rec_small_desc)
     }
 
+    private val stringTools = StringTools()
+
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         val view =
             LayoutInflater.from(viewGroup.context)
@@ -46,11 +48,11 @@ class AdapterPacksAdvancedSearch(
             colors.recycle()
             val dbHelperGet =
                 DB_Helper_Get(c.applicationContext)
-            val size = dbHelperGet.getAllCardsByPack(pack[position].uid).size
+            val size = dbHelperGet.countCardsInPack(pack[position].uid)
             viewHolder.textView.text = String.format("%s (%d)", pack[position].name, size)
             try {
                 val collectionName =
-                    StringTools()
+                    stringTools
                         .shorten(
                             DB_Helper_Get(c)
                                 .getSingleCollection(pack[position].collection)
