@@ -142,6 +142,7 @@
     <string name="advanced_search_progress_greater">greater or equal</string>
     <string name="advanced_search_progress_less">less or equal</string>
     <string name="advanced_search_progress_value">progress value</string>
+    <string name="advanced_search_packs_checkbox_description">deck “%1$s” (in filing box: “%2$s”)</string>
     <string name="settings_default_sort">Flashcard list: default sort</string>
     <string name="settings_format">Formatting</string>
     <string name="settings_format_cards">Flashcard front/back: Simple formatting</string>

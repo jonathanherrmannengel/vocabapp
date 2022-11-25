@@ -136,6 +136,7 @@
     <string name="advanced_search_progress_greater">Größer gleich</string>
     <string name="advanced_search_progress_less">Kleiner gleich</string>
     <string name="advanced_search_progress_value">Lernfortschrittswert</string>
+    <string name="advanced_search_packs_checkbox_description">Kartenstapel „%1$s“ (in Karteikasten: „%2$s“)</string>
     <string name="settings_default_sort">Kartenliste: Standard-Sortierung</string>
     <string name="settings_format">Formatierung</string>
     <string name="settings_format_cards">Karteikarten-Vorder-/Rückseite: Einfache Formatierung</string>

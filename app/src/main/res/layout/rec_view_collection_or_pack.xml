@@ -16,6 +16,7 @@
         android:layout_height="50dp"
         android:layout_gravity="center"
         android:gravity="center"
+        android:importantForAccessibility="no"
         android:padding="12dp"
         android:textColor="@android:color/black"
         android:textSize="@dimen/rec_view_font_size_default" />

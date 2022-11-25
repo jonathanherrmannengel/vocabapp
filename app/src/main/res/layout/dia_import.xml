@@ -75,7 +75,8 @@
                     android:id="@+id/dia_import_include_settings"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:buttonTint="@color/ijblue" />
+                    android:buttonTint="@color/ijblue"
+                    android:contentDescription="@string/import_export_include_settings" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -109,7 +110,8 @@
                         android:id="@+id/dia_import_include_media"
                         android:layout_width="20dp"
                         android:layout_height="20dp"
-                        android:buttonTint="@color/ijblue" />
+                        android:buttonTint="@color/ijblue"
+                        android:contentDescription="@string/import_export_include_media" />
 
                     <TextView
                         android:layout_width="wrap_content"

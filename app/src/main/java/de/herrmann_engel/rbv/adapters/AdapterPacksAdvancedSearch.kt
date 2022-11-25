@@ -49,6 +49,7 @@ class AdapterPacksAdvancedSearch(
             val dbHelperGet =
                 DB_Helper_Get(c.applicationContext)
             val size = dbHelperGet.countCardsInPack(pack[position].uid)
+            var checkBoxContentDescription = pack[position].name
             viewHolder.textView.text = String.format("%s (%d)", pack[position].name, size)
             try {
                 val collectionName =
@@ -60,9 +61,15 @@ class AdapterPacksAdvancedSearch(
                         )
                 viewHolder.textViewDesc.visibility = View.VISIBLE
                 viewHolder.textViewDesc.text = collectionName
+                checkBoxContentDescription = String.format(
+                    c.resources.getString(R.string.advanced_search_packs_checkbox_description),
+                    checkBoxContentDescription,
+                    collectionName
+                )
             } catch (e: Exception) {
                 Toast.makeText(c.applicationContext, R.string.error, Toast.LENGTH_SHORT).show()
             }
+            viewHolder.checkBox.contentDescription = checkBoxContentDescription
             val extra = pack[position].uid
             if (packList.contains(extra)) {
                 viewHolder.checkBox.isChecked = true

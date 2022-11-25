@@ -28,7 +28,8 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:buttonTint="@color/ijblue"
-                    android:checked="true" />
+                    android:checked="true"
+                    android:contentDescription="@string/print_include_progress" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -55,7 +56,8 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:buttonTint="@color/ijblue"
-                    android:checked="true" />
+                    android:checked="true"
+                    android:contentDescription="@string/print_include_notes" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -82,7 +84,8 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:buttonTint="@color/ijblue"
-                    android:checked="true" />
+                    android:checked="true"
+                    android:contentDescription="@string/print_include_images" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -109,7 +112,8 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:buttonTint="@color/ijblue"
-                    android:checked="true" />
+                    android:checked="true"
+                    android:contentDescription="@string/print_include_media_list" />
 
                 <TextView
                     android:layout_width="wrap_content"

@@ -82,6 +82,7 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:buttonTint="@color/ijblue"
+                    android:contentDescription="@string/settings_format_cards"
                     android:onClick="setFormatCards" />
 
                 <TextView
@@ -98,6 +99,7 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:background="@android:color/transparent"
+                    android:contentDescription="@string/info"
                     android:onClick="infoFormatCards"
                     android:src="@drawable/outline_info_24"
                     app:tint="@color/ijblue" />
@@ -115,6 +117,7 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:buttonTint="@color/ijblue"
+                    android:contentDescription="@string/settings_format_card_notes"
                     android:onClick="setFormatCardNotes" />
 
                 <TextView
@@ -148,6 +151,7 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:buttonTint="@color/ijblue"
+                    android:contentDescription="@string/settings_ui_background_images"
                     android:onClick="setUIBackground" />
 
                 <TextView
@@ -173,6 +177,7 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:buttonTint="@color/ijblue"
+                    android:contentDescription="@string/settings_ui_increase_font_size"
                     android:onClick="setUIFontSize" />
 
                 <TextView
@@ -206,6 +211,7 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:buttonTint="@color/ijblue"
+                    android:contentDescription="@string/settings_list_no_update"
                     android:onClick="setListNoUpdate" />
 
                 <TextView
