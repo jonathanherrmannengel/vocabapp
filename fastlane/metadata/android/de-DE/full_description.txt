@@ -1,22 +1,22 @@
-Einfache App zum Verwalten Ihrer Karteikarten.
+📣 Einfache App zum Verwalten Ihrer Karteikarten.
 
-App-Aufbau
+🏛️ App-Aufbau
 Karteikästen -> Kartenstapel -> Karteikarten
 
-Karteikästen können einzeln oder komplett als Backup gespeichert werden und wieder importiert werden.
+🗃️ Karteikästen können einzeln oder komplett als Backup gespeichert werden und wieder importiert werden.
 
-Die Kartenstapel eines Karteikastens enthalten die Karteikarten.
+🗂️ Die Kartenstapel eines Karteikastens enthalten die Karteikarten.
 
-Die Karteikarten eines Kartenstapels bieten eine Vorderseite und eine Rückseite sowie optional Notizen. Der Lernfortschritt wird als Zahlenwert gespeichert.
+📇 Die Karteikarten eines Kartenstapels bieten eine Vorderseite und eine Rückseite sowie optional Notizen. Der Lernfortschritt wird als Zahlenwert gespeichert.
 
-Sie können Formatierungsoptionen für die Karteikarten in den App-Einstellungen aktivieren.
+🖌️ Sie können Formatierungsoptionen für die Karteikarten in den App-Einstellungen aktivieren.
 
-Sie können Karteikarten mit Medien verknüpfen und drucken.
+📎🖨️ Sie können Karteikarten mit Medien verknüpfen und drucken.
 
-Sie können vier Farbvarianten für Karteikästen und Kartenstapel nutzen.
+🌈 Sie können vier Farbvarianten für Karteikästen und Kartenstapel nutzen.
 
-Aus jeder Karteikartenliste kann ein Abfragemodus gestartet werden.
+▶️ Aus jeder Karteikartenliste kann ein Abfragemodus gestartet werden.
 
-Karteikartenlisten können die gesamte Sammlung sowie einzelne Karteikästen bzw. Kartenstapel umfassen. Über die erweiterte Suche können Listen aller oder mehrerer Kartenstapel nach Lernfortschritt generiert werden.
+🔍 Karteikartenlisten können die gesamte Sammlung sowie einzelne Karteikästen bzw. Kartenstapel umfassen. Über die erweiterte Suche können Listen aller oder mehrerer Kartenstapel nach Lernfortschritt generiert werden.
 
-Sichern Sie bitte Ihre Daten vor dem Einspielen eines Updates.
+❗ Sichern Sie bitte Ihre Daten vor dem Einspielen eines Updates.
