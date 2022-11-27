@@ -22,17 +22,17 @@ class AdapterMediaLinkCard(
     private val c: Context
 ) : RecyclerView.Adapter<AdapterMediaLinkCard.ViewHolder>() {
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val fileNameTextView: TextView = view.findViewById(R.id.rec_media_link_card_name)
-        val openButton: Button = view.findViewById(R.id.rec_media_link_card_open)
-        val shareButton: Button = view.findViewById(R.id.rec_media_link_card_share)
-        val deleteButton: Button = view.findViewById(R.id.rec_media_link_card_delete)
-        val missingTextView: TextView = view.findViewById(R.id.rec_media_link_card_missing)
+        val fileNameTextView: TextView = view.findViewById(R.id.rec_files_name)
+        val openButton: Button = view.findViewById(R.id.rec_files_open)
+        val shareButton: Button = view.findViewById(R.id.rec_files_share)
+        val deleteButton: Button = view.findViewById(R.id.rec_files_delete)
+        val missingTextView: TextView = view.findViewById(R.id.rec_files_missing)
     }
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         val view =
             LayoutInflater.from(viewGroup.context)
-                .inflate(R.layout.rec_view_media_link_card, viewGroup, false)
+                .inflate(R.layout.rec_view_files, viewGroup, false)
         return ViewHolder(view)
     }
 

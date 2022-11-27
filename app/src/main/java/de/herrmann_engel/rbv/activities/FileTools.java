@@ -188,11 +188,11 @@ public abstract class FileTools extends AppCompatActivity {
         });
         noButton.setOnClickListener(v -> deleteFileDialog.dismiss());
         deleteFileDialog.show();
-        return  deleteFileDialog;
+        return deleteFileDialog;
     }
 
-    public Dialog showDeleteDialog(String fileName){
-       return showDeleteDialog(fileName, getResources().getString(R.string.delete_file_info));
+    public Dialog showDeleteDialog(String fileName) {
+        return showDeleteDialog(fileName, getResources().getString(R.string.delete_file_info));
     }
 
     public Uri getImageUri(int id) {

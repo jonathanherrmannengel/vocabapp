@@ -23,13 +23,13 @@ public class ManageMedia extends FileTools {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manage_media);
-        Button addMediaButton = findViewById(R.id.manage_files_button);
+        Button manageFilesButton = findViewById(R.id.manage_files_button);
         GradientDrawable gradientDrawable = new GradientDrawable();
         gradientDrawable.setShape(GradientDrawable.RECTANGLE);
         gradientDrawable.setColor(Color.argb(75, 200, 200, 250));
         gradientDrawable.setStroke(2, Color.rgb(170, 170, 220));
         gradientDrawable.setCornerRadius(8);
-        addMediaButton.setBackground(gradientDrawable);
+        manageFilesButton.setBackground(gradientDrawable);
         setRecView();
     }
 

@@ -1,6 +1,5 @@
 package de.herrmann_engel.rbv.adapters
 
-import android.app.Dialog
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
@@ -18,17 +17,17 @@ class AdapterFilesManage(
     private val c: Context
 ) : RecyclerView.Adapter<AdapterFilesManage.ViewHolder>() {
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val fileNameTextView: TextView = view.findViewById(R.id.rec_media_link_card_name)
-        val openButton: Button = view.findViewById(R.id.rec_media_link_card_open)
-        val shareButton: Button = view.findViewById(R.id.rec_media_link_card_share)
-        val deleteButton: Button = view.findViewById(R.id.rec_media_link_card_delete)
-        val missingTextView: TextView = view.findViewById(R.id.rec_media_link_card_missing)
+        val fileNameTextView: TextView = view.findViewById(R.id.rec_files_name)
+        val openButton: Button = view.findViewById(R.id.rec_files_open)
+        val shareButton: Button = view.findViewById(R.id.rec_files_share)
+        val deleteButton: Button = view.findViewById(R.id.rec_files_delete)
+        val missingTextView: TextView = view.findViewById(R.id.rec_files_missing)
     }
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         val view =
             LayoutInflater.from(viewGroup.context)
-                .inflate(R.layout.rec_view_media_link_card, viewGroup, false)
+                .inflate(R.layout.rec_view_files, viewGroup, false)
         return ViewHolder(view)
     }
 
@@ -51,9 +50,12 @@ class AdapterFilesManage(
                 (c as FileTools).openFile(files[position].name)
             }
             viewHolder.deleteButton.setOnClickListener {
-                val dialog = (c as FileTools).showDeleteDialog(files[position].name, c.resources.getString(R.string.delete_file_without_media_info))
+                val dialog = (c as FileTools).showDeleteDialog(
+                    files[position].name,
+                    c.resources.getString(R.string.delete_file_without_media_info)
+                )
                 dialog.setOnDismissListener {
-                    if(!c.existsMediaFile(files[position].name)) {
+                    if (!c.existsMediaFile(files[position].name)) {
                         files.remove(files[position])
                         notifyItemRemoved(position)
                         notifyItemRangeChanged(position, files.size)
