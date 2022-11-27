@@ -139,6 +139,11 @@ public class EditCardMedia extends FileTools {
         gradientDrawable.setStroke(2, Color.rgb(170, 170, 220));
         gradientDrawable.setCornerRadius(8);
         addMediaButton.setBackground(gradientDrawable);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         setRecView();
     }
 
@@ -213,7 +218,6 @@ public class EditCardMedia extends FileTools {
 
     @Override
     protected void notifyMissingAction(int id) {
-
     }
 
     @Override

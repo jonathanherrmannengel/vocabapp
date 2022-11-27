@@ -19,6 +19,11 @@ public class ManageFiles extends FileTools {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manage_files);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         setRecView();
     }
 
