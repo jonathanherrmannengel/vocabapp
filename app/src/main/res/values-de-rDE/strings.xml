@@ -49,6 +49,7 @@
     <string name="edit_card_media">Verknüpfte Medien verwalten</string>
     <string name="edit_card_media_add">Medien hinzufügen</string>
     <string name="no_media">Keine Medien</string>
+    <string name="no_files_without_media">Keine Dateien ohne Datenbankeintrag</string>
     <string name="media_missing">Medium verschollen (Datei nicht gefunden)</string>
     <string name="media_missing_db">Medium verschollen (Kein Datenbankeintrag)</string>
     <string name="media_missing_dialog">Medien fehlen</string>
@@ -58,6 +59,7 @@
     <string name="show_all_media">Alle Medien anzeigen</string>
     <string name="all_media">Alle Medien</string>
     <string name="manage_media">Medien verwalten</string>
+    <string name="manage_files_without_media">Dateien ohne Datenbankeintrag verwalten</string>
     <string name="media_linked_cards">Verknüpfte Karteikarten</string>
     <string name="media_no_card">Keine verknüpften Karteikarten gefunden. Medium löschen?</string>
     <string name="select_folder_title">Ordner auswählen</string>
@@ -70,6 +72,7 @@
     <string name="file_exists_action_new">Ausgewählte Datei umbenennen und kopieren</string>
     <string name="delete_file_title">Datei löschen</string>
     <string name="delete_file_info">Datenbankeintrag gelöscht. Auch Datei vom Dateisystem löschen?</string>
+    <string name="delete_file_without_media_info">Datei vom Dateisystem löschen?</string>
     <string name="delete_pack_with_cards">Dieser Kartenstapel enthält Karteikarten. Wenn Sie das Löschen fortsetzen, werden auch die enthaltenen Karteikarten gelöscht. Trotzdem löschen?</string>
     <string name="delete_collection_with_packs">Dieser Karteikasten enthält Kartenstapel. Wenn Sie das Löschen fortsetzen, werden auch die enthaltenen Kartenstapel samt Karteikarten gelöscht. Trotzdem löschen?</string>
     <string name="move">Verschieben</string>

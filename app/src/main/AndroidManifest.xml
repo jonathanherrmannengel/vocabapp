@@ -13,6 +13,10 @@
             android:configChanges="orientation|screenSize|screenLayout"
             android:label="@string/manage_media" />
         <activity
+            android:name=".activities.ManageFiles"
+            android:configChanges="orientation|screenSize|screenLayout"
+            android:label="@string/manage_files_without_media" />
+        <activity
             android:name=".activities.EditCardMedia"
             android:configChanges="orientation|screenSize|screenLayout"
             android:label="@string/edit_card_media" />

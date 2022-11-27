@@ -1,7 +1,11 @@
 package de.herrmann_engel.rbv.activities;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,6 +23,13 @@ public class ManageMedia extends FileTools {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manage_media);
+        Button addMediaButton = findViewById(R.id.manage_files_button);
+        GradientDrawable gradientDrawable = new GradientDrawable();
+        gradientDrawable.setShape(GradientDrawable.RECTANGLE);
+        gradientDrawable.setColor(Color.argb(75, 200, 200, 250));
+        gradientDrawable.setStroke(2, Color.rgb(170, 170, 220));
+        gradientDrawable.setCornerRadius(8);
+        addMediaButton.setBackground(gradientDrawable);
         setRecView();
     }
 
@@ -36,9 +47,15 @@ public class ManageMedia extends FileTools {
         DB_Helper_Get dbHelperGet = new DB_Helper_Get(this);
         ArrayList<DB_Media> mediaList = (ArrayList<DB_Media>) dbHelperGet.getAllMedia();
         AdapterMediaManage adapter = new AdapterMediaManage(mediaList, this);
-        RecyclerView recyclerView = findViewById(R.id.rec_card_media_manage);
+        RecyclerView recyclerView = findViewById(R.id.rec_media_manage);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+    }
+
+    public void manageFiles(View view) {
+        Intent intent = new Intent(getApplicationContext(), ManageFiles.class);
+        startActivity(intent);
+        this.finish();
     }
 
     @Override

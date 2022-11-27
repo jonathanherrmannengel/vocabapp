@@ -171,7 +171,7 @@ public abstract class FileTools extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
 
-    public void showDeleteDialog(String fileName) {
+    public Dialog showDeleteDialog(String fileName, String text) {
         Dialog deleteFileDialog = new Dialog(this, R.style.dia_view);
         deleteFileDialog.setContentView(R.layout.dia_confirm);
         deleteFileDialog.setTitle(getResources().getString(R.string.delete_file_title));
@@ -180,7 +180,7 @@ public abstract class FileTools extends AppCompatActivity {
         Button yesButton = deleteFileDialog.findViewById(R.id.dia_confirm_yes);
         Button noButton = deleteFileDialog.findViewById(R.id.dia_confirm_no);
         TextView confirmDeleteDesc = deleteFileDialog.findViewById(R.id.dia_confirm_desc);
-        confirmDeleteDesc.setText(R.string.delete_file_info);
+        confirmDeleteDesc.setText(text);
         confirmDeleteDesc.setVisibility(View.VISIBLE);
         yesButton.setOnClickListener(v -> {
             deleteMediaFile(fileName);
@@ -188,6 +188,11 @@ public abstract class FileTools extends AppCompatActivity {
         });
         noButton.setOnClickListener(v -> deleteFileDialog.dismiss());
         deleteFileDialog.show();
+        return  deleteFileDialog;
+    }
+
+    public Dialog showDeleteDialog(String fileName){
+       return showDeleteDialog(fileName, getResources().getString(R.string.delete_file_info));
     }
 
     public Uri getImageUri(int id) {
@@ -200,6 +205,14 @@ public abstract class FileTools extends AppCompatActivity {
             return null;
         }
         return file.getUri();
+    }
+
+    public DocumentFile[] listFiles() {
+        DocumentFile folderFile = DocumentFile.fromTreeUri(this, Uri.parse(getCardMediaFolder()));
+        if (folderFile == null) {
+            return null;
+        }
+        return folderFile.listFiles();
     }
 
     private DocumentFile getFile(String name) {
@@ -220,14 +233,47 @@ public abstract class FileTools extends AppCompatActivity {
         return getFile(fileName);
     }
 
+    private void openFile(DocumentFile file) {
+        Intent intent = new Intent();
+        intent.setAction(android.content.Intent.ACTION_VIEW);
+        intent.setDataAndType(file.getUri(), file.getType());
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        this.startActivity(intent);
+    }
+
+    public void openFile(String name) {
+        try {
+            DocumentFile file = getFile(name);
+            openFile(file);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(getApplicationContext(), R.string.error, Toast.LENGTH_SHORT).show();
+        }
+    }
+
     public void openFile(int id) {
         try {
             DocumentFile file = getFile(id);
-            Intent intent = new Intent();
-            intent.setAction(android.content.Intent.ACTION_VIEW);
-            intent.setDataAndType(file.getUri(), file.getType());
-            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            this.startActivity(intent);
+            openFile(file);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(getApplicationContext(), R.string.error, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void shareFile(DocumentFile file) {
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_SEND);
+        intent.setType(file.getType());
+        intent.putExtra(Intent.EXTRA_STREAM, file.getUri());
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        this.startActivity(Intent.createChooser(intent, file.getName()));
+    }
+
+    public void shareFile(String name) {
+        try {
+            DocumentFile file = getFile(name);
+            shareFile(file);
         } catch (Exception e) {
             e.printStackTrace();
             Toast.makeText(getApplicationContext(), R.string.error, Toast.LENGTH_SHORT).show();
@@ -237,12 +283,7 @@ public abstract class FileTools extends AppCompatActivity {
     public void shareFile(int id) {
         try {
             DocumentFile file = getFile(id);
-            Intent intent = new Intent();
-            intent.setAction(Intent.ACTION_SEND);
-            intent.setType(file.getType());
-            intent.putExtra(Intent.EXTRA_STREAM, file.getUri());
-            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            this.startActivity(Intent.createChooser(intent, file.getName()));
+            shareFile(file);
         } catch (Exception e) {
             e.printStackTrace();
             Toast.makeText(getApplicationContext(), R.string.error, Toast.LENGTH_SHORT).show();

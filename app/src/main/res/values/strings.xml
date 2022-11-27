@@ -50,6 +50,7 @@
     <string name="edit_card_media">Manage attached media</string>
     <string name="edit_card_media_add">Add media</string>
     <string name="no_media">no media</string>
+    <string name="no_files_without_media">All files are in database</string>
     <string name="media_missing">media missing (file not found)</string>
     <string name="media_missing_db">media missing (no database entry)</string>
     <string name="media_missing_dialog">media missing</string>
@@ -59,6 +60,7 @@
     <string name="show_all_media">show all media</string>
     <string name="all_media">all media</string>
     <string name="manage_media">Manage media</string>
+    <string name="manage_files_without_media">Manage files not in database</string>
     <string name="media_linked_cards">Linked flashcards</string>
     <string name="media_no_card">No linked flashcards found. Delete medium?</string>
     <string name="select_folder_title">Select folder</string>
@@ -71,6 +73,7 @@
     <string name="file_exists_action_new">rename and copy selected file</string>
     <string name="delete_file_title">delete file</string>
     <string name="delete_file_info">Media deleted from database. Also delete file from disk?</string>
+    <string name="delete_file_without_media_info">Delete file from disk?</string>
     <string name="delete_pack_with_cards">This deck contains flashcards. If you proceed these flashcards will also be deleted. Delete anyway?</string>
     <string name="delete_collection_with_packs">This filing box contains decks. If you proceed these decks and their flashcards will also be deleted. Delete anyway?</string>
     <string name="move">move</string>

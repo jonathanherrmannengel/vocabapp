@@ -5,10 +5,22 @@
     android:layout_height="match_parent"
     tools:context=".activities.ManageMedia">
 
+    <Button
+        android:id="@+id/manage_files_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="12dp"
+        android:onClick="manageFiles"
+        android:text="@string/manage_files_without_media"
+        android:textColor="@color/ijblue"
+        android:textSize="13sp" />
+
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rec_card_media_manage"
+        android:id="@+id/rec_media_manage"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@id/manage_files_button"
         android:layout_margin="20dp" />
 
 </RelativeLayout>
