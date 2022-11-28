@@ -38,9 +38,14 @@ import org.commonmark.node.Node;
 import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;
 
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 import de.herrmann_engel.rbv.Globals;
@@ -140,8 +145,16 @@ public class ViewCard extends FileTools {
                 backText.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.card_back_size_big));
                 notesText.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.card_notes_size_big));
             }
-            TextView date = findViewById(R.id.card_date);
-            date.setText(new Date(card.date * 1000).toString());
+            TextView dateTextView = findViewById(R.id.card_date);
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                Instant instant = Instant.ofEpochSecond(card.date);
+                DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)
+                        .withLocale(Locale.ROOT)
+                        .withZone(ZoneId.systemDefault());
+                dateTextView.setText(dateTimeFormatter.format(instant));
+            } else {
+                dateTextView.setText(new Date(card.date * 1000).toString());
+            }
             known = card.known;
             knownMinus = findViewById(R.id.card_minus);
             updateCardKnown();

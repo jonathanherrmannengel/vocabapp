@@ -8,49 +8,50 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center"
             android:orientation="vertical">
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:gravity="center"
-                android:text="@string/collection_or_pack_name"
-                android:textColor="@color/light_black" />
-
-            <EditText
-                android:id="@+id/new_collection_or_pack_name"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/new_collection_or_pack_name_layout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="20dp"
-                android:ems="10"
                 android:hint="@string/collection_or_pack_name"
-                android:inputType="text"
-                android:textColor="@color/light_black"
-                android:textColorHint="@color/light_black" />
+                android:textColorHint="@color/light_black">
 
-            <TextView
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/new_collection_or_pack_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:inputType="text"
+                    android:textColor="@color/light_black" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/new_collection_or_pack_desc_layout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:gravity="center"
-                android:text="@string/collection_or_pack_desc"
-                android:textColor="@color/light_black" />
-
-            <EditText
-                android:id="@+id/new_collection_or_pack_desc"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
+                android:layout_marginBottom="20dp"
                 android:hint="@string/collection_or_pack_desc"
-                android:inputType="text"
-                android:textColor="@color/light_black"
-                android:textColorHint="@color/light_black" />
+                android:textColorHint="@color/light_black">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/new_collection_or_pack_desc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:inputType="text"
+                    android:textColor="@color/light_black" />
+            </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
     </ScrollView>
 </RelativeLayout>

@@ -18,6 +18,12 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.Date;
+import java.util.Locale;
 import java.util.Objects;
 
 import de.herrmann_engel.rbv.Globals;
@@ -59,7 +65,15 @@ public class ViewCollection extends AppCompatActivity {
                         getResources().getDimension(R.dimen.details_desc_size_big));
             }
             TextView dateTextView = findViewById(R.id.collection_or_pack_date);
-            dateTextView.setText(new java.util.Date(collection.date * 1000).toString());
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                Instant instant = Instant.ofEpochSecond(collection.date);
+                DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)
+                        .withLocale(Locale.ROOT)
+                        .withZone(ZoneId.systemDefault());
+                dateTextView.setText(dateTimeFormatter.format(instant));
+            } else {
+                dateTextView.setText(new Date(collection.date * 1000).toString());
+            }
             TypedArray colors = getResources().obtainTypedArray(R.array.pack_color_main);
             TypedArray colorsBackground = getResources().obtainTypedArray(R.array.pack_color_background);
             if (collection.colors < Math.min(colors.length(), colorsBackground.length()) && collection.colors >= 0) {

@@ -2,6 +2,7 @@ package de.herrmann_engel.rbv.activities;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -21,6 +22,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.textfield.TextInputLayout;
 import com.vanniktech.emoji.EmojiEditText;
 import com.vanniktech.emoji.EmojiPopup;
 import com.vanniktech.emoji.inputfilters.OnlyEmojisInputFilter;
@@ -36,7 +38,6 @@ import de.herrmann_engel.rbv.utils.StringTools;
 
 public class EditPack extends AppCompatActivity {
 
-    EmojiEditText packEmoji;
     private int collectionNo;
     private int packNo;
     private boolean reverse;
@@ -48,18 +49,24 @@ public class EditPack extends AppCompatActivity {
     private DB_Pack pack;
     private TextView packName;
     private TextView packDesc;
+    private EmojiEditText packEmoji;
+    private TextInputLayout packNameLayout;
+    private TextInputLayout packDescLayout;
+    private TextInputLayout packEmojiLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_collection_or_pack);
-        packName = findViewById(R.id.edit_pack_name);
-        packDesc = findViewById(R.id.edit_pack_desc);
-        packDesc.setHint(String.format(getString(R.string.optional), getString(R.string.collection_or_pack_desc)));
-        packEmoji = findViewById(R.id.edit_pack_emoji);
-        packEmoji
-                .setHint(String.format(getString(R.string.optional), getString(R.string.collection_or_pack_emoji)));
-        EmojiPopup emojiPopup = new EmojiPopup(findViewById(R.id.root_edit_pack), packEmoji);
+        packName = findViewById(R.id.edit_collection_or_pack_name);
+        packNameLayout = findViewById(R.id.edit_collection_or_pack_name_layout);
+        packNameLayout.setHintTextColor(ColorStateList.valueOf(getResources().getColor(R.color.light_black, getTheme())));
+        packDesc = findViewById(R.id.edit_collection_or_pack_desc);
+        packDescLayout = findViewById(R.id.edit_collection_or_pack_desc_layout);
+        packDescLayout.setHint(String.format(getString(R.string.optional), getString(R.string.collection_or_pack_desc)));
+        packDescLayout.setHintTextColor(ColorStateList.valueOf(getResources().getColor(R.color.light_black, getTheme())));
+        packEmoji = findViewById(R.id.edit_collection_or_pack_emoji);
+        EmojiPopup emojiPopup = new EmojiPopup(findViewById(R.id.root_edit_collection_or_pack), packEmoji);
         packEmoji.setFilters(new InputFilter[]{new OnlyEmojisInputFilter()});
         packEmoji.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
@@ -70,6 +77,9 @@ public class EditPack extends AppCompatActivity {
                 emojiPopup.dismiss();
             }
         });
+        packEmojiLayout = findViewById(R.id.edit_collection_or_pack_emoji_layout);
+        packEmojiLayout.setHint(String.format(getString(R.string.optional), getString(R.string.collection_or_pack_emoji)));
+        packEmojiLayout.setHintTextColor(ColorStateList.valueOf(getResources().getColor(R.color.light_black, getTheme())));
         collectionNo = getIntent().getExtras().getInt("collection");
         packNo = getIntent().getExtras().getInt("pack");
         reverse = getIntent().getExtras().getBoolean("reverse");
@@ -159,7 +169,10 @@ public class EditPack extends AppCompatActivity {
         Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(new ColorDrawable(main));
         Window window = this.getWindow();
         window.setStatusBarColor(main);
-        findViewById(R.id.root_edit_pack).setBackgroundColor(background);
+        packNameLayout.setBoxStrokeColor(main);
+        packDescLayout.setBoxStrokeColor(main);
+        packEmojiLayout.setBoxStrokeColor(main);
+        findViewById(R.id.root_edit_collection_or_pack).setBackgroundColor(background);
     }
 
     private void startViewPack() {

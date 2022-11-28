@@ -12,6 +12,8 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.textfield.TextInputLayout;
+
 import de.herrmann_engel.rbv.R;
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Create;
 
@@ -26,10 +28,12 @@ public class NewCollection extends AppCompatActivity {
         setContentView(R.layout.activity_new_collection_or_pack);
 
         nameTextView = findViewById(R.id.new_collection_or_pack_name);
-        nameTextView.setHint(String.format(getString(R.string.collection_or_pack_name_format),
+        TextInputLayout nameTextViewLayout = findViewById(R.id.new_collection_or_pack_name_layout);
+        nameTextViewLayout.setHint(String.format(getString(R.string.collection_or_pack_name_format),
                 getString(R.string.collection_name), getString(R.string.collection_or_pack_name)));
         descTextView = findViewById(R.id.new_collection_or_pack_desc);
-        descTextView.setHint(String.format(getString(R.string.optional), getString(R.string.collection_or_pack_desc)));
+        TextInputLayout descTextViewLayout = findViewById(R.id.new_collection_or_pack_desc_layout);
+        descTextViewLayout.setHint(String.format(getString(R.string.optional), getString(R.string.collection_or_pack_desc)));
     }
 
     @Override

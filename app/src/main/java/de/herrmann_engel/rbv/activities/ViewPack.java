@@ -20,8 +20,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 import de.herrmann_engel.rbv.Globals;
@@ -79,7 +85,15 @@ public class ViewPack extends AppCompatActivity {
                         getResources().getDimension(R.dimen.details_desc_size_big));
             }
             TextView dateTextView = findViewById(R.id.collection_or_pack_date);
-            dateTextView.setText(new java.util.Date(pack.date * 1000).toString());
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                Instant instant = Instant.ofEpochSecond(pack.date);
+                DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)
+                        .withLocale(Locale.ROOT)
+                        .withZone(ZoneId.systemDefault());
+                dateTextView.setText(dateTimeFormatter.format(instant));
+            } else {
+                dateTextView.setText(new Date(pack.date * 1000).toString());
+            }
             TypedArray colors = getResources().obtainTypedArray(R.array.pack_color_main);
             TypedArray colorsBackground = getResources().obtainTypedArray(R.array.pack_color_background);
             if (pack.colors < Math.min(colors.length(), colorsBackground.length()) && pack.colors >= 0) {

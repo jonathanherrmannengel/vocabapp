@@ -2,6 +2,7 @@ package de.herrmann_engel.rbv.activities;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -14,6 +15,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.Objects;
 
@@ -34,6 +37,15 @@ public class NewPack extends AppCompatActivity {
 
         collectionNo = getIntent().getExtras().getInt("collection");
 
+        nameTextView = findViewById(R.id.new_collection_or_pack_name);
+        TextInputLayout nameTextViewLayout = findViewById(R.id.new_collection_or_pack_name_layout);
+        nameTextViewLayout.setHint(String.format(getString(R.string.collection_or_pack_name_format),
+                getString(R.string.pack_name), getString(R.string.collection_or_pack_name)));
+        descTextView = findViewById(R.id.new_collection_or_pack_desc);
+
+        TextInputLayout descTextViewLayout = findViewById(R.id.new_collection_or_pack_desc_layout);
+        descTextViewLayout.setHint(String.format(getString(R.string.optional), getString(R.string.collection_or_pack_desc)));
+
         TypedArray colors = getResources().obtainTypedArray(R.array.pack_color_main);
         TypedArray colorsBackground = getResources().obtainTypedArray(R.array.pack_color_background);
         DB_Helper_Get dbHelperGet = new DB_Helper_Get(this);
@@ -45,6 +57,10 @@ public class NewPack extends AppCompatActivity {
                 Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(new ColorDrawable(color));
                 Window window = this.getWindow();
                 window.setStatusBarColor(color);
+                nameTextViewLayout.setBoxStrokeColor(color);
+                nameTextViewLayout.setHintTextColor(ColorStateList.valueOf(getResources().getColor(R.color.light_black, getTheme())));
+                descTextViewLayout.setBoxStrokeColor(color);
+                descTextViewLayout.setHintTextColor(ColorStateList.valueOf(getResources().getColor(R.color.light_black, getTheme())));
                 findViewById(R.id.root_new_collection_or_pack).setBackgroundColor(colorBackground);
             }
             colors.recycle();
@@ -52,12 +68,6 @@ public class NewPack extends AppCompatActivity {
         } catch (Exception e) {
             Toast.makeText(getApplicationContext(), R.string.error, Toast.LENGTH_SHORT).show();
         }
-
-        nameTextView = findViewById(R.id.new_collection_or_pack_name);
-        nameTextView.setHint(String.format(getString(R.string.collection_or_pack_name_format),
-                getString(R.string.pack_name), getString(R.string.collection_or_pack_name)));
-        descTextView = findViewById(R.id.new_collection_or_pack_desc);
-        descTextView.setHint(String.format(getString(R.string.optional), getString(R.string.collection_or_pack_desc)));
     }
 
     @Override

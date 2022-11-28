@@ -2,6 +2,7 @@ package de.herrmann_engel.rbv.activities;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -21,6 +22,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.textfield.TextInputLayout;
 import com.vanniktech.emoji.EmojiEditText;
 import com.vanniktech.emoji.EmojiPopup;
 import com.vanniktech.emoji.inputfilters.OnlyEmojisInputFilter;
@@ -35,25 +37,29 @@ import de.herrmann_engel.rbv.utils.StringTools;
 
 public class EditCollection extends AppCompatActivity {
 
-    DB_Collection collection;
-    TextView collectionName;
-    TextView collectionDesc;
-    EmojiEditText collectionEmoji;
+    private DB_Collection collection;
     private int collectionNo;
+    private TextView collectionName;
+    private TextView collectionDesc;
+    private EmojiEditText collectionEmoji;
+    private TextInputLayout collectionNameLayout;
+    private TextInputLayout collectionDescLayout;
+    private TextInputLayout collectionEmojiLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_collection_or_pack);
 
-        collectionName = findViewById(R.id.edit_pack_name);
-        collectionDesc = findViewById(R.id.edit_pack_desc);
-        collectionDesc
-                .setHint(String.format(getString(R.string.optional), getString(R.string.collection_or_pack_desc)));
-        collectionEmoji = findViewById(R.id.edit_pack_emoji);
-        collectionEmoji
-                .setHint(String.format(getString(R.string.optional), getString(R.string.collection_or_pack_emoji)));
-        EmojiPopup emojiPopup = new EmojiPopup(findViewById(R.id.root_edit_pack), collectionEmoji);
+        collectionName = findViewById(R.id.edit_collection_or_pack_name);
+        collectionNameLayout = findViewById(R.id.edit_collection_or_pack_name_layout);
+        collectionNameLayout.setHintTextColor(ColorStateList.valueOf(getResources().getColor(R.color.light_black, getTheme())));
+        collectionDesc = findViewById(R.id.edit_collection_or_pack_desc);
+        collectionDescLayout = findViewById(R.id.edit_collection_or_pack_desc_layout);
+        collectionDescLayout.setHintTextColor(ColorStateList.valueOf(getResources().getColor(R.color.light_black, getTheme())));
+        collectionDescLayout.setHint(String.format(getString(R.string.optional), getString(R.string.collection_or_pack_desc)));
+        collectionEmoji = findViewById(R.id.edit_collection_or_pack_emoji);
+        EmojiPopup emojiPopup = new EmojiPopup(findViewById(R.id.root_edit_collection_or_pack), collectionEmoji);
         collectionEmoji.setFilters(new InputFilter[]{new OnlyEmojisInputFilter()});
         collectionEmoji.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
@@ -64,6 +70,9 @@ public class EditCollection extends AppCompatActivity {
                 emojiPopup.dismiss();
             }
         });
+        collectionEmojiLayout = findViewById(R.id.edit_collection_or_pack_emoji_layout);
+        collectionEmojiLayout.setHint(String.format(getString(R.string.optional), getString(R.string.collection_or_pack_emoji)));
+        collectionEmojiLayout.setHintTextColor(ColorStateList.valueOf(getResources().getColor(R.color.light_black, getTheme())));
         collectionNo = getIntent().getExtras().getInt("collection");
         DB_Helper_Get dbHelperGet = new DB_Helper_Get(this);
         try {
@@ -116,6 +125,7 @@ public class EditCollection extends AppCompatActivity {
             colors.recycle();
             colorsBackground.recycle();
         } catch (Exception e) {
+            e.printStackTrace();
             Toast.makeText(getApplicationContext(), R.string.error, Toast.LENGTH_SHORT).show();
         }
     }
@@ -146,7 +156,10 @@ public class EditCollection extends AppCompatActivity {
         Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(new ColorDrawable(main));
         Window window = this.getWindow();
         window.setStatusBarColor(main);
-        findViewById(R.id.root_edit_pack).setBackgroundColor(background);
+        collectionNameLayout.setBoxStrokeColor(main);
+        collectionDescLayout.setBoxStrokeColor(main);
+        collectionEmojiLayout.setBoxStrokeColor(main);
+        findViewById(R.id.root_edit_collection_or_pack).setBackgroundColor(background);
     }
 
     private void startViewCollection() {
