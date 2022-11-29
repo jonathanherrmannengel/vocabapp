@@ -26,6 +26,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.textfield.TextInputLayout;
 import com.vanniktech.emoji.EmojiEditText;
 import com.vanniktech.emoji.EmojiPopup;
+import com.vanniktech.emoji.EmojiTheming;
 import com.vanniktech.emoji.inputfilters.OnlyEmojisInputFilter;
 
 import java.util.ArrayList;
@@ -67,7 +68,16 @@ public class EditPack extends AppCompatActivity {
         packDescLayout.setHint(String.format(getString(R.string.optional), getString(R.string.collection_or_pack_desc)));
         packDescLayout.setHintTextColor(ColorStateList.valueOf(getResources().getColor(R.color.light_black, getTheme())));
         packEmoji = findViewById(R.id.edit_collection_or_pack_emoji);
-        EmojiPopup emojiPopup = new EmojiPopup(findViewById(R.id.root_edit_collection_or_pack), packEmoji);
+        EmojiPopup emojiPopup = new EmojiPopup(findViewById(R.id.root_edit_collection_or_pack), packEmoji,
+                new EmojiTheming(
+                        getResources().getColor(R.color.light_grey, getTheme()),
+                        getResources().getColor(R.color.light_black, getTheme()),
+                        getResources().getColor(R.color.warn_red, getTheme()),
+                        getResources().getColor(R.color.button, getTheme()),
+                        getResources().getColor(R.color.light_black, getTheme()),
+                        getResources().getColor(R.color.dark_grey, getTheme())
+                )
+        );
         packEmoji.setFilters(new InputFilter[]{new OnlyEmojisInputFilter()});
         packEmoji.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
@@ -76,6 +86,11 @@ public class EditPack extends AppCompatActivity {
                 }
             } else if (emojiPopup.isShowing()) {
                 emojiPopup.dismiss();
+            }
+        });
+        packEmoji.setOnClickListener(v -> {
+            if (!emojiPopup.isShowing()) {
+                emojiPopup.show();
             }
         });
         packEmojiLayout = findViewById(R.id.edit_collection_or_pack_emoji_layout);

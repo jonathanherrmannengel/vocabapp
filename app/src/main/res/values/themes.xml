@@ -4,6 +4,7 @@
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/ijblue</item>
         <item name="colorPrimaryVariant">@color/ijblue</item>
+        <item name="colorSecondary">@color/warn_red</item>
         <item name="colorOnPrimary">@color/white</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor">@color/ijblue</item>

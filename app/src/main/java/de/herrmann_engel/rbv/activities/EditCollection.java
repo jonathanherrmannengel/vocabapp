@@ -26,6 +26,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.textfield.TextInputLayout;
 import com.vanniktech.emoji.EmojiEditText;
 import com.vanniktech.emoji.EmojiPopup;
+import com.vanniktech.emoji.EmojiTheming;
 import com.vanniktech.emoji.inputfilters.OnlyEmojisInputFilter;
 
 import java.util.Objects;
@@ -60,7 +61,16 @@ public class EditCollection extends AppCompatActivity {
         collectionDescLayout.setHintTextColor(ColorStateList.valueOf(getResources().getColor(R.color.light_black, getTheme())));
         collectionDescLayout.setHint(String.format(getString(R.string.optional), getString(R.string.collection_or_pack_desc)));
         collectionEmoji = findViewById(R.id.edit_collection_or_pack_emoji);
-        EmojiPopup emojiPopup = new EmojiPopup(findViewById(R.id.root_edit_collection_or_pack), collectionEmoji);
+        EmojiPopup emojiPopup = new EmojiPopup(findViewById(R.id.root_edit_collection_or_pack), collectionEmoji,
+                new EmojiTheming(
+                        getResources().getColor(R.color.light_grey, getTheme()),
+                        getResources().getColor(R.color.light_black, getTheme()),
+                        getResources().getColor(R.color.warn_red, getTheme()),
+                        getResources().getColor(R.color.button, getTheme()),
+                        getResources().getColor(R.color.light_black, getTheme()),
+                        getResources().getColor(R.color.dark_grey, getTheme())
+                )
+        );
         collectionEmoji.setFilters(new InputFilter[]{new OnlyEmojisInputFilter()});
         collectionEmoji.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
@@ -69,6 +79,11 @@ public class EditCollection extends AppCompatActivity {
                 }
             } else if (emojiPopup.isShowing()) {
                 emojiPopup.dismiss();
+            }
+        });
+        collectionEmoji.setOnClickListener(v -> {
+            if (!emojiPopup.isShowing()) {
+                emojiPopup.show();
             }
         });
         collectionEmojiLayout = findViewById(R.id.edit_collection_or_pack_emoji_layout);
