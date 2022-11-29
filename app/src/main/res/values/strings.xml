@@ -83,6 +83,10 @@
     <string name="collection_or_pack_name">name</string>
     <string name="collection_or_pack_desc">description</string>
     <string name="collection_or_pack_emoji">list preview icon (single emoji)</string>
+    <string name="collection_or_pack_color_blue">blue</string>
+    <string name="collection_or_pack_color_red">red</string>
+    <string name="collection_or_pack_color_green">green</string>
+    <string name="collection_or_pack_color_yellow">yellow</string>
     <string name="collection_name">of filing box</string>
     <string name="pack_name">of deck</string>
     <string name="new_collection">New filing box</string>

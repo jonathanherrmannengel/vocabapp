@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputFilter;
@@ -98,9 +99,11 @@ public class EditCollection extends AppCompatActivity {
                 }
             });
             LinearLayout colorPicker = findViewById(R.id.color_picker);
+            TypedArray colorNames = getResources().obtainTypedArray(R.array.pack_color_names);
             TypedArray colors = getResources().obtainTypedArray(R.array.pack_color_main);
             TypedArray colorsBackground = getResources().obtainTypedArray(R.array.pack_color_background);
-            for (int i = 0; i < colors.length() && i < colorsBackground.length(); i++) {
+            for (int i = 0; i < colorNames.length() && i < colors.length() && i < colorsBackground.length(); i++) {
+                String colorName = colorNames.getString(i);
                 int color = colors.getColor(i, 0);
                 int colorBackground = colorsBackground.getColor(i, 0);
                 if (collection.colors == i) {
@@ -120,8 +123,13 @@ public class EditCollection extends AppCompatActivity {
                             setColors(color, colorBackground);
                             collection.colors = finalI;
                         });
+                colorView.setContentDescription(colorName);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    colorView.setTooltipText(colorName);
+                }
                 colorPicker.addView(colorView);
             }
+            colorNames.recycle();
             colors.recycle();
             colorsBackground.recycle();
         } catch (Exception e) {

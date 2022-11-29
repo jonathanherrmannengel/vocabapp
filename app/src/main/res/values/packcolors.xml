@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <array name="pack_color_names">
+        <item>@string/collection_or_pack_color_blue</item>
+        <item>@string/collection_or_pack_color_red</item>
+        <item>@string/collection_or_pack_color_green</item>
+        <item>@string/collection_or_pack_color_yellow</item>
+    </array>
     <array name="pack_color_main">
         <item>@color/ijblue</item>
         <item>#550000</item>

@@ -82,6 +82,10 @@
     <string name="collection_or_pack_name">Name</string>
     <string name="collection_or_pack_desc">Beschreibung</string>
     <string name="collection_or_pack_emoji">Listen-Vorschau-Icon (einzelnes Emoji)</string>
+    <string name="collection_or_pack_color_blue">Blau</string>
+    <string name="collection_or_pack_color_red">Rot</string>
+    <string name="collection_or_pack_color_green">Grün</string>
+    <string name="collection_or_pack_color_yellow">Gelb</string>
     <string name="collection_name">des Karteikastens</string>
     <string name="pack_name">des Kartenstapels</string>
     <string name="new_collection">Neuer Karteikasten</string>
