@@ -8,6 +8,7 @@
     <color name="background">#f1f1ff</color>
     <color name="light_black">#343455</color>
     <color name="warn_red">#ff00ee</color>
+    <color name="highlight">#a642f0</color>
     <color name="ijblue">#1b2c66</color>
     <color name="dark_red">#550000</color>
     <color name="dark_green">#005500</color>

@@ -10,7 +10,12 @@
         <item name="android:layout_height">match_parent</item>
         <item name="android:gravity">center</item>
         <item name="android:background">@color/background</item>
-        <item name="android:textSize">18sp</item>
-        <item name="android:textColor">@color/warn_red</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/highlight</item>
+    </style>
+
+    <style name="material_edit_text" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="colorControlActivated">@color/highlight</item>
     </style>
 </resources>

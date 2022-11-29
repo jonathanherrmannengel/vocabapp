@@ -65,7 +65,7 @@ public class EditCollection extends AppCompatActivity {
                 new EmojiTheming(
                         getResources().getColor(R.color.light_grey, getTheme()),
                         getResources().getColor(R.color.light_black, getTheme()),
-                        getResources().getColor(R.color.warn_red, getTheme()),
+                        getResources().getColor(R.color.highlight, getTheme()),
                         getResources().getColor(R.color.button, getTheme()),
                         getResources().getColor(R.color.light_black, getTheme()),
                         getResources().getColor(R.color.dark_grey, getTheme())
