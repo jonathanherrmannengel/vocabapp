@@ -1,17 +1,22 @@
 package de.herrmann_engel.rbv.activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.XmlResourceParser;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import de.herrmann_engel.rbv.Globals;
 import de.herrmann_engel.rbv.R;
 import de.herrmann_engel.rbv.adapters.AdapterOSS;
 import de.herrmann_engel.rbv.oss.OSSLicenses;
@@ -81,6 +86,13 @@ public class AppLicenses extends AppCompatActivity {
 
         } catch (Exception e) {
             Toast.makeText(getApplicationContext(), R.string.error, Toast.LENGTH_LONG).show();
+        }
+
+        SharedPreferences settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE);
+        if (settings.getBoolean("ui_bg_images", true)) {
+            ImageView backgroundImage = findViewById(R.id.background_image);
+            backgroundImage.setVisibility(View.VISIBLE);
+            backgroundImage.setImageDrawable(AppCompatResources.getDrawable(this, R.drawable.bg_licenses));
         }
     }
 
