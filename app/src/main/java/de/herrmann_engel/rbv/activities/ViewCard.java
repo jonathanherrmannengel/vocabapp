@@ -13,6 +13,7 @@ import android.print.PrintAttributes;
 import android.print.PrintDocumentAdapter;
 import android.print.PrintManager;
 import android.text.SpannableString;
+import android.text.util.Linkify;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -60,6 +61,8 @@ import de.herrmann_engel.rbv.db.utils.DB_Helper_Get;
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Update;
 import de.herrmann_engel.rbv.utils.StringTools;
 import io.noties.markwon.Markwon;
+import io.noties.markwon.linkify.LinkifyPlugin;
+import me.saket.bettermovementmethod.BetterLinkMovementMethod;
 
 
 public class ViewCard extends FileTools {
@@ -131,10 +134,16 @@ public class ViewCard extends FileTools {
             formatCardNotes = settings.getBoolean("format_card_notes", false);
             if (card.notes != null && !card.notes.isEmpty()) {
                 if (formatCardNotes) {
-                    final Markwon markwon = Markwon.create(this);
+                    final Markwon markwon = Markwon.builder(this)
+                            .usePlugin(LinkifyPlugin.create(
+                                    Linkify.WEB_URLS
+                            ))
+                            .build();
+                    notesText.setMovementMethod(BetterLinkMovementMethod.getInstance());
                     notesText.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_START);
                     markwon.setMarkdown(notesText, card.notes);
                 } else {
+                    notesText.setAutoLinkMask(Linkify.WEB_URLS);
                     notesText.setText(card.notes);
                 }
             } else {

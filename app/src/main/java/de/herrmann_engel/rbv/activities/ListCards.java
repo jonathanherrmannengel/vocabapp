@@ -8,6 +8,7 @@ import android.content.res.TypedArray;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.SpannableString;
+import android.text.util.Linkify;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -41,6 +42,8 @@ import de.herrmann_engel.rbv.utils.SearchCards;
 import de.herrmann_engel.rbv.utils.SortCards;
 import de.herrmann_engel.rbv.utils.StringTools;
 import io.noties.markwon.Markwon;
+import io.noties.markwon.linkify.LinkifyPlugin;
+import me.saket.bettermovementmethod.BetterLinkMovementMethod;
 
 public class ListCards extends FileTools {
 
@@ -382,11 +385,18 @@ public class ListCards extends FileTools {
                     info.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
                             WindowManager.LayoutParams.MATCH_PARENT);
                     TextView infoText = info.findViewById(R.id.dia_info_text);
+                    infoText.setTextIsSelectable(true);
                     if (settings.getBoolean("format_card_notes", false)) {
-                        final Markwon markwon = Markwon.create(this);
+                        final Markwon markwon = Markwon.builder(this)
+                                .usePlugin(LinkifyPlugin.create(
+                                        Linkify.WEB_URLS
+                                ))
+                                .build();
+                        infoText.setMovementMethod(BetterLinkMovementMethod.getInstance());
                         infoText.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_START);
                         markwon.setMarkdown(infoText, card.notes);
                     } else {
+                        infoText.setAutoLinkMask(Linkify.WEB_URLS);
                         infoText.setText(card.notes);
                     }
                     info.show();
