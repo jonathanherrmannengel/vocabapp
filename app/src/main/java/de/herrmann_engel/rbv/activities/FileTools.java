@@ -293,10 +293,14 @@ public abstract class FileTools extends AppCompatActivity {
     private void deleteMediaFile(String name) {
         try {
             DocumentFile file = getFile(name);
-            DocumentsContract.deleteDocument(
-                    this.getApplicationContext().getContentResolver(),
-                    file.getUri()
-            );
+            if (file != null && file.isFile()) {
+                DocumentsContract.deleteDocument(
+                        this.getApplicationContext().getContentResolver(),
+                        file.getUri()
+                );
+            } else {
+                Toast.makeText(getApplicationContext(), R.string.error, Toast.LENGTH_SHORT).show();
+            }
         } catch (Exception e) {
             e.printStackTrace();
             Toast.makeText(getApplicationContext(), R.string.error, Toast.LENGTH_SHORT).show();

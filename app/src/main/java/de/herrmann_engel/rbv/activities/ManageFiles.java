@@ -42,7 +42,7 @@ public class ManageFiles extends FileTools {
         ArrayList<DocumentFile> filesWithoutMedia = new ArrayList<>();
         DB_Helper_Get dbHelperGet = new DB_Helper_Get(this);
         for (DocumentFile file : files) {
-            if (!dbHelperGet.existsMedia(file.getName())) {
+            if (!dbHelperGet.existsMedia(file.getName()) && file.isFile()) {
                 filesWithoutMedia.add(file);
             }
         }
