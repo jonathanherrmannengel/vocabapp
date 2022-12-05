@@ -150,7 +150,9 @@
     <string name="advanced_search_progress_less">less or equal</string>
     <string name="advanced_search_progress_value">progress value</string>
     <string name="advanced_search_packs_checkbox_description">deck “%1$s” (in filing box: “%2$s”)</string>
-    <string name="settings_default_sort">Flashcard list: default sort</string>
+    <string name="settings_list_default_sort">Flashcard list: Default sort</string>
+    <string name="settings_list_other">Flashcard list: Other options</string>
+    <string name="settings_list_other_no_update">Don\'t update open lists order</string>
     <string name="settings_format">Formatting</string>
     <string name="settings_format_cards">Flashcard front/back: Simple formatting</string>
     <string name="settings_format_cards_info">***Text*** = Bold and italic\n**Text** = Bold\n*Text* = Italic\n_Text_ = Underline</string>
@@ -158,8 +160,8 @@
     <string name="settings_ui">Customize UI</string>
     <string name="settings_ui_background_images">Show background images</string>
     <string name="settings_ui_increase_font_size">Increase font size</string>
-    <string name="settings_list">Flashcard list</string>
-    <string name="settings_list_no_update">Don\'t update open lists order</string>
+    <string name="settings_media">Media files</string>
+    <string name="settings_media_in_gallery">Show media files in other apps (e.g. gallery)</string>
     <string name="warn_inaccurate">This list contains more than %d flashcards.</string>
     <string name="warn_inaccurate_saved">Saved list order is not always kept.</string>
     <string name="warn_inaccurate_format">List display and search results may be inaccurate.</string>

@@ -89,6 +89,8 @@ public class ListCollections extends FileTools implements AsyncImportFinish, Asy
             backgroundImage.setVisibility(View.VISIBLE);
             backgroundImage.setImageDrawable(AppCompatResources.getDrawable(this, R.drawable.bg_collections));
         }
+
+        handleNoMediaFile();
     }
 
     @Override

@@ -144,7 +144,9 @@
     <string name="advanced_search_progress_less">Kleiner gleich</string>
     <string name="advanced_search_progress_value">Lernfortschrittswert</string>
     <string name="advanced_search_packs_checkbox_description">Kartenstapel „%1$s“ (in Karteikasten: „%2$s“)</string>
-    <string name="settings_default_sort">Kartenliste: Standard-Sortierung</string>
+    <string name="settings_list_default_sort">Karteikartenliste: Standard-Sortierung</string>
+    <string name="settings_list_other">Karteikartenliste: Weitere Optionen</string>
+    <string name="settings_list_other_no_update">Reihenfolge in offenen Listen nicht aktualisieren</string>
     <string name="settings_format">Formatierung</string>
     <string name="settings_format_cards">Karteikarten-Vorder-/Rückseite: Einfache Formatierung</string>
     <string name="settings_format_cards_info">***Text*** = Fett und kursiv\n**Text** = Fett\n*Text* = Kursiv\n_Text_ = Unterstrichen</string>
@@ -152,8 +154,8 @@
     <string name="settings_ui">Nutzeroberfläche</string>
     <string name="settings_ui_background_images">Hintergrundbilder anzeigen</string>
     <string name="settings_ui_increase_font_size">Schriftgröße erhöhen</string>
-    <string name="settings_list">Karteikartenliste</string>
-    <string name="settings_list_no_update">Reihenfolge in offenen Listen nicht aktualisieren</string>
+    <string name="settings_media">Mediendateien</string>
+    <string name="settings_media_in_gallery">Mediendateien in anderen Apps (etwa Galerie) anzeigen</string>
     <string name="warn_inaccurate">Mehr als %d Karteikarten in dieser Liste.</string>
     <string name="warn_inaccurate_saved">Reihenfolge der gespeicherten Liste wird nicht immer beibehalten.</string>
     <string name="warn_inaccurate_format">Listendarstellung und Suchergebnisse können ungenau sein.</string>

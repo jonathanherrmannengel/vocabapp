@@ -19,7 +19,7 @@ class AsyncExportWorker(
     private val includeMedia: Boolean,
     private val exportFileUri: Uri?
 ) {
-    private var progress = 0;
+    private var progress = 0
     fun execute() {
         listener.exportCardsResult(exportFile())
     }
@@ -58,7 +58,7 @@ class AsyncExportWorker(
                     }
                     csvWrite.writeNext(row)
                     cursor.moveToNext()
-                    progress++;
+                    progress++
                     if (progress % 1000 == 0) {
                         listenerProgress.exportCardsProgress(
                             String.format(

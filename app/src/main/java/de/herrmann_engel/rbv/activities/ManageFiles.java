@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import de.herrmann_engel.rbv.R;
 import de.herrmann_engel.rbv.adapters.AdapterFilesManage;
@@ -42,7 +43,7 @@ public class ManageFiles extends FileTools {
         ArrayList<DocumentFile> filesWithoutMedia = new ArrayList<>();
         DB_Helper_Get dbHelperGet = new DB_Helper_Get(this);
         for (DocumentFile file : files) {
-            if (!dbHelperGet.existsMedia(file.getName()) && file.isFile()) {
+            if (!dbHelperGet.existsMedia(file.getName()) && file.isFile() && !Objects.equals(file.getName(), ".nomedia")) {
                 filesWithoutMedia.add(file);
             }
         }

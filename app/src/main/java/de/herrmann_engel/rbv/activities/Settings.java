@@ -10,12 +10,10 @@ import android.widget.CheckBox;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import de.herrmann_engel.rbv.Globals;
 import de.herrmann_engel.rbv.R;
 
-public class Settings extends AppCompatActivity {
+public class Settings extends FileTools {
 
     SharedPreferences settings;
     CheckBox formatCardsButton;
@@ -23,6 +21,7 @@ public class Settings extends AppCompatActivity {
     CheckBox uiBgImagesButton;
     CheckBox uiFontSizeButton;
     CheckBox listNoUpdateButton;
+    CheckBox mediaInGalleryButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +54,19 @@ public class Settings extends AppCompatActivity {
         boolean listNoUpdate = settings.getBoolean("list_no_update", true);
         listNoUpdateButton = findViewById(R.id.settings_list_no_update);
         listNoUpdateButton.setChecked(listNoUpdate);
+        boolean mediaInGallery = settings.getBoolean("media_in_gallery", true);
+        mediaInGalleryButton = findViewById(R.id.settings_media_in_gallery);
+        mediaInGalleryButton.setChecked(mediaInGallery);
+    }
+
+    @Override
+    protected void notifyFolderSet() {
+
+    }
+
+    @Override
+    protected void notifyMissingAction(int id) {
+
     }
 
     private void setSort(int sort) {
@@ -114,6 +126,13 @@ public class Settings extends AppCompatActivity {
         SharedPreferences.Editor settingsEdit = settings.edit();
         settingsEdit.putBoolean("list_no_update", listNoUpdateButton.isChecked());
         settingsEdit.apply();
+    }
+
+    public void setMediaInGallery(View view) {
+        SharedPreferences.Editor settingsEdit = settings.edit();
+        settingsEdit.putBoolean("media_in_gallery", mediaInGalleryButton.isChecked());
+        settingsEdit.apply();
+        handleNoMediaFile();
     }
 
     @Override

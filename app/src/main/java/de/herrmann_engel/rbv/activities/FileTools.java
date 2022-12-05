@@ -63,12 +63,14 @@ public abstract class FileTools extends AppCompatActivity {
         try {
             String folder = getCardMediaFolder();
             DB_Helper_Get dbHelperGet = new DB_Helper_Get(this);
+            //Check: No media folder set
             if (folder == null || folder.isEmpty()) {
                 if (!dbHelperGet.getAllMedia().isEmpty()) {
                     showSelectDialog(getResources().getString(R.string.select_folder_help_db_entries));
                 }
             } else {
-                DocumentFile outputDirectory = DocumentFile.fromTreeUri(this, Uri.parse(getCardMediaFolder()));
+                DocumentFile outputDirectory = DocumentFile.fromTreeUri(this, Uri.parse(folder));
+                //Check: Media folder set but directory not accessible
                 if (outputDirectory == null || !outputDirectory.isDirectory()) {
                     showSelectDialog(getResources().getString(R.string.select_folder_help_reselect));
                 }
@@ -193,6 +195,32 @@ public abstract class FileTools extends AppCompatActivity {
 
     public Dialog showDeleteDialog(String fileName) {
         return showDeleteDialog(fileName, getResources().getString(R.string.delete_file_info));
+    }
+
+    public void handleNoMediaFile() {
+        try {
+            String folder = getCardMediaFolder();
+            if (folder == null || folder.isEmpty()) {
+                return;
+            }
+            DocumentFile outputDirectory = DocumentFile.fromTreeUri(this, Uri.parse(folder));
+            if (outputDirectory == null || !outputDirectory.exists() || !outputDirectory.isDirectory()) {
+                return;
+            }
+            SharedPreferences settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE);
+            boolean mediaInGallery = settings.getBoolean("media_in_gallery", true);
+            DocumentFile noMediaFile = outputDirectory.findFile(".nomedia");
+            if (mediaInGallery && noMediaFile != null && noMediaFile.exists() && noMediaFile.isFile()) {
+                DocumentsContract.deleteDocument(
+                        this.getApplicationContext().getContentResolver(),
+                        noMediaFile.getUri()
+                );
+            } else if (!mediaInGallery && (noMediaFile == null || !noMediaFile.exists())) {
+                outputDirectory.createFile("application/octet-stream", ".nomedia");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public Uri getImageUri(int id) {
