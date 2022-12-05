@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/background"
     android:gravity="center"
-    android:padding="10dp">
+    android:padding="30dp">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -15,11 +15,10 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
             android:orientation="vertical">
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/settings_list_default_sort"
                 android:textColor="@android:color/black"
@@ -28,8 +27,8 @@
             <RadioGroup
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="10dp">
+                android:layout_margin="10dp"
+                android:orientation="vertical">
 
                 <RadioButton
                     android:id="@+id/settings_sort_normal"
@@ -62,11 +61,10 @@
                     android:textSize="16sp" />
             </RadioGroup>
 
-
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="40dp"
+                android:layout_marginTop="20dp"
                 android:text="@string/settings_list_other"
                 android:textColor="@android:color/black"
                 android:textSize="20sp" />
@@ -74,24 +72,15 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical|start"
-                android:orientation="horizontal"
-                android:padding="10dp">
+                android:layout_margin="10dp"
+                android:orientation="vertical">
 
                 <CheckBox
                     android:id="@+id/settings_list_no_update"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:buttonTint="@color/ijblue"
-                    android:contentDescription="@string/settings_list_other_no_update"
-                    android:onClick="setListNoUpdate" />
-
-                <TextView
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="2"
-                    android:paddingStart="5dp"
-                    android:paddingEnd="5dp"
+                    android:buttonTint="@color/ijblue"
+                    android:onClick="setListNoUpdate"
                     android:text="@string/settings_list_other_no_update"
                     android:textColor="@color/light_black"
                     android:textSize="16sp" />
@@ -100,16 +89,14 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="40dp"
-                android:layout_marginEnd="20dp"
+                android:layout_margin="30dp"
                 android:background="@color/button"
                 android:importantForAccessibility="no" />
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="40dp"
+                android:paddingTop="10dp"
                 android:text="@string/settings_format"
                 android:textColor="@android:color/black"
                 android:textSize="20sp" />
@@ -117,59 +104,42 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical|start"
-                android:orientation="horizontal"
-                android:padding="10dp">
+                android:layout_margin="10dp"
+                android:orientation="vertical">
 
-                <CheckBox
-                    android:id="@+id/settings_format_cards"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:buttonTint="@color/ijblue"
-                    android:contentDescription="@string/settings_format_cards"
-                    android:onClick="setFormatCards" />
-
-                <TextView
-                    android:layout_width="0dp"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="2"
-                    android:paddingStart="5dp"
-                    android:paddingEnd="5dp"
-                    android:text="@string/settings_format_cards"
-                    android:textColor="@color/light_black"
-                    android:textSize="16sp" />
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
-                <ImageButton
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:background="@android:color/transparent"
-                    android:contentDescription="@string/info"
-                    android:onClick="infoFormatCards"
-                    android:src="@drawable/outline_info_24"
-                    app:tint="@color/ijblue" />
-            </LinearLayout>
+                    <CheckBox
+                        android:id="@+id/settings_format_cards"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:buttonTint="@color/ijblue"
+                        android:onClick="setFormatCards"
+                        android:text="@string/settings_format_cards"
+                        android:textColor="@color/light_black"
+                        android:textSize="16sp" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical|start"
-                android:orientation="horizontal"
-                android:padding="10dp">
+                    <ImageButton
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:background="@android:color/transparent"
+                        android:contentDescription="@string/info"
+                        android:onClick="infoFormatCards"
+                        android:src="@drawable/outline_info_24"
+                        app:tint="@color/ijblue" />
+                </LinearLayout>
 
                 <CheckBox
                     android:id="@+id/settings_format_card_notes"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:buttonTint="@color/ijblue"
-                    android:contentDescription="@string/settings_format_card_notes"
-                    android:onClick="setFormatCardNotes" />
-
-                <TextView
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="2"
-                    android:paddingStart="5dp"
-                    android:paddingEnd="5dp"
+                    android:buttonTint="@color/ijblue"
+                    android:onClick="setFormatCardNotes"
                     android:text="@string/settings_format_card_notes"
                     android:textColor="@color/light_black"
                     android:textSize="16sp" />
@@ -178,16 +148,14 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="40dp"
-                android:layout_marginEnd="20dp"
+                android:layout_margin="30dp"
                 android:background="@color/button"
                 android:importantForAccessibility="no" />
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="40dp"
+                android:paddingTop="10dp"
                 android:text="@string/settings_ui"
                 android:textColor="@android:color/black"
                 android:textSize="20sp" />
@@ -195,50 +163,25 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical|start"
-                android:orientation="horizontal"
-                android:padding="10dp">
+                android:layout_margin="10dp"
+                android:orientation="vertical">
 
                 <CheckBox
                     android:id="@+id/settings_ui_background_images"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:buttonTint="@color/ijblue"
-                    android:contentDescription="@string/settings_ui_background_images"
-                    android:onClick="setUIBackground" />
-
-                <TextView
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="2"
-                    android:paddingStart="5dp"
-                    android:paddingEnd="5dp"
+                    android:buttonTint="@color/ijblue"
+                    android:onClick="setUIBackground"
                     android:text="@string/settings_ui_background_images"
                     android:textColor="@color/light_black"
                     android:textSize="16sp" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical|start"
-                android:orientation="horizontal"
-                android:padding="10dp">
 
                 <CheckBox
                     android:id="@+id/settings_ui_increase_font_size"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:buttonTint="@color/ijblue"
-                    android:contentDescription="@string/settings_ui_increase_font_size"
-                    android:onClick="setUIFontSize" />
-
-                <TextView
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="2"
-                    android:paddingStart="5dp"
-                    android:paddingEnd="5dp"
+                    android:buttonTint="@color/ijblue"
+                    android:onClick="setUIFontSize"
                     android:text="@string/settings_ui_increase_font_size"
                     android:textColor="@color/light_black"
                     android:textSize="16sp" />
@@ -247,16 +190,14 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="40dp"
-                android:layout_marginEnd="20dp"
+                android:layout_margin="30dp"
                 android:background="@color/button"
                 android:importantForAccessibility="no" />
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="40dp"
+                android:paddingTop="10dp"
                 android:text="@string/settings_media"
                 android:textColor="@android:color/black"
                 android:textSize="20sp" />
@@ -264,24 +205,15 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical|start"
-                android:orientation="horizontal"
-                android:padding="10dp">
+                android:layout_margin="10dp"
+                android:orientation="vertical">
 
                 <CheckBox
                     android:id="@+id/settings_media_in_gallery"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:buttonTint="@color/ijblue"
-                    android:contentDescription="@string/settings_media_in_gallery"
-                    android:onClick="setMediaInGallery" />
-
-                <TextView
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="2"
-                    android:paddingStart="5dp"
-                    android:paddingEnd="5dp"
+                    android:buttonTint="@color/ijblue"
+                    android:onClick="setMediaInGallery"
                     android:text="@string/settings_media_in_gallery"
                     android:textColor="@color/light_black"
                     android:textSize="16sp" />
