@@ -1,4 +1,4 @@
-📣 Einfache App zum Verwalten Ihrer Karteikarten.
+📣 Einfache App zum Verwalten Deiner Karteikarten.
 
 🏛️ App-Aufbau
 Karteikästen -> Kartenstapel -> Karteikarten
@@ -9,14 +9,14 @@ Karteikästen -> Kartenstapel -> Karteikarten
 
 📇 Die Karteikarten eines Kartenstapels bieten eine Vorderseite und eine Rückseite sowie optional Notizen. Der Lernfortschritt wird als Zahlenwert gespeichert.
 
-🖌️ Sie können Formatierungsoptionen für die Karteikarten in den App-Einstellungen aktivieren.
+🖌️ Du kannst Formatierungsoptionen für die Karteikarten in den App-Einstellungen aktivieren.
 
-📎🖨️ Sie können Karteikarten mit Medien verknüpfen und drucken.
+📎🖨️ Du kannst Karteikarten mit Medien verknüpfen und drucken.
 
-🌈 Sie können vier Farbvarianten für Karteikästen und Kartenstapel nutzen.
+🌈 Du kannst vier Farbvarianten für Karteikästen und Kartenstapel nutzen.
 
 ▶️ Aus jeder Karteikartenliste kann ein Abfragemodus gestartet werden.
 
 🔍 Karteikartenlisten können die gesamte Sammlung sowie einzelne Karteikästen bzw. Kartenstapel umfassen. Über die erweiterte Suche können Listen aller oder mehrerer Kartenstapel nach Lernfortschritt generiert werden.
 
-❗ Sichern Sie bitte Ihre Daten vor dem Einspielen eines Updates.
+❗ Sichere Deine Daten bitte vor dem Einspielen eines Updates.

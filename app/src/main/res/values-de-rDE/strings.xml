@@ -5,7 +5,7 @@
     <string name="yes">Ja</string>
     <string name="no">Nein</string>
     <string name="error">Fehler</string>
-    <string name="error_values">Fehler – Haben Sie alle erforderlichen Felder ausgefüllt?</string>
+    <string name="error_values">Fehler – Hast Du alle erforderlichen Felder ausgefüllt?</string>
     <string name="success">Erfolgreich abgeschlossen</string>
     <string name="wait">Bitte warten</string>
     <string name="add">Einfügen</string>
@@ -19,11 +19,11 @@
     <string name="share">Teilen</string>
     <string name="options">Optionen</string>
     <string name="print">Drucken</string>
-    <string name="welcome_collection">Willkommen. Erstellen Sie einen neuen Karteikasten (+) oder importieren Sie ein Karteikasten-Backup (↓).</string>
+    <string name="welcome_collection">Willkommen. Erstelle einen neuen Karteikasten (+) oder importiere ein Karteikasten-Backup (↓).</string>
     <string name="welcome_pack">Es sind noch keine Kartenstapel in diesem Karteikasten vorhanden.</string>
-    <string name="welcome_pack_create">Erstellen Sie einen neuen Kartenstapel (+).</string>
+    <string name="welcome_pack_create">Erstelle einen neuen Kartenstapel (+).</string>
     <string name="welcome_card">Es sind noch keine Karteikarten in diesem Kartenstapel vorhanden.</string>
-    <string name="welcome_card_create">Erstellen Sie eine neue Karteikarte (+).</string>
+    <string name="welcome_card_create">Erstelle eine neue Karteikarte (+).</string>
     <string name="all_packs">Alle Kartenstapel</string>
     <string name="all_packs_desc">Gesamte Karteikartensammlung nach Kartenstapeln ansehen</string>
     <string name="all_cards">Alle Karteikarten</string>
@@ -41,7 +41,7 @@
     <string name="import_mode_integrate">Mit erstem gleichnamigen Karteikasten zusammenführen</string>
     <string name="import_export_include_settings">App-Einstellungen einschließen</string>
     <string name="import_export_include_media">Medien-Referenzen einschließen</string>
-    <string name="import_export_include_media_warn_no_files">Die Sicherung enthält nur die Medien-Referenzen, nicht die Dateien selbst. Diese müssen Sie selbstständig sichern und wiederherstellen.</string>
+    <string name="import_export_include_media_warn_no_files">Die Sicherung enthält nur die Medien-Referenzen, nicht die Dateien selbst. Diese musst Du selbstständig sichern und wiederherstellen.</string>
     <string name="import_export_include_media_warn_all_media">Die Sicherung enthält alle Medien-Referenzen, auch die nicht in diesem Karteikasten verwendeten.</string>
     <string name="import_export_lines_progress">~%d Zeilen.</string>
     <string name="edit_pack">Kartenstapel bearbeiten</string>
@@ -63,18 +63,18 @@
     <string name="media_linked_cards">Verknüpfte Karteikarten</string>
     <string name="media_no_card">Keine verknüpften Karteikarten gefunden. Medium löschen?</string>
     <string name="select_folder_title">Ordner auswählen</string>
-    <string name="select_folder_help">Sie müssen einen Ordner auswählen, in dem diese App ihre Dateien speichern kann. Bitte wählen Sie einen Ordner exklusiv für diese App und sichern Sie diesen selbstständig. Auswahl jetzt setzen?</string>
+    <string name="select_folder_help">Du musst einen Ordner auswählen, in dem diese App ihre Dateien speichern kann. Bitte wähle einen Ordner exklusiv für diese App und sichere diesen selbstständig. Auswahl jetzt setzen?</string>
     <string name="select_folder_help_reselect">Ausgewählter Medien-Ordner ist nicht erreichbar. Ordner jetzt erneut auswählen?</string>
     <string name="select_folder_help_db_entries">Datenbank enthält Medien-Einträge, aber es its kein Ordner ausgewählt. Den Ordner jetzt auswähen?</string>
-    <string name="file_exists">Eine Datei mit diesem Name existstiert im App Medien Ordner. Wie möchten Sie verfahren?</string>
+    <string name="file_exists">Eine Datei mit diesem Name existstiert im Medienordner der App. Wie möchtest Du verfahren?</string>
     <string name="file_exists_title">Datei vorhanden</string>
     <string name="file_exists_action_link">Bestehende anstelle der ausgewählten Datei benutzen</string>
     <string name="file_exists_action_new">Ausgewählte Datei umbenennen und kopieren</string>
     <string name="delete_file_title">Datei löschen</string>
     <string name="delete_file_info">Datenbankeintrag gelöscht. Auch Datei vom Dateisystem löschen?</string>
     <string name="delete_file_without_media_info">Datei vom Dateisystem löschen?</string>
-    <string name="delete_pack_with_cards">Dieser Kartenstapel enthält Karteikarten. Wenn Sie das Löschen fortsetzen, werden auch die enthaltenen Karteikarten gelöscht. Trotzdem löschen?</string>
-    <string name="delete_collection_with_packs">Dieser Karteikasten enthält Kartenstapel. Wenn Sie das Löschen fortsetzen, werden auch die enthaltenen Kartenstapel samt Karteikarten gelöscht. Trotzdem löschen?</string>
+    <string name="delete_pack_with_cards">Dieser Kartenstapel enthält Karteikarten. Wenn Du das Löschen fortsetzt, werden auch die enthaltenen Karteikarten gelöscht. Trotzdem löschen?</string>
+    <string name="delete_collection_with_packs">Dieser Karteikasten enthält Kartenstapel. Wenn Du das Löschen fortsetzt, werden auch die enthaltenen Kartenstapel samt Karteikarten gelöscht. Trotzdem löschen?</string>
     <string name="move">Verschieben</string>
     <string name="move_pack">Kartenstapel in anderen Karteikasten verschieben</string>
     <string name="move_card">Karteikarte in anderen Kartenstapel verschieben</string>
@@ -157,6 +157,6 @@
     <string name="warn_inaccurate">Mehr als %d Karteikarten in dieser Liste.</string>
     <string name="warn_inaccurate_saved">Reihenfolge der gespeicherten Liste wird nicht immer beibehalten.</string>
     <string name="warn_inaccurate_format">Listendarstellung und Suchergebnisse können ungenau sein.</string>
-    <string name="warn_inaccurate_note">Diese Warnung wird nicht wieder angezeigt.</string>
+    <string name="warn_inaccurate_note">Diese Warnung wird nicht erneut angezeigt.</string>
 
 </resources>
