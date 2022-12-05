@@ -53,7 +53,8 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_margin="30dp"
-            android:background="@color/button" />
+            android:background="@color/button"
+            android:importantForAccessibility="no" />
 
         <TextView
             android:layout_width="match_parent"
@@ -176,7 +177,8 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_margin="30dp"
-            android:background="@color/button" />
+            android:background="@color/button"
+            android:importantForAccessibility="no" />
 
         <TableLayout
             android:layout_width="match_parent"
