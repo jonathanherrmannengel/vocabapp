@@ -1,5 +1,8 @@
 package de.herrmann_engel.rbv.activities;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ValueAnimator;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -7,6 +10,8 @@ import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.SpannableString;
 import android.text.util.Linkify;
 import android.view.KeyEvent;
@@ -41,6 +46,7 @@ import de.herrmann_engel.rbv.db.utils.DB_Helper_Update;
 import de.herrmann_engel.rbv.utils.SearchCards;
 import de.herrmann_engel.rbv.utils.SortCards;
 import de.herrmann_engel.rbv.utils.StringTools;
+import de.herrmann_engel.rbv.utils.SwipeEvents;
 import io.noties.markwon.Markwon;
 import io.noties.markwon.linkify.LinkifyPlugin;
 import me.saket.bettermovementmethod.BetterLinkMovementMethod;
@@ -313,7 +319,74 @@ public class ListCards extends FileTools {
         setRecView();
     }
 
+    private void queryModeSkipAction(Dialog queryMode) {
+        cardPosition++;
+        if (cardPosition >= currentCardsList.size()) {
+            cardPosition = 0;
+            if (!saveList) {
+                sortList();
+            }
+            setRecView();
+            queryMode.dismiss();
+        } else {
+            nextQuery(queryMode);
+        }
+    }
+
+    private void queryModePreviousAction(Dialog queryMode) {
+        cardPosition--;
+        if (cardPosition < 0) {
+            cardPosition = 0;
+            if (!saveList) {
+                sortList();
+            }
+            setRecView();
+            queryMode.dismiss();
+        } else {
+            nextQuery(queryMode);
+        }
+    }
+
+    private void queryModePlusAction(Dialog queryMode, DB_Card card) {
+        int known = card.known + 1;
+        cardsList.stream().filter(i -> i.uid == card.uid).findFirst().get().known = known;
+        originalCardsList.stream().filter(i -> i.uid == card.uid).findFirst().get().known = known;
+        card.known = known;
+        dbHelperUpdate.updateCard(card);
+        cardPosition++;
+        if (cardPosition >= currentCardsList.size()) {
+            cardPosition = 0;
+            if (!saveList) {
+                sortList();
+            }
+            setRecView();
+            queryMode.dismiss();
+        } else {
+            nextQuery(queryMode);
+        }
+    }
+
+    private void queryModeMinusAction(Dialog queryMode, DB_Card card) {
+        int known = Math.max(0, card.known - 1);
+        cardsList.stream().filter(i -> i.uid == card.uid).findFirst().get().known = known;
+        originalCardsList.stream().filter(i -> i.uid == card.uid).findFirst().get().known = known;
+        card.known = known;
+        dbHelperUpdate.updateCard(card);
+        cardPosition++;
+        if (cardPosition >= currentCardsList.size()) {
+            cardPosition = 0;
+            if (!saveList) {
+                sortList();
+            }
+            setRecView();
+            queryMode.dismiss();
+        } else {
+            nextQuery(queryMode);
+        }
+    }
+
     private void nextQuery(Dialog queryMode) {
+        View root = queryMode.findViewById(R.id.dia_query_root);
         try {
             int position = Math.min(cardPosition, currentCardsList.size() - 1);
             DB_Card card = dbHelperGet.getSingleCard(currentCardsList.get(position).uid);
@@ -327,7 +400,7 @@ public class ListCards extends FileTools {
                         colorsBackgroundHighlight.length()) && packColors >= 0) {
                     int colorBackground = colorsBackground.getColor(packColors, 0);
                     int colorBackgroundHighlight = colorsBackgroundHighlight.getColor(packColors, 0);
-                    queryMode.findViewById(R.id.dia_query_root).setBackgroundColor(colorBackground);
+                    root.setBackgroundColor(colorBackground);
                     queryMode.findViewById(R.id.query_hide).setBackgroundColor(colorBackgroundHighlight);
                 }
                 colorsBackground.recycle();
@@ -403,88 +476,193 @@ public class ListCards extends FileTools {
                 });
             }
 
+            root.setOnTouchListener(new SwipeEvents() {
+                final ImageView swipeNext = queryMode.findViewById(R.id.query_swipe_next);
+                final ImageView swipePrevious = queryMode.findViewById(R.id.query_swipe_previous);
+                final ImageView swipeMinus = queryMode.findViewById(R.id.query_swipe_minus);
+                final ImageView swipePlus = queryMode.findViewById(R.id.query_swipe_plus);
+                final int ANIM_GROW_TIME = 150;
+                final int ANIM_DISPlAY_TIME = 300;
+                boolean allowTouchEvent = true;
+
+                @Override
+                public void onMoveX(float distance) {
+                    if (allowTouchEvent) {
+                        if (distance < 0) {
+                            swipeNext.getLayoutParams().width = (int) (2 * Math.abs(distance));
+                            swipeNext.requestLayout();
+                        } else if (position > 0) {
+                            swipePrevious.getLayoutParams().width = (int) (2 * Math.abs(distance));
+                            swipePrevious.requestLayout();
+                        }
+                    }
+                }
+
+                @Override
+                public void onMoveY(float distance) {
+                    if (allowTouchEvent && showSolution.getVisibility() == View.VISIBLE) {
+                        if (distance < 0) {
+                            swipePlus.getLayoutParams().height = (int) (2 * Math.abs(distance));
+                            swipePlus.requestLayout();
+                        } else {
+                            swipeMinus.getLayoutParams().height = (int) (2 * Math.abs(distance));
+                            swipeMinus.requestLayout();
+                        }
+                    }
+                }
+
+                @Override
+                public void onMoveCancel() {
+                    super.onMoveCancel();
+                    if (allowTouchEvent) {
+                        swipeNext.getLayoutParams().width = 0;
+                        swipeNext.requestLayout();
+                        swipePrevious.getLayoutParams().width = 0;
+                        swipePrevious.requestLayout();
+                        swipeMinus.getLayoutParams().height = 0;
+                        swipeMinus.requestLayout();
+                        swipePlus.getLayoutParams().height = 0;
+                        swipePlus.requestLayout();
+                    }
+                }
+
+                @Override
+                public void onSwipeLeft() {
+                    if (allowTouchEvent) {
+                        allowTouchEvent = false;
+                        ValueAnimator growAnimator = ValueAnimator.ofInt(swipeNext.getWidth(), root.getWidth());
+                        growAnimator.setDuration(ANIM_GROW_TIME);
+                        growAnimator.addUpdateListener(animation -> {
+                            swipeNext.getLayoutParams().width = (int) animation.getAnimatedValue();
+                            swipeNext.requestLayout();
+                        });
+                        growAnimator.addListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                new Handler(Looper.getMainLooper()).postDelayed(
+                                        () -> {
+                                            queryModeSkipAction(queryMode);
+                                            allowTouchEvent = true;
+                                            onMoveCancel();
+                                        },
+                                        ANIM_DISPlAY_TIME);
+                            }
+                        });
+                        growAnimator.start();
+                    } else {
+                        onMoveCancel();
+                    }
+                }
+
+                @Override
+                public void onSwipeRight() {
+                    if (allowTouchEvent && position > 0) {
+                        allowTouchEvent = false;
+                        ValueAnimator growAnimator = ValueAnimator.ofInt(swipePrevious.getWidth(), root.getWidth());
+                        growAnimator.setDuration(ANIM_GROW_TIME);
+                        growAnimator.addUpdateListener(animation -> {
+                            swipePrevious.getLayoutParams().width = (int) animation.getAnimatedValue();
+                            swipePrevious.requestLayout();
+                        });
+                        growAnimator.addListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                new Handler(Looper.getMainLooper()).postDelayed(
+                                        () -> {
+                                            queryModePreviousAction(queryMode);
+                                            allowTouchEvent = true;
+                                            onMoveCancel();
+                                        },
+                                        ANIM_DISPlAY_TIME);
+                            }
+                        });
+                        growAnimator.start();
+                    } else {
+                        onMoveCancel();
+                    }
+                }
+
+                @Override
+                public void onSwipeTop() {
+                    if (allowTouchEvent && showSolution.getVisibility() == View.VISIBLE) {
+                        allowTouchEvent = false;
+                        ValueAnimator growAnimator = ValueAnimator.ofInt(swipePlus.getHeight(), root.getHeight());
+                        growAnimator.setDuration(ANIM_GROW_TIME);
+                        growAnimator.addUpdateListener(animation -> {
+                            swipePlus.getLayoutParams().height = (int) animation.getAnimatedValue();
+                            swipePlus.requestLayout();
+                        });
+                        growAnimator.addListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                new Handler(Looper.getMainLooper()).postDelayed(
+                                        () -> {
+                                            queryModePlusAction(queryMode, card);
+                                            allowTouchEvent = true;
+                                            onMoveCancel();
+                                        },
+                                        ANIM_DISPlAY_TIME);
+                            }
+                        });
+                        growAnimator.start();
+                    } else {
+                        onMoveCancel();
+                    }
+                }
+
+                @Override
+                public void onSwipeBottom() {
+                    if (allowTouchEvent && showSolution.getVisibility() == View.VISIBLE) {
+                        allowTouchEvent = false;
+                        ValueAnimator growAnimator = ValueAnimator.ofInt(swipeMinus.getHeight(), root.getHeight());
+                        growAnimator.setDuration(ANIM_GROW_TIME);
+                        growAnimator.addUpdateListener(animation -> {
+                            swipeMinus.getLayoutParams().height = (int) animation.getAnimatedValue();
+                            swipeMinus.requestLayout();
+                        });
+                        growAnimator.addListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                new Handler(Looper.getMainLooper()).postDelayed(
+                                        () -> {
+                                            queryModeMinusAction(queryMode, card);
+                                            allowTouchEvent = true;
+                                            onMoveCancel();
+                                        },
+                                        ANIM_DISPlAY_TIME);
+                            }
+                        });
+                        growAnimator.start();
+                    } else {
+                        onMoveCancel();
+                    }
+                }
+            });
+
             ImageButton plus = queryMode.findViewById(R.id.query_plus);
             ImageButton minus = queryMode.findViewById(R.id.query_minus);
             plus.setVisibility(View.GONE);
             minus.setVisibility(View.GONE);
 
             ImageButton skip = queryMode.findViewById(R.id.query_skip);
-            skip.setOnClickListener(vv -> {
-                cardPosition++;
-                if (cardPosition >= currentCardsList.size()) {
-                    cardPosition = 0;
-                    if (!saveList) {
-                        sortList();
-                    }
-                    setRecView();
-                    queryMode.dismiss();
-                } else {
-                    nextQuery(queryMode);
-                }
-            });
+            skip.setOnClickListener(vv -> queryModeSkipAction(queryMode));
             ImageButton previous = queryMode.findViewById(R.id.query_back);
             if (position == 0) {
                 previous.setVisibility(View.INVISIBLE);
             } else {
                 previous.setVisibility(View.VISIBLE);
-                previous.setOnClickListener(vv -> {
-                    cardPosition--;
-                    if (cardPosition < 0) {
-                        cardPosition = 0;
-                        if (!saveList) {
-                            sortList();
-                        }
-                        setRecView();
-                        queryMode.dismiss();
-                    } else {
-                        nextQuery(queryMode);
-                    }
-                });
+                previous.setOnClickListener(vv -> queryModePreviousAction(queryMode));
             }
 
-            Button hideQueryButton = queryMode.findViewById(R.id.query_button_hide);
-            hideQueryButton.setVisibility(View.VISIBLE);
-            hideQueryButton.setOnClickListener(v -> {
-                hideQueryButton.setVisibility(View.GONE);
+            Button showHiddenButton = queryMode.findViewById(R.id.query_button_hide);
+            showHiddenButton.setVisibility(View.VISIBLE);
+            showHiddenButton.setOnClickListener(v -> {
+                showHiddenButton.setVisibility(View.GONE);
                 showSolution.setVisibility(View.VISIBLE);
                 plus.setVisibility(View.VISIBLE);
                 minus.setVisibility(View.VISIBLE);
-                plus.setOnClickListener(vv -> {
-                    int known = card.known + 1;
-                    cardsList.stream().filter(i -> i.uid == card.uid).findFirst().get().known = known;
-                    originalCardsList.stream().filter(i -> i.uid == card.uid).findFirst().get().known = known;
-                    card.known = known;
-                    dbHelperUpdate.updateCard(card);
-                    cardPosition++;
-                    if (cardPosition >= currentCardsList.size()) {
-                        cardPosition = 0;
-                        if (!saveList) {
-                            sortList();
-                        }
-                        setRecView();
-                        queryMode.dismiss();
-                    } else {
-                        nextQuery(queryMode);
-                    }
-                });
-                minus.setOnClickListener(vv -> {
-                    int known = Math.max(0, card.known - 1);
-                    cardsList.stream().filter(i -> i.uid == card.uid).findFirst().get().known = known;
-                    originalCardsList.stream().filter(i -> i.uid == card.uid).findFirst().get().known = known;
-                    card.known = known;
-                    dbHelperUpdate.updateCard(card);
-                    cardPosition++;
-                    if (cardPosition >= currentCardsList.size()) {
-                        cardPosition = 0;
-                        if (!saveList) {
-                            sortList();
-                        }
-                        setRecView();
-                        queryMode.dismiss();
-                    } else {
-                        nextQuery(queryMode);
-                    }
-                });
+                plus.setOnClickListener(vv -> queryModePlusAction(queryMode, card));
+                minus.setOnClickListener(vv -> queryModeMinusAction(queryMode, card));
             });
         } catch (Exception e) {
             e.printStackTrace();

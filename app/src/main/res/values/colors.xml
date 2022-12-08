@@ -12,7 +12,9 @@
     <color name="hyperlink">#5f0072</color>
     <color name="ijblue">#1b2c66</color>
     <color name="dark_red">#550000</color>
+    <color name="light_red">#ec7070</color>
     <color name="dark_green">#005500</color>
+    <color name="light_green">#70ec70</color>
     <color name="progress0">#ff0000</color>
     <color name="progress1">#ee5500</color>
     <color name="progress2">#eecc00</color>

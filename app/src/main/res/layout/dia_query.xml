@@ -32,7 +32,7 @@
 
             <Button
                 android:id="@+id/query_button_hide"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
                 android:gravity="center"
@@ -103,7 +103,7 @@
 
             <Button
                 android:id="@+id/query_button_media_image"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
                 android:gravity="center"
@@ -113,7 +113,7 @@
 
             <Button
                 android:id="@+id/query_button_media_other"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
                 android:gravity="center"
@@ -123,7 +123,7 @@
 
             <Button
                 android:id="@+id/query_button_notes"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
                 android:gravity="center"
@@ -132,4 +132,48 @@
                 android:textSize="13sp" />
         </LinearLayout>
     </ScrollView>
+
+    <ImageView
+        android:id="@+id/query_swipe_next"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        android:background="@color/light_grey"
+        android:importantForAccessibility="no"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_outline_skip_next_24"
+        app:tint="@color/dark_grey" />
+
+    <ImageView
+        android:id="@+id/query_swipe_previous"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:background="@color/light_grey"
+        android:importantForAccessibility="no"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_outline_skip_previous_24"
+        app:tint="@color/dark_grey" />
+
+    <ImageView
+        android:id="@+id/query_swipe_plus"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/light_green"
+        android:importantForAccessibility="no"
+        android:scaleType="fitCenter"
+        android:src="@drawable/outline_done_24"
+        app:tint="@color/dark_green" />
+
+    <ImageView
+        android:id="@+id/query_swipe_minus"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_alignParentTop="true"
+        android:background="@color/light_red"
+        android:importantForAccessibility="no"
+        android:scaleType="fitCenter"
+        android:src="@drawable/outline_close_24"
+        app:tint="@color/dark_red" />
 </RelativeLayout>
