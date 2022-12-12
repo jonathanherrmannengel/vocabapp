@@ -6,7 +6,7 @@ import android.view.View;
 public class SwipeEvents implements View.OnTouchListener {
 
     private static final int SWIPE_DISTANCE_MIN = 150;
-    private static final int SWIPE_START_DISTANCE_MIN = 100;
+    private static final int SWIPE_START_DISTANCE_MAX = 50;
     private static final int MOVE_DIRECTION_RIGHT = 1;
     private static final int MOVE_DIRECTION_LEFT = 2;
     private static final int MOVE_DIRECTION_BOTTOM = 3;
@@ -33,9 +33,9 @@ public class SwipeEvents implements View.OnTouchListener {
             if (Math.abs(distanceX) > Math.abs(distanceY)) {
                 if (Math.abs(distanceX) < SWIPE_DISTANCE_MIN) {
                     if (moveDirection == 0) {
-                        if (distanceX > 0 && initialX < SWIPE_START_DISTANCE_MIN) {
+                        if (distanceX > 0 && initialX < SWIPE_START_DISTANCE_MAX) {
                             moveDirection = MOVE_DIRECTION_RIGHT;
-                        } else if (initialX > v.getWidth() - SWIPE_START_DISTANCE_MIN) {
+                        } else if (distanceX < 0 && initialX > v.getWidth() - SWIPE_START_DISTANCE_MAX) {
                             moveDirection = MOVE_DIRECTION_LEFT;
                         }
                         return true;
@@ -55,9 +55,9 @@ public class SwipeEvents implements View.OnTouchListener {
             } else {
                 if (Math.abs(distanceY) < SWIPE_DISTANCE_MIN) {
                     if (moveDirection == 0) {
-                        if (distanceY > 0 && initialY < SWIPE_START_DISTANCE_MIN) {
+                        if (distanceY > 0 && initialY < SWIPE_START_DISTANCE_MAX) {
                             moveDirection = MOVE_DIRECTION_BOTTOM;
-                        } else if (initialY > v.getHeight() - SWIPE_START_DISTANCE_MIN) {
+                        } else if (distanceY < 0 && initialY > v.getHeight() - SWIPE_START_DISTANCE_MAX) {
                             moveDirection = MOVE_DIRECTION_TOP;
                         }
                         return true;

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/dia_query_root_background_main">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/background" />
+        </shape>
+    </item>
+    <item
+        android:id="@+id/dia_query_root_background_left"
+        android:bottom="-6dp"
+        android:left="0dp"
+        android:right="-6dp"
+        android:top="-6dp">
+        <shape android:shape="rectangle">
+            <stroke
+                android:width="3dp"
+                android:color="@color/dark_grey" />
+        </shape>
+    </item>
+    <item
+        android:id="@+id/dia_query_root_background_right"
+        android:bottom="-6dp"
+        android:left="-6dp"
+        android:right="0dp"
+        android:top="-6dp">
+        <shape android:shape="rectangle">
+            <stroke
+                android:width="3dp"
+                android:color="@color/dark_grey" />
+        </shape>
+    </item>
+    <item
+        android:id="@+id/dia_query_root_background_bottom"
+        android:bottom="0dp"
+        android:left="-6dp"
+        android:right="-6dp"
+        android:top="-6dp">
+        <shape android:shape="rectangle">
+            <stroke
+                android:width="3dp"
+                android:color="@color/light_green" />
+        </shape>
+    </item>
+    <item
+        android:id="@+id/dia_query_root_background_top"
+        android:bottom="-6dp"
+        android:left="-6dp"
+        android:right="-6dp"
+        android:top="0dp">
+        <shape android:shape="rectangle">
+            <stroke
+                android:width="3dp"
+                android:color="@color/light_red" />
+        </shape>
+    </item>
+</layer-list>

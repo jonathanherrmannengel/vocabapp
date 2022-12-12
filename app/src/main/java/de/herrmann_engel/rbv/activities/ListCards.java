@@ -9,6 +9,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -387,6 +389,7 @@ public class ListCards extends FileTools {
 
     private void nextQuery(Dialog queryMode) {
         View root = queryMode.findViewById(R.id.dia_query_root);
+        LayerDrawable rootBackground = (LayerDrawable) root.getBackground();
         try {
             int position = Math.min(cardPosition, currentCardsList.size() - 1);
             DB_Card card = dbHelperGet.getSingleCard(currentCardsList.get(position).uid);
@@ -400,7 +403,8 @@ public class ListCards extends FileTools {
                         colorsBackgroundHighlight.length()) && packColors >= 0) {
                     int colorBackground = colorsBackground.getColor(packColors, 0);
                     int colorBackgroundHighlight = colorsBackgroundHighlight.getColor(packColors, 0);
-                    root.setBackgroundColor(colorBackground);
+                    GradientDrawable rootBackgroundMain = (GradientDrawable) rootBackground.findDrawableByLayerId(R.id.dia_query_root_background_main);
+                    rootBackgroundMain.setColor(colorBackground);
                     queryMode.findViewById(R.id.query_hide).setBackgroundColor(colorBackgroundHighlight);
                 }
                 colorsBackground.recycle();
@@ -475,6 +479,13 @@ public class ListCards extends FileTools {
                     info.show();
                 });
             }
+
+            final GradientDrawable rootBackgroundLeft = (GradientDrawable) rootBackground.findDrawableByLayerId(R.id.dia_query_root_background_left);
+            final GradientDrawable rootBackgroundTop = (GradientDrawable) rootBackground.findDrawableByLayerId(R.id.dia_query_root_background_top);
+            final GradientDrawable rootBackgroundBottom = (GradientDrawable) rootBackground.findDrawableByLayerId(R.id.dia_query_root_background_bottom);
+            rootBackgroundLeft.setAlpha(position > 0 ? 255 : 0);
+            rootBackgroundTop.setAlpha(0);
+            rootBackgroundBottom.setAlpha(0);
 
             root.setOnTouchListener(new SwipeEvents() {
                 final ImageView swipeNext = queryMode.findViewById(R.id.query_swipe_next);
@@ -663,6 +674,8 @@ public class ListCards extends FileTools {
                 minus.setVisibility(View.VISIBLE);
                 plus.setOnClickListener(vv -> queryModePlusAction(queryMode, card));
                 minus.setOnClickListener(vv -> queryModeMinusAction(queryMode, card));
+                rootBackgroundTop.setAlpha(255);
+                rootBackgroundBottom.setAlpha(255);
             });
         } catch (Exception e) {
             e.printStackTrace();
