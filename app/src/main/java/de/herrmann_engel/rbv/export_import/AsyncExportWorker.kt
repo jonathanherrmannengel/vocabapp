@@ -189,6 +189,14 @@ class AsyncExportWorker(
                         settings.getBoolean("list_no_update", true).toString()
                     )
                 }
+                if (settings.contains("media_in_gallery")) {
+                    exportSetting(
+                        "media_in_gallery",
+                        file.name,
+                        "bool",
+                        settings.getBoolean("media_in_gallery", true).toString()
+                    )
+                }
             }
             if (exportFileUri != null) {
                 try {
