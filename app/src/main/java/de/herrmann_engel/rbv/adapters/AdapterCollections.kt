@@ -120,6 +120,8 @@ class AdapterCollections(private val collection: List<DB_Collection>, private va
                 DB_Helper_Get(c.applicationContext)
             val size = dbHelperGet.countPacks()
             viewHolder.numberText.text = size.toString()
+            viewHolder.textView.setTextColor(Color.rgb(0, 0, 0))
+            viewHolder.previewView.setTextColor(Color.rgb(0, 0, 0))
             viewHolder.previewView.setBackgroundColor(Color.rgb(185, 185, 185))
             background.mutate()
             background.setStroke(2, Color.rgb(85, 85, 85))
