@@ -45,6 +45,12 @@ class AdapterCollectionsMovePack(
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
+        val colors = c.resources.obtainTypedArray(R.array.pack_color_list)
+        val color = collection[position].colors
+        if (color < colors.length() && color >= 0) {
+            viewHolder.textView.setTextColor(colors.getColor(color, 0))
+        }
+        colors.recycle()
         viewHolder.textView.text = collection[position].name
         viewHolder.textView.setOnClickListener {
             val updateHelper =

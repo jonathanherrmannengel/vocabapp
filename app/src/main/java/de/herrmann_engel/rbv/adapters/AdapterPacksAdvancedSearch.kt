@@ -39,6 +39,7 @@ class AdapterPacksAdvancedSearch(
         if (pack.isEmpty()) {
             viewHolder.textView.text = c.resources.getString(R.string.welcome_pack)
             viewHolder.textViewDesc.visibility = View.GONE
+            viewHolder.checkBox.visibility = View.GONE
         } else {
             val colors = c.resources.obtainTypedArray(R.array.pack_color_list)
             val color = pack[position].colors
