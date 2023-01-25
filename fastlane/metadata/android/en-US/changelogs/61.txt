@@ -1,0 +1,9 @@
+Optional swipe gestures in query mode: Swipe to center…
+…from left: previous flashcard.
+…from right: next flashcard.
+…from top: Mark as not known (after displaying solution).
+…from bottom: Mark as known (after displaying solution).
+
+Settings: Hide app media in other apps (by adding / removing the ".nomedia"-file).
+Minor UI-improvements.
+Bugfixes.

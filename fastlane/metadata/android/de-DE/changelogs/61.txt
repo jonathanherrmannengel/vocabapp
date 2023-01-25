@@ -1,0 +1,9 @@
+Optionale Wischgesten im Abfragemodus: Zur Mitte wischen…
+…von links: vorherige Karteikarte.
+…von rechts: nächste Karteikarte.
+…von oben: Als nicht gewusst markieren (nach Aufdecken der Lösung).
+…von unten: Als gewusst markieren (nach Aufdecken der Lösung).
+
+Einstellung, ob die App-Medien in anderen Apps ausgeblendet werden sollen (mittels Anlegen / Entfernen der ".nomedia"-Datei).
+Kleinere UI-Verbesserungen.
+Fehlerbehebungen.
