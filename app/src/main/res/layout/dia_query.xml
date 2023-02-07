@@ -110,7 +110,7 @@
                 android:gravity="center"
                 android:text="@string/query_media_image"
                 android:textColor="@color/button"
-                android:textSize="13sp" />
+                android:textSize="14sp" />
 
             <Button
                 android:id="@+id/query_button_media_other"
@@ -120,7 +120,7 @@
                 android:gravity="center"
                 android:text="@string/query_media_all"
                 android:textColor="@color/button"
-                android:textSize="13sp" />
+                android:textSize="14sp" />
 
             <Button
                 android:id="@+id/query_button_notes"
@@ -130,7 +130,7 @@
                 android:gravity="center"
                 android:text="@string/query_notes"
                 android:textColor="@color/button"
-                android:textSize="13sp" />
+                android:textSize="14sp" />
         </LinearLayout>
     </ScrollView>
 

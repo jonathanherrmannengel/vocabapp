@@ -15,7 +15,7 @@
         <item name="android:textColor">@color/highlight</item>
     </style>
 
-    <style name="material_edit_text" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+    <style name="material_edit_text" parent="Widget.Material3.TextInputLayout.OutlinedBox">
         <item name="colorControlActivated">@color/highlight</item>
     </style>
 </resources>

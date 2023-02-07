@@ -1,17 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Base application theme. -->
-    <style name="Theme.RBV" parent="Theme.MaterialComponents.Light.DarkActionBar">
+    <style name="Theme.RBV" parent="Theme.Material3.Light">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/ijblue</item>
-        <item name="colorPrimaryVariant">@color/ijblue</item>
-        <item name="colorSecondary">@color/highlight</item>
         <item name="colorOnPrimary">@color/white</item>
+        <item name="colorSecondary">@color/highlight</item>
         <item name="android:textColorLink">@color/hyperlink</item>
         <!-- Status bar color. -->
-        <item name="android:statusBarColor">@color/ijblue</item>
+        <item name="actionBarTheme">@style/Theme.RBV.ActionBar</item>
         <!-- Default background color. -->
         <item name="android:windowBackground">@color/background</item>
         <!-- No animations. -->
         <item name="android:windowAnimationStyle">@null</item>
+    </style>
+
+    <style name="Theme.RBV.ActionBar" parent="@style/ThemeOverlay.Material3.ActionBar">
+        <item name="colorSurface">@color/ijblue</item>
+        <item name="colorOnSurface">@color/white</item>
+        <item name="android:editTextColor">@color/light_grey</item>
+        <item name="android:textColorHint">@color/light_grey_alpha</item>
+        <item name="android:tint">?attr/colorOnSurface</item>
     </style>
 </resources>

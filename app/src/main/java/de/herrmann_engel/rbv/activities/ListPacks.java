@@ -14,7 +14,6 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -165,7 +164,7 @@ public class ListPacks extends AppCompatActivity implements AsyncExportFinish, A
         startExportDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.MATCH_PARENT);
         Button startExportButton = startExportDialog.findViewById(R.id.dia_export_start);
-        LinearLayout includeSettingsLayout = startExportDialog.findViewById(R.id.dia_export_include_settings_layout);
+        CheckBox includeSettingsLayout = startExportDialog.findViewById(R.id.dia_export_include_settings);
         CheckBox includeMediaCheckBox = startExportDialog.findViewById(R.id.dia_export_include_media);
         TextView includeMediaWarnNoFile = startExportDialog.findViewById(R.id.dia_export_include_media_warn_no_files);
         TextView includeMediaWarnAllMedia = startExportDialog.findViewById(R.id.dia_export_include_media_warn_all_media);

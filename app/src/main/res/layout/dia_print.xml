@@ -27,15 +27,9 @@
 
                 <CheckBox
                     android:id="@+id/dia_print_include_progress"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:buttonTint="@color/ijblue"
-                    android:checked="true"
-                    android:contentDescription="@string/print_include_progress" />
-
-                <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:checked="true"
                     android:paddingStart="5dp"
                     android:paddingEnd="5dp"
                     android:text="@string/print_include_progress"
@@ -55,15 +49,9 @@
 
                 <CheckBox
                     android:id="@+id/dia_print_include_notes"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:buttonTint="@color/ijblue"
-                    android:checked="true"
-                    android:contentDescription="@string/print_include_notes" />
-
-                <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:checked="true"
                     android:paddingStart="5dp"
                     android:paddingEnd="5dp"
                     android:text="@string/print_include_notes"
@@ -83,15 +71,9 @@
 
                 <CheckBox
                     android:id="@+id/dia_print_include_images"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:buttonTint="@color/ijblue"
-                    android:checked="true"
-                    android:contentDescription="@string/print_include_images" />
-
-                <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:checked="true"
                     android:paddingStart="5dp"
                     android:paddingEnd="5dp"
                     android:text="@string/print_include_images"
@@ -111,15 +93,9 @@
 
                 <CheckBox
                     android:id="@+id/dia_print_include_media"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:buttonTint="@color/ijblue"
-                    android:checked="true"
-                    android:contentDescription="@string/print_include_media_list" />
-
-                <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:checked="true"
                     android:paddingStart="5dp"
                     android:paddingEnd="5dp"
                     android:text="@string/print_include_media_list"

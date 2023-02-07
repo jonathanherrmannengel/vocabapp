@@ -14,12 +14,12 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
             android:orientation="vertical">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:text="@string/advanced_search_packs"
                 android:textColor="@android:color/black"
                 android:textSize="20sp" />
@@ -34,7 +34,6 @@
                     android:id="@+id/advanced_search_packs_all"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:buttonTint="@color/ijblue"
                     android:text="@string/advanced_search_packs_all"
                     android:textColor="@color/light_black"
                     android:textSize="16sp" />
@@ -43,7 +42,6 @@
                     android:id="@+id/advanced_search_packs_select"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:buttonTint="@color/ijblue"
                     android:text="@string/advanced_search_packs_select"
                     android:textColor="@color/light_black"
                     android:textSize="16sp" />
@@ -53,11 +51,20 @@
                 android:id="@+id/rec_advanced_search"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:layout_margin="20dp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_margin="30dp"
+                android:background="@color/button"
+                android:importantForAccessibility="no" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:text="@string/advanced_search_progress"
                 android:textColor="@android:color/black"
                 android:textSize="20sp" />
@@ -72,7 +79,6 @@
                     android:id="@+id/advanced_search_progress_less"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:buttonTint="@color/ijblue"
                     android:text="@string/advanced_search_progress_less"
                     android:textColor="@color/light_black"
                     android:textSize="16sp" />
@@ -81,7 +87,6 @@
                     android:id="@+id/advanced_search_progress_greater"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:buttonTint="@color/ijblue"
                     android:text="@string/advanced_search_progress_greater"
                     android:textColor="@color/light_black"
                     android:textSize="16sp" />
@@ -91,11 +96,18 @@
                 android:id="@+id/advanced_search_progress_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:ems="10"
+                android:layout_gravity="center"
                 android:hint="@string/advanced_search_progress_value"
                 android:inputType="number"
                 android:textColor="@color/light_black"
                 android:textColorHint="@color/light_black" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_margin="30dp"
+                android:background="@color/button"
+                android:importantForAccessibility="no" />
 
             <Button
                 android:id="@+id/advanced_search_go"
