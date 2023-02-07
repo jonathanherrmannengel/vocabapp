@@ -109,24 +109,16 @@
 
             <Button
                 android:id="@+id/view_card_images"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                style="@style/material_button"
                 android:layout_marginTop="20dp"
-                android:background="@android:color/transparent"
-                android:gravity="center"
                 android:text="@string/show_image_media"
-                android:textColor="@color/button"
                 android:textSize="22sp" />
 
             <Button
                 android:id="@+id/view_card_media"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                style="@style/material_button"
                 android:layout_marginTop="20dp"
-                android:background="@android:color/transparent"
-                android:gravity="center"
                 android:text="@string/show_all_media"
-                android:textColor="@color/button"
                 android:textSize="22sp" />
 
             <TextView
