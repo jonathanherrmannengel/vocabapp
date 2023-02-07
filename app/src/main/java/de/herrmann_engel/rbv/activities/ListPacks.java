@@ -164,11 +164,12 @@ public class ListPacks extends AppCompatActivity implements AsyncExportFinish, A
         startExportDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.MATCH_PARENT);
         Button startExportButton = startExportDialog.findViewById(R.id.dia_export_start);
-        CheckBox includeSettingsLayout = startExportDialog.findViewById(R.id.dia_export_include_settings);
+        CheckBox includeSettingsCheckBox = startExportDialog.findViewById(R.id.dia_export_include_settings);
         CheckBox includeMediaCheckBox = startExportDialog.findViewById(R.id.dia_export_include_media);
         TextView includeMediaWarnNoFile = startExportDialog.findViewById(R.id.dia_export_include_media_warn_no_files);
         TextView includeMediaWarnAllMedia = startExportDialog.findViewById(R.id.dia_export_include_media_warn_all_media);
-        includeSettingsLayout.setVisibility(View.GONE);
+        includeSettingsCheckBox.setChecked(false);
+        includeSettingsCheckBox.setVisibility(View.GONE);
         includeMediaCheckBox.setChecked(true);
         includeMediaWarnNoFile.setVisibility(includeMediaCheckBox.isChecked() ? View.VISIBLE : View.GONE);
         includeMediaWarnAllMedia.setVisibility(includeMediaCheckBox.isChecked() ? View.VISIBLE : View.GONE);
