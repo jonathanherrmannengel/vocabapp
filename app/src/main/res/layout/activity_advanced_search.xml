@@ -99,6 +99,7 @@
                 android:layout_gravity="center"
                 android:hint="@string/advanced_search_progress_value"
                 android:inputType="number"
+                android:textAlignment="center"
                 android:textColor="@color/light_black"
                 android:textColorHint="@color/light_black" />
 
