@@ -112,10 +112,8 @@
 
             <Button
                 android:id="@+id/advanced_search_go"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@android:color/transparent"
-                android:gravity="center"
+                style="@style/material_button"
+                android:layout_gravity="center"
                 android:text="@string/search"
                 android:textColor="@color/button"
                 android:textSize="@dimen/card_back_size_default" />

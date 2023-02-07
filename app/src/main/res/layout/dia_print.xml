@@ -105,13 +105,11 @@
 
             <Button
                 android:id="@+id/dia_print_start"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                style="@style/material_button"
                 android:layout_below="@id/dia_print_include_media_layout"
                 android:layout_centerHorizontal="true"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="10dp"
-                android:background="@android:color/transparent"
                 android:text="@string/start"
                 android:textColor="@color/light_black"
                 android:textSize="20sp" />

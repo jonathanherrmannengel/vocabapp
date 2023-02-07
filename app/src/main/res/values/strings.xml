@@ -47,7 +47,7 @@
     <string name="edit_collection">Edit filing box</string>
     <string name="edit_pack">Edit deck</string>
     <string name="edit_card">Edit flashcard</string>
-    <string name="edit_card_media">Manage attached media</string>
+    <string name="edit_card_media">manage attached media</string>
     <string name="edit_card_media_add">Add media</string>
     <string name="no_media">no media</string>
     <string name="no_files_without_media">All files are in database</string>

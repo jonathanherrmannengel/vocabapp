@@ -21,26 +21,22 @@
 
     <Button
         android:id="@+id/dia_file_exists_link"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        style="@style/material_button"
         android:layout_below="@id/dia_file_exists_desc"
         android:layout_centerHorizontal="true"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="20dp"
-        android:background="@android:color/transparent"
         android:text="@string/file_exists_action_link"
         android:textColor="@color/light_black"
         android:textSize="20sp" />
 
     <Button
         android:id="@+id/dia_file_exists_new"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        style="@style/material_button"
         android:layout_below="@id/dia_file_exists_link"
         android:layout_centerHorizontal="true"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="20dp"
-        android:background="@android:color/transparent"
         android:text="@string/file_exists_action_new"
         android:textColor="@color/light_black"
         android:textSize="20sp" />

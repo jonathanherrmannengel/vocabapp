@@ -7,13 +7,11 @@
 
     <Button
         android:id="@+id/manage_files_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        style="@style/material_button"
         android:layout_centerHorizontal="true"
         android:layout_margin="12dp"
         android:onClick="manageFiles"
         android:text="@string/manage_files_without_media"
-        android:textColor="@color/ijblue"
         android:textSize="13sp" />
 
     <androidx.recyclerview.widget.RecyclerView
