@@ -9,6 +9,7 @@
         <item name="android:textColorLink">@color/hyperlink</item>
         <!-- Status bar color. -->
         <item name="actionBarTheme">@style/Theme.RBV.ActionBar</item>
+        <item name="actionOverflowMenuStyle">@style/Theme.RBV.ActionBarOverflow</item>
         <!-- Default background color. -->
         <item name="android:windowBackground">@color/background</item>
         <!-- No animations. -->
@@ -21,5 +22,9 @@
         <item name="android:editTextColor">@color/light_grey</item>
         <item name="android:textColorHint">@color/light_grey_alpha</item>
         <item name="android:tint">?attr/colorOnSurface</item>
+    </style>
+
+    <style name="Theme.RBV.ActionBarOverflow" parent="@style/Widget.Material3.PopupMenu.Overflow">
+        <item name="android:popupBackground">@color/white</item>
     </style>
 </resources>
