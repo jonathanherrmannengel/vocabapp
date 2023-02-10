@@ -46,23 +46,31 @@ class AdapterCollections(private val collection: MutableList<DB_Collection>) :
             viewGroup,
             false
         )
-        val settings =
-            viewGroup.context.getSharedPreferences(Globals.SETTINGS_NAME, Context.MODE_PRIVATE)
-        if (settings.getBoolean("ui_font_size", false)) {
-            binding.recCollectionsName.setTextSize(
-                TypedValue.COMPLEX_UNIT_PX,
-                viewGroup.context.resources.getDimension(R.dimen.rec_view_font_size_big)
-            )
-            binding.recCollectionsDesc.setTextSize(
-                TypedValue.COMPLEX_UNIT_PX,
-                viewGroup.context.resources.getDimension(R.dimen.rec_view_font_size_below_big)
-            )
-        }
         return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         val context = viewHolder.binding.root.context
+        val settings = context.getSharedPreferences(Globals.SETTINGS_NAME, Context.MODE_PRIVATE)
+        if (settings.getBoolean("ui_font_size", false)) {
+            viewHolder.binding.recCollectionsName.setTextSize(
+                TypedValue.COMPLEX_UNIT_PX,
+                context.resources.getDimension(R.dimen.rec_view_font_size_big)
+            )
+            viewHolder.binding.recCollectionsDesc.setTextSize(
+                TypedValue.COMPLEX_UNIT_PX,
+                context.resources.getDimension(R.dimen.rec_view_font_size_below_big)
+            )
+        } else {
+            viewHolder.binding.recCollectionsName.setTextSize(
+                TypedValue.COMPLEX_UNIT_PX,
+                context.resources.getDimension(R.dimen.rec_view_font_size_default)
+            )
+            viewHolder.binding.recCollectionsDesc.setTextSize(
+                TypedValue.COMPLEX_UNIT_PX,
+                context.resources.getDimension(R.dimen.rec_view_font_size_below_default)
+            )
+        }
         val backgroundLayerList =
             viewHolder.binding.root.background as LayerDrawable
         val background =
