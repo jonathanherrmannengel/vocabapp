@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/root_settings"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
@@ -34,7 +33,6 @@
                     android:id="@+id/settings_sort_normal"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:onClick="setSortNormal"
                     android:text="@string/sort_normal"
                     android:textColor="@color/light_black"
                     android:textSize="16sp" />
@@ -43,7 +41,6 @@
                     android:id="@+id/settings_sort_random"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:onClick="setSortRandom"
                     android:text="@string/sort_random"
                     android:textColor="@color/light_black"
                     android:textSize="16sp" />
@@ -52,7 +49,6 @@
                     android:id="@+id/settings_sort_alphabetical"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:onClick="setSortAlphabetical"
                     android:text="@string/sort_alphabetical"
                     android:textColor="@color/light_black"
                     android:textSize="16sp" />
@@ -76,7 +72,6 @@
                     android:id="@+id/settings_list_no_update"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:onClick="setListNoUpdate"
                     android:text="@string/settings_list_other_no_update"
                     android:textColor="@color/light_black"
                     android:textSize="16sp" />
@@ -114,17 +109,16 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:onClick="setFormatCards"
                         android:text="@string/settings_format_cards"
                         android:textColor="@color/light_black"
                         android:textSize="16sp" />
 
                     <ImageButton
+                        android:id="@+id/settings_format_cards_info"
                         android:layout_width="20dp"
                         android:layout_height="20dp"
                         android:background="@android:color/transparent"
                         android:contentDescription="@string/info"
-                        android:onClick="infoFormatCards"
                         android:src="@drawable/outline_info_24"
                         app:tint="@color/ijblue" />
                 </LinearLayout>
@@ -133,7 +127,6 @@
                     android:id="@+id/settings_format_card_notes"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:onClick="setFormatCardNotes"
                     android:text="@string/settings_format_card_notes"
                     android:textColor="@color/light_black"
                     android:textSize="16sp" />
@@ -164,7 +157,6 @@
                     android:id="@+id/settings_ui_background_images"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:onClick="setUIBackground"
                     android:text="@string/settings_ui_background_images"
                     android:textColor="@color/light_black"
                     android:textSize="16sp" />
@@ -173,7 +165,6 @@
                     android:id="@+id/settings_ui_increase_font_size"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:onClick="setUIFontSize"
                     android:text="@string/settings_ui_increase_font_size"
                     android:textColor="@color/light_black"
                     android:textSize="16sp" />
@@ -204,7 +195,6 @@
                     android:id="@+id/settings_media_in_gallery"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:onClick="setMediaInGallery"
                     android:text="@string/settings_media_in_gallery"
                     android:textColor="@color/light_black"
                     android:textSize="16sp" />

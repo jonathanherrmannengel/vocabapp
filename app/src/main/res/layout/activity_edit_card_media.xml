@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/root_edit_card_media"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
@@ -20,7 +19,6 @@
                 android:id="@+id/add_media_button"
                 style="@style/material_button"
                 android:layout_margin="12dp"
-                android:onClick="addMedia"
                 android:text="@string/edit_card_media_add"
                 android:textSize="16sp" />
 

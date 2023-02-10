@@ -12,61 +12,74 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
-import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.R
-import de.herrmann_engel.rbv.activities.ListCollections
 import de.herrmann_engel.rbv.activities.ListPacks
+import de.herrmann_engel.rbv.adapters.compare.ListCollectionCompare
+import de.herrmann_engel.rbv.databinding.RecViewCollectionOrPackBinding
 import de.herrmann_engel.rbv.db.DB_Collection
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.utils.StringTools
 
-class AdapterCollections(private val collection: List<DB_Collection>, private val c: Context) :
+class AdapterCollections(private val collection: MutableList<DB_Collection>) :
     RecyclerView.Adapter<AdapterCollections.ViewHolder>() {
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val layout: LinearLayout = view.findViewById(R.id.rec_collections_preview_layout)
-        val textView: TextView = view.findViewById(R.id.rec_collections_name)
-        val descView: TextView = view.findViewById(R.id.rec_collections_desc)
-        val previewView: TextView = view.findViewById(R.id.rec_collections_preview_text)
-        val numberText: TextView = view.findViewById(R.id.rec_collections_number_text)
-    }
+
+    class ViewHolder(val binding: RecViewCollectionOrPackBinding) :
+        RecyclerView.ViewHolder(binding.root)
 
     private val stringTools = StringTools()
 
+    fun updateContent(collectionListNew: List<DB_Collection>) {
+        val diffResult =
+            DiffUtil.calculateDiff(ListCollectionCompare(collection, collectionListNew))
+        collection.clear()
+        collection.addAll(collectionListNew)
+        diffResult.dispatchUpdatesTo(this)
+    }
+
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
-        val view =
-            LayoutInflater.from(viewGroup.context)
-                .inflate(R.layout.rec_view_collection_or_pack, viewGroup, false)
-        val settings = c.getSharedPreferences(Globals.SETTINGS_NAME, Context.MODE_PRIVATE)
+        val binding = RecViewCollectionOrPackBinding.inflate(
+            LayoutInflater.from(viewGroup.context),
+            viewGroup,
+            false
+        )
+        val settings =
+            viewGroup.context.getSharedPreferences(Globals.SETTINGS_NAME, Context.MODE_PRIVATE)
         if (settings.getBoolean("ui_font_size", false)) {
-            view.findViewById<TextView>(R.id.rec_collections_name)
-                .setTextSize(
-                    TypedValue.COMPLEX_UNIT_PX,
-                    c.resources.getDimension(R.dimen.rec_view_font_size_big)
-                )
-            view.findViewById<TextView>(R.id.rec_collections_desc)
-                .setTextSize(
-                    TypedValue.COMPLEX_UNIT_PX,
-                    c.resources.getDimension(R.dimen.rec_view_font_size_below_big)
-                )
+            binding.recCollectionsName.setTextSize(
+                TypedValue.COMPLEX_UNIT_PX,
+                viewGroup.context.resources.getDimension(R.dimen.rec_view_font_size_big)
+            )
+            binding.recCollectionsDesc.setTextSize(
+                TypedValue.COMPLEX_UNIT_PX,
+                viewGroup.context.resources.getDimension(R.dimen.rec_view_font_size_below_big)
+            )
         }
-        return ViewHolder(view)
+        return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-        val backgroundLayerList = viewHolder.layout.background as LayerDrawable
+        val context = viewHolder.binding.root.context
+        val backgroundLayerList =
+            viewHolder.binding.root.background as LayerDrawable
         val background =
             backgroundLayerList.findDrawableByLayerId(R.id.rec_view_collection_or_pack_background_main) as GradientDrawable
         val backgroundBehind =
             backgroundLayerList.findDrawableByLayerId(R.id.rec_view_collection_or_pack_background_behind) as GradientDrawable
-        if (position == 0 && collection.isEmpty()) {
-            viewHolder.layout.background = null
-            val welcomeText = SpannableString(c.resources.getString(R.string.welcome_collection))
-            val welcomeTextDrawableAdd = ContextCompat.getDrawable(c, R.drawable.outline_add_24)
-            welcomeTextDrawableAdd?.setTint(c.getColor(R.color.light_black))
+        viewHolder.binding.recCollectionsName.textAlignment = View.TEXT_ALIGNMENT_INHERIT
+        viewHolder.binding.recCollectionsPreviewText.visibility = View.VISIBLE
+        viewHolder.binding.recCollectionsNumberText.visibility = View.VISIBLE
+        if (position == 0 && collection.size == 1) {
+            val welcomeText =
+                SpannableString(context.resources.getString(R.string.welcome_collection))
+            val welcomeTextDrawableAdd = ContextCompat.getDrawable(
+                context,
+                R.drawable.outline_add_24
+            )
+            welcomeTextDrawableAdd?.setTint(context.getColor(R.color.light_black))
             welcomeTextDrawableAdd?.setBounds(
                 0,
                 0,
@@ -83,8 +96,15 @@ class AdapterCollections(private val collection: List<DB_Collection>, private va
                 Spannable.SPAN_INCLUSIVE_EXCLUSIVE
             )
             val welcomeTextDrawableImport =
-                ContextCompat.getDrawable(c, R.drawable.outline_file_download_24)
-            welcomeTextDrawableImport?.setTint(c.getColor(R.color.light_black))
+                ContextCompat.getDrawable(
+                    context,
+                    R.drawable.outline_file_download_24
+                )
+            welcomeTextDrawableImport?.setTint(
+                context.getColor(
+                    R.color.light_black
+                )
+            )
             welcomeTextDrawableImport?.setBounds(
                 0,
                 0,
@@ -100,75 +120,100 @@ class AdapterCollections(private val collection: List<DB_Collection>, private va
                 indexImport + 1,
                 Spannable.SPAN_INCLUSIVE_EXCLUSIVE
             )
-            viewHolder.textView.text = welcomeText
-            viewHolder.textView.textAlignment = View.TEXT_ALIGNMENT_CENTER
-            viewHolder.descView.visibility = View.GONE
-            viewHolder.previewView.visibility = View.GONE
-            viewHolder.numberText.visibility = View.GONE
+            viewHolder.binding.recCollectionsName.text = welcomeText
+            viewHolder.binding.recCollectionsName.textAlignment = View.TEXT_ALIGNMENT_CENTER
+            viewHolder.binding.recCollectionsDesc.visibility = View.GONE
+            viewHolder.binding.recCollectionsPreviewText.visibility = View.GONE
+            viewHolder.binding.recCollectionsNumberText.visibility = View.GONE
+            background.mutate()
+            background.setStroke(0, Color.rgb(0, 0, 0))
+            background.setColor(Color.argb(0, 0, 0, 0))
+            backgroundBehind.mutate()
+            backgroundBehind.setStroke(0, Color.rgb(0, 0, 0))
         } else if (position == 0) {
-            viewHolder.layout.setOnClickListener {
-                val intent = Intent(c.applicationContext, ListPacks::class.java)
+            viewHolder.binding.root.setOnClickListener {
+                val intent = Intent(
+                    context,
+                    ListPacks::class.java
+                )
                 intent.putExtra("collection", -1)
-                c.startActivity(intent)
-                (c as ListCollections).finish()
+                context.startActivity(intent)
             }
-            viewHolder.textView.text = c.resources.getString(R.string.all_packs)
-            viewHolder.descView.visibility = View.VISIBLE
-            viewHolder.descView.text = c.resources.getString(R.string.all_packs_desc)
-            viewHolder.previewView.text = "…"
+            viewHolder.binding.recCollectionsName.text =
+                context.resources.getString(R.string.all_packs)
+            viewHolder.binding.recCollectionsDesc.visibility = View.VISIBLE
+            viewHolder.binding.recCollectionsDesc.text =
+                viewHolder.binding.recCollectionsDesc.resources.getString(R.string.all_packs_desc)
+            viewHolder.binding.recCollectionsPreviewText.text = "…"
             val dbHelperGet =
-                DB_Helper_Get(c.applicationContext)
+                DB_Helper_Get(context)
             val size = dbHelperGet.countPacks()
-            viewHolder.numberText.text = size.toString()
-            viewHolder.textView.setTextColor(Color.rgb(0, 0, 0))
-            viewHolder.previewView.setTextColor(Color.rgb(0, 0, 0))
-            viewHolder.previewView.setBackgroundColor(Color.rgb(185, 185, 185))
+            viewHolder.binding.recCollectionsNumberText.text = size.toString()
+            viewHolder.binding.recCollectionsName.setTextColor(Color.rgb(0, 0, 0))
+            viewHolder.binding.recCollectionsPreviewText.setTextColor(Color.rgb(0, 0, 0))
+            viewHolder.binding.recCollectionsPreviewText.setBackgroundColor(
+                Color.rgb(
+                    185,
+                    185,
+                    185
+                )
+            )
             background.mutate()
             background.setStroke(2, Color.rgb(85, 85, 85))
             background.setColor(Color.argb(75, 185, 185, 185))
             backgroundBehind.mutate()
             backgroundBehind.setStroke(1, Color.rgb(185, 185, 185))
         } else {
-            val extra = collection[position - 1].uid
-            viewHolder.layout.setOnClickListener {
-                val intent = Intent(c.applicationContext, ListPacks::class.java)
+            val extra = collection[position].uid
+            viewHolder.binding.root.setOnClickListener {
+                val intent = Intent(
+                    context,
+                    ListPacks::class.java
+                )
                 intent.putExtra("collection", extra)
-                c.startActivity(intent)
-                (c as ListCollections).finish()
+                context.startActivity(intent)
             }
-            viewHolder.textView.text = stringTools.shorten(collection[position - 1].name)
-            if (collection[position - 1].desc.isEmpty()) {
-                viewHolder.descView.visibility = View.GONE
+            viewHolder.binding.recCollectionsName.text =
+                stringTools.shorten(collection[position].name)
+            if (collection[position].desc.isEmpty()) {
+                viewHolder.binding.recCollectionsDesc.visibility = View.GONE
             } else {
-                viewHolder.descView.visibility = View.VISIBLE
-                viewHolder.descView.text = stringTools
-                    .shorten(collection[position - 1].desc)
+                viewHolder.binding.recCollectionsDesc.visibility = View.VISIBLE
+                viewHolder.binding.recCollectionsDesc.text = stringTools
+                    .shorten(collection[position].desc)
             }
-            val emojiText = collection[position - 1].emoji
-            viewHolder.previewView.text =
+            val emojiText = collection[position].emoji
+            viewHolder.binding.recCollectionsPreviewText.text =
                 if (emojiText.isNullOrEmpty()) {
                     val pattern = Regex("^(\\P{M}\\p{M}*+).*")
-                    collection[position - 1].name.replace(pattern, "$1")
+                    collection[position].name.replace(pattern, "$1")
                 } else {
                     emojiText
                 }
             val dbHelperGet =
-                DB_Helper_Get(c.applicationContext)
-            val size = dbHelperGet.countPacksInCollection(collection[position - 1].uid)
-            viewHolder.numberText.text = size.toString()
-            val color = collection[position - 1].colors
-            val colors = c.resources.obtainTypedArray(R.array.pack_color_list)
-            val colorsBackground = c.resources.obtainTypedArray(R.array.pack_color_background_light)
+                DB_Helper_Get(context)
+            val size = dbHelperGet.countPacksInCollection(collection[position].uid)
+            viewHolder.binding.recCollectionsNumberText.text = size.toString()
+            val color = collection[position].colors
+            val colors =
+                context.resources.obtainTypedArray(R.array.pack_color_list)
+            val colorsBackground =
+                context.resources.obtainTypedArray(R.array.pack_color_background_light)
             val colorsBackgroundAlpha =
-                c.resources.obtainTypedArray(R.array.pack_color_background_light_alpha)
+                context.resources.obtainTypedArray(R.array.pack_color_background_light_alpha)
             if (color < colors.length() &&
                 color < colorsBackground.length() &&
                 color < colorsBackgroundAlpha.length() &&
                 color >= 0
             ) {
-                viewHolder.textView.setTextColor(colors.getColor(color, 0))
-                viewHolder.previewView.setTextColor(colors.getColor(color, 0))
-                viewHolder.previewView.setBackgroundColor(colorsBackground.getColor(color, 0))
+                viewHolder.binding.recCollectionsName.setTextColor(colors.getColor(color, 0))
+                viewHolder.binding.recCollectionsPreviewText.setTextColor(colors.getColor(color, 0))
+                viewHolder.binding.recCollectionsPreviewText.setBackgroundColor(
+                    colorsBackground.getColor(
+                        color,
+                        0
+                    )
+                )
                 background.mutate()
                 background.setStroke(2, colors.getColor(color, 0))
                 background.setColor(colorsBackgroundAlpha.getColor(color, 0))
@@ -182,6 +227,6 @@ class AdapterCollections(private val collection: List<DB_Collection>, private va
     }
 
     override fun getItemCount(): Int {
-        return collection.size + 1
+        return collection.size
     }
 }

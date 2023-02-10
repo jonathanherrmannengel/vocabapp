@@ -202,7 +202,7 @@ class AsyncExportWorker(
                 try {
                     val inputStream: InputStream = FileInputStream(file)
                     val outputStream: OutputStream? =
-                        context.applicationContext.contentResolver.openOutputStream(exportFileUri)
+                        context.contentResolver.openOutputStream(exportFileUri)
                     val buffer = ByteArray(1024)
                     var length: Int
                     while (inputStream.read(buffer).also { length = it } > 0) {

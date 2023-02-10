@@ -7,79 +7,84 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.R
+import de.herrmann_engel.rbv.databinding.DiaOssBinding
+import de.herrmann_engel.rbv.databinding.RecViewBinding
 import de.herrmann_engel.rbv.oss.OSSLicenses
+import de.herrmann_engel.rbv.utils.ContextTools
 
-class AdapterOSS(private val licenses: List<OSSLicenses>, private val c: Context) :
+class AdapterOSS(private val licenses: List<OSSLicenses>) :
     RecyclerView.Adapter<AdapterOSS.ViewHolder>() {
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val textView: TextView = view.findViewById(R.id.rec_name)
-    }
+    class ViewHolder(val binding: RecViewBinding) : RecyclerView.ViewHolder(binding.root)
+
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
-        val view =
-            LayoutInflater.from(viewGroup.context).inflate(R.layout.rec_view, viewGroup, false)
-        val settings = c.getSharedPreferences(Globals.SETTINGS_NAME, Context.MODE_PRIVATE)
+        val binding = RecViewBinding.inflate(
+            LayoutInflater.from(viewGroup.context),
+            viewGroup,
+            false
+        )
+        val settings =
+            viewGroup.context.getSharedPreferences(Globals.SETTINGS_NAME, Context.MODE_PRIVATE)
         if (settings.getBoolean("ui_font_size", false)) {
-            view.findViewById<TextView>(R.id.rec_name)
-                .setTextSize(
-                    TypedValue.COMPLEX_UNIT_PX,
-                    c.resources.getDimension(R.dimen.rec_view_font_size_big)
-                )
-            view.findViewById<TextView>(R.id.rec_desc)
-                .setTextSize(
-                    TypedValue.COMPLEX_UNIT_PX,
-                    c.resources.getDimension(R.dimen.rec_view_font_size_below_big)
-                )
+            binding.recName.setTextSize(
+                TypedValue.COMPLEX_UNIT_PX,
+                viewGroup.context.resources.getDimension(R.dimen.rec_view_font_size_big)
+            )
+            binding.recDesc.setTextSize(
+                TypedValue.COMPLEX_UNIT_PX,
+                viewGroup.context.resources.getDimension(R.dimen.rec_view_font_size_below_big)
+            )
         }
-        return ViewHolder(view)
+        return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-        viewHolder.textView.text = licenses[position].project.name
+        val context = viewHolder.binding.root.context
+        viewHolder.binding.recName.text = licenses[position].project.name
         val license = licenses[position]
-        viewHolder.textView.setOnClickListener {
-            val ossDialog = Dialog(c, R.style.dia_view)
-            ossDialog.setContentView(R.layout.dia_oss)
-            ossDialog.setTitle(license.project.name)
-            ossDialog.window!!.setLayout(
-                WindowManager.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.MATCH_PARENT
-            )
-            val ossDialogProjectDev = ossDialog.findViewById<TextView>(R.id.dia_oss_project_dev)
-            if (license.project.dev == "") {
-                ossDialogProjectDev.visibility = View.GONE
-            } else {
-                ossDialogProjectDev.text = license.project.dev
-            }
-            val ossDialogProjectUrl = ossDialog.findViewById<TextView>(R.id.dia_oss_project_url)
-            if (license.project.url == "") {
-                ossDialogProjectUrl.visibility = View.GONE
-            } else {
-                ossDialogProjectUrl.text = license.project.url
-            }
-            val ossDialogLicenseShort = ossDialog.findViewById<TextView>(R.id.dia_oss_license_short)
-            if (license.licenseLink == null) {
-                ossDialogLicenseShort.visibility = View.GONE
-            } else {
-                ossDialogLicenseShort.text = license.licenseLink
-            }
-            val ossDialogLicense = ossDialog.findViewById<TextView>(R.id.dia_oss_license)
-            try {
-                ossDialogLicense.text =
-                    license.licenseFilePath?.let { it1 ->
-                        c.assets.open(it1).bufferedReader().use { reader ->
-                            reader.readText()
+        viewHolder.binding.recName.setOnClickListener {
+            val activity = ContextTools().getActivity(context)
+            if (activity != null) {
+                val ossDialog = Dialog(context, R.style.dia_view)
+                val bindingOssDialog: DiaOssBinding =
+                    DiaOssBinding.inflate(activity.layoutInflater)
+                ossDialog.setContentView(bindingOssDialog.root)
+                ossDialog.setTitle(license.project.name)
+                ossDialog.window!!.setLayout(
+                    WindowManager.LayoutParams.MATCH_PARENT,
+                    WindowManager.LayoutParams.MATCH_PARENT
+                )
+                if (license.project.dev == "") {
+                    bindingOssDialog.diaOssProjectDev.visibility = View.GONE
+                } else {
+                    bindingOssDialog.diaOssProjectDev.text = license.project.dev
+                }
+                if (license.project.url == "") {
+                    bindingOssDialog.diaOssProjectUrl.visibility = View.GONE
+                } else {
+                    bindingOssDialog.diaOssProjectUrl.text = license.project.url
+                }
+                if (license.licenseLink == null) {
+                    bindingOssDialog.diaOssLicenseShort.visibility = View.GONE
+                } else {
+                    bindingOssDialog.diaOssLicenseShort.text = license.licenseLink
+                }
+                try {
+                    bindingOssDialog.diaOssLicense.text =
+                        license.licenseFilePath?.let { it1 ->
+                            context.assets.open(it1).bufferedReader().use { reader ->
+                                reader.readText()
+                            }
                         }
-                    }
-            } catch (e: Exception) {
-                Toast.makeText(c, R.string.error, Toast.LENGTH_LONG).show()
+                } catch (e: Exception) {
+                    Toast.makeText(context, R.string.error, Toast.LENGTH_LONG).show()
+                }
+                ossDialog.show()
             }
-            ossDialog.show()
         }
     }
 

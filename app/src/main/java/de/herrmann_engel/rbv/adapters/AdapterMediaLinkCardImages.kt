@@ -1,46 +1,49 @@
 package de.herrmann_engel.rbv.adapters
 
-import android.content.Context
 import android.graphics.Color
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.activities.FileTools
+import de.herrmann_engel.rbv.databinding.RecViewImageBinding
 import de.herrmann_engel.rbv.db.DB_Media_Link_Card
+import de.herrmann_engel.rbv.utils.ContextTools
 
 
 class AdapterMediaLinkCardImages(
-    private val media: ArrayList<DB_Media_Link_Card>,
-    private val c: Context
+    private val media: ArrayList<DB_Media_Link_Card>
 ) : RecyclerView.Adapter<AdapterMediaLinkCardImages.ViewHolder>() {
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val imageView: ImageView = view.findViewById(R.id.rec_img)
-    }
+    class ViewHolder(val binding: RecViewImageBinding) : RecyclerView.ViewHolder(binding.root)
+
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
-        val view =
-            LayoutInflater.from(viewGroup.context)
-                .inflate(R.layout.rec_view_image, viewGroup, false)
-        return ViewHolder(view)
+        val binding =
+            RecViewImageBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false)
+        return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-        viewHolder.imageView.setBackgroundColor(ContextCompat.getColor(c, R.color.warn_red))
-        val uri = (c as FileTools).getImageUri(media[position].file)
+        val context = viewHolder.binding.root.context
+        viewHolder.binding.recImg.setBackgroundColor(
+            ContextCompat.getColor(
+                context,
+                R.color.warn_red
+            )
+        )
+        val uri =
+            (ContextTools().getActivity(context) as FileTools).getImageUri(media[position].file)
         if (uri != null) {
-            Picasso.get().load(uri).fit().centerCrop().into(viewHolder.imageView)
-            viewHolder.imageView.setBackgroundColor(Color.TRANSPARENT)
+            Picasso.get().load(uri).fit().centerCrop().into(viewHolder.binding.recImg)
+            viewHolder.binding.recImg.setBackgroundColor(Color.TRANSPARENT)
         }
-        viewHolder.imageView.setOnClickListener {
+        viewHolder.binding.recImg.setOnClickListener {
             if (uri != null) {
-                c.showImageDialog(media[position].file)
-            } else if (!c.existsMediaFile(media[position].file)) {
-                c.showMissingDialog(media[position].card)
+                (ContextTools().getActivity(context) as FileTools).showImageDialog(media[position].file)
+            } else if (!(ContextTools().getActivity(context) as FileTools).existsMediaFile(media[position].file)) {
+                (ContextTools().getActivity(context) as FileTools).showMissingDialog(media[position].card)
             }
         }
     }

@@ -1,39 +1,32 @@
 package de.herrmann_engel.rbv.activities;
 
 import android.app.Dialog;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.material.textfield.TextInputLayout;
-
 import de.herrmann_engel.rbv.R;
+import de.herrmann_engel.rbv.databinding.ActivityNewCollectionOrPackBinding;
+import de.herrmann_engel.rbv.databinding.DiaConfirmBinding;
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Create;
 
 public class NewCollection extends AppCompatActivity {
 
-    TextView nameTextView;
-    TextView descTextView;
+    private ActivityNewCollectionOrPackBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_new_collection_or_pack);
+        binding = ActivityNewCollectionOrPackBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
-        nameTextView = findViewById(R.id.new_collection_or_pack_name);
-        TextInputLayout nameTextViewLayout = findViewById(R.id.new_collection_or_pack_name_layout);
-        nameTextViewLayout.setHint(String.format(getString(R.string.collection_or_pack_name_format),
+        binding.newCollectionOrPackNameLayout.setHint(String.format(getString(R.string.collection_or_pack_name_format),
                 getString(R.string.collection_name), getString(R.string.collection_or_pack_name)));
-        descTextView = findViewById(R.id.new_collection_or_pack_desc);
-        TextInputLayout descTextViewLayout = findViewById(R.id.new_collection_or_pack_desc_layout);
-        descTextViewLayout.setHint(String.format(getString(R.string.optional), getString(R.string.collection_or_pack_desc)));
+        binding.newCollectionOrPackDescLayout.setHint(String.format(getString(R.string.optional), getString(R.string.collection_or_pack_desc)));
     }
 
     @Override
@@ -43,41 +36,33 @@ public class NewCollection extends AppCompatActivity {
     }
 
     public void insert(MenuItem menuItem) {
-        String name = nameTextView.getText().toString();
-        String desc = descTextView.getText().toString();
+        String name = binding.newCollectionOrPackName.getText().toString();
+        String desc = binding.newCollectionOrPackDesc.getText().toString();
         try {
-            DB_Helper_Create dbHelperCreate = new DB_Helper_Create(getApplicationContext());
+            DB_Helper_Create dbHelperCreate = new DB_Helper_Create(this);
             dbHelperCreate.createCollection(name, desc);
-            startListCollections();
+            this.finish();
         } catch (Exception e) {
-            Toast.makeText(getApplicationContext(), R.string.error_values, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.error_values, Toast.LENGTH_SHORT).show();
         }
-    }
-
-    private void startListCollections() {
-        Intent intent = new Intent(getApplicationContext(), ListCollections.class);
-        startActivity(intent);
-        this.finish();
     }
 
     @Override
     public void onBackPressed() {
-        String name = nameTextView.getText().toString();
-        String desc = descTextView.getText().toString();
+        String name = binding.newCollectionOrPackName.getText().toString();
+        String desc = binding.newCollectionOrPackDesc.getText().toString();
         if (name.isEmpty() && desc.isEmpty()) {
-            startListCollections();
+            super.onBackPressed();
         } else {
-            Dialog confirmCancel = new Dialog(this, R.style.dia_view);
-            confirmCancel.setContentView(R.layout.dia_confirm);
-            confirmCancel.setTitle(getResources().getString(R.string.discard_changes));
-            confirmCancel.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
+            Dialog confirmCancelDialog = new Dialog(this, R.style.dia_view);
+            DiaConfirmBinding bindingConfirmCancelDialog = DiaConfirmBinding.inflate(getLayoutInflater());
+            confirmCancelDialog.setContentView(bindingConfirmCancelDialog.getRoot());
+            confirmCancelDialog.setTitle(getResources().getString(R.string.discard_changes));
+            confirmCancelDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
                     WindowManager.LayoutParams.MATCH_PARENT);
-
-            Button confirmCancelY = confirmCancel.findViewById(R.id.dia_confirm_yes);
-            Button confirmCancelN = confirmCancel.findViewById(R.id.dia_confirm_no);
-            confirmCancelY.setOnClickListener(v -> startListCollections());
-            confirmCancelN.setOnClickListener(v -> confirmCancel.dismiss());
-            confirmCancel.show();
+            bindingConfirmCancelDialog.diaConfirmYes.setOnClickListener(v -> super.onBackPressed());
+            bindingConfirmCancelDialog.diaConfirmNo.setOnClickListener(v -> confirmCancelDialog.dismiss());
+            confirmCancelDialog.show();
         }
     }
 }

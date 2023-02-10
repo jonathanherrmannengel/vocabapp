@@ -10,9 +10,6 @@ import android.os.Bundle;
 import android.provider.DocumentsContract;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -21,7 +18,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.documentfile.provider.DocumentFile;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.squareup.picasso.Picasso;
 
@@ -31,6 +27,9 @@ import de.herrmann_engel.rbv.Globals;
 import de.herrmann_engel.rbv.R;
 import de.herrmann_engel.rbv.adapters.AdapterMediaLinkCardAll;
 import de.herrmann_engel.rbv.adapters.AdapterMediaLinkCardImages;
+import de.herrmann_engel.rbv.databinding.DiaConfirmBinding;
+import de.herrmann_engel.rbv.databinding.DiaImageBinding;
+import de.herrmann_engel.rbv.databinding.DiaRecBinding;
 import de.herrmann_engel.rbv.db.DB_Media;
 import de.herrmann_engel.rbv.db.DB_Media_Link_Card;
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get;
@@ -89,52 +88,48 @@ public abstract class FileTools extends AppCompatActivity {
     }
 
     protected void showSelectDialog(String text) {
-        Dialog selectFolderInfo = new Dialog(this, R.style.dia_view);
-        selectFolderInfo.setContentView(R.layout.dia_confirm);
-        selectFolderInfo.setTitle(getResources().getString(R.string.select_folder_title));
-        selectFolderInfo.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
+        Dialog selectFolderInfoDialog = new Dialog(this, R.style.dia_view);
+        DiaConfirmBinding bindingSelectFolderInfoDialog = DiaConfirmBinding.inflate(getLayoutInflater());
+        selectFolderInfoDialog.setContentView(bindingSelectFolderInfoDialog.getRoot());
+        selectFolderInfoDialog.setTitle(getResources().getString(R.string.select_folder_title));
+        selectFolderInfoDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.MATCH_PARENT);
-        Button yesButton = selectFolderInfo.findViewById(R.id.dia_confirm_yes);
-        Button noButton = selectFolderInfo.findViewById(R.id.dia_confirm_no);
-        TextView confirmDeleteDesc = selectFolderInfo.findViewById(R.id.dia_confirm_desc);
-        confirmDeleteDesc.setText(text);
-        confirmDeleteDesc.setVisibility(View.VISIBLE);
-        yesButton.setOnClickListener(v -> {
+        bindingSelectFolderInfoDialog.diaConfirmDesc.setText(text);
+        bindingSelectFolderInfoDialog.diaConfirmDesc.setVisibility(View.VISIBLE);
+        bindingSelectFolderInfoDialog.diaConfirmYes.setOnClickListener(v -> {
             startSelectMediaFolder();
-            selectFolderInfo.dismiss();
+            selectFolderInfoDialog.dismiss();
         });
-        noButton.setOnClickListener(v -> selectFolderInfo.dismiss());
-        selectFolderInfo.show();
+        bindingSelectFolderInfoDialog.diaConfirmNo.setOnClickListener(v -> selectFolderInfoDialog.dismiss());
+        selectFolderInfoDialog.show();
     }
 
     public void showMissingDialog(int card) {
-        Dialog selectFolderInfo = new Dialog(this, R.style.dia_view);
-        selectFolderInfo.setContentView(R.layout.dia_confirm);
-        selectFolderInfo.setTitle(getResources().getString(R.string.media_missing_dialog));
-        selectFolderInfo.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
+        Dialog selectFolderInfoDialog = new Dialog(this, R.style.dia_view);
+        DiaConfirmBinding bindingSelectFolderInfoDialog = DiaConfirmBinding.inflate(getLayoutInflater());
+        selectFolderInfoDialog.setContentView(bindingSelectFolderInfoDialog.getRoot());
+        selectFolderInfoDialog.setTitle(getResources().getString(R.string.media_missing_dialog));
+        selectFolderInfoDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.MATCH_PARENT);
-        Button yesButton = selectFolderInfo.findViewById(R.id.dia_confirm_yes);
-        Button noButton = selectFolderInfo.findViewById(R.id.dia_confirm_no);
-        TextView confirmDeleteDesc = selectFolderInfo.findViewById(R.id.dia_confirm_desc);
-        confirmDeleteDesc.setText(getResources().getString(R.string.media_missing_dialog_text));
-        confirmDeleteDesc.setVisibility(View.VISIBLE);
-        yesButton.setOnClickListener(v -> {
-            selectFolderInfo.dismiss();
+        bindingSelectFolderInfoDialog.diaConfirmDesc.setText(getResources().getString(R.string.media_missing_dialog_text));
+        bindingSelectFolderInfoDialog.diaConfirmDesc.setVisibility(View.VISIBLE);
+        bindingSelectFolderInfoDialog.diaConfirmYes.setOnClickListener(v -> {
+            selectFolderInfoDialog.dismiss();
             notifyMissingAction(card);
         });
-        noButton.setOnClickListener(v -> selectFolderInfo.dismiss());
-        selectFolderInfo.show();
+        bindingSelectFolderInfoDialog.diaConfirmNo.setOnClickListener(v -> selectFolderInfoDialog.dismiss());
+        selectFolderInfoDialog.show();
     }
 
     public void showImageDialog(int id) {
-        Dialog info = new Dialog(this, R.style.dia_view);
-        info.setContentView(R.layout.dia_image);
-        info.setTitle(getResources().getString(R.string.image_media));
-        info.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
+        Dialog imageDialog = new Dialog(this, R.style.dia_view);
+        DiaImageBinding bindingImageDialog = DiaImageBinding.inflate(getLayoutInflater());
+        imageDialog.setContentView(bindingImageDialog.getRoot());
+        imageDialog.setTitle(getResources().getString(R.string.image_media));
+        imageDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.MATCH_PARENT);
-        ImageView imageView = info.findViewById(R.id.dia_image_view);
-        Picasso.get().load(getImageUri(id)).fit().centerInside().into(imageView);
-        info.show();
+        Picasso.get().load(getImageUri(id)).fit().centerInside().into(bindingImageDialog.diaImageView);
+        imageDialog.show();
     }
 
     public void showImageListDialog(ArrayList<DB_Media_Link_Card> imageList) {
@@ -143,16 +138,16 @@ public abstract class FileTools extends AppCompatActivity {
         } else if (imageList.size() > Globals.IMAGE_PREVIEW_MAX) {
             showMediaListDialog(imageList, true, getResources().getString(R.string.query_media_image_title));
         } else {
-            Dialog info = new Dialog(this, R.style.dia_view);
-            info.setContentView(R.layout.dia_rec);
-            info.setTitle(getResources().getString(R.string.query_media_image_title));
-            info.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
+            Dialog imageListDialog = new Dialog(this, R.style.dia_view);
+            DiaRecBinding bindingImageListDialog = DiaRecBinding.inflate(getLayoutInflater());
+            imageListDialog.setContentView(bindingImageListDialog.getRoot());
+            imageListDialog.setTitle(getResources().getString(R.string.query_media_image_title));
+            imageListDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
                     WindowManager.LayoutParams.MATCH_PARENT);
-            info.show();
-            AdapterMediaLinkCardImages adapter = new AdapterMediaLinkCardImages(imageList, this);
-            RecyclerView recyclerView = info.findViewById(R.id.dia_rec);
-            recyclerView.setAdapter(adapter);
-            recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
+            imageListDialog.show();
+            AdapterMediaLinkCardImages adapter = new AdapterMediaLinkCardImages(imageList);
+            bindingImageListDialog.diaRec.setAdapter(adapter);
+            bindingImageListDialog.diaRec.setLayoutManager(new GridLayoutManager(this, 3));
         }
     }
 
@@ -161,34 +156,32 @@ public abstract class FileTools extends AppCompatActivity {
     }
 
     private void showMediaListDialog(ArrayList<DB_Media_Link_Card> mediaList, boolean onlyImages, String title) {
-        Dialog info = new Dialog(this, R.style.dia_view);
-        info.setContentView(R.layout.dia_rec);
-        info.setTitle(title);
-        info.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
+        Dialog mediaListDialog = new Dialog(this, R.style.dia_view);
+        DiaRecBinding bindingMediaListDialog = DiaRecBinding.inflate(getLayoutInflater());
+        mediaListDialog.setContentView(bindingMediaListDialog.getRoot());
+        mediaListDialog.setTitle(title);
+        mediaListDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.MATCH_PARENT);
-        info.show();
-        AdapterMediaLinkCardAll adapter = new AdapterMediaLinkCardAll(mediaList, onlyImages, this);
-        RecyclerView recyclerView = info.findViewById(R.id.dia_rec);
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mediaListDialog.show();
+        AdapterMediaLinkCardAll adapter = new AdapterMediaLinkCardAll(mediaList, onlyImages);
+        bindingMediaListDialog.diaRec.setAdapter(adapter);
+        bindingMediaListDialog.diaRec.setLayoutManager(new LinearLayoutManager(this));
     }
 
     public Dialog showDeleteDialog(String fileName, String text) {
         Dialog deleteFileDialog = new Dialog(this, R.style.dia_view);
-        deleteFileDialog.setContentView(R.layout.dia_confirm);
+        DiaConfirmBinding bindingDeleteFileDialog = DiaConfirmBinding.inflate(getLayoutInflater());
+        deleteFileDialog.setContentView(bindingDeleteFileDialog.getRoot());
         deleteFileDialog.setTitle(getResources().getString(R.string.delete_file_title));
         deleteFileDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.MATCH_PARENT);
-        Button yesButton = deleteFileDialog.findViewById(R.id.dia_confirm_yes);
-        Button noButton = deleteFileDialog.findViewById(R.id.dia_confirm_no);
-        TextView confirmDeleteDesc = deleteFileDialog.findViewById(R.id.dia_confirm_desc);
-        confirmDeleteDesc.setText(text);
-        confirmDeleteDesc.setVisibility(View.VISIBLE);
-        yesButton.setOnClickListener(v -> {
+        bindingDeleteFileDialog.diaConfirmDesc.setText(text);
+        bindingDeleteFileDialog.diaConfirmDesc.setVisibility(View.VISIBLE);
+        bindingDeleteFileDialog.diaConfirmYes.setOnClickListener(v -> {
             deleteMediaFile(fileName);
             deleteFileDialog.dismiss();
         });
-        noButton.setOnClickListener(v -> deleteFileDialog.dismiss());
+        bindingDeleteFileDialog.diaConfirmNo.setOnClickListener(v -> deleteFileDialog.dismiss());
         deleteFileDialog.show();
         return deleteFileDialog;
     }
@@ -212,7 +205,7 @@ public abstract class FileTools extends AppCompatActivity {
             DocumentFile noMediaFile = outputDirectory.findFile(".nomedia");
             if (mediaInGallery && noMediaFile != null && noMediaFile.exists() && noMediaFile.isFile()) {
                 DocumentsContract.deleteDocument(
-                        this.getApplicationContext().getContentResolver(),
+                        getContentResolver(),
                         noMediaFile.getUri()
                 );
             } else if (!mediaInGallery && (noMediaFile == null || !noMediaFile.exists())) {
@@ -275,7 +268,7 @@ public abstract class FileTools extends AppCompatActivity {
             openFile(file);
         } catch (Exception e) {
             e.printStackTrace();
-            Toast.makeText(getApplicationContext(), R.string.error, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -285,7 +278,7 @@ public abstract class FileTools extends AppCompatActivity {
             openFile(file);
         } catch (Exception e) {
             e.printStackTrace();
-            Toast.makeText(getApplicationContext(), R.string.error, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -304,7 +297,7 @@ public abstract class FileTools extends AppCompatActivity {
             shareFile(file);
         } catch (Exception e) {
             e.printStackTrace();
-            Toast.makeText(getApplicationContext(), R.string.error, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -314,7 +307,7 @@ public abstract class FileTools extends AppCompatActivity {
             shareFile(file);
         } catch (Exception e) {
             e.printStackTrace();
-            Toast.makeText(getApplicationContext(), R.string.error, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -323,15 +316,15 @@ public abstract class FileTools extends AppCompatActivity {
             DocumentFile file = getFile(name);
             if (file != null && file.isFile()) {
                 DocumentsContract.deleteDocument(
-                        this.getApplicationContext().getContentResolver(),
+                        getContentResolver(),
                         file.getUri()
                 );
             } else {
-                Toast.makeText(getApplicationContext(), R.string.error, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
             }
         } catch (Exception e) {
             e.printStackTrace();
-            Toast.makeText(getApplicationContext(), R.string.error, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
         }
     }
 

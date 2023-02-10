@@ -12,8 +12,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -28,12 +26,13 @@ import java.util.Objects;
 
 import de.herrmann_engel.rbv.Globals;
 import de.herrmann_engel.rbv.R;
+import de.herrmann_engel.rbv.databinding.ActivityViewCollectionOrPackBinding;
+import de.herrmann_engel.rbv.databinding.DiaConfirmBinding;
 import de.herrmann_engel.rbv.db.DB_Collection;
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Delete;
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get;
 
 public class ViewCollection extends AppCompatActivity {
-
     private DB_Helper_Get dbHelperGet;
     private DB_Collection collection;
     private int collectionNo;
@@ -41,7 +40,8 @@ public class ViewCollection extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_view_collection_or_pack);
+        ActivityViewCollectionOrPackBinding binding = ActivityViewCollectionOrPackBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         SharedPreferences settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE);
         collectionNo = getIntent().getExtras().getInt("collection");
@@ -50,29 +50,26 @@ public class ViewCollection extends AppCompatActivity {
         try {
             collection = dbHelperGet.getSingleCollection(collectionNo);
             setTitle(collection.name);
-            TextView nameTextView = findViewById(R.id.collection_or_pack_name);
-            nameTextView.setText(collection.name);
-            TextView descTextView = findViewById(R.id.collection_or_pack_desc);
+            binding.collectionOrPackName.setText(collection.name);
             if (collection.desc.equals("")) {
-                descTextView.setVisibility(View.GONE);
+                binding.collectionOrPackDesc.setVisibility(View.GONE);
             } else {
-                descTextView.setText(collection.desc);
+                binding.collectionOrPackDesc.setText(collection.desc);
             }
             if (increaseFontSize) {
-                nameTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                binding.collectionOrPackName.setTextSize(TypedValue.COMPLEX_UNIT_PX,
                         getResources().getDimension(R.dimen.details_name_size_big));
-                descTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                binding.collectionOrPackDesc.setTextSize(TypedValue.COMPLEX_UNIT_PX,
                         getResources().getDimension(R.dimen.details_desc_size_big));
             }
-            TextView dateTextView = findViewById(R.id.collection_or_pack_date);
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
                 Instant instant = Instant.ofEpochSecond(collection.date);
                 DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)
                         .withLocale(Locale.ROOT)
                         .withZone(ZoneId.systemDefault());
-                dateTextView.setText(dateTimeFormatter.format(instant));
+                binding.collectionOrPackDate.setText(dateTimeFormatter.format(instant));
             } else {
-                dateTextView.setText(new Date(collection.date * 1000).toString());
+                binding.collectionOrPackDate.setText(new Date(collection.date * 1000).toString());
             }
             TypedArray colors = getResources().obtainTypedArray(R.array.pack_color_main);
             TypedArray colorsBackground = getResources().obtainTypedArray(R.array.pack_color_background);
@@ -82,12 +79,12 @@ public class ViewCollection extends AppCompatActivity {
                 Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(new ColorDrawable(color));
                 Window window = this.getWindow();
                 window.setStatusBarColor(color);
-                findViewById(R.id.root_view_collection_or_pack).setBackgroundColor(colorBackground);
+                binding.getRoot().setBackgroundColor(colorBackground);
             }
             colors.recycle();
             colorsBackground.recycle();
         } catch (Exception e) {
-            Toast.makeText(getApplicationContext(), R.string.error, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
         }
 
     }
@@ -99,40 +96,38 @@ public class ViewCollection extends AppCompatActivity {
     }
 
     public void editCollection(MenuItem menuItem) {
-        Intent intent = new Intent(getApplicationContext(), EditCollection.class);
+        Intent intent = new Intent(this, EditCollection.class);
         intent.putExtra("collection", collectionNo);
         startActivity(intent);
         this.finish();
     }
 
     public void deleteCollection(boolean forceDelete) {
-        Dialog confirmDelete = new Dialog(this, R.style.dia_view);
-        confirmDelete.setContentView(R.layout.dia_confirm);
-        confirmDelete.setTitle(getResources().getString(R.string.delete));
-        confirmDelete.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
+        Dialog confirmDeleteDialog = new Dialog(this, R.style.dia_view);
+        DiaConfirmBinding bindingConfirmDeleteDialog = DiaConfirmBinding.inflate(getLayoutInflater());
+        confirmDeleteDialog.setContentView(bindingConfirmDeleteDialog.getRoot());
+        confirmDeleteDialog.setTitle(getResources().getString(R.string.delete));
+        confirmDeleteDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.MATCH_PARENT);
 
-        Button confirmDeleteY = confirmDelete.findViewById(R.id.dia_confirm_yes);
-        Button confirmDeleteN = confirmDelete.findViewById(R.id.dia_confirm_no);
         if (dbHelperGet.getAllPacksByCollection(collection.uid).size() > 0 && !forceDelete) {
-            TextView confirmDeleteDesc = confirmDelete.findViewById(R.id.dia_confirm_desc);
-            confirmDeleteDesc.setText(R.string.delete_collection_with_packs);
-            confirmDeleteDesc.setVisibility(View.VISIBLE);
+            bindingConfirmDeleteDialog.diaConfirmDesc.setText(R.string.delete_collection_with_packs);
+            bindingConfirmDeleteDialog.diaConfirmDesc.setVisibility(View.VISIBLE);
         }
-        confirmDeleteY.setOnClickListener(v -> {
+        bindingConfirmDeleteDialog.diaConfirmYes.setOnClickListener(v -> {
             if (dbHelperGet.getAllPacksByCollection(collection.uid).size() == 0 || forceDelete) {
-                DB_Helper_Delete dbHelperDelete = new DB_Helper_Delete(getApplicationContext());
+                DB_Helper_Delete dbHelperDelete = new DB_Helper_Delete(this);
                 dbHelperDelete.deleteCollection(collection, forceDelete);
-                Intent intent = new Intent(getApplicationContext(), ListCollections.class);
+                Intent intent = new Intent(this, ListCollections.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
-                this.finish();
             } else {
                 deleteCollection(true);
-                confirmDelete.dismiss();
+                confirmDeleteDialog.dismiss();
             }
         });
-        confirmDeleteN.setOnClickListener(v -> confirmDelete.dismiss());
-        confirmDelete.show();
+        bindingConfirmDeleteDialog.diaConfirmNo.setOnClickListener(v -> confirmDeleteDialog.dismiss());
+        confirmDeleteDialog.show();
     }
 
     public void deleteCollection(MenuItem menuItem) {
@@ -141,7 +136,7 @@ public class ViewCollection extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(getApplicationContext(), ListPacks.class);
+        Intent intent = new Intent(this, ListPacks.class);
         intent.putExtra("collection", collectionNo);
         startActivity(intent);
         this.finish();

@@ -10,7 +10,6 @@
         style="@style/material_button"
         android:layout_centerHorizontal="true"
         android:layout_margin="12dp"
-        android:onClick="manageFiles"
         android:text="@string/manage_files_without_media"
         android:textSize="13sp" />
 

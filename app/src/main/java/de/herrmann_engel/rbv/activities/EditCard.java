@@ -10,8 +10,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,16 +18,15 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 import de.herrmann_engel.rbv.R;
+import de.herrmann_engel.rbv.databinding.ActivityEditCardBinding;
+import de.herrmann_engel.rbv.databinding.DiaConfirmBinding;
 import de.herrmann_engel.rbv.db.DB_Card;
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get;
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Update;
 
 public class EditCard extends AppCompatActivity {
-
-    TextView frontTextView;
-    TextView backTextView;
-    TextView notesTextView;
-    DB_Card card;
+    private ActivityEditCardBinding binding;
+    private DB_Card card;
     private int collectionNo;
     private int packNo;
     private ArrayList<Integer> packNos;
@@ -46,10 +43,8 @@ public class EditCard extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_edit_card);
-        frontTextView = findViewById(R.id.edit_card_front);
-        backTextView = findViewById(R.id.edit_card_back);
-        notesTextView = findViewById(R.id.edit_card_notes);
+        binding = ActivityEditCardBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
         collectionNo = getIntent().getExtras().getInt("collection");
         packNo = getIntent().getExtras().getInt("pack");
         packNos = getIntent().getExtras().getIntegerArrayList("packs");
@@ -65,18 +60,18 @@ public class EditCard extends AppCompatActivity {
         DB_Helper_Get dbHelperGet = new DB_Helper_Get(this);
         try {
             card = dbHelperGet.getSingleCard(cardNo);
-            frontTextView.setText(card.front);
+            binding.editCardFront.setText(card.front);
             if (card.front.contains(System.getProperty("line.separator"))) {
-                frontTextView.setInputType(InputType.TYPE_TEXT_FLAG_MULTI_LINE);
-                frontTextView.setSingleLine(false);
+                binding.editCardFront.setInputType(InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+                binding.editCardFront.setSingleLine(false);
             }
-            backTextView.setText(card.back);
+            binding.editCardBack.setText(card.back);
             if (card.back.contains(System.getProperty("line.separator"))) {
-                backTextView.setInputType(InputType.TYPE_TEXT_FLAG_MULTI_LINE);
-                backTextView.setSingleLine(false);
+                binding.editCardBack.setInputType(InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+                binding.editCardBack.setSingleLine(false);
             }
-            notesTextView.setText(card.notes);
-            notesTextView.setHint(String.format(getString(R.string.optional), getString(R.string.card_notes)));
+            binding.editCardNotes.setText(card.notes);
+            binding.editCardNotes.setHint(String.format(getString(R.string.optional), getString(R.string.card_notes)));
 
             TypedArray colors = getResources().obtainTypedArray(R.array.pack_color_main);
             TypedArray colorsBackground = getResources().obtainTypedArray(R.array.pack_color_background);
@@ -87,12 +82,12 @@ public class EditCard extends AppCompatActivity {
                 Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(new ColorDrawable(color));
                 Window window = this.getWindow();
                 window.setStatusBarColor(color);
-                findViewById(R.id.root_edit_card).setBackgroundColor(colorBackground);
+                binding.getRoot().setBackgroundColor(colorBackground);
             }
             colors.recycle();
             colorsBackground.recycle();
         } catch (Exception e) {
-            Toast.makeText(getApplicationContext(), R.string.error, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -103,19 +98,19 @@ public class EditCard extends AppCompatActivity {
     }
 
     public void saveChanges(MenuItem menuItem) {
-        card.front = frontTextView.getText().toString();
-        card.back = backTextView.getText().toString();
-        card.notes = notesTextView.getText().toString();
+        card.front = binding.editCardFront.getText().toString();
+        card.back = binding.editCardBack.getText().toString();
+        card.notes = binding.editCardNotes.getText().toString();
         DB_Helper_Update dbHelperUpdate = new DB_Helper_Update(this);
         if (dbHelperUpdate.updateCard(card)) {
             startViewCard();
         } else {
-            Toast.makeText(getApplicationContext(), R.string.error_values, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.error_values, Toast.LENGTH_SHORT).show();
         }
     }
 
     private void startViewCard() {
-        Intent intent = new Intent(getApplicationContext(), ViewCard.class);
+        Intent intent = new Intent(this, ViewCard.class);
         intent.putExtra("collection", collectionNo);
         intent.putExtra("pack", packNo);
         intent.putIntegerArrayListExtra("packs", packNos);
@@ -134,22 +129,21 @@ public class EditCard extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        String front = frontTextView.getText().toString();
-        String back = backTextView.getText().toString();
-        String notes = notesTextView.getText().toString();
+        String front = binding.editCardFront.getText().toString();
+        String back = binding.editCardBack.getText().toString();
+        String notes = binding.editCardNotes.getText().toString();
         if (card == null || (card.front.equals(front) && card.back.equals(back) && card.notes.equals(notes))) {
             startViewCard();
         } else {
-            Dialog confirmCancel = new Dialog(this, R.style.dia_view);
-            confirmCancel.setContentView(R.layout.dia_confirm);
-            confirmCancel.setTitle(getResources().getString(R.string.discard_changes));
-            confirmCancel.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
+            Dialog confirmCancelDialog = new Dialog(this, R.style.dia_view);
+            DiaConfirmBinding bindingConfirmCancelDialog = DiaConfirmBinding.inflate(getLayoutInflater());
+            confirmCancelDialog.setContentView(bindingConfirmCancelDialog.getRoot());
+            confirmCancelDialog.setTitle(getResources().getString(R.string.discard_changes));
+            confirmCancelDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
                     WindowManager.LayoutParams.MATCH_PARENT);
-            Button confirmCancelY = confirmCancel.findViewById(R.id.dia_confirm_yes);
-            Button confirmCancelN = confirmCancel.findViewById(R.id.dia_confirm_no);
-            confirmCancelY.setOnClickListener(v -> startViewCard());
-            confirmCancelN.setOnClickListener(v -> confirmCancel.dismiss());
-            confirmCancel.show();
+            bindingConfirmCancelDialog.diaConfirmYes.setOnClickListener(v -> startViewCard());
+            bindingConfirmCancelDialog.diaConfirmNo.setOnClickListener(v -> confirmCancelDialog.dismiss());
+            confirmCancelDialog.show();
         }
     }
 }

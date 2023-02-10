@@ -23,17 +23,11 @@ import android.view.WindowManager;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;
 import androidx.core.text.HtmlCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import org.commonmark.node.Node;
 import org.commonmark.parser.Parser;
@@ -52,6 +46,10 @@ import java.util.Objects;
 import de.herrmann_engel.rbv.Globals;
 import de.herrmann_engel.rbv.R;
 import de.herrmann_engel.rbv.adapters.AdapterPacksMoveCard;
+import de.herrmann_engel.rbv.databinding.ActivityViewCardBinding;
+import de.herrmann_engel.rbv.databinding.DiaConfirmBinding;
+import de.herrmann_engel.rbv.databinding.DiaPrintBinding;
+import de.herrmann_engel.rbv.databinding.DiaRecBinding;
 import de.herrmann_engel.rbv.db.DB_Card;
 import de.herrmann_engel.rbv.db.DB_Media;
 import de.herrmann_engel.rbv.db.DB_Media_Link_Card;
@@ -67,11 +65,7 @@ import me.saket.bettermovementmethod.BetterLinkMovementMethod;
 
 public class ViewCard extends FileTools {
 
-    private TextView knownText;
-    private TextView frontText;
-    private TextView backText;
-    private TextView notesText;
-    private ImageButton knownMinus;
+    private ActivityViewCardBinding binding;
     private DB_Helper_Get dbHelperGet;
     private DB_Helper_Update dbHelperUpdate;
     private DB_Card card;
@@ -95,7 +89,8 @@ public class ViewCard extends FileTools {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_view_card);
+        binding = ActivityViewCardBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
         SharedPreferences settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE);
         collectionNo = getIntent().getExtras().getInt("collection");
         packNo = getIntent().getExtras().getInt("pack");
@@ -113,10 +108,6 @@ public class ViewCard extends FileTools {
         dbHelperUpdate = new DB_Helper_Update(this);
         boolean formatCards = settings.getBoolean("format_cards", false);
         boolean increaseFontSize = settings.getBoolean("ui_font_size", false);
-        frontText = findViewById(R.id.card_front);
-        backText = findViewById(R.id.card_back);
-        knownText = findViewById(R.id.card_known);
-        notesText = findViewById(R.id.card_notes);
         try {
             card = dbHelperGet.getSingleCard(cardNo);
             String cardFront;
@@ -124,12 +115,12 @@ public class ViewCard extends FileTools {
                 StringTools formatString = new StringTools();
                 SpannableString cardFrontSpannable = formatString.format(card.front);
                 cardFront = cardFrontSpannable.toString();
-                frontText.setText(cardFrontSpannable);
-                backText.setText(formatString.format(card.back));
+                binding.cardFront.setText(cardFrontSpannable);
+                binding.cardBack.setText(formatString.format(card.back));
             } else {
                 cardFront = card.front;
-                frontText.setText(cardFront);
-                backText.setText(card.back);
+                binding.cardFront.setText(cardFront);
+                binding.cardBack.setText(card.back);
             }
             formatCardNotes = settings.getBoolean("format_card_notes", false);
             if (card.notes != null && !card.notes.isEmpty()) {
@@ -139,40 +130,44 @@ public class ViewCard extends FileTools {
                                     Linkify.WEB_URLS
                             ))
                             .build();
-                    notesText.setMovementMethod(BetterLinkMovementMethod.getInstance());
-                    notesText.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_START);
-                    markwon.setMarkdown(notesText, card.notes);
+                    binding.cardNotes.setMovementMethod(BetterLinkMovementMethod.getInstance());
+                    binding.cardNotes.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_START);
+                    markwon.setMarkdown(binding.cardNotes, card.notes);
                 } else {
-                    notesText.setAutoLinkMask(Linkify.WEB_URLS);
-                    notesText.setText(card.notes);
+                    binding.cardNotes.setAutoLinkMask(Linkify.WEB_URLS);
+                    binding.cardNotes.setText(card.notes);
                 }
             } else {
-                notesText.setVisibility(View.GONE);
+                binding.cardNotes.setVisibility(View.GONE);
             }
             if (increaseFontSize) {
-                frontText.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.card_front_size_big));
-                backText.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.card_back_size_big));
-                notesText.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.card_notes_size_big));
+                binding.cardFront.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.card_front_size_big));
+                binding.cardBack.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.card_back_size_big));
+                binding.cardNotes.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.card_notes_size_big));
             }
-            TextView dateTextView = findViewById(R.id.card_date);
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
                 Instant instant = Instant.ofEpochSecond(card.date);
                 DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)
                         .withLocale(Locale.ROOT)
                         .withZone(ZoneId.systemDefault());
-                dateTextView.setText(dateTimeFormatter.format(instant));
+                binding.cardDate.setText(dateTimeFormatter.format(instant));
             } else {
-                dateTextView.setText(new Date(card.date * 1000).toString());
+                binding.cardDate.setText(new Date(card.date * 1000).toString());
             }
             known = card.known;
-            knownMinus = findViewById(R.id.card_minus);
             updateCardKnown();
             updateColors();
             setTitle(cardFront);
         } catch (Exception e) {
             e.printStackTrace();
-            Toast.makeText(getApplicationContext(), R.string.error, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
         }
+        setMediaButtons();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         setMediaButtons();
     }
 
@@ -183,7 +178,7 @@ public class ViewCard extends FileTools {
 
     @Override
     protected void notifyMissingAction(int id) {
-        Intent intent = new Intent(this.getApplicationContext(), EditCardMedia.class);
+        Intent intent = new Intent(this, EditCardMedia.class);
         intent.putExtra("collection", collectionNo);
         intent.putExtra("pack", packNo);
         intent.putIntegerArrayListExtra("packs", packNos);
@@ -223,21 +218,21 @@ public class ViewCard extends FileTools {
                 Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(new ColorDrawable(color));
                 Window window = this.getWindow();
                 window.setStatusBarColor(color);
-                findViewById(R.id.root_view_card).setBackgroundColor(colorBackground);
-                findViewById(R.id.card_known_progress).setBackgroundColor(colorBackgroundLight);
+                binding.getRoot().setBackgroundColor(colorBackground);
+                binding.cardKnownProgress.setBackgroundColor(colorBackgroundLight);
             }
             colors.recycle();
             colorsBackground.recycle();
             colorsBackgroundLight.recycle();
         } catch (Exception e) {
-            Toast.makeText(getApplicationContext(), R.string.error, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
         }
     }
 
     private void updateCardKnown() {
-        knownText.setText(Integer.toString(known));
-        knownMinus.setColorFilter(Color.argb(255, 255, 255, 255));
-        knownMinus.setColorFilter(ContextCompat.getColor(this, known > 0 ? R.color.dark_red : R.color.dark_grey),
+        binding.cardKnown.setText(Integer.toString(known));
+        binding.cardMinus.setColorFilter(Color.argb(255, 255, 255, 255));
+        binding.cardMinus.setColorFilter(ContextCompat.getColor(this, known > 0 ? R.color.dark_red : R.color.dark_grey),
                 android.graphics.PorterDuff.Mode.MULTIPLY);
     }
 
@@ -256,7 +251,7 @@ public class ViewCard extends FileTools {
     }
 
     public void editCard(MenuItem menuItem) {
-        Intent intent = new Intent(getApplicationContext(), EditCard.class);
+        Intent intent = new Intent(this, EditCard.class);
         intent.putExtra("collection", collectionNo);
         intent.putExtra("pack", packNo);
         intent.putIntegerArrayListExtra("packs", packNos);
@@ -274,40 +269,27 @@ public class ViewCard extends FileTools {
     }
 
     public void editCardMedia(MenuItem menuItem) {
-        Intent intent = new Intent(getApplicationContext(), EditCardMedia.class);
-        intent.putExtra("collection", collectionNo);
-        intent.putExtra("pack", packNo);
-        intent.putIntegerArrayListExtra("packs", packNos);
+        Intent intent = new Intent(this, EditCardMedia.class);
         intent.putExtra("card", cardNo);
-        intent.putExtra("reverse", reverse);
-        intent.putExtra("sort", sort);
-        intent.putExtra("searchQuery", searchQuery);
-        intent.putExtra("cardPosition", cardPosition);
-        intent.putExtra("progressGreater", progressGreater);
-        intent.putExtra("progressNumber", progressNumber);
-        intent.putIntegerArrayListExtra("savedList", savedList);
-        intent.putExtra("savedListSeed", savedListSeed);
         startActivity(intent);
-        this.finish();
     }
 
     public void deleteCard(MenuItem menuItem) {
-        Dialog confirmDelete = new Dialog(this, R.style.dia_view);
-        confirmDelete.setContentView(R.layout.dia_confirm);
-        confirmDelete.setTitle(getResources().getString(R.string.delete));
-        confirmDelete.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
+        Dialog confirmDeleteDialog = new Dialog(this, R.style.dia_view);
+        DiaConfirmBinding bindingConfirmDeleteDialog = DiaConfirmBinding.inflate(getLayoutInflater());
+        confirmDeleteDialog.setContentView(bindingConfirmDeleteDialog.getRoot());
+        confirmDeleteDialog.setTitle(getResources().getString(R.string.delete));
+        confirmDeleteDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.MATCH_PARENT);
 
-        Button confirmDeleteY = confirmDelete.findViewById(R.id.dia_confirm_yes);
-        Button confirmDeleteN = confirmDelete.findViewById(R.id.dia_confirm_no);
-        confirmDeleteY.setOnClickListener(v -> {
+        bindingConfirmDeleteDialog.diaConfirmYes.setOnClickListener(v -> {
             DB_Helper_Delete dbHelperDelete = new DB_Helper_Delete(this);
             dbHelperDelete.deleteCard(card);
             if (savedList != null) {
                 savedList.remove(Integer.valueOf(card.uid));
             }
-            confirmDelete.dismiss();
-            Intent intent = new Intent(getApplicationContext(), ListCards.class);
+            confirmDeleteDialog.dismiss();
+            Intent intent = new Intent(this, ListCards.class);
             intent.putExtra("collection", collectionNo);
             intent.putExtra("pack", packNo);
             intent.putIntegerArrayListExtra("packs", packNos);
@@ -321,37 +303,30 @@ public class ViewCard extends FileTools {
             startActivity(intent);
             this.finish();
         });
-        confirmDeleteN.setOnClickListener(v -> confirmDelete.dismiss());
-        confirmDelete.show();
+        bindingConfirmDeleteDialog.diaConfirmNo.setOnClickListener(v -> confirmDeleteDialog.dismiss());
+        confirmDeleteDialog.show();
     }
 
     public void printCard(MenuItem menuItem) {
         Dialog printDialog = new Dialog(this, R.style.dia_view);
-        printDialog.setContentView(R.layout.dia_print);
+        DiaPrintBinding bindingPrintDialog = DiaPrintBinding.inflate(getLayoutInflater());
+        printDialog.setContentView(bindingPrintDialog.getRoot());
         printDialog.setTitle(getResources().getString(R.string.print));
         printDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.MATCH_PARENT);
-        CheckBox progressCheckBox = printDialog.findViewById(R.id.dia_print_include_progress);
-        LinearLayout notesLayout = printDialog.findViewById(R.id.dia_print_include_notes_layout);
-        CheckBox notesCheckBox = printDialog.findViewById(R.id.dia_print_include_notes);
-        LinearLayout imagesLayout = printDialog.findViewById(R.id.dia_print_include_images_layout);
-        CheckBox imagesCheckBox = printDialog.findViewById(R.id.dia_print_include_images);
-        LinearLayout mediaLayout = printDialog.findViewById(R.id.dia_print_include_media_layout);
-        CheckBox mediaCheckBox = printDialog.findViewById(R.id.dia_print_include_media);
-        Button startPrintButton = printDialog.findViewById(R.id.dia_print_start);
         if (card.notes == null || card.notes.isEmpty()) {
-            notesLayout.setVisibility(View.GONE);
-            notesCheckBox.setChecked(false);
+            bindingPrintDialog.diaPrintIncludeNotesLayout.setVisibility(View.GONE);
+            bindingPrintDialog.diaPrintIncludeNotes.setChecked(false);
         }
         if (imageList.isEmpty() || imageList.size() > Globals.IMAGE_PREVIEW_MAX) {
-            imagesLayout.setVisibility(View.GONE);
-            imagesCheckBox.setChecked(false);
+            bindingPrintDialog.diaPrintIncludeImagesLayout.setVisibility(View.GONE);
+            bindingPrintDialog.diaPrintIncludeImages.setChecked(false);
         }
         if (mediaList.isEmpty()) {
-            mediaLayout.setVisibility(View.GONE);
-            mediaCheckBox.setChecked(false);
+            bindingPrintDialog.diaPrintIncludeMediaLayout.setVisibility(View.GONE);
+            bindingPrintDialog.diaPrintIncludeMedia.setChecked(false);
         }
-        startPrintButton.setOnClickListener(v -> {
+        bindingPrintDialog.diaPrintStart.setOnClickListener(v -> {
             Toast.makeText(this, R.string.wait, Toast.LENGTH_LONG).show();
             printDialog.dismiss();
             PrintManager printManager = (PrintManager) getSystemService(Context.PRINT_SERVICE);
@@ -373,20 +348,20 @@ public class ViewCard extends FileTools {
             });
             StringTools stringTools = new StringTools();
             String htmlDocument = "<!doctype html><html><head><meta charset=\"utf-8\"><title>print</title><style>#main-title{margin-bottom: 30px;}.title{text-align:center;color: #000007;}.title:not(.first-title)::before{margin-bottom:20px;margin-top:30px;display:block;content:' ';width:100%;height:1px;outline:2px solid #555;outline-offset:-1px;}.image-div,.media-div{text-align:center}.image{padding:10px;max-width:30%;max-height:10%;object-fit:contain;}</style></head>";
-            String title = stringTools.shorten(frontText.getText().toString(), 30);
-            if (progressCheckBox.isChecked()) {
-                title += " (" + knownText.getText() + ")";
+            String title = stringTools.shorten(binding.cardFront.getText().toString(), 30);
+            if (bindingPrintDialog.diaPrintIncludeProgress.isChecked()) {
+                title += " (" + binding.cardKnown.getText() + ")";
             }
             htmlDocument += "<h1 id=\"main-title\" class=\"title first-title\" dir=\"auto\">" + title + "</h1>";
             htmlDocument += "<article>";
             htmlDocument += "<h2 class=\"title first-title\" dir=\"auto\">" + getString(R.string.card_front) + "</h2><div>";
-            htmlDocument += HtmlCompat.toHtml((SpannableString) frontText.getText(), HtmlCompat.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE);
+            htmlDocument += HtmlCompat.toHtml((SpannableString) binding.cardFront.getText(), HtmlCompat.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE);
             htmlDocument += "</div></article>";
             htmlDocument += "<article>";
             htmlDocument += "<h2 class=\"title\" dir=\"auto\">" + getString(R.string.card_back) + "</h2><div>";
-            htmlDocument += HtmlCompat.toHtml((SpannableString) backText.getText(), HtmlCompat.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE);
+            htmlDocument += HtmlCompat.toHtml((SpannableString) binding.cardBack.getText(), HtmlCompat.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE);
             htmlDocument += "</div></article>";
-            if (card.notes != null && !card.notes.isEmpty() && notesCheckBox.isChecked()) {
+            if (card.notes != null && !card.notes.isEmpty() && bindingPrintDialog.diaPrintIncludeNotes.isChecked()) {
                 htmlDocument += "<article>";
                 htmlDocument += "<h2 class=\"title\" dir=\"auto\">" + getString(R.string.card_notes) + "</h2><div dir=\"auto\">";
                 if (formatCardNotes) {
@@ -395,11 +370,11 @@ public class ViewCard extends FileTools {
                     HtmlRenderer renderer = HtmlRenderer.builder().build();
                     htmlDocument += renderer.render(document);
                 } else {
-                    htmlDocument += HtmlCompat.toHtml((SpannableString) notesText.getText(), HtmlCompat.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE);
+                    htmlDocument += HtmlCompat.toHtml((SpannableString) binding.cardNotes.getText(), HtmlCompat.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE);
                 }
                 htmlDocument += "</div></article>";
             }
-            if (!imageList.isEmpty() && imagesCheckBox.isChecked()) {
+            if (!imageList.isEmpty() && bindingPrintDialog.diaPrintIncludeImages.isChecked()) {
                 htmlDocument += "<article>";
                 htmlDocument += "<h2 class=\"title\" dir=\"auto\">" + getString(R.string.image_media) + "</h2><div>";
                 for (DB_Media_Link_Card i : imageList) {
@@ -413,7 +388,7 @@ public class ViewCard extends FileTools {
                 }
                 htmlDocument += "</div></article>";
             }
-            if (!mediaList.isEmpty() && mediaCheckBox.isChecked()) {
+            if (!mediaList.isEmpty() && bindingPrintDialog.diaPrintIncludeMedia.isChecked()) {
                 htmlDocument += "<article>";
                 htmlDocument += "<h2 class=\"title\" dir=\"auto\">" + getString(R.string.all_media) + "</h2><div>";
                 for (DB_Media_Link_Card i : mediaList) {
@@ -432,7 +407,8 @@ public class ViewCard extends FileTools {
 
     public void moveCard(MenuItem menuItem) {
         Dialog moveDialog = new Dialog(this, R.style.dia_view);
-        moveDialog.setContentView(R.layout.dia_rec);
+        DiaRecBinding bindingMoveDialog = DiaRecBinding.inflate(getLayoutInflater());
+        moveDialog.setContentView(bindingMoveDialog.getRoot());
         moveDialog.setTitle(getResources().getString(R.string.move_card));
         moveDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.MATCH_PARENT);
@@ -442,10 +418,9 @@ public class ViewCard extends FileTools {
         } else {
             packs = dbHelperGet.getAllPacksByCollection(collectionNo);
         }
-        RecyclerView recyclerView = moveDialog.findViewById(R.id.dia_rec);
-        AdapterPacksMoveCard adapter = new AdapterPacksMoveCard(packs, collectionNo, this, card, moveDialog);
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        AdapterPacksMoveCard adapter = new AdapterPacksMoveCard(packs, collectionNo, card, moveDialog);
+        bindingMoveDialog.diaRec.setAdapter(adapter);
+        bindingMoveDialog.diaRec.setLayoutManager(new LinearLayoutManager(this));
         moveDialog.show();
     }
 
@@ -457,32 +432,30 @@ public class ViewCard extends FileTools {
             packNo = card.pack;
             updateColors();
         } catch (Exception e) {
-            Toast.makeText(getApplicationContext(), R.string.error, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
         }
     }
 
     private void setMediaButtons() {
         imageList = (ArrayList<DB_Media_Link_Card>) dbHelperGet.getImageMediaLinksByCard(cardNo);
-        Button showImages = findViewById(R.id.view_card_images);
         if (imageList.isEmpty()) {
-            showImages.setVisibility(View.GONE);
+            binding.viewCardImages.setVisibility(View.GONE);
         } else {
-            showImages.setVisibility(View.VISIBLE);
+            binding.viewCardImages.setVisibility(View.VISIBLE);
         }
-        showImages.setOnClickListener(v -> showImageListDialog(imageList));
+        binding.viewCardImages.setOnClickListener(v -> showImageListDialog(imageList));
         mediaList = (ArrayList<DB_Media_Link_Card>) dbHelperGet.getAllMediaLinksByCard(cardNo);
-        Button showAllMedia = findViewById(R.id.view_card_media);
         if (mediaList.isEmpty()) {
-            showAllMedia.setVisibility(View.GONE);
+            binding.viewCardMedia.setVisibility(View.GONE);
         } else {
-            showAllMedia.setVisibility(View.VISIBLE);
+            binding.viewCardMedia.setVisibility(View.VISIBLE);
         }
-        showAllMedia.setOnClickListener(v -> showMediaListDialog(mediaList));
+        binding.viewCardMedia.setOnClickListener(v -> showMediaListDialog(mediaList));
     }
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(getApplicationContext(), ListCards.class);
+        Intent intent = new Intent(this, ListCards.class);
         intent.putExtra("collection", collectionNo);
         intent.putExtra("pack", packNo);
         intent.putIntegerArrayListExtra("packs", packNos);

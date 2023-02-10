@@ -1,25 +1,26 @@
 package de.herrmann_engel.rbv.activities;
 
-import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.documentfile.provider.DocumentFile;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.Objects;
 
-import de.herrmann_engel.rbv.R;
 import de.herrmann_engel.rbv.adapters.AdapterFilesManage;
+import de.herrmann_engel.rbv.databinding.ActivityManageFilesBinding;
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get;
 
 public class ManageFiles extends FileTools {
 
+    private ActivityManageFilesBinding binding;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_manage_files);
+        binding = ActivityManageFilesBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
     }
 
     @Override
@@ -47,16 +48,8 @@ public class ManageFiles extends FileTools {
                 filesWithoutMedia.add(file);
             }
         }
-        AdapterFilesManage adapter = new AdapterFilesManage(filesWithoutMedia, this);
-        RecyclerView recyclerView = findViewById(R.id.rec_files_manage);
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-    }
-
-    @Override
-    public void onBackPressed() {
-        Intent intent = new Intent(getApplicationContext(), ManageMedia.class);
-        startActivity(intent);
-        this.finish();
+        AdapterFilesManage adapter = new AdapterFilesManage(filesWithoutMedia);
+        binding.recFilesManage.setAdapter(adapter);
+        binding.recFilesManage.setLayoutManager(new LinearLayoutManager(this));
     }
 }

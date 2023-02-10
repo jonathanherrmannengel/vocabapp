@@ -5,78 +5,78 @@ import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.TextView
 import androidx.documentfile.provider.DocumentFile
 import androidx.recyclerview.widget.RecyclerView
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.activities.FileTools
+import de.herrmann_engel.rbv.databinding.RecViewFilesBinding
 import de.herrmann_engel.rbv.db.DB_Media_Link_Card
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Delete
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
+import de.herrmann_engel.rbv.utils.ContextTools
 
 class AdapterMediaLinkCard(
     private val media: ArrayList<DB_Media_Link_Card>,
     private val cardNo: Int,
-    private val folder: String?,
-    private val c: Context
+    private val folder: String?
 ) : RecyclerView.Adapter<AdapterMediaLinkCard.ViewHolder>() {
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val fileNameTextView: TextView = view.findViewById(R.id.rec_files_name)
-        val openButton: Button = view.findViewById(R.id.rec_files_open)
-        val shareButton: Button = view.findViewById(R.id.rec_files_share)
-        val deleteButton: Button = view.findViewById(R.id.rec_files_delete)
-        val missingTextView: TextView = view.findViewById(R.id.rec_files_missing)
-    }
+    class ViewHolder(val binding: RecViewFilesBinding) : RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
-        val view =
-            LayoutInflater.from(viewGroup.context)
-                .inflate(R.layout.rec_view_files, viewGroup, false)
-        return ViewHolder(view)
+        val binding = RecViewFilesBinding.inflate(
+            LayoutInflater.from(viewGroup.context),
+            viewGroup,
+            false
+        )
+        return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-        viewHolder.shareButton.visibility = View.GONE
-        viewHolder.openButton.visibility = View.GONE
-        viewHolder.deleteButton.visibility = View.GONE
-        viewHolder.missingTextView.visibility = View.GONE
+        val context = viewHolder.binding.root.context
+        viewHolder.binding.recFilesShare.visibility = View.GONE
+        viewHolder.binding.recFilesOpen.visibility = View.GONE
+        viewHolder.binding.recFilesDelete.visibility = View.GONE
+        viewHolder.binding.recFilesMissing.visibility = View.GONE
         if (media.isEmpty()) {
-            viewHolder.fileNameTextView.text = c.getString(R.string.no_media)
+            viewHolder.binding.recFilesName.text = context.getString(R.string.no_media)
         } else {
-            viewHolder.deleteButton.visibility = View.VISIBLE
-            val dbHelperGet = DB_Helper_Get(c)
+            viewHolder.binding.recFilesDelete.visibility = View.VISIBLE
+            val dbHelperGet = DB_Helper_Get(context)
             val currentMedia = dbHelperGet.getSingleMedia(media[position].file)
             if (currentMedia != null) {
                 val fileName = currentMedia.file
-                viewHolder.fileNameTextView.text = fileName
-                val outputDirectory = DocumentFile.fromTreeUri(c, Uri.parse(folder))
+                viewHolder.binding.recFilesName.text = fileName
+                val outputDirectory = DocumentFile.fromTreeUri(context, Uri.parse(folder))
                 if (outputDirectory?.findFile(fileName) != null) {
-                    viewHolder.shareButton.visibility = View.VISIBLE
-                    viewHolder.shareButton.setOnClickListener {
-                        (c as FileTools).shareFile(media[position].file)
+                    viewHolder.binding.recFilesShare.visibility = View.VISIBLE
+                    viewHolder.binding.recFilesShare.setOnClickListener {
+                        (ContextTools().getActivity(context) as FileTools).shareFile(media[position].file)
                     }
-                    viewHolder.openButton.visibility = View.VISIBLE
-                    viewHolder.openButton.setOnClickListener {
-                        (c as FileTools).openFile(media[position].file)
+                    viewHolder.binding.recFilesOpen.visibility = View.VISIBLE
+                    viewHolder.binding.recFilesOpen.setOnClickListener {
+                        (ContextTools().getActivity(context) as FileTools).openFile(media[position].file)
                     }
-                    viewHolder.deleteButton.setOnClickListener {
-                        if (deleteItem(position)) {
-                            (c as FileTools).showDeleteDialog(fileName)
+                    viewHolder.binding.recFilesDelete.setOnClickListener {
+                        if (deleteItem(position, context)) {
+                            (ContextTools().getActivity(context) as FileTools).showDeleteDialog(
+                                fileName
+                            )
                         }
                     }
                 } else {
-                    viewHolder.missingTextView.text = c.resources.getString(R.string.media_missing)
-                    viewHolder.missingTextView.visibility = View.VISIBLE
-                    viewHolder.deleteButton.setOnClickListener {
-                        deleteItem(position)
+                    viewHolder.binding.recFilesMissing.text =
+                        context.resources.getString(R.string.media_missing)
+                    viewHolder.binding.recFilesMissing.visibility = View.VISIBLE
+                    viewHolder.binding.recFilesDelete.setOnClickListener {
+                        deleteItem(position, context)
                     }
                 }
             } else {
-                viewHolder.missingTextView.text = c.resources.getString(R.string.media_missing_db)
-                viewHolder.missingTextView.visibility = View.VISIBLE
-                viewHolder.deleteButton.setOnClickListener {
-                    deleteItem(position)
+                viewHolder.binding.recFilesMissing.text =
+                    context.resources.getString(R.string.media_missing_db)
+                viewHolder.binding.recFilesMissing.visibility = View.VISIBLE
+                viewHolder.binding.recFilesDelete.setOnClickListener {
+                    deleteItem(position, context)
                 }
             }
         }
@@ -86,10 +86,10 @@ class AdapterMediaLinkCard(
         return 1.coerceAtLeast(media.size)
     }
 
-    private fun deleteItem(position: Int): Boolean {
+    private fun deleteItem(position: Int, context: Context): Boolean {
         val fileId = media[position].file
-        val dbHelperGet = DB_Helper_Get(c)
-        val dbHelperDelete = DB_Helper_Delete(c)
+        val dbHelperGet = DB_Helper_Get(context)
+        val dbHelperDelete = DB_Helper_Delete(context)
         dbHelperDelete.deleteMediaLink(fileId, cardNo)
         media.remove(media[position])
         notifyItemRemoved(position)

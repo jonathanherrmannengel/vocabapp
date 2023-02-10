@@ -12,13 +12,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import java.time.Instant;
 import java.time.ZoneId;
@@ -33,13 +30,15 @@ import java.util.Objects;
 import de.herrmann_engel.rbv.Globals;
 import de.herrmann_engel.rbv.R;
 import de.herrmann_engel.rbv.adapters.AdapterCollectionsMovePack;
+import de.herrmann_engel.rbv.databinding.ActivityViewCollectionOrPackBinding;
+import de.herrmann_engel.rbv.databinding.DiaConfirmBinding;
+import de.herrmann_engel.rbv.databinding.DiaRecBinding;
 import de.herrmann_engel.rbv.db.DB_Collection;
 import de.herrmann_engel.rbv.db.DB_Pack;
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Delete;
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get;
 
 public class ViewPack extends AppCompatActivity {
-
     private DB_Helper_Get dbHelperGet;
     private DB_Pack pack;
     private int packNo;
@@ -54,7 +53,8 @@ public class ViewPack extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_view_collection_or_pack);
+        ActivityViewCollectionOrPackBinding binding = ActivityViewCollectionOrPackBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         SharedPreferences settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE);
         collectionNo = getIntent().getExtras().getInt("collection");
@@ -70,29 +70,26 @@ public class ViewPack extends AppCompatActivity {
         try {
             pack = dbHelperGet.getSinglePack(packNo);
             setTitle(pack.name);
-            TextView nameTextView = findViewById(R.id.collection_or_pack_name);
-            nameTextView.setText(pack.name);
-            TextView descTextView = findViewById(R.id.collection_or_pack_desc);
+            binding.collectionOrPackName.setText(pack.name);
             if (pack.desc.equals("")) {
-                descTextView.setVisibility(View.GONE);
+                binding.collectionOrPackDesc.setVisibility(View.GONE);
             } else {
-                descTextView.setText(pack.desc);
+                binding.collectionOrPackDesc.setText(pack.desc);
             }
             if (increaseFontSize) {
-                nameTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                binding.collectionOrPackName.setTextSize(TypedValue.COMPLEX_UNIT_PX,
                         getResources().getDimension(R.dimen.details_name_size_big));
-                descTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                binding.collectionOrPackDesc.setTextSize(TypedValue.COMPLEX_UNIT_PX,
                         getResources().getDimension(R.dimen.details_desc_size_big));
             }
-            TextView dateTextView = findViewById(R.id.collection_or_pack_date);
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
                 Instant instant = Instant.ofEpochSecond(pack.date);
                 DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)
                         .withLocale(Locale.ROOT)
                         .withZone(ZoneId.systemDefault());
-                dateTextView.setText(dateTimeFormatter.format(instant));
+                binding.collectionOrPackDate.setText(dateTimeFormatter.format(instant));
             } else {
-                dateTextView.setText(new Date(pack.date * 1000).toString());
+                binding.collectionOrPackDate.setText(new Date(pack.date * 1000).toString());
             }
             TypedArray colors = getResources().obtainTypedArray(R.array.pack_color_main);
             TypedArray colorsBackground = getResources().obtainTypedArray(R.array.pack_color_background);
@@ -102,12 +99,12 @@ public class ViewPack extends AppCompatActivity {
                 Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(new ColorDrawable(color));
                 Window window = this.getWindow();
                 window.setStatusBarColor(color);
-                findViewById(R.id.root_view_collection_or_pack).setBackgroundColor(colorBackground);
+                binding.getRoot().setBackgroundColor(colorBackground);
             }
             colors.recycle();
             colorsBackground.recycle();
         } catch (Exception e) {
-            Toast.makeText(getApplicationContext(), R.string.error, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -121,7 +118,7 @@ public class ViewPack extends AppCompatActivity {
     }
 
     public void editPack(MenuItem menuItem) {
-        Intent intent = new Intent(getApplicationContext(), EditPack.class);
+        Intent intent = new Intent(this, EditPack.class);
         intent.putExtra("collection", collectionNo);
         intent.putExtra("pack", packNo);
         intent.putExtra("reverse", reverse);
@@ -135,35 +132,32 @@ public class ViewPack extends AppCompatActivity {
     }
 
     public void deletePack(boolean forceDelete) {
-        Dialog confirmDelete = new Dialog(this, R.style.dia_view);
-        confirmDelete.setContentView(R.layout.dia_confirm);
-        confirmDelete.setTitle(getResources().getString(R.string.delete));
-        confirmDelete.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
+        Dialog confirmDeleteDialog = new Dialog(this, R.style.dia_view);
+        DiaConfirmBinding bindingConfirmDeleteDialog = DiaConfirmBinding.inflate(getLayoutInflater());
+        confirmDeleteDialog.setContentView(bindingConfirmDeleteDialog.getRoot());
+        confirmDeleteDialog.setTitle(getResources().getString(R.string.delete));
+        confirmDeleteDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.MATCH_PARENT);
 
-        Button confirmDeleteY = confirmDelete.findViewById(R.id.dia_confirm_yes);
-        Button confirmDeleteN = confirmDelete.findViewById(R.id.dia_confirm_no);
-
         if (dbHelperGet.countCardsInPack(pack.uid) > 0 && !forceDelete) {
-            TextView confirmDeleteDesc = confirmDelete.findViewById(R.id.dia_confirm_desc);
-            confirmDeleteDesc.setText(R.string.delete_pack_with_cards);
-            confirmDeleteDesc.setVisibility(View.VISIBLE);
+            bindingConfirmDeleteDialog.diaConfirmDesc.setText(R.string.delete_pack_with_cards);
+            bindingConfirmDeleteDialog.diaConfirmDesc.setVisibility(View.VISIBLE);
         }
-        confirmDeleteY.setOnClickListener(v -> {
+        bindingConfirmDeleteDialog.diaConfirmYes.setOnClickListener(v -> {
             if (dbHelperGet.countCardsInPack(pack.uid) == 0 || forceDelete) {
-                DB_Helper_Delete dbHelperDelete = new DB_Helper_Delete(getApplicationContext());
+                DB_Helper_Delete dbHelperDelete = new DB_Helper_Delete(this);
                 dbHelperDelete.deletePack(pack, forceDelete);
-                Intent intent = new Intent(getApplicationContext(), ListPacks.class);
+                Intent intent = new Intent(this, ListPacks.class);
                 intent.putExtra("collection", collectionNo);
                 startActivity(intent);
                 this.finish();
             } else {
                 deletePack(true);
-                confirmDelete.dismiss();
+                confirmDeleteDialog.dismiss();
             }
         });
-        confirmDeleteN.setOnClickListener(v -> confirmDelete.dismiss());
-        confirmDelete.show();
+        bindingConfirmDeleteDialog.diaConfirmNo.setOnClickListener(v -> confirmDeleteDialog.dismiss());
+        confirmDeleteDialog.show();
     }
 
     public void deletePack(MenuItem menuItem) {
@@ -172,16 +166,16 @@ public class ViewPack extends AppCompatActivity {
 
     public void movePack(MenuItem menuItem) {
         Dialog moveDialog = new Dialog(this, R.style.dia_view);
-        moveDialog.setContentView(R.layout.dia_rec);
+        DiaRecBinding bindingMoveDialog = DiaRecBinding.inflate(getLayoutInflater());
+        moveDialog.setContentView(bindingMoveDialog.getRoot());
         moveDialog.setTitle(getResources().getString(R.string.move_pack));
         moveDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.MATCH_PARENT);
 
         List<DB_Collection> collections = dbHelperGet.getAllCollections();
-        RecyclerView recyclerView = moveDialog.findViewById(R.id.dia_rec);
-        AdapterCollectionsMovePack adapter = new AdapterCollectionsMovePack(collections, pack, this, moveDialog);
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        AdapterCollectionsMovePack adapter = new AdapterCollectionsMovePack(collections, pack, moveDialog);
+        bindingMoveDialog.diaRec.setAdapter(adapter);
+        bindingMoveDialog.diaRec.setLayoutManager(new LinearLayoutManager(this));
 
         moveDialog.show();
     }
@@ -191,13 +185,13 @@ public class ViewPack extends AppCompatActivity {
             pack = dbHelperGet.getSinglePack(packNo);
             collectionNo = pack.collection;
         } catch (Exception e) {
-            Toast.makeText(getApplicationContext(), R.string.error, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
         }
     }
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(getApplicationContext(), ListCards.class);
+        Intent intent = new Intent(this, ListCards.class);
         intent.putExtra("collection", collectionNo);
         intent.putExtra("pack", packNo);
         intent.putExtra("reverse", reverse);

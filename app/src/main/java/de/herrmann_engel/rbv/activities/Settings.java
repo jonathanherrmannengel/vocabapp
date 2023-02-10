@@ -1,62 +1,92 @@
 package de.herrmann_engel.rbv.activities;
 
 import android.app.Dialog;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.View;
 import android.view.WindowManager;
 import android.widget.CheckBox;
-import android.widget.RadioButton;
-import android.widget.TextView;
 
 import de.herrmann_engel.rbv.Globals;
 import de.herrmann_engel.rbv.R;
+import de.herrmann_engel.rbv.databinding.ActivitySettingsBinding;
+import de.herrmann_engel.rbv.databinding.DiaInfoBinding;
 
 public class Settings extends FileTools {
 
-    SharedPreferences settings;
-    CheckBox formatCardsButton;
-    CheckBox formatCardNotesButton;
-    CheckBox uiBgImagesButton;
-    CheckBox uiFontSizeButton;
-    CheckBox listNoUpdateButton;
-    CheckBox mediaInGalleryButton;
+    SharedPreferences.Editor settingsEdit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_settings);
-        settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE);
+        ActivitySettingsBinding binding = ActivitySettingsBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+        SharedPreferences settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE);
+        settingsEdit = settings.edit();
+
         int sort = settings.getInt("default_sort", Globals.SORT_DEFAULT);
         if (sort == Globals.SORT_ALPHABETICAL) {
-            RadioButton selectedSort = findViewById(R.id.settings_sort_alphabetical);
-            selectedSort.setChecked(true);
+            binding.settingsSortAlphabetical.setChecked(true);
         } else if (sort == Globals.SORT_RANDOM) {
-            RadioButton selectedSort = findViewById(R.id.settings_sort_random);
-            selectedSort.setChecked(true);
+            binding.settingsSortRandom.setChecked(true);
         } else {
-            RadioButton selectedSort = findViewById(R.id.settings_sort_normal);
-            selectedSort.setChecked(true);
+            binding.settingsSortNormal.setChecked(true);
         }
+        binding.settingsSortAlphabetical.setOnClickListener(v -> setSort(Globals.SORT_ALPHABETICAL));
+        binding.settingsSortRandom.setOnClickListener(v -> setSort(Globals.SORT_RANDOM));
+        binding.settingsSortNormal.setOnClickListener(v -> setSort(Globals.SORT_DEFAULT));
+
         boolean formatCards = settings.getBoolean("format_cards", false);
+        binding.settingsFormatCards.setChecked(formatCards);
+        binding.settingsFormatCards.setOnClickListener(v -> {
+            settingsEdit.putBoolean("format_cards", ((CheckBox) v).isChecked());
+            settingsEdit.apply();
+        });
+        binding.settingsFormatCardsInfo.setOnClickListener(v -> {
+            Dialog infoDialog = new Dialog(this, R.style.dia_view);
+            DiaInfoBinding bindingInfoDialog = DiaInfoBinding.inflate(getLayoutInflater());
+            infoDialog.setContentView(bindingInfoDialog.getRoot());
+            infoDialog.setTitle(getResources().getString(R.string.info));
+            infoDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
+                    WindowManager.LayoutParams.MATCH_PARENT);
+            bindingInfoDialog.diaInfoText.setText(R.string.settings_format_cards_info);
+            infoDialog.show();
+        });
+
         boolean formatCardNotes = settings.getBoolean("format_card_notes", false);
-        formatCardsButton = findViewById(R.id.settings_format_cards);
-        formatCardsButton.setChecked(formatCards);
-        formatCardNotesButton = findViewById(R.id.settings_format_card_notes);
-        formatCardNotesButton.setChecked(formatCardNotes);
+        binding.settingsFormatCardNotes.setChecked(formatCardNotes);
+        binding.settingsFormatCardNotes.setOnClickListener(v -> {
+            settingsEdit.putBoolean("format_card_notes", ((CheckBox) v).isChecked());
+            settingsEdit.apply();
+        });
+
         boolean uiBgImages = settings.getBoolean("ui_bg_images", true);
+        binding.settingsUiBackgroundImages.setChecked(uiBgImages);
+        binding.settingsUiBackgroundImages.setOnClickListener(v -> {
+            settingsEdit.putBoolean("ui_bg_images", ((CheckBox) v).isChecked());
+            settingsEdit.apply();
+        });
+
         boolean uiFontSize = settings.getBoolean("ui_font_size", false);
-        uiBgImagesButton = findViewById(R.id.settings_ui_background_images);
-        uiFontSizeButton = findViewById(R.id.settings_ui_increase_font_size);
-        uiBgImagesButton.setChecked(uiBgImages);
-        uiFontSizeButton.setChecked(uiFontSize);
+        binding.settingsUiIncreaseFontSize.setChecked(uiFontSize);
+        binding.settingsUiIncreaseFontSize.setOnClickListener(v -> {
+            settingsEdit.putBoolean("ui_font_size", ((CheckBox) v).isChecked());
+            settingsEdit.apply();
+        });
+
         boolean listNoUpdate = settings.getBoolean("list_no_update", true);
-        listNoUpdateButton = findViewById(R.id.settings_list_no_update);
-        listNoUpdateButton.setChecked(listNoUpdate);
+        binding.settingsListNoUpdate.setChecked(listNoUpdate);
+        binding.settingsListNoUpdate.setOnClickListener(v -> {
+            settingsEdit.putBoolean("list_no_update", ((CheckBox) v).isChecked());
+            settingsEdit.apply();
+        });
+
         boolean mediaInGallery = settings.getBoolean("media_in_gallery", true);
-        mediaInGalleryButton = findViewById(R.id.settings_media_in_gallery);
-        mediaInGalleryButton.setChecked(mediaInGallery);
+        binding.settingsMediaInGallery.setChecked(mediaInGallery);
+        binding.settingsMediaInGallery.setOnClickListener(v -> {
+            settingsEdit.putBoolean("media_in_gallery", ((CheckBox) v).isChecked());
+            settingsEdit.apply();
+            handleNoMediaFile();
+        });
     }
 
     @Override
@@ -70,75 +100,7 @@ public class Settings extends FileTools {
     }
 
     private void setSort(int sort) {
-        SharedPreferences.Editor settingsEdit = settings.edit();
         settingsEdit.putInt("default_sort", sort);
         settingsEdit.apply();
-    }
-
-    public void setSortNormal(View view) {
-        setSort(Globals.SORT_DEFAULT);
-    }
-
-    public void setSortRandom(View view) {
-        setSort(Globals.SORT_RANDOM);
-    }
-
-    public void setSortAlphabetical(View view) {
-        setSort(Globals.SORT_ALPHABETICAL);
-    }
-
-    public void setFormatCards(View view) {
-        SharedPreferences.Editor settingsEdit = settings.edit();
-        settingsEdit.putBoolean("format_cards", formatCardsButton.isChecked());
-        settingsEdit.apply();
-    }
-
-    public void setFormatCardNotes(View view) {
-        SharedPreferences.Editor settingsEdit = settings.edit();
-        settingsEdit.putBoolean("format_card_notes", formatCardNotesButton.isChecked());
-        settingsEdit.apply();
-    }
-
-    public void infoFormatCards(View view) {
-        Dialog info = new Dialog(this, R.style.dia_view);
-        info.setContentView(R.layout.dia_info);
-        info.setTitle(getResources().getString(R.string.info));
-        info.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.MATCH_PARENT);
-        TextView infoText = info.findViewById(R.id.dia_info_text);
-        infoText.setText(R.string.settings_format_cards_info);
-        info.show();
-    }
-
-    public void setUIBackground(View view) {
-        SharedPreferences.Editor settingsEdit = settings.edit();
-        settingsEdit.putBoolean("ui_bg_images", uiBgImagesButton.isChecked());
-        settingsEdit.apply();
-    }
-
-    public void setUIFontSize(View view) {
-        SharedPreferences.Editor settingsEdit = settings.edit();
-        settingsEdit.putBoolean("ui_font_size", uiFontSizeButton.isChecked());
-        settingsEdit.apply();
-    }
-
-    public void setListNoUpdate(View view) {
-        SharedPreferences.Editor settingsEdit = settings.edit();
-        settingsEdit.putBoolean("list_no_update", listNoUpdateButton.isChecked());
-        settingsEdit.apply();
-    }
-
-    public void setMediaInGallery(View view) {
-        SharedPreferences.Editor settingsEdit = settings.edit();
-        settingsEdit.putBoolean("media_in_gallery", mediaInGalleryButton.isChecked());
-        settingsEdit.apply();
-        handleNoMediaFile();
-    }
-
-    @Override
-    public void onBackPressed() {
-        Intent intent = new Intent(getApplicationContext(), ListCollections.class);
-        startActivity(intent);
-        this.finish();
     }
 }

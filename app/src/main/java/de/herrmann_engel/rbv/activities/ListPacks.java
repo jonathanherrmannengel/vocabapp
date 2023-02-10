@@ -11,17 +11,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.File;
 import java.util.List;
@@ -30,6 +25,8 @@ import java.util.Objects;
 import de.herrmann_engel.rbv.Globals;
 import de.herrmann_engel.rbv.R;
 import de.herrmann_engel.rbv.adapters.AdapterPacks;
+import de.herrmann_engel.rbv.databinding.ActivityDefaultRecBinding;
+import de.herrmann_engel.rbv.databinding.DiaExportBinding;
 import de.herrmann_engel.rbv.db.DB_Pack;
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get;
 import de.herrmann_engel.rbv.export_import.AsyncExport;
@@ -38,6 +35,7 @@ import de.herrmann_engel.rbv.export_import.AsyncExportProgress;
 
 public class ListPacks extends AppCompatActivity implements AsyncExportFinish, AsyncExportProgress {
 
+    private ActivityDefaultRecBinding binding;
     private DB_Helper_Get dbHelperGet;
 
     private int collectionNo;
@@ -45,13 +43,13 @@ public class ListPacks extends AppCompatActivity implements AsyncExportFinish, A
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_default_rec);
+        binding = ActivityDefaultRecBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         SharedPreferences settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE);
         if (settings.getBoolean("ui_bg_images", true)) {
-            ImageView backgroundImage = findViewById(R.id.background_image);
-            backgroundImage.setVisibility(View.VISIBLE);
-            backgroundImage.setImageDrawable(AppCompatResources.getDrawable(this, R.drawable.bg_packs));
+            binding.backgroundImage.setVisibility(View.VISIBLE);
+            binding.backgroundImage.setImageDrawable(AppCompatResources.getDrawable(this, R.drawable.bg_packs));
         }
     }
 
@@ -97,29 +95,28 @@ public class ListPacks extends AppCompatActivity implements AsyncExportFinish, A
                     Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(new ColorDrawable(color));
                     Window window = this.getWindow();
                     window.setStatusBarColor(color);
-                    findViewById(R.id.rec_default_root).setBackgroundColor(colorBackground);
+                    binding.getRoot().setBackgroundColor(colorBackground);
                 }
                 colors.recycle();
                 colorsBackground.recycle();
             } catch (Exception e) {
-                Toast.makeText(getApplicationContext(), R.string.error, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
             }
         }
-        RecyclerView recyclerView = this.findViewById(R.id.rec_default);
-        AdapterPacks adapter = new AdapterPacks(packs, this, collectionNo);
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        AdapterPacks adapter = new AdapterPacks(packs, collectionNo);
+        binding.recDefault.setAdapter(adapter);
+        binding.recDefault.setLayoutManager(new LinearLayoutManager(this));
     }
 
     public void collectionDetails(MenuItem item) {
-        Intent intent = new Intent(getApplicationContext(), ViewCollection.class);
+        Intent intent = new Intent(this, ViewCollection.class);
         intent.putExtra("collection", collectionNo);
         this.startActivity(intent);
         this.finish();
     }
 
     public void startNewPack(MenuItem menuItem) {
-        Intent intent = new Intent(getApplicationContext(), NewPack.class);
+        Intent intent = new Intent(this, NewPack.class);
         intent.putExtra("collection", collectionNo);
         this.startActivity(intent);
         this.finish();
@@ -159,41 +156,30 @@ public class ListPacks extends AppCompatActivity implements AsyncExportFinish, A
 
     public void export(MenuItem menuItem) {
         Dialog startExportDialog = new Dialog(this, R.style.dia_view);
-        startExportDialog.setContentView(R.layout.dia_export);
+        DiaExportBinding bindingStartExportDialog = DiaExportBinding.inflate(getLayoutInflater());
+        startExportDialog.setContentView(bindingStartExportDialog.getRoot());
         startExportDialog.setTitle(getResources().getString(R.string.options));
         startExportDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.MATCH_PARENT);
-        Button startExportButton = startExportDialog.findViewById(R.id.dia_export_start);
-        CheckBox includeSettingsCheckBox = startExportDialog.findViewById(R.id.dia_export_include_settings);
-        CheckBox includeMediaCheckBox = startExportDialog.findViewById(R.id.dia_export_include_media);
-        TextView includeMediaWarnNoFile = startExportDialog.findViewById(R.id.dia_export_include_media_warn_no_files);
-        TextView includeMediaWarnAllMedia = startExportDialog.findViewById(R.id.dia_export_include_media_warn_all_media);
-        includeSettingsCheckBox.setChecked(false);
-        includeSettingsCheckBox.setVisibility(View.GONE);
-        includeMediaCheckBox.setChecked(false);
-        includeMediaWarnNoFile.setVisibility(includeMediaCheckBox.isChecked() ? View.VISIBLE : View.GONE);
-        includeMediaWarnAllMedia.setVisibility(includeMediaCheckBox.isChecked() ? View.VISIBLE : View.GONE);
-        includeMediaCheckBox.setOnCheckedChangeListener((v, c) -> {
+        bindingStartExportDialog.diaExportIncludeSettings.setChecked(false);
+        bindingStartExportDialog.diaExportIncludeSettings.setVisibility(View.GONE);
+        bindingStartExportDialog.diaExportIncludeMedia.setChecked(false);
+        bindingStartExportDialog.diaExportIncludeMediaWarnNoFiles.setVisibility(bindingStartExportDialog.diaExportIncludeMedia.isChecked() ? View.VISIBLE : View.GONE);
+        bindingStartExportDialog.diaExportIncludeMediaWarnAllMedia.setVisibility(bindingStartExportDialog.diaExportIncludeMedia.isChecked() ? View.VISIBLE : View.GONE);
+        bindingStartExportDialog.diaExportIncludeMedia.setOnCheckedChangeListener((v, c) -> {
             if (c) {
-                includeMediaWarnNoFile.setVisibility(View.VISIBLE);
-                includeMediaWarnAllMedia.setVisibility(View.VISIBLE);
+                bindingStartExportDialog.diaExportIncludeMediaWarnNoFiles.setVisibility(View.VISIBLE);
+                bindingStartExportDialog.diaExportIncludeMediaWarnAllMedia.setVisibility(View.VISIBLE);
             } else {
-                includeMediaWarnNoFile.setVisibility(View.GONE);
-                includeMediaWarnAllMedia.setVisibility(View.GONE);
+                bindingStartExportDialog.diaExportIncludeMediaWarnNoFiles.setVisibility(View.GONE);
+                bindingStartExportDialog.diaExportIncludeMediaWarnAllMedia.setVisibility(View.GONE);
             }
         });
-        startExportButton.setOnClickListener(v -> {
-            new AsyncExport(getApplicationContext(), this, this, collectionNo, includeMediaCheckBox.isChecked()).execute();
+        bindingStartExportDialog.diaExportStart.setOnClickListener(v -> {
+            new AsyncExport(this, this, this, collectionNo, bindingStartExportDialog.diaExportIncludeMedia.isChecked()).execute();
             startExportDialog.dismiss();
             Toast.makeText(this, R.string.wait, Toast.LENGTH_LONG).show();
         });
         startExportDialog.show();
-    }
-
-    @Override
-    public void onBackPressed() {
-        Intent intent = new Intent(getApplicationContext(), ListCollections.class);
-        startActivity(intent);
-        this.finish();
     }
 }

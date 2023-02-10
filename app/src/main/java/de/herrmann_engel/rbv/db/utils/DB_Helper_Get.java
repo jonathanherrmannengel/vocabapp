@@ -29,6 +29,10 @@ public class DB_Helper_Get {
     }
 
     //Check if has content
+    public boolean hasCollections() {
+        return dbHelper.collection_dao.hasCollections();
+    }
+
     public boolean hasCards() {
         return dbHelper.card_dao.hasCards();
     }

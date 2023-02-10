@@ -9,17 +9,14 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.documentfile.provider.DocumentFile;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -28,6 +25,8 @@ import java.util.Objects;
 
 import de.herrmann_engel.rbv.R;
 import de.herrmann_engel.rbv.adapters.AdapterMediaLinkCard;
+import de.herrmann_engel.rbv.databinding.ActivityEditCardMediaBinding;
+import de.herrmann_engel.rbv.databinding.DiaFileExistsBinding;
 import de.herrmann_engel.rbv.db.DB_Card;
 import de.herrmann_engel.rbv.db.DB_Media;
 import de.herrmann_engel.rbv.db.DB_Media_Link_Card;
@@ -35,20 +34,8 @@ import de.herrmann_engel.rbv.db.utils.DB_Helper_Create;
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get;
 
 public class EditCardMedia extends FileTools {
-
-    private int collectionNo;
-    private int packNo;
-    private ArrayList<Integer> packNos;
+    private ActivityEditCardMediaBinding binding;
     private int cardNo;
-    private boolean reverse;
-    private int sort;
-    private String searchQuery;
-    private int cardPosition;
-    private boolean progressGreater;
-    private int progressNumber;
-    private ArrayList<Integer> savedList;
-    private Long savedListSeed;
-    private boolean fromMediaManager;
 
     private DB_Helper_Get dbHelperGet;
 
@@ -70,18 +57,17 @@ public class EditCardMedia extends FileTools {
                                 createMediaFile(outputDirectory, mime, inputFileName, fileUri);
                             } else {
                                 Dialog fileExistsDialog = new Dialog(this, R.style.dia_view);
-                                fileExistsDialog.setContentView(R.layout.dia_file_exists);
+                                DiaFileExistsBinding bindingFileExistsDialog = DiaFileExistsBinding.inflate(getLayoutInflater());
+                                fileExistsDialog.setContentView(bindingFileExistsDialog.getRoot());
                                 fileExistsDialog.setTitle(getResources().getString(R.string.file_exists_title));
                                 fileExistsDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
                                         WindowManager.LayoutParams.MATCH_PARENT);
 
-                                Button linkButton = fileExistsDialog.findViewById(R.id.dia_file_exists_link);
-                                Button newButton = fileExistsDialog.findViewById(R.id.dia_file_exists_new);
-                                linkButton.setOnClickListener(v -> {
+                                bindingFileExistsDialog.diaFileExistsLink.setOnClickListener(v -> {
                                     addMediaLink(inputFileName, mime);
                                     fileExistsDialog.dismiss();
                                 });
-                                newButton.setOnClickListener(v -> {
+                                bindingFileExistsDialog.diaFileExistsNew.setOnClickListener(v -> {
                                     createMediaFile(outputDirectory, mime, inputFileName, fileUri);
                                     fileExistsDialog.dismiss();
                                 });
@@ -98,20 +84,9 @@ public class EditCardMedia extends FileTools {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_edit_card_media);
-        collectionNo = getIntent().getExtras().getInt("collection");
-        packNo = getIntent().getExtras().getInt("pack");
-        packNos = getIntent().getExtras().getIntegerArrayList("packs");
+        binding = ActivityEditCardMediaBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
         cardNo = getIntent().getExtras().getInt("card");
-        reverse = getIntent().getExtras().getBoolean("reverse");
-        sort = getIntent().getExtras().getInt("sort");
-        searchQuery = getIntent().getExtras().getString("searchQuery");
-        cardPosition = getIntent().getExtras().getInt("cardPosition");
-        progressGreater = getIntent().getExtras().getBoolean("progressGreater");
-        progressNumber = getIntent().getExtras().getInt("progressNumber");
-        savedList = getIntent().getExtras().getIntegerArrayList("savedList");
-        savedListSeed = getIntent().getExtras().getLong("savedListSeed");
-        fromMediaManager = getIntent().getExtras().getBoolean("fromMediaManager");
         dbHelperGet = new DB_Helper_Get(this);
         try {
             DB_Card card = dbHelperGet.getSingleCard(cardNo);
@@ -124,21 +99,30 @@ public class EditCardMedia extends FileTools {
                 Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(new ColorDrawable(color));
                 Window window = this.getWindow();
                 window.setStatusBarColor(color);
-                findViewById(R.id.root_edit_card_media).setBackgroundColor(colorBackground);
+                binding.getRoot().setBackgroundColor(colorBackground);
             }
             colors.recycle();
             colorsBackground.recycle();
         } catch (Exception e) {
             e.printStackTrace();
-            Toast.makeText(getApplicationContext(), R.string.error, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
         }
-        Button addMediaButton = findViewById(R.id.add_media_button);
         GradientDrawable gradientDrawable = new GradientDrawable();
         gradientDrawable.setShape(GradientDrawable.RECTANGLE);
         gradientDrawable.setColor(Color.argb(75, 200, 200, 250));
         gradientDrawable.setStroke(2, Color.rgb(170, 170, 220));
         gradientDrawable.setCornerRadius(8);
-        addMediaButton.setBackground(gradientDrawable);
+        binding.addMediaButton.setBackground(gradientDrawable);
+        binding.addMediaButton.setOnClickListener(v -> {
+            String folder = getCardMediaFolder();
+            if (folder == null || folder.isEmpty()) {
+                showSelectDialog(getResources().getString(R.string.select_folder_help));
+            }
+            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+            intent.setType("*/*");
+            openFile.launch(intent);
+        });
     }
 
     @Override
@@ -182,7 +166,7 @@ public class EditCardMedia extends FileTools {
                 DB_Helper_Create dbHelperCreate = new DB_Helper_Create(this);
                 dbHelperCreate.createMediaLink(fileId, cardNo);
                 setRecView();
-                Toast.makeText(getApplicationContext(), R.string.success, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.success, Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show();
             }
@@ -192,23 +176,11 @@ public class EditCardMedia extends FileTools {
         }
     }
 
-    public void addMedia(View view) {
-        String folder = getCardMediaFolder();
-        if (folder == null || folder.isEmpty()) {
-            showSelectDialog(getResources().getString(R.string.select_folder_help));
-        }
-        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.setType("*/*");
-        openFile.launch(intent);
-    }
-
     private void setRecView() {
         ArrayList<DB_Media_Link_Card> mediaList = (ArrayList<DB_Media_Link_Card>) dbHelperGet.getAllMediaLinksByCard(cardNo);
-        AdapterMediaLinkCard adapter = new AdapterMediaLinkCard(mediaList, cardNo, getCardMediaFolder(), this);
-        RecyclerView recyclerView = findViewById(R.id.rec_card_media);
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        AdapterMediaLinkCard adapter = new AdapterMediaLinkCard(mediaList, cardNo, getCardMediaFolder());
+        binding.recCardMedia.setAdapter(adapter);
+        binding.recCardMedia.setLayoutManager(new LinearLayoutManager(this));
     }
 
     @Override
@@ -218,29 +190,5 @@ public class EditCardMedia extends FileTools {
 
     @Override
     protected void notifyMissingAction(int id) {
-    }
-
-    @Override
-    public void onBackPressed() {
-        Intent intent;
-        if (fromMediaManager) {
-            intent = new Intent(getApplicationContext(), ManageMedia.class);
-        } else {
-            intent = new Intent(getApplicationContext(), ViewCard.class);
-            intent.putExtra("collection", collectionNo);
-            intent.putExtra("pack", packNo);
-            intent.putIntegerArrayListExtra("packs", packNos);
-            intent.putExtra("card", cardNo);
-            intent.putExtra("reverse", reverse);
-            intent.putExtra("sort", sort);
-            intent.putExtra("searchQuery", searchQuery);
-            intent.putExtra("cardPosition", cardPosition);
-            intent.putExtra("progressGreater", progressGreater);
-            intent.putExtra("progressNumber", progressNumber);
-            intent.putIntegerArrayListExtra("savedList", savedList);
-            intent.putExtra("savedListSeed", savedListSeed);
-        }
-        startActivity(intent);
-        this.finish();
     }
 }

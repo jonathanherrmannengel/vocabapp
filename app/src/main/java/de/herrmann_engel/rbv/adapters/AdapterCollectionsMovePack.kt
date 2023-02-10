@@ -4,60 +4,61 @@ import android.app.Dialog
 import android.content.Context
 import android.util.TypedValue
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.activities.ViewPack
+import de.herrmann_engel.rbv.databinding.RecViewBinding
 import de.herrmann_engel.rbv.db.DB_Collection
 import de.herrmann_engel.rbv.db.DB_Pack
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Update
+import de.herrmann_engel.rbv.utils.ContextTools
 
 class AdapterCollectionsMovePack(
     private val collection: List<DB_Collection>,
     private val pack: DB_Pack,
-    private val c: Context,
     private val dialog: Dialog
 ) : RecyclerView.Adapter<AdapterCollectionsMovePack.ViewHolder>() {
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val textView: TextView = view.findViewById(R.id.rec_name)
-    }
+    class ViewHolder(val binding: RecViewBinding) : RecyclerView.ViewHolder(binding.root)
+
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
-        val view =
-            LayoutInflater.from(viewGroup.context).inflate(R.layout.rec_view, viewGroup, false)
-        val settings = c.getSharedPreferences(Globals.SETTINGS_NAME, Context.MODE_PRIVATE)
+        val binding = RecViewBinding.inflate(
+            LayoutInflater.from(viewGroup.context),
+            viewGroup,
+            false
+        )
+        val settings =
+            viewGroup.context.getSharedPreferences(Globals.SETTINGS_NAME, Context.MODE_PRIVATE)
         if (settings.getBoolean("ui_font_size", false)) {
-            view.findViewById<TextView>(R.id.rec_name)
-                .setTextSize(
-                    TypedValue.COMPLEX_UNIT_PX,
-                    c.resources.getDimension(R.dimen.rec_view_font_size_big)
-                )
-            view.findViewById<TextView>(R.id.rec_desc)
-                .setTextSize(
-                    TypedValue.COMPLEX_UNIT_PX,
-                    c.resources.getDimension(R.dimen.rec_view_font_size_below_big)
-                )
+            binding.recName.setTextSize(
+                TypedValue.COMPLEX_UNIT_PX,
+                viewGroup.context.resources.getDimension(R.dimen.rec_view_font_size_big)
+            )
+            binding.recDesc.setTextSize(
+                TypedValue.COMPLEX_UNIT_PX,
+                viewGroup.context.resources.getDimension(R.dimen.rec_view_font_size_below_big)
+            )
         }
-        return ViewHolder(view)
+        return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-        val colors = c.resources.obtainTypedArray(R.array.pack_color_list)
+        val context = viewHolder.binding.root.context
+        val colors = context.resources.obtainTypedArray(R.array.pack_color_list)
         val color = collection[position].colors
         if (color < colors.length() && color >= 0) {
-            viewHolder.textView.setTextColor(colors.getColor(color, 0))
+            viewHolder.binding.recName.setTextColor(colors.getColor(color, 0))
         }
         colors.recycle()
-        viewHolder.textView.text = collection[position].name
-        viewHolder.textView.setOnClickListener {
+        viewHolder.binding.recName.text = collection[position].name
+        viewHolder.binding.recName.setOnClickListener {
             val updateHelper =
-                DB_Helper_Update(c)
+                DB_Helper_Update(context)
             pack.collection = collection[position].uid
             updateHelper.updatePack(pack)
-            (c as ViewPack).movedPack()
+            (ContextTools().getActivity(context) as ViewPack).movedPack()
             dialog.dismiss()
         }
     }

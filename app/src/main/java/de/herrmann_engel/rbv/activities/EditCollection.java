@@ -15,16 +15,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.material.textfield.TextInputLayout;
-import com.vanniktech.emoji.EmojiEditText;
 import com.vanniktech.emoji.EmojiPopup;
 import com.vanniktech.emoji.EmojiTheming;
 import com.vanniktech.emoji.inputfilters.OnlyEmojisInputFilter;
@@ -32,6 +28,8 @@ import com.vanniktech.emoji.inputfilters.OnlyEmojisInputFilter;
 import java.util.Objects;
 
 import de.herrmann_engel.rbv.R;
+import de.herrmann_engel.rbv.databinding.ActivityEditCollectionOrPackBinding;
+import de.herrmann_engel.rbv.databinding.DiaConfirmBinding;
 import de.herrmann_engel.rbv.db.DB_Collection;
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get;
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Update;
@@ -39,29 +37,18 @@ import de.herrmann_engel.rbv.utils.StringTools;
 
 public class EditCollection extends AppCompatActivity {
 
+    private ActivityEditCollectionOrPackBinding binding;
     private DB_Collection collection;
     private int collectionNo;
-    private TextView collectionName;
-    private TextView collectionDesc;
-    private EmojiEditText collectionEmoji;
-    private TextInputLayout collectionNameLayout;
-    private TextInputLayout collectionDescLayout;
-    private TextInputLayout collectionEmojiLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_edit_collection_or_pack);
+        binding = ActivityEditCollectionOrPackBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
-        collectionName = findViewById(R.id.edit_collection_or_pack_name);
-        collectionNameLayout = findViewById(R.id.edit_collection_or_pack_name_layout);
-        collectionNameLayout.setHintTextColor(ColorStateList.valueOf(getResources().getColor(R.color.light_black, getTheme())));
-        collectionDesc = findViewById(R.id.edit_collection_or_pack_desc);
-        collectionDescLayout = findViewById(R.id.edit_collection_or_pack_desc_layout);
-        collectionDescLayout.setHintTextColor(ColorStateList.valueOf(getResources().getColor(R.color.light_black, getTheme())));
-        collectionDescLayout.setHint(String.format(getString(R.string.optional), getString(R.string.collection_or_pack_desc)));
-        collectionEmoji = findViewById(R.id.edit_collection_or_pack_emoji);
-        EmojiPopup emojiPopup = new EmojiPopup(findViewById(R.id.root_edit_collection_or_pack), collectionEmoji,
+        binding.editCollectionOrPackDescLayout.setHint(String.format(getString(R.string.optional), getString(R.string.collection_or_pack_desc)));
+        EmojiPopup emojiPopup = new EmojiPopup(binding.getRoot(), binding.editCollectionOrPackEmoji,
                 new EmojiTheming(
                         getResources().getColor(R.color.light_grey, getTheme()),
                         getResources().getColor(R.color.light_black, getTheme()),
@@ -71,8 +58,8 @@ public class EditCollection extends AppCompatActivity {
                         getResources().getColor(R.color.dark_grey, getTheme())
                 )
         );
-        collectionEmoji.setFilters(new InputFilter[]{new OnlyEmojisInputFilter()});
-        collectionEmoji.setOnFocusChangeListener((v, hasFocus) -> {
+        binding.editCollectionOrPackEmoji.setFilters(new InputFilter[]{new OnlyEmojisInputFilter()});
+        binding.editCollectionOrPackEmoji.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
                 if (!emojiPopup.isShowing()) {
                     emojiPopup.show();
@@ -81,31 +68,30 @@ public class EditCollection extends AppCompatActivity {
                 emojiPopup.dismiss();
             }
         });
-        collectionEmoji.setOnClickListener(v -> {
+        binding.editCollectionOrPackEmoji.setOnClickListener(v -> {
             if (!emojiPopup.isShowing()) {
                 emojiPopup.show();
             }
         });
-        collectionEmojiLayout = findViewById(R.id.edit_collection_or_pack_emoji_layout);
-        collectionEmojiLayout.setHint(String.format(getString(R.string.optional), getString(R.string.collection_or_pack_emoji)));
-        collectionEmojiLayout.setHintTextColor(ColorStateList.valueOf(getResources().getColor(R.color.light_black, getTheme())));
+        binding.editCollectionOrPackEmojiLayout.setHint(String.format(getString(R.string.optional), getString(R.string.collection_or_pack_emoji)));
+        binding.editCollectionOrPackEmojiLayout.setHintTextColor(ColorStateList.valueOf(getResources().getColor(R.color.light_black, getTheme())));
         collectionNo = getIntent().getExtras().getInt("collection");
         DB_Helper_Get dbHelperGet = new DB_Helper_Get(this);
         try {
             collection = dbHelperGet.getSingleCollection(collectionNo);
-            collectionName.setText(collection.name);
-            collectionDesc.setText(collection.desc);
-            collectionEmoji.setText(collection.emoji);
-            collectionEmoji.addTextChangedListener(new TextWatcher() {
+            binding.editCollectionOrPackName.setText(collection.name);
+            binding.editCollectionOrPackDesc.setText(collection.desc);
+            binding.editCollectionOrPackEmoji.setText(collection.emoji);
+            binding.editCollectionOrPackEmoji.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 }
 
                 @Override
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    collectionEmoji.removeTextChangedListener(this);
-                    collectionEmoji.setText(s.subSequence(start, start + count));
-                    collectionEmoji.addTextChangedListener(this);
+                    binding.editCollectionOrPackEmoji.removeTextChangedListener(this);
+                    binding.editCollectionOrPackEmoji.setText(s.subSequence(start, start + count));
+                    binding.editCollectionOrPackEmoji.addTextChangedListener(this);
                 }
 
                 @Override
@@ -113,7 +99,6 @@ public class EditCollection extends AppCompatActivity {
 
                 }
             });
-            LinearLayout colorPicker = findViewById(R.id.color_picker);
             TypedArray colorNames = getResources().obtainTypedArray(R.array.pack_color_names);
             TypedArray colors = getResources().obtainTypedArray(R.array.pack_color_main);
             TypedArray colorsBackground = getResources().obtainTypedArray(R.array.pack_color_background);
@@ -142,14 +127,14 @@ public class EditCollection extends AppCompatActivity {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     colorView.setTooltipText(colorName);
                 }
-                colorPicker.addView(colorView);
+                binding.colorPicker.addView(colorView);
             }
             colorNames.recycle();
             colors.recycle();
             colorsBackground.recycle();
         } catch (Exception e) {
             e.printStackTrace();
-            Toast.makeText(getApplicationContext(), R.string.error, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -160,10 +145,10 @@ public class EditCollection extends AppCompatActivity {
     }
 
     public void saveChanges(MenuItem menuItem) {
-        collection.name = collectionName.getText().toString();
-        collection.desc = collectionDesc.getText().toString();
-        if (collectionEmoji.getText() != null) {
-            collection.emoji = (new StringTools()).firstEmoji(collectionEmoji.getText().toString());
+        collection.name = binding.editCollectionOrPackName.getText().toString();
+        collection.desc = binding.editCollectionOrPackDesc.getText().toString();
+        if (binding.editCollectionOrPackEmoji.getText() != null) {
+            collection.emoji = (new StringTools()).firstEmoji(binding.editCollectionOrPackEmoji.getText().toString());
         } else {
             collection.emoji = null;
         }
@@ -171,7 +156,7 @@ public class EditCollection extends AppCompatActivity {
         if (dbHelperUpdate.updateCollection(collection)) {
             startViewCollection();
         } else {
-            Toast.makeText(getApplicationContext(), R.string.error_values, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.error_values, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -179,14 +164,14 @@ public class EditCollection extends AppCompatActivity {
         Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(new ColorDrawable(main));
         Window window = this.getWindow();
         window.setStatusBarColor(main);
-        collectionNameLayout.setBoxStrokeColor(main);
-        collectionDescLayout.setBoxStrokeColor(main);
-        collectionEmojiLayout.setBoxStrokeColor(main);
-        findViewById(R.id.root_edit_collection_or_pack).setBackgroundColor(background);
+        binding.editCollectionOrPackNameLayout.setBoxStrokeColor(main);
+        binding.editCollectionOrPackDescLayout.setBoxStrokeColor(main);
+        binding.editCollectionOrPackEmojiLayout.setBoxStrokeColor(main);
+        binding.getRoot().setBackgroundColor(background);
     }
 
     private void startViewCollection() {
-        Intent intent = new Intent(getApplicationContext(), ViewCollection.class);
+        Intent intent = new Intent(this, ViewCollection.class);
         intent.putExtra("collection", collectionNo);
         startActivity(intent);
         this.finish();
@@ -194,21 +179,20 @@ public class EditCollection extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        String name = collectionName.getText().toString();
-        String desc = collectionDesc.getText().toString();
+        String name = binding.editCollectionOrPackName.getText().toString();
+        String desc = binding.editCollectionOrPackDesc.getText().toString();
         if (collection == null || (collection.name.equals(name) && collection.desc.equals(desc))) {
             startViewCollection();
         } else {
-            Dialog confirmCancel = new Dialog(this, R.style.dia_view);
-            confirmCancel.setContentView(R.layout.dia_confirm);
-            confirmCancel.setTitle(getResources().getString(R.string.discard_changes));
-            confirmCancel.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
+            Dialog confirmCancelDialog = new Dialog(this, R.style.dia_view);
+            DiaConfirmBinding bindingConfirmCancelDialog = DiaConfirmBinding.inflate(getLayoutInflater());
+            confirmCancelDialog.setContentView(bindingConfirmCancelDialog.getRoot());
+            confirmCancelDialog.setTitle(getResources().getString(R.string.discard_changes));
+            confirmCancelDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
                     WindowManager.LayoutParams.MATCH_PARENT);
-            Button confirmCancelY = confirmCancel.findViewById(R.id.dia_confirm_yes);
-            Button confirmCancelN = confirmCancel.findViewById(R.id.dia_confirm_no);
-            confirmCancelY.setOnClickListener(v -> startViewCollection());
-            confirmCancelN.setOnClickListener(v -> confirmCancel.dismiss());
-            confirmCancel.show();
+            bindingConfirmCancelDialog.diaConfirmYes.setOnClickListener(v -> startViewCollection());
+            bindingConfirmCancelDialog.diaConfirmNo.setOnClickListener(v -> confirmCancelDialog.dismiss());
+            confirmCancelDialog.show();
         }
     }
 }

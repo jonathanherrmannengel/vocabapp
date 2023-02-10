@@ -7,22 +7,21 @@ import android.text.SpannableString
 import android.text.style.ImageSpan
 import android.util.TypedValue
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.activities.ListCards
 import de.herrmann_engel.rbv.activities.ViewCard
+import de.herrmann_engel.rbv.databinding.RecViewBinding
 import de.herrmann_engel.rbv.db.DB_Card
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
+import de.herrmann_engel.rbv.utils.ContextTools
 import de.herrmann_engel.rbv.utils.StringTools
 
 class AdapterCards(
     private val cards: List<DB_Card>,
-    private val c: Context,
     private val reverse: Boolean,
     private val sort: Int,
     private val packNo: Int,
@@ -34,45 +33,47 @@ class AdapterCards(
     private val savedList: ArrayList<Int>?,
     private val savedListSeed: Long?
 ) : RecyclerView.Adapter<AdapterCards.ViewHolder>() {
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val textView: TextView = view.findViewById(R.id.rec_name)
-    }
+    class ViewHolder(val binding: RecViewBinding) : RecyclerView.ViewHolder(binding.root)
 
     private val stringTools = StringTools()
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
-        val view =
-            LayoutInflater.from(viewGroup.context).inflate(R.layout.rec_view, viewGroup, false)
-        val settings = c.getSharedPreferences(Globals.SETTINGS_NAME, Context.MODE_PRIVATE)
+        val binding =
+            RecViewBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false)
+        val settings =
+            viewGroup.context.getSharedPreferences(Globals.SETTINGS_NAME, Context.MODE_PRIVATE)
         if (settings.getBoolean("ui_font_size", false)) {
-            view.findViewById<TextView>(R.id.rec_name)
-                .setTextSize(
-                    TypedValue.COMPLEX_UNIT_PX,
-                    c.resources.getDimension(R.dimen.rec_view_font_size_big)
-                )
-            view.findViewById<TextView>(R.id.rec_desc)
-                .setTextSize(
-                    TypedValue.COMPLEX_UNIT_PX,
-                    c.resources.getDimension(R.dimen.rec_view_font_size_below_big)
-                )
+            binding.recName.setTextSize(
+                TypedValue.COMPLEX_UNIT_PX,
+                viewGroup.context.resources.getDimension(R.dimen.rec_view_font_size_big)
+            )
+            binding.recDesc.setTextSize(
+                TypedValue.COMPLEX_UNIT_PX,
+                viewGroup.context.resources.getDimension(R.dimen.rec_view_font_size_below_big)
+            )
         }
-        return ViewHolder(view)
+        return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
+        val context = viewHolder.binding.root.context
         if (cards.isEmpty()) {
             if (packNo < 0) {
-                viewHolder.textView.text = c.resources.getString(R.string.welcome_card)
+                viewHolder.binding.recName.text =
+                    context.resources.getString(R.string.welcome_card)
             } else {
                 val text =
                     String.format(
                         "%s %s",
-                        c.resources.getString(R.string.welcome_card),
-                        c.resources.getString(R.string.welcome_card_create)
+                        context.resources.getString(R.string.welcome_card),
+                        context.resources.getString(R.string.welcome_card_create)
                     )
                 val addText = SpannableString(text)
-                val addTextDrawable = ContextCompat.getDrawable(c, R.drawable.outline_add_24)
-                addTextDrawable?.setTint(c.getColor(R.color.light_black))
+                val addTextDrawable = ContextCompat.getDrawable(
+                    context,
+                    R.drawable.outline_add_24
+                )
+                addTextDrawable?.setTint(context.getColor(R.color.light_black))
                 addTextDrawable?.setBounds(
                     0,
                     0,
@@ -82,21 +83,23 @@ class AdapterCards(
                 val addTextImage = addTextDrawable?.let { ImageSpan(it, ImageSpan.ALIGN_BOTTOM) }
                 val index = addText.indexOf("+")
                 addText.setSpan(addTextImage, index, index + 1, Spannable.SPAN_INCLUSIVE_EXCLUSIVE)
-                viewHolder.textView.text = addText
+                viewHolder.binding.recName.text = addText
             }
         } else {
             var cardText = if (reverse) cards[position].back else cards[position].front
-            cardText = cardText.replace(System.getProperty("line.separator"), " ")
+            cardText = System.getProperty("line.separator")?.let { cardText.replace(it, " ") }
             cardText = stringTools.shorten(cardText)
-            viewHolder.textView.text = String.format("%s (%d)", cardText, cards[position].known)
+            viewHolder.binding.recName.text =
+                String.format("%s (%d)", cardText, cards[position].known)
             if (packNo < 0) {
                 val dbHelperGet =
-                    DB_Helper_Get(c.applicationContext)
+                    DB_Helper_Get(context)
                 try {
                     val color = dbHelperGet.getSinglePack(cards[position].pack).colors
-                    val colors = c.resources.obtainTypedArray(R.array.pack_color_list)
+                    val colors =
+                        context.resources.obtainTypedArray(R.array.pack_color_list)
                     if (color < colors.length() && color >= 0) {
-                        viewHolder.textView.setTextColor(colors.getColor(color, 0))
+                        viewHolder.binding.recName.setTextColor(colors.getColor(color, 0))
                     }
                     colors.recycle()
                 } catch (e: Exception) {
@@ -104,8 +107,8 @@ class AdapterCards(
                 }
             }
             val extra = cards[position].uid
-            viewHolder.textView.setOnClickListener {
-                val intent = Intent(c.applicationContext, ViewCard::class.java)
+            viewHolder.binding.recName.setOnClickListener {
+                val intent = Intent(context, ViewCard::class.java)
                 intent.putExtra("collection", collectionNo)
                 intent.putExtra("pack", packNo)
                 intent.putIntegerArrayListExtra("packs", packNos)
@@ -118,8 +121,8 @@ class AdapterCards(
                 intent.putExtra("progressNumber", progressNumber)
                 intent.putIntegerArrayListExtra("savedList", savedList)
                 intent.putExtra("savedListSeed", savedListSeed)
-                c.startActivity(intent)
-                (c as ListCards).finish()
+                context.startActivity(intent)
+                (ContextTools().getActivity(context) as ListCards).finish()
             }
         }
     }

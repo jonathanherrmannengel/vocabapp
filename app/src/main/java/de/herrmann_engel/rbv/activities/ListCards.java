@@ -3,6 +3,7 @@ package de.herrmann_engel.rbv.activities;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -22,16 +23,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +37,11 @@ import java.util.Random;
 import de.herrmann_engel.rbv.Globals;
 import de.herrmann_engel.rbv.R;
 import de.herrmann_engel.rbv.adapters.AdapterCards;
+import de.herrmann_engel.rbv.databinding.ActivityDefaultRecBinding;
+import de.herrmann_engel.rbv.databinding.DiaConfirmBinding;
+import de.herrmann_engel.rbv.databinding.DiaInfoBinding;
+import de.herrmann_engel.rbv.databinding.DiaListStatsBinding;
+import de.herrmann_engel.rbv.databinding.DiaQueryBinding;
 import de.herrmann_engel.rbv.db.DB_Card;
 import de.herrmann_engel.rbv.db.DB_Media_Link_Card;
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get;
@@ -54,15 +55,14 @@ import io.noties.markwon.linkify.LinkifyPlugin;
 import me.saket.bettermovementmethod.BetterLinkMovementMethod;
 
 public class ListCards extends FileTools {
-
-    SharedPreferences settings;
     MenuItem changeFrontBackItem;
     MenuItem sortRandomItem;
     MenuItem searchCardsItem;
     MenuItem searchCardsOffItem;
     MenuItem queryModeItem;
     MenuItem listStatsItem;
-    RecyclerView recyclerView;
+    private ActivityDefaultRecBinding binding;
+    private SharedPreferences settings;
     private DB_Helper_Get dbHelperGet;
     private DB_Helper_Update dbHelperUpdate;
     private boolean saveList;
@@ -84,7 +84,8 @@ public class ListCards extends FileTools {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_default_rec);
+        binding = ActivityDefaultRecBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE);
         saveList = settings.getBoolean("list_no_update", true);
@@ -102,9 +103,8 @@ public class ListCards extends FileTools {
         savedListSeed = getIntent().getExtras().getLong("savedListSeed");
 
         if (settings.getBoolean("ui_bg_images", true)) {
-            ImageView backgroundImage = findViewById(R.id.background_image);
-            backgroundImage.setVisibility(View.VISIBLE);
-            backgroundImage.setImageDrawable(AppCompatResources.getDrawable(this, R.drawable.bg_cards));
+            binding.backgroundImage.setVisibility(View.VISIBLE);
+            binding.backgroundImage.setImageDrawable(AppCompatResources.getDrawable(this, R.drawable.bg_cards));
         }
     }
 
@@ -115,7 +115,7 @@ public class ListCards extends FileTools {
     @Override
     protected void notifyMissingAction(int id) {
         try {
-            Intent intent = new Intent(this.getApplicationContext(), EditCardMedia.class);
+            Intent intent = new Intent(this, EditCardMedia.class);
             intent.putExtra("collection", collectionNo);
             intent.putExtra("pack", packNo);
             intent.putIntegerArrayListExtra("packs", packNos);
@@ -132,7 +132,7 @@ public class ListCards extends FileTools {
             this.finish();
         } catch (Exception e) {
             e.printStackTrace();
-            Toast.makeText(getApplicationContext(), R.string.error, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -224,12 +224,12 @@ public class ListCards extends FileTools {
             boolean formatCardsOrNotes = settings.getBoolean("format_cards", false) || settings.getBoolean("format_card_notes", false);
             if ((saveList && warnInaccurateSaved) || (formatCardsOrNotes && warnInaccurateFormat)) {
                 SharedPreferences.Editor configEditor = config.edit();
-                Dialog info = new Dialog(this, R.style.dia_view);
-                info.setContentView(R.layout.dia_info);
-                info.setTitle(getResources().getString(R.string.info));
-                info.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
+                Dialog infoDialog = new Dialog(this, R.style.dia_view);
+                DiaInfoBinding bindingInfoDialog = DiaInfoBinding.inflate(getLayoutInflater());
+                infoDialog.setContentView(bindingInfoDialog.getRoot());
+                infoDialog.setTitle(getResources().getString(R.string.info));
+                infoDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
                         WindowManager.LayoutParams.MATCH_PARENT);
-                TextView infoText = info.findViewById(R.id.dia_info_text);
                 List<String> warnings = new ArrayList<>();
                 warnings.add(String.format(getResources().getString(R.string.warn_inaccurate), Globals.LIST_ACCURATE_SIZE));
                 if (saveList) {
@@ -241,8 +241,8 @@ public class ListCards extends FileTools {
                     warnings.add(getResources().getString(R.string.warn_inaccurate_format));
                 }
                 warnings.add(getResources().getString(R.string.warn_inaccurate_note));
-                infoText.setText(String.join(System.getProperty("line.separator") + System.getProperty("line.separator"), warnings));
-                info.show();
+                bindingInfoDialog.diaInfoText.setText(String.join(System.getProperty("line.separator") + System.getProperty("line.separator"), warnings));
+                infoDialog.show();
                 configEditor.apply();
             }
         }
@@ -259,12 +259,12 @@ public class ListCards extends FileTools {
                     Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(new ColorDrawable(color));
                     Window window = this.getWindow();
                     window.setStatusBarColor(color);
-                    findViewById(R.id.rec_default_root).setBackgroundColor(colorBackground);
+                    binding.getRoot().setBackgroundColor(colorBackground);
                 }
                 colors.recycle();
                 colorsBackground.recycle();
             } catch (Exception e) {
-                Toast.makeText(getApplicationContext(), R.string.error, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
             }
         } else if (collectionNo >= 0) {
             try {
@@ -277,18 +277,17 @@ public class ListCards extends FileTools {
                     Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(new ColorDrawable(color));
                     Window window = this.getWindow();
                     window.setStatusBarColor(color);
-                    findViewById(R.id.rec_default_root).setBackgroundColor(colorBackground);
+                    binding.getRoot().setBackgroundColor(colorBackground);
                 }
                 colors.recycle();
                 colorsBackground.recycle();
             } catch (Exception e) {
                 e.printStackTrace();
-                Toast.makeText(getApplicationContext(), R.string.error, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
             }
         }
 
         //Display content
-        recyclerView = this.findViewById(R.id.rec_default);
         setRecView();
         return true;
     }
@@ -321,7 +320,7 @@ public class ListCards extends FileTools {
         setRecView();
     }
 
-    private void queryModeSkipAction(Dialog queryMode) {
+    private void queryModeSkipAction(Dialog queryModeDialog, DiaQueryBinding bindingQueryModeDialog) {
         cardPosition++;
         if (cardPosition >= currentCardsList.size()) {
             cardPosition = 0;
@@ -329,13 +328,13 @@ public class ListCards extends FileTools {
                 sortList();
             }
             setRecView();
-            queryMode.dismiss();
+            queryModeDialog.dismiss();
         } else {
-            nextQuery(queryMode);
+            nextQuery(queryModeDialog, bindingQueryModeDialog);
         }
     }
 
-    private void queryModePreviousAction(Dialog queryMode) {
+    private void queryModePreviousAction(Dialog queryModeDialog, DiaQueryBinding bindingQueryModeDialog) {
         cardPosition--;
         if (cardPosition < 0) {
             cardPosition = 0;
@@ -343,13 +342,13 @@ public class ListCards extends FileTools {
                 sortList();
             }
             setRecView();
-            queryMode.dismiss();
+            queryModeDialog.dismiss();
         } else {
-            nextQuery(queryMode);
+            nextQuery(queryModeDialog, bindingQueryModeDialog);
         }
     }
 
-    private void queryModePlusAction(Dialog queryMode, DB_Card card) {
+    private void queryModePlusAction(Dialog queryModeDialog, DiaQueryBinding bindingQueryModeDialog, DB_Card card) {
         int known = card.known + 1;
         cardsList.stream().filter(i -> i.uid == card.uid).findFirst().get().known = known;
         originalCardsList.stream().filter(i -> i.uid == card.uid).findFirst().get().known = known;
@@ -362,13 +361,13 @@ public class ListCards extends FileTools {
                 sortList();
             }
             setRecView();
-            queryMode.dismiss();
+            queryModeDialog.dismiss();
         } else {
-            nextQuery(queryMode);
+            nextQuery(queryModeDialog, bindingQueryModeDialog);
         }
     }
 
-    private void queryModeMinusAction(Dialog queryMode, DB_Card card) {
+    private void queryModeMinusAction(Dialog queryModeDialog, DiaQueryBinding bindingQueryModeDialog, DB_Card card) {
         int known = Math.max(0, card.known - 1);
         cardsList.stream().filter(i -> i.uid == card.uid).findFirst().get().known = known;
         originalCardsList.stream().filter(i -> i.uid == card.uid).findFirst().get().known = known;
@@ -381,15 +380,15 @@ public class ListCards extends FileTools {
                 sortList();
             }
             setRecView();
-            queryMode.dismiss();
+            queryModeDialog.dismiss();
         } else {
-            nextQuery(queryMode);
+            nextQuery(queryModeDialog, bindingQueryModeDialog);
         }
     }
 
-    private void nextQuery(Dialog queryMode) {
-        View root = queryMode.findViewById(R.id.dia_query_root);
-        LayerDrawable rootBackground = (LayerDrawable) root.getBackground();
+    @SuppressLint("ClickableViewAccessibility")
+    private void nextQuery(Dialog queryModeDialog, DiaQueryBinding bindingQueryModeDialog) {
+        LayerDrawable rootBackground = (LayerDrawable) bindingQueryModeDialog.getRoot().getBackground();
         try {
             int position = Math.min(cardPosition, currentCardsList.size() - 1);
             DB_Card card = dbHelperGet.getSingleCard(currentCardsList.get(position).uid);
@@ -405,7 +404,7 @@ public class ListCards extends FileTools {
                     int colorBackgroundHighlight = colorsBackgroundHighlight.getColor(packColors, 0);
                     GradientDrawable rootBackgroundMain = (GradientDrawable) rootBackground.findDrawableByLayerId(R.id.dia_query_root_background_main);
                     rootBackgroundMain.setColor(colorBackground);
-                    queryMode.findViewById(R.id.query_hide).setBackgroundColor(colorBackgroundHighlight);
+                    bindingQueryModeDialog.queryHide.setBackgroundColor(colorBackgroundHighlight);
                 }
                 colorsBackground.recycle();
                 colorsBackgroundHighlight.recycle();
@@ -425,58 +424,52 @@ public class ListCards extends FileTools {
                 front = new SpannableString(frontString);
                 back = new SpannableString(backString);
             }
-            TextView showQuery = queryMode.findViewById(R.id.query_show);
-            showQuery.setText(front);
+            bindingQueryModeDialog.queryShow.setText(front);
+            bindingQueryModeDialog.queryHide.setText(back);
+            bindingQueryModeDialog.queryHide.setVisibility(View.GONE);
 
-            TextView showSolution = queryMode.findViewById(R.id.query_hide);
-            showSolution.setText(back);
-            showSolution.setVisibility(View.GONE);
-
-            TextView showImageButton = queryMode.findViewById(R.id.query_button_media_image);
             ArrayList<DB_Media_Link_Card> imageList = (ArrayList<DB_Media_Link_Card>) dbHelperGet.getImageMediaLinksByCard(card.uid);
             if (imageList.isEmpty()) {
-                showImageButton.setVisibility(View.INVISIBLE);
+                bindingQueryModeDialog.queryButtonMediaImage.setVisibility(View.INVISIBLE);
             } else {
-                showImageButton.setVisibility(View.VISIBLE);
-                showImageButton.setOnClickListener(v -> showImageListDialog(imageList));
+                bindingQueryModeDialog.queryButtonMediaImage.setVisibility(View.VISIBLE);
+                bindingQueryModeDialog.queryButtonMediaImage.setOnClickListener(v -> showImageListDialog(imageList));
             }
 
-            TextView showMediaButton = queryMode.findViewById(R.id.query_button_media_other);
             ArrayList<DB_Media_Link_Card> mediaList = (ArrayList<DB_Media_Link_Card>) dbHelperGet.getAllMediaLinksByCard(card.uid);
             if (mediaList.isEmpty()) {
-                showMediaButton.setVisibility(View.INVISIBLE);
+                bindingQueryModeDialog.queryButtonMediaOther.setVisibility(View.INVISIBLE);
             } else {
-                showMediaButton.setVisibility(View.VISIBLE);
-                showMediaButton.setOnClickListener(v -> showMediaListDialog(mediaList));
+                bindingQueryModeDialog.queryButtonMediaOther.setVisibility(View.VISIBLE);
+                bindingQueryModeDialog.queryButtonMediaOther.setOnClickListener(v -> showMediaListDialog(mediaList));
             }
 
-            TextView showNotesButton = queryMode.findViewById(R.id.query_button_notes);
             if (card.notes == null || card.notes.isEmpty()) {
-                showNotesButton.setVisibility(View.INVISIBLE);
+                bindingQueryModeDialog.queryButtonNotes.setVisibility(View.INVISIBLE);
             } else {
-                showNotesButton.setVisibility(View.VISIBLE);
-                showNotesButton.setOnClickListener(v -> {
-                    Dialog info = new Dialog(this, R.style.dia_view);
-                    info.setContentView(R.layout.dia_info);
-                    info.setTitle(getResources().getString(R.string.query_notes_title));
-                    info.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
+                bindingQueryModeDialog.queryButtonNotes.setVisibility(View.VISIBLE);
+                bindingQueryModeDialog.queryButtonNotes.setOnClickListener(v -> {
+                    Dialog infoDialog = new Dialog(this, R.style.dia_view);
+                    DiaInfoBinding bindingInfoDialog = DiaInfoBinding.inflate(getLayoutInflater());
+                    infoDialog.setContentView(bindingInfoDialog.getRoot());
+                    infoDialog.setTitle(getResources().getString(R.string.query_notes_title));
+                    infoDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
                             WindowManager.LayoutParams.MATCH_PARENT);
-                    TextView infoText = info.findViewById(R.id.dia_info_text);
-                    infoText.setTextIsSelectable(true);
+                    bindingInfoDialog.diaInfoText.setTextIsSelectable(true);
                     if (settings.getBoolean("format_card_notes", false)) {
                         final Markwon markwon = Markwon.builder(this)
                                 .usePlugin(LinkifyPlugin.create(
                                         Linkify.WEB_URLS
                                 ))
                                 .build();
-                        infoText.setMovementMethod(BetterLinkMovementMethod.getInstance());
-                        infoText.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_START);
-                        markwon.setMarkdown(infoText, card.notes);
+                        bindingInfoDialog.diaInfoText.setMovementMethod(BetterLinkMovementMethod.getInstance());
+                        bindingInfoDialog.diaInfoText.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_START);
+                        markwon.setMarkdown(bindingInfoDialog.diaInfoText, card.notes);
                     } else {
-                        infoText.setAutoLinkMask(Linkify.WEB_URLS);
-                        infoText.setText(card.notes);
+                        bindingInfoDialog.diaInfoText.setAutoLinkMask(Linkify.WEB_URLS);
+                        bindingInfoDialog.diaInfoText.setText(card.notes);
                     }
-                    info.show();
+                    infoDialog.show();
                 });
             }
 
@@ -487,11 +480,7 @@ public class ListCards extends FileTools {
             rootBackgroundTop.setAlpha(0);
             rootBackgroundBottom.setAlpha(0);
 
-            root.setOnTouchListener(new SwipeEvents() {
-                final ImageView swipeNext = queryMode.findViewById(R.id.query_swipe_next);
-                final ImageView swipePrevious = queryMode.findViewById(R.id.query_swipe_previous);
-                final ImageView swipeMinus = queryMode.findViewById(R.id.query_swipe_minus);
-                final ImageView swipePlus = queryMode.findViewById(R.id.query_swipe_plus);
+            bindingQueryModeDialog.getRoot().setOnTouchListener(new SwipeEvents() {
                 final int ANIM_GROW_TIME = 150;
                 final int ANIM_DISPlAY_TIME = 300;
                 boolean allowTouchEvent = true;
@@ -500,24 +489,24 @@ public class ListCards extends FileTools {
                 public void onMoveX(float distance) {
                     if (allowTouchEvent) {
                         if (distance < 0) {
-                            swipeNext.getLayoutParams().width = (int) (2 * Math.abs(distance));
-                            swipeNext.requestLayout();
+                            bindingQueryModeDialog.querySwipeNext.getLayoutParams().width = (int) (2 * Math.abs(distance));
+                            bindingQueryModeDialog.querySwipeNext.requestLayout();
                         } else if (position > 0) {
-                            swipePrevious.getLayoutParams().width = (int) (2 * Math.abs(distance));
-                            swipePrevious.requestLayout();
+                            bindingQueryModeDialog.querySwipePrevious.getLayoutParams().width = (int) (2 * Math.abs(distance));
+                            bindingQueryModeDialog.querySwipePrevious.requestLayout();
                         }
                     }
                 }
 
                 @Override
                 public void onMoveY(float distance) {
-                    if (allowTouchEvent && showSolution.getVisibility() == View.VISIBLE) {
+                    if (allowTouchEvent && bindingQueryModeDialog.queryHide.getVisibility() == View.VISIBLE) {
                         if (distance < 0) {
-                            swipePlus.getLayoutParams().height = (int) (2 * Math.abs(distance));
-                            swipePlus.requestLayout();
+                            bindingQueryModeDialog.querySwipePlus.getLayoutParams().height = (int) (2 * Math.abs(distance));
+                            bindingQueryModeDialog.querySwipePlus.requestLayout();
                         } else {
-                            swipeMinus.getLayoutParams().height = (int) (2 * Math.abs(distance));
-                            swipeMinus.requestLayout();
+                            bindingQueryModeDialog.querySwipeMinus.getLayoutParams().height = (int) (2 * Math.abs(distance));
+                            bindingQueryModeDialog.querySwipeMinus.requestLayout();
                         }
                     }
                 }
@@ -526,14 +515,14 @@ public class ListCards extends FileTools {
                 public void onMoveCancel() {
                     super.onMoveCancel();
                     if (allowTouchEvent) {
-                        swipeNext.getLayoutParams().width = 0;
-                        swipeNext.requestLayout();
-                        swipePrevious.getLayoutParams().width = 0;
-                        swipePrevious.requestLayout();
-                        swipeMinus.getLayoutParams().height = 0;
-                        swipeMinus.requestLayout();
-                        swipePlus.getLayoutParams().height = 0;
-                        swipePlus.requestLayout();
+                        bindingQueryModeDialog.querySwipeNext.getLayoutParams().width = 0;
+                        bindingQueryModeDialog.querySwipeNext.requestLayout();
+                        bindingQueryModeDialog.querySwipePrevious.getLayoutParams().width = 0;
+                        bindingQueryModeDialog.querySwipePrevious.requestLayout();
+                        bindingQueryModeDialog.querySwipeMinus.getLayoutParams().height = 0;
+                        bindingQueryModeDialog.querySwipeMinus.requestLayout();
+                        bindingQueryModeDialog.querySwipePlus.getLayoutParams().height = 0;
+                        bindingQueryModeDialog.querySwipePlus.requestLayout();
                     }
                 }
 
@@ -541,18 +530,18 @@ public class ListCards extends FileTools {
                 public void onSwipeLeft() {
                     if (allowTouchEvent) {
                         allowTouchEvent = false;
-                        ValueAnimator growAnimator = ValueAnimator.ofInt(swipeNext.getWidth(), root.getWidth());
+                        ValueAnimator growAnimator = ValueAnimator.ofInt(bindingQueryModeDialog.querySwipeNext.getWidth(), bindingQueryModeDialog.getRoot().getWidth());
                         growAnimator.setDuration(ANIM_GROW_TIME);
                         growAnimator.addUpdateListener(animation -> {
-                            swipeNext.getLayoutParams().width = (int) animation.getAnimatedValue();
-                            swipeNext.requestLayout();
+                            bindingQueryModeDialog.querySwipeNext.getLayoutParams().width = (int) animation.getAnimatedValue();
+                            bindingQueryModeDialog.querySwipeNext.requestLayout();
                         });
                         growAnimator.addListener(new AnimatorListenerAdapter() {
                             @Override
                             public void onAnimationEnd(Animator animation) {
                                 new Handler(Looper.getMainLooper()).postDelayed(
                                         () -> {
-                                            queryModeSkipAction(queryMode);
+                                            queryModeSkipAction(queryModeDialog, bindingQueryModeDialog);
                                             allowTouchEvent = true;
                                             onMoveCancel();
                                         },
@@ -569,18 +558,18 @@ public class ListCards extends FileTools {
                 public void onSwipeRight() {
                     if (allowTouchEvent && position > 0) {
                         allowTouchEvent = false;
-                        ValueAnimator growAnimator = ValueAnimator.ofInt(swipePrevious.getWidth(), root.getWidth());
+                        ValueAnimator growAnimator = ValueAnimator.ofInt(bindingQueryModeDialog.querySwipePrevious.getWidth(), bindingQueryModeDialog.getRoot().getWidth());
                         growAnimator.setDuration(ANIM_GROW_TIME);
                         growAnimator.addUpdateListener(animation -> {
-                            swipePrevious.getLayoutParams().width = (int) animation.getAnimatedValue();
-                            swipePrevious.requestLayout();
+                            bindingQueryModeDialog.querySwipePrevious.getLayoutParams().width = (int) animation.getAnimatedValue();
+                            bindingQueryModeDialog.querySwipePrevious.requestLayout();
                         });
                         growAnimator.addListener(new AnimatorListenerAdapter() {
                             @Override
                             public void onAnimationEnd(Animator animation) {
                                 new Handler(Looper.getMainLooper()).postDelayed(
                                         () -> {
-                                            queryModePreviousAction(queryMode);
+                                            queryModePreviousAction(queryModeDialog, bindingQueryModeDialog);
                                             allowTouchEvent = true;
                                             onMoveCancel();
                                         },
@@ -595,20 +584,20 @@ public class ListCards extends FileTools {
 
                 @Override
                 public void onSwipeTop() {
-                    if (allowTouchEvent && showSolution.getVisibility() == View.VISIBLE) {
+                    if (allowTouchEvent && bindingQueryModeDialog.queryHide.getVisibility() == View.VISIBLE) {
                         allowTouchEvent = false;
-                        ValueAnimator growAnimator = ValueAnimator.ofInt(swipePlus.getHeight(), root.getHeight());
+                        ValueAnimator growAnimator = ValueAnimator.ofInt(bindingQueryModeDialog.querySwipePlus.getHeight(), bindingQueryModeDialog.getRoot().getHeight());
                         growAnimator.setDuration(ANIM_GROW_TIME);
                         growAnimator.addUpdateListener(animation -> {
-                            swipePlus.getLayoutParams().height = (int) animation.getAnimatedValue();
-                            swipePlus.requestLayout();
+                            bindingQueryModeDialog.querySwipePlus.getLayoutParams().height = (int) animation.getAnimatedValue();
+                            bindingQueryModeDialog.querySwipePlus.requestLayout();
                         });
                         growAnimator.addListener(new AnimatorListenerAdapter() {
                             @Override
                             public void onAnimationEnd(Animator animation) {
                                 new Handler(Looper.getMainLooper()).postDelayed(
                                         () -> {
-                                            queryModePlusAction(queryMode, card);
+                                            queryModePlusAction(queryModeDialog, bindingQueryModeDialog, card);
                                             allowTouchEvent = true;
                                             onMoveCancel();
                                         },
@@ -623,20 +612,20 @@ public class ListCards extends FileTools {
 
                 @Override
                 public void onSwipeBottom() {
-                    if (allowTouchEvent && showSolution.getVisibility() == View.VISIBLE) {
+                    if (allowTouchEvent && bindingQueryModeDialog.queryHide.getVisibility() == View.VISIBLE) {
                         allowTouchEvent = false;
-                        ValueAnimator growAnimator = ValueAnimator.ofInt(swipeMinus.getHeight(), root.getHeight());
+                        @SuppressLint("ClickableViewAccessibility") ValueAnimator growAnimator = ValueAnimator.ofInt(bindingQueryModeDialog.querySwipeMinus.getHeight(), bindingQueryModeDialog.getRoot().getHeight());
                         growAnimator.setDuration(ANIM_GROW_TIME);
                         growAnimator.addUpdateListener(animation -> {
-                            swipeMinus.getLayoutParams().height = (int) animation.getAnimatedValue();
-                            swipeMinus.requestLayout();
+                            bindingQueryModeDialog.querySwipeMinus.getLayoutParams().height = (int) animation.getAnimatedValue();
+                            bindingQueryModeDialog.querySwipeMinus.requestLayout();
                         });
                         growAnimator.addListener(new AnimatorListenerAdapter() {
                             @Override
                             public void onAnimationEnd(Animator animation) {
                                 new Handler(Looper.getMainLooper()).postDelayed(
                                         () -> {
-                                            queryModeMinusAction(queryMode, card);
+                                            queryModeMinusAction(queryModeDialog, bindingQueryModeDialog, card);
                                             allowTouchEvent = true;
                                             onMoveCancel();
                                         },
@@ -650,107 +639,98 @@ public class ListCards extends FileTools {
                 }
             });
 
-            ImageButton plus = queryMode.findViewById(R.id.query_plus);
-            ImageButton minus = queryMode.findViewById(R.id.query_minus);
-            plus.setVisibility(View.GONE);
-            minus.setVisibility(View.GONE);
+            bindingQueryModeDialog.queryPlus.setVisibility(View.GONE);
+            bindingQueryModeDialog.queryMinus.setVisibility(View.GONE);
 
-            ImageButton skip = queryMode.findViewById(R.id.query_skip);
-            skip.setOnClickListener(vv -> queryModeSkipAction(queryMode));
-            ImageButton previous = queryMode.findViewById(R.id.query_back);
+            bindingQueryModeDialog.querySkip.setOnClickListener(vv -> queryModeSkipAction(queryModeDialog, bindingQueryModeDialog));
             if (position == 0) {
-                previous.setVisibility(View.INVISIBLE);
+                bindingQueryModeDialog.queryBack.setVisibility(View.INVISIBLE);
             } else {
-                previous.setVisibility(View.VISIBLE);
-                previous.setOnClickListener(vv -> queryModePreviousAction(queryMode));
+                bindingQueryModeDialog.queryBack.setVisibility(View.VISIBLE);
+                bindingQueryModeDialog.queryBack.setOnClickListener(vv -> queryModePreviousAction(queryModeDialog, bindingQueryModeDialog));
             }
 
-            Button showHiddenButton = queryMode.findViewById(R.id.query_button_hide);
-            showHiddenButton.setVisibility(View.VISIBLE);
-            showHiddenButton.setOnClickListener(v -> {
-                showHiddenButton.setVisibility(View.GONE);
-                showSolution.setVisibility(View.VISIBLE);
-                plus.setVisibility(View.VISIBLE);
-                minus.setVisibility(View.VISIBLE);
-                plus.setOnClickListener(vv -> queryModePlusAction(queryMode, card));
-                minus.setOnClickListener(vv -> queryModeMinusAction(queryMode, card));
+            bindingQueryModeDialog.queryButtonHide.setVisibility(View.VISIBLE);
+            bindingQueryModeDialog.queryButtonHide.setOnClickListener(v -> {
+                bindingQueryModeDialog.queryButtonHide.setVisibility(View.GONE);
+                bindingQueryModeDialog.queryHide.setVisibility(View.VISIBLE);
+                bindingQueryModeDialog.queryPlus.setVisibility(View.VISIBLE);
+                bindingQueryModeDialog.queryMinus.setVisibility(View.VISIBLE);
+                bindingQueryModeDialog.queryPlus.setOnClickListener(vv -> queryModePlusAction(queryModeDialog, bindingQueryModeDialog, card));
+                bindingQueryModeDialog.queryMinus.setOnClickListener(vv -> queryModeMinusAction(queryModeDialog, bindingQueryModeDialog, card));
                 rootBackgroundTop.setAlpha(255);
                 rootBackgroundBottom.setAlpha(255);
             });
         } catch (Exception e) {
             e.printStackTrace();
-            Toast.makeText(getApplicationContext(), R.string.error, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
         }
     }
 
     private void setCardPosition() {
-        cardPosition = ((LinearLayoutManager) Objects.requireNonNull(recyclerView.getLayoutManager()))
+        cardPosition = ((LinearLayoutManager) Objects.requireNonNull(binding.recDefault.getLayoutManager()))
                 .findFirstVisibleItemPosition();
-        cardPosition = Math.min(cardPosition, Objects.requireNonNull(recyclerView.getAdapter()).getItemCount() - 1);
+        cardPosition = Math.min(cardPosition, Objects.requireNonNull(binding.recDefault.getAdapter()).getItemCount() - 1);
     }
 
     public void startQueryMode(MenuItem menuItem) {
-        Dialog queryMode = new Dialog(this, R.style.dia_view);
-        queryMode.setContentView(R.layout.dia_query);
-        queryMode.setTitle(getResources().getString(R.string.query_mode));
-        queryMode.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
+        Dialog queryModeDialog = new Dialog(this, R.style.dia_view);
+        DiaQueryBinding bindingQueryModeDialog = DiaQueryBinding.inflate(getLayoutInflater());
+        queryModeDialog.setContentView(bindingQueryModeDialog.getRoot());
+        queryModeDialog.setTitle(getResources().getString(R.string.query_mode));
+        queryModeDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.MATCH_PARENT);
         dbHelperUpdate = new DB_Helper_Update(this);
         setCardPosition();
-        nextQuery(queryMode);
-        queryMode.setOnKeyListener((dialogInterface, keyCode, event) -> {
+        nextQuery(queryModeDialog, bindingQueryModeDialog);
+        queryModeDialog.setOnKeyListener((dialogInterface, keyCode, event) -> {
             if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
                 if (!saveList || (savedList == null && savedListSeed == 0)) {
                     Dialog exitQueryModeDialog = new Dialog(ListCards.this, R.style.dia_view);
-                    exitQueryModeDialog.setContentView(R.layout.dia_confirm);
+                    DiaConfirmBinding bindingExitQueryModeDialog = DiaConfirmBinding.inflate(getLayoutInflater());
+                    exitQueryModeDialog.setContentView(bindingExitQueryModeDialog.getRoot());
                     exitQueryModeDialog.setTitle(getResources().getString(R.string.query_mode_exit));
                     exitQueryModeDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
                             WindowManager.LayoutParams.MATCH_PARENT);
-                    Button exitQueryModeY = exitQueryModeDialog.findViewById(R.id.dia_confirm_yes);
-                    Button exitQueryModeN = exitQueryModeDialog.findViewById(R.id.dia_confirm_no);
-                    exitQueryModeY.setOnClickListener(v -> {
+                    bindingExitQueryModeDialog.diaConfirmYes.setOnClickListener(v -> {
                         cardPosition = 0;
                         sortList();
                         setRecView();
                         exitQueryModeDialog.dismiss();
-                        queryMode.dismiss();
+                        queryModeDialog.dismiss();
                     });
-                    exitQueryModeN.setOnClickListener(v -> exitQueryModeDialog.dismiss());
+                    bindingExitQueryModeDialog.diaConfirmNo.setOnClickListener(v -> exitQueryModeDialog.dismiss());
                     exitQueryModeDialog.show();
                 } else {
                     setRecView();
-                    queryMode.dismiss();
+                    queryModeDialog.dismiss();
                 }
                 return true;
             }
             return false;
         });
-        queryMode.show();
+        queryModeDialog.show();
     }
 
     public void showListStats(MenuItem menuItem) {
         Dialog listStatsDialog = new Dialog(this, R.style.dia_view);
-        listStatsDialog.setContentView(R.layout.dia_list_stats);
+        DiaListStatsBinding bindingListStatsDialog = DiaListStatsBinding.inflate(getLayoutInflater());
+        listStatsDialog.setContentView(bindingListStatsDialog.getRoot());
         listStatsDialog.setTitle(getResources().getString(R.string.list_stats));
         listStatsDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.MATCH_PARENT);
 
-        TextView statTotalCardsView = listStatsDialog.findViewById(R.id.list_stat_cards_total_content);
-        statTotalCardsView.setText(Integer.toString(currentCardsList.size()));
+        bindingListStatsDialog.listStatCardsTotalContent.setText(Integer.toString(currentCardsList.size()));
 
         int statTotalProgress = currentCardsList.stream().mapToInt(c -> c.known).sum();
-        TextView statTotalProgressView = listStatsDialog.findViewById(R.id.list_stat_progress_total_content);
-        statTotalProgressView.setText(Integer.toString(statTotalProgress));
+        bindingListStatsDialog.listStatProgressTotalContent.setText(Integer.toString(statTotalProgress));
         int statMaxProgress = currentCardsList.stream().mapToInt(c -> c.known).max().orElse(0);
-        TextView statMaxProgressView = listStatsDialog.findViewById(R.id.list_stat_progress_max_content);
-        statMaxProgressView.setText(Integer.toString(statMaxProgress));
+        bindingListStatsDialog.listStatProgressMaxContent.setText(Integer.toString(statMaxProgress));
         int statMinProgress = currentCardsList.stream().mapToInt(c -> c.known).min().orElse(0);
-        TextView statMinProgressView = listStatsDialog.findViewById(R.id.list_stat_progress_min_content);
-        statMinProgressView.setText(Integer.toString(statMinProgress));
+        bindingListStatsDialog.listStatProgressMinContent.setText(Integer.toString(statMinProgress));
         double statAvgProgress = currentCardsList.stream().mapToInt(c -> c.known).average().orElse(0);
         statAvgProgress = Math.round(statAvgProgress * 100.0) / 100.0;
-        TextView statAvgProgressView = listStatsDialog.findViewById(R.id.list_stat_progress_avg_content);
-        statAvgProgressView.setText(Double.toString(statAvgProgress));
+        bindingListStatsDialog.listStatProgressAvgContent.setText(Double.toString(statAvgProgress));
 
         int statProgressTableIs0 = (int) currentCardsList.stream().filter(c -> c.known == 0).count();
         int statProgressTableIs1 = (int) currentCardsList.stream().filter(c -> c.known == 1).count();
@@ -759,47 +739,35 @@ public class ListCards extends FileTools {
         int statProgressTableIs4 = (int) currentCardsList.stream().filter(c -> c.known == 4).count();
         int statProgressTableIs5OrMore = (int) currentCardsList.stream().filter(c -> c.known >= 5).count();
         float percentCurrent = statProgressTableIs0 / ((float) currentCardsList.size());
-        TextView statProgressTableKnown0 = listStatsDialog.findViewById(R.id.list_stat_progress_counter_number_0);
-        TextView statProgressTablePercent0 = listStatsDialog.findViewById(R.id.list_stat_progress_counter_percent_0);
-        statProgressTableKnown0.setText(Integer.toString(statProgressTableIs0));
-        statProgressTablePercent0.setText(Integer.toString(Math.round(percentCurrent * 100)));
+        bindingListStatsDialog.listStatProgressCounterNumber0.setText(Integer.toString(statProgressTableIs0));
+        bindingListStatsDialog.listStatProgressCounterPercent0.setText(Integer.toString(Math.round(percentCurrent * 100)));
         percentCurrent = statProgressTableIs1 / ((float) currentCardsList.size());
-        TextView statProgressTableKnown1 = listStatsDialog.findViewById(R.id.list_stat_progress_counter_number_1);
-        TextView statProgressTablePercent1 = listStatsDialog.findViewById(R.id.list_stat_progress_counter_percent_1);
-        statProgressTableKnown1.setText(Integer.toString(statProgressTableIs1));
-        statProgressTablePercent1.setText(Integer.toString(Math.round(percentCurrent * 100)));
+        bindingListStatsDialog.listStatProgressCounterNumber1.setText(Integer.toString(statProgressTableIs1));
+        bindingListStatsDialog.listStatProgressCounterPercent1.setText(Integer.toString(Math.round(percentCurrent * 100)));
         percentCurrent = statProgressTableIs2 / ((float) currentCardsList.size());
-        TextView statProgressTableKnown2 = listStatsDialog.findViewById(R.id.list_stat_progress_counter_number_2);
-        TextView statProgressTablePercent2 = listStatsDialog.findViewById(R.id.list_stat_progress_counter_percent_2);
-        statProgressTableKnown2.setText(Integer.toString(statProgressTableIs2));
-        statProgressTablePercent2.setText(Integer.toString(Math.round(percentCurrent * 100)));
+        bindingListStatsDialog.listStatProgressCounterNumber2.setText(Integer.toString(statProgressTableIs2));
+        bindingListStatsDialog.listStatProgressCounterPercent2.setText(Integer.toString(Math.round(percentCurrent * 100)));
         percentCurrent = statProgressTableIs3 / ((float) currentCardsList.size());
-        TextView statProgressTableKnown3 = listStatsDialog.findViewById(R.id.list_stat_progress_counter_number_3);
-        TextView statProgressTablePercent3 = listStatsDialog.findViewById(R.id.list_stat_progress_counter_percent_3);
-        statProgressTableKnown3.setText(Integer.toString(statProgressTableIs3));
-        statProgressTablePercent3.setText(Integer.toString(Math.round(percentCurrent * 100)));
+        bindingListStatsDialog.listStatProgressCounterNumber3.setText(Integer.toString(statProgressTableIs3));
+        bindingListStatsDialog.listStatProgressCounterPercent3.setText(Integer.toString(Math.round(percentCurrent * 100)));
         percentCurrent = statProgressTableIs4 / ((float) currentCardsList.size());
-        TextView statProgressTableKnown4 = listStatsDialog.findViewById(R.id.list_stat_progress_counter_number_4);
-        TextView statProgressTablePercent4 = listStatsDialog.findViewById(R.id.list_stat_progress_counter_percent_4);
-        statProgressTableKnown4.setText(Integer.toString(statProgressTableIs4));
-        statProgressTablePercent4.setText(Integer.toString(Math.round(percentCurrent * 100)));
+        bindingListStatsDialog.listStatProgressCounterNumber4.setText(Integer.toString(statProgressTableIs4));
+        bindingListStatsDialog.listStatProgressCounterPercent4.setText(Integer.toString(Math.round(percentCurrent * 100)));
         percentCurrent = statProgressTableIs5OrMore / ((float) currentCardsList.size());
-        TextView statProgressTableKnown5 = listStatsDialog.findViewById(R.id.list_stat_progress_counter_number_5);
-        TextView statProgressTablePercent5 = listStatsDialog.findViewById(R.id.list_stat_progress_counter_percent_5);
-        statProgressTableKnown5.setText(Integer.toString(statProgressTableIs5OrMore));
-        statProgressTablePercent5.setText(Integer.toString(Math.round(percentCurrent * 100)));
+        bindingListStatsDialog.listStatProgressCounterNumber5.setText(Integer.toString(statProgressTableIs5OrMore));
+        bindingListStatsDialog.listStatProgressCounterPercent5.setText(Integer.toString(Math.round(percentCurrent * 100)));
 
         listStatsDialog.show();
     }
 
     public void startNewCard(MenuItem menuItem) {
-        Intent intent = new Intent(this.getApplicationContext(), NewCard.class);
+        Intent intent = new Intent(this, NewCard.class);
         intent.putExtra("collection", collectionNo);
         intent.putExtra("pack", packNo);
         intent.putExtra("reverse", reverse);
         intent.putExtra("sort", sort);
         intent.putExtra("searchQuery", searchQuery);
-        intent.putExtra("cardPosition", ((LinearLayoutManager) Objects.requireNonNull(recyclerView.getLayoutManager()))
+        intent.putExtra("cardPosition", ((LinearLayoutManager) Objects.requireNonNull(binding.recDefault.getLayoutManager()))
                 .findFirstVisibleItemPosition());
         intent.putIntegerArrayListExtra("savedList", savedList);
         this.startActivity(intent);
@@ -830,13 +798,13 @@ public class ListCards extends FileTools {
     }
 
     public void packDetails(MenuItem menuItem) {
-        Intent intent = new Intent(getApplicationContext(), ViewPack.class);
+        Intent intent = new Intent(this, ViewPack.class);
         intent.putExtra("collection", collectionNo);
         intent.putExtra("pack", packNo);
         intent.putExtra("reverse", reverse);
         intent.putExtra("sort", sort);
         intent.putExtra("searchQuery", searchQuery);
-        intent.putExtra("cardPosition", ((LinearLayoutManager) Objects.requireNonNull(recyclerView.getLayoutManager()))
+        intent.putExtra("cardPosition", ((LinearLayoutManager) Objects.requireNonNull(binding.recDefault.getLayoutManager()))
                 .findFirstVisibleItemPosition());
         intent.putIntegerArrayListExtra("savedList", savedList);
         intent.putExtra("savedListSeed", savedListSeed);
@@ -870,25 +838,24 @@ public class ListCards extends FileTools {
                 searchCardsOffItem.setVisible(false);
                 searchQuery = "";
                 cardPosition = 0;
-                Toast.makeText(getApplicationContext(), R.string.search_no_results, Toast.LENGTH_LONG).show();
+                Toast.makeText(this, R.string.search_no_results, Toast.LENGTH_LONG).show();
             } else {
                 currentCardsList = cardsListFiltered;
             }
         }
         //Set recycler view
-        AdapterCards adapter = new AdapterCards(currentCardsList, this, reverse, sort, packNo, packNos, searchQuery,
-                collectionNo, progressGreater, progressNumber, savedList, savedListSeed);
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.scrollToPosition(
-                Math.min(cardPosition, Objects.requireNonNull(recyclerView.getAdapter()).getItemCount() - 1));
+        AdapterCards adapter = new AdapterCards(currentCardsList, reverse, sort, packNo, packNos, searchQuery, collectionNo, progressGreater, progressNumber, savedList, savedListSeed);
+        binding.recDefault.setAdapter(adapter);
+        binding.recDefault.setLayoutManager(new LinearLayoutManager(this));
+        binding.recDefault.scrollToPosition(
+                Math.min(cardPosition, Objects.requireNonNull(binding.recDefault.getAdapter()).getItemCount() - 1));
     }
 
     @Override
     public void onBackPressed() {
         Intent intent;
         if (packNo == -2 || packNo == -3) {
-            intent = new Intent(getApplicationContext(), AdvancedSearch.class);
+            intent = new Intent(this, AdvancedSearch.class);
             intent.putExtra("pack", packNo);
             if (packNo == -2) {
                 intent.putIntegerArrayListExtra("packs", packNos);
@@ -896,7 +863,7 @@ public class ListCards extends FileTools {
             intent.putExtra("progressGreater", progressGreater);
             intent.putExtra("progressNumber", progressNumber);
         } else {
-            intent = new Intent(getApplicationContext(), ListPacks.class);
+            intent = new Intent(this, ListPacks.class);
             intent.putExtra("collection", collectionNo);
         }
         startActivity(intent);
