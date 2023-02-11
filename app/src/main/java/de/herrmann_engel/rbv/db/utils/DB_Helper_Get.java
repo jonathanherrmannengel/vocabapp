@@ -12,6 +12,7 @@ import java.util.List;
 import de.herrmann_engel.rbv.Globals;
 import de.herrmann_engel.rbv.db.DB_Card;
 import de.herrmann_engel.rbv.db.DB_Collection;
+import de.herrmann_engel.rbv.db.DB_Collection_With_Meta;
 import de.herrmann_engel.rbv.db.DB_Media;
 import de.herrmann_engel.rbv.db.DB_Media_Link_Card;
 import de.herrmann_engel.rbv.db.DB_Pack;
@@ -44,10 +45,6 @@ public class DB_Helper_Get {
     //Count
     public int countPacks() {
         return dbHelper.pack_dao.countPacks();
-    }
-
-    public int countPacksInCollection(int collection) {
-        return dbHelper.pack_dao.countPacksInCollection(collection);
     }
 
     public int countCards() {
@@ -116,6 +113,10 @@ public class DB_Helper_Get {
 
     public List<DB_Collection> getAllCollectionsByName(String name) {
         return dbHelper.collection_dao.getAllByName(name);
+    }
+
+    public List<DB_Collection_With_Meta> getAllCollectionsWithMeta() {
+        return dbHelper.collection_dao.getAllWithMeta();
     }
 
     //Get All: Packs

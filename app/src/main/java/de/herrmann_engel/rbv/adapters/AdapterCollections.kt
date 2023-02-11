@@ -1,6 +1,5 @@
 package de.herrmann_engel.rbv.adapters
 
-import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
@@ -15,16 +14,17 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.activities.ListPacks
 import de.herrmann_engel.rbv.adapters.compare.ListCollectionCompare
 import de.herrmann_engel.rbv.databinding.RecViewCollectionOrPackBinding
-import de.herrmann_engel.rbv.db.DB_Collection
-import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
+import de.herrmann_engel.rbv.db.DB_Collection_With_Meta
 import de.herrmann_engel.rbv.utils.StringTools
 
-class AdapterCollections(private val collection: MutableList<DB_Collection>) :
+class AdapterCollections(
+    private val collection: MutableList<DB_Collection_With_Meta>,
+    private var uiFontSizeBig: Boolean
+) :
     RecyclerView.Adapter<AdapterCollections.ViewHolder>() {
 
     class ViewHolder(val binding: RecViewCollectionOrPackBinding) :
@@ -32,9 +32,31 @@ class AdapterCollections(private val collection: MutableList<DB_Collection>) :
 
     private val stringTools = StringTools()
 
-    fun updateContent(collectionListNew: List<DB_Collection>) {
+    fun updateSettingsAndContent(
+        collectionListNew: List<DB_Collection_With_Meta>,
+        uiFontSizeBig: Boolean
+    ) {
+        val updateAllContent = this.uiFontSizeBig != uiFontSizeBig
+        this.uiFontSizeBig = uiFontSizeBig
+        updateContent(collectionListNew, updateAllContent)
+    }
+
+    fun updateContent(collectionListNew: List<DB_Collection_With_Meta>) {
+        updateContent(collectionListNew, false)
+    }
+
+    private fun updateContent(
+        collectionListNew: List<DB_Collection_With_Meta>,
+        updateAllContent: Boolean
+    ) {
         val diffResult =
-            DiffUtil.calculateDiff(ListCollectionCompare(collection, collectionListNew))
+            DiffUtil.calculateDiff(
+                ListCollectionCompare(
+                    collection,
+                    collectionListNew,
+                    updateAllContent
+                )
+            )
         collection.clear()
         collection.addAll(collectionListNew)
         diffResult.dispatchUpdatesTo(this)
@@ -51,8 +73,7 @@ class AdapterCollections(private val collection: MutableList<DB_Collection>) :
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         val context = viewHolder.binding.root.context
-        val settings = context.getSharedPreferences(Globals.SETTINGS_NAME, Context.MODE_PRIVATE)
-        if (settings.getBoolean("ui_font_size", false)) {
+        if (uiFontSizeBig) {
             viewHolder.binding.recCollectionsName.setTextSize(
                 TypedValue.COMPLEX_UNIT_PX,
                 context.resources.getDimension(R.dimen.rec_view_font_size_big)
@@ -153,10 +174,8 @@ class AdapterCollections(private val collection: MutableList<DB_Collection>) :
             viewHolder.binding.recCollectionsDesc.text =
                 viewHolder.binding.recCollectionsDesc.resources.getString(R.string.all_packs_desc)
             viewHolder.binding.recCollectionsPreviewText.text = "…"
-            val dbHelperGet =
-                DB_Helper_Get(context)
-            val size = dbHelperGet.countPacks()
-            viewHolder.binding.recCollectionsNumberText.text = size.toString()
+            viewHolder.binding.recCollectionsNumberText.text =
+                collection[position].counter.toString()
             viewHolder.binding.recCollectionsName.setTextColor(Color.rgb(0, 0, 0))
             viewHolder.binding.recCollectionsPreviewText.setTextColor(Color.rgb(0, 0, 0))
             viewHolder.binding.recCollectionsPreviewText.setBackgroundColor(
@@ -172,7 +191,8 @@ class AdapterCollections(private val collection: MutableList<DB_Collection>) :
             backgroundBehind.mutate()
             backgroundBehind.setStroke(1, Color.rgb(185, 185, 185))
         } else {
-            val extra = collection[position].uid
+            val currentCollection = collection[position].collection
+            val extra = currentCollection.uid
             viewHolder.binding.root.setOnClickListener {
                 val intent = Intent(
                     context,
@@ -182,27 +202,25 @@ class AdapterCollections(private val collection: MutableList<DB_Collection>) :
                 context.startActivity(intent)
             }
             viewHolder.binding.recCollectionsName.text =
-                stringTools.shorten(collection[position].name)
-            if (collection[position].desc.isEmpty()) {
+                stringTools.shorten(currentCollection.name)
+            if (currentCollection.desc.isNullOrEmpty()) {
                 viewHolder.binding.recCollectionsDesc.visibility = View.GONE
             } else {
                 viewHolder.binding.recCollectionsDesc.visibility = View.VISIBLE
                 viewHolder.binding.recCollectionsDesc.text = stringTools
-                    .shorten(collection[position].desc)
+                    .shorten(currentCollection.desc)
             }
-            val emojiText = collection[position].emoji
+            val emojiText = currentCollection.emoji
             viewHolder.binding.recCollectionsPreviewText.text =
                 if (emojiText.isNullOrEmpty()) {
                     val pattern = Regex("^(\\P{M}\\p{M}*+).*")
-                    collection[position].name.replace(pattern, "$1")
+                    currentCollection.name.replace(pattern, "$1")
                 } else {
                     emojiText
                 }
-            val dbHelperGet =
-                DB_Helper_Get(context)
-            val size = dbHelperGet.countPacksInCollection(collection[position].uid)
-            viewHolder.binding.recCollectionsNumberText.text = size.toString()
-            val color = collection[position].colors
+            viewHolder.binding.recCollectionsNumberText.text =
+                collection[position].counter.toString()
+            val color = currentCollection.colors
             val colors =
                 context.resources.obtainTypedArray(R.array.pack_color_list)
             val colorsBackground =

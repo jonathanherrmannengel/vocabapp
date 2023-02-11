@@ -28,7 +28,7 @@ import de.herrmann_engel.rbv.adapters.AdapterCollections;
 import de.herrmann_engel.rbv.databinding.ActivityDefaultRecBinding;
 import de.herrmann_engel.rbv.databinding.DiaExportBinding;
 import de.herrmann_engel.rbv.databinding.DiaImportBinding;
-import de.herrmann_engel.rbv.db.DB_Collection;
+import de.herrmann_engel.rbv.db.DB_Collection_With_Meta;
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get;
 import de.herrmann_engel.rbv.export_import.AsyncExport;
 import de.herrmann_engel.rbv.export_import.AsyncExportFinish;
@@ -77,9 +77,6 @@ public class ListCollections extends FileTools implements AsyncImportFinish, Asy
         setContentView(binding.getRoot());
         setTitle(R.string.app_name);
         dbHelperGet = new DB_Helper_Get(this);
-        adapter = new AdapterCollections(loadContent());
-        binding.recDefault.setAdapter(adapter);
-        binding.recDefault.setLayoutManager(new LinearLayoutManager(this));
         handleNoMediaFile();
     }
 
@@ -110,7 +107,14 @@ public class ListCollections extends FileTools implements AsyncImportFinish, Asy
         } else {
             binding.backgroundImage.setVisibility(View.GONE);
         }
-        updateContent();
+        boolean uiFontSizeBig = settings.getBoolean("ui_font_size", false);
+        if (adapter == null) {
+            adapter = new AdapterCollections(loadContent(), uiFontSizeBig);
+            binding.recDefault.setAdapter(adapter);
+            binding.recDefault.setLayoutManager(new LinearLayoutManager(this));
+        } else {
+            adapter.updateSettingsAndContent(loadContent(), uiFontSizeBig);
+        }
     }
 
     @Override
@@ -131,15 +135,12 @@ public class ListCollections extends FileTools implements AsyncImportFinish, Asy
         }
     }
 
-    private List<DB_Collection> loadContent() {
-        List<DB_Collection> currentList = dbHelperGet.getAllCollections();
-        DB_Collection fixedFirstItemPlaceholder = new DB_Collection();
+    private List<DB_Collection_With_Meta> loadContent() {
+        List<DB_Collection_With_Meta> currentList = dbHelperGet.getAllCollectionsWithMeta();
+        DB_Collection_With_Meta fixedFirstItemPlaceholder = new DB_Collection_With_Meta();
+        fixedFirstItemPlaceholder.counter = dbHelperGet.countPacks();
         currentList.add(0, fixedFirstItemPlaceholder);
         return currentList;
-    }
-
-    private void updateContent() {
-        adapter.updateContent(loadContent());
     }
 
     public void startNewCollection(MenuItem menuItem) {
@@ -217,7 +218,9 @@ public class ListCollections extends FileTools implements AsyncImportFinish, Asy
                 } else {
                     Toast.makeText(this, R.string.import_warn, Toast.LENGTH_LONG).show();
                 }
-                updateContent();
+                if (adapter != null) {
+                    adapter.updateContent(loadContent());
+                }
             } else {
                 Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show();
             }

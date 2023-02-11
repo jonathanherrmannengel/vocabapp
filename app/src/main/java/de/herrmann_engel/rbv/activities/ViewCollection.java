@@ -119,7 +119,7 @@ public class ViewCollection extends AppCompatActivity {
                 DB_Helper_Delete dbHelperDelete = new DB_Helper_Delete(this);
                 dbHelperDelete.deleteCollection(collection, forceDelete);
                 Intent intent = new Intent(this, ListCollections.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 startActivity(intent);
             } else {
                 deleteCollection(true);

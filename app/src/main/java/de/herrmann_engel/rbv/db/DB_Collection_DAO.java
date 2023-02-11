@@ -21,6 +21,9 @@ public interface DB_Collection_DAO {
     @Query("SELECT * FROM db_collection WHERE name=:name ORDER BY name COLLATE NOCASE ASC, uid DESC")
     List<DB_Collection> getAllByName(String name);
 
+    @Query("SELECT *, (SELECT COUNT(*) FROM db_pack WHERE collection=db_collection.uid) AS counter FROM db_collection ORDER BY name COLLATE NOCASE ASC, uid DESC")
+    List<DB_Collection_With_Meta> getAllWithMeta();
+
     @Query("SELECT uid FROM db_collection ORDER BY name COLLATE NOCASE ASC, uid DESC")
     List<Integer> getAllIDs();
 

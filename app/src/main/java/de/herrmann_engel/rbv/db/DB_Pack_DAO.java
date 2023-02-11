@@ -16,9 +16,6 @@ public interface DB_Pack_DAO {
     @Query("SELECT COUNT(*) FROM db_pack")
     int countPacks();
 
-    @Query("SELECT COUNT(*) FROM db_pack WHERE collection=:cid")
-    int countPacksInCollection(int cid);
-
     @Query("SELECT * FROM db_pack ORDER BY name COLLATE NOCASE ASC, uid DESC")
     List<DB_Pack> getAll();
 
