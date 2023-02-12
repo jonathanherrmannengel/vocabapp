@@ -16,9 +16,9 @@ import de.herrmann_engel.rbv.db.DB_Pack;
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get;
 
 public class AdvancedSearch extends AppCompatActivity {
+    private final ArrayList<Integer> packList = new ArrayList<>();
     private ActivityAdvancedSearchBinding binding;
     private int pack = -3;
-    private ArrayList<Integer> packList = new ArrayList<>();
     private boolean progressGreater = false;
     private int progressNumber = -1;
 
@@ -28,18 +28,9 @@ public class AdvancedSearch extends AppCompatActivity {
         binding = ActivityAdvancedSearchBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        if (getIntent().getExtras() != null) {
-            pack = getIntent().getExtras().getInt("pack");
-            if (getIntent().getExtras().getIntegerArrayList("packs") != null) {
-                packList = getIntent().getExtras().getIntegerArrayList("packs");
-            }
-            progressGreater = getIntent().getExtras().getBoolean("progressGreater", false);
-            progressNumber = getIntent().getExtras().getInt("progressNumber", -1);
-        }
-
         DB_Helper_Get dbHelperGet = new DB_Helper_Get(this);
         List<DB_Pack> packs = dbHelperGet.getAllPacks();
-        AdapterPacksAdvancedSearch adapter = new AdapterPacksAdvancedSearch(packs, packList);
+        AdapterPacksAdvancedSearch adapter = new AdapterPacksAdvancedSearch(packs);
         binding.recAdvancedSearch.setAdapter(adapter);
         binding.recAdvancedSearch.setLayoutManager(new LinearLayoutManager(this));
         if (pack == -3) {
@@ -87,7 +78,6 @@ public class AdvancedSearch extends AppCompatActivity {
             intent.putExtra("progressGreater", progressGreater);
             intent.putExtra("progressNumber", progressNumber);
             startActivity(intent);
-            this.finish();
         });
     }
 

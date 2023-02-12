@@ -91,7 +91,6 @@ public class ViewCard extends FileTools {
         super.onCreate(savedInstanceState);
         binding = ActivityViewCardBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        SharedPreferences settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE);
         collectionNo = getIntent().getExtras().getInt("collection");
         packNo = getIntent().getExtras().getInt("pack");
         packNos = getIntent().getExtras().getIntegerArrayList("packs");
@@ -106,6 +105,12 @@ public class ViewCard extends FileTools {
         savedListSeed = getIntent().getExtras().getLong("savedListSeed");
         dbHelperGet = new DB_Helper_Get(this);
         dbHelperUpdate = new DB_Helper_Update(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        SharedPreferences settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE);
         boolean formatCards = settings.getBoolean("format_cards", false);
         boolean increaseFontSize = settings.getBoolean("ui_font_size", false);
         try {
@@ -124,6 +129,7 @@ public class ViewCard extends FileTools {
             }
             formatCardNotes = settings.getBoolean("format_card_notes", false);
             if (card.notes != null && !card.notes.isEmpty()) {
+                binding.cardNotes.setVisibility(View.VISIBLE);
                 if (formatCardNotes) {
                     final Markwon markwon = Markwon.builder(this)
                             .usePlugin(LinkifyPlugin.create(
@@ -166,12 +172,6 @@ public class ViewCard extends FileTools {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        setMediaButtons();
-    }
-
-    @Override
     protected void notifyFolderSet() {
         setMediaButtons();
     }
@@ -179,20 +179,8 @@ public class ViewCard extends FileTools {
     @Override
     protected void notifyMissingAction(int id) {
         Intent intent = new Intent(this, EditCardMedia.class);
-        intent.putExtra("collection", collectionNo);
-        intent.putExtra("pack", packNo);
-        intent.putIntegerArrayListExtra("packs", packNos);
-        intent.putExtra("card", id);
-        intent.putExtra("reverse", reverse);
-        intent.putExtra("sort", sort);
-        intent.putExtra("searchQuery", searchQuery);
-        intent.putExtra("cardPosition", 0);
-        intent.putExtra("progressGreater", progressGreater);
-        intent.putExtra("progressNumber", progressNumber);
-        intent.putIntegerArrayListExtra("savedList", savedList);
-        intent.putExtra("savedListSeed", savedListSeed);
-        this.startActivity(intent);
-        this.finish();
+        intent.putExtra("card", cardNo);
+        startActivity(intent);
     }
 
     @Override
@@ -252,20 +240,8 @@ public class ViewCard extends FileTools {
 
     public void editCard(MenuItem menuItem) {
         Intent intent = new Intent(this, EditCard.class);
-        intent.putExtra("collection", collectionNo);
-        intent.putExtra("pack", packNo);
-        intent.putIntegerArrayListExtra("packs", packNos);
         intent.putExtra("card", cardNo);
-        intent.putExtra("reverse", reverse);
-        intent.putExtra("sort", sort);
-        intent.putExtra("searchQuery", searchQuery);
-        intent.putExtra("cardPosition", cardPosition);
-        intent.putExtra("progressGreater", progressGreater);
-        intent.putExtra("progressNumber", progressNumber);
-        intent.putIntegerArrayListExtra("savedList", savedList);
-        intent.putExtra("savedListSeed", savedListSeed);
         startActivity(intent);
-        this.finish();
     }
 
     public void editCardMedia(MenuItem menuItem) {

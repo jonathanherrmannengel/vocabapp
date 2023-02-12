@@ -1,7 +1,6 @@
 package de.herrmann_engel.rbv.activities;
 
 import android.app.Dialog;
-import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
@@ -24,7 +23,6 @@ import com.vanniktech.emoji.EmojiPopup;
 import com.vanniktech.emoji.EmojiTheming;
 import com.vanniktech.emoji.inputfilters.OnlyEmojisInputFilter;
 
-import java.util.ArrayList;
 import java.util.Objects;
 
 import de.herrmann_engel.rbv.R;
@@ -38,14 +36,6 @@ import de.herrmann_engel.rbv.utils.StringTools;
 public class EditPack extends AppCompatActivity {
 
     private ActivityEditCollectionOrPackBinding binding;
-    private int collectionNo;
-    private int packNo;
-    private boolean reverse;
-    private int sort;
-    private String searchQuery;
-    private int cardPosition;
-    private ArrayList<Integer> savedList;
-    private Long savedListSeed;
     private DB_Pack pack;
 
     @Override
@@ -81,14 +71,7 @@ public class EditPack extends AppCompatActivity {
             }
         });
         binding.editCollectionOrPackEmojiLayout.setHint(String.format(getString(R.string.optional), getString(R.string.collection_or_pack_emoji)));
-        collectionNo = getIntent().getExtras().getInt("collection");
-        packNo = getIntent().getExtras().getInt("pack");
-        reverse = getIntent().getExtras().getBoolean("reverse");
-        sort = getIntent().getExtras().getInt("sort");
-        searchQuery = getIntent().getExtras().getString("searchQuery");
-        cardPosition = getIntent().getExtras().getInt("cardPosition");
-        savedList = getIntent().getExtras().getIntegerArrayList("savedList");
-        savedListSeed = getIntent().getExtras().getLong("savedListSeed");
+        int packNo = getIntent().getExtras().getInt("pack");
         DB_Helper_Get dbHelperGet = new DB_Helper_Get(this);
         try {
             pack = dbHelperGet.getSinglePack(packNo);
@@ -166,7 +149,7 @@ public class EditPack extends AppCompatActivity {
         }
         DB_Helper_Update dbHelperUpdate = new DB_Helper_Update(this);
         if (dbHelperUpdate.updatePack(pack)) {
-            startViewPack();
+            this.finish();
         } else {
             Toast.makeText(this, R.string.error_values, Toast.LENGTH_SHORT).show();
         }
@@ -182,26 +165,12 @@ public class EditPack extends AppCompatActivity {
         binding.getRoot().setBackgroundColor(background);
     }
 
-    private void startViewPack() {
-        Intent intent = new Intent(this, ViewPack.class);
-        intent.putExtra("collection", collectionNo);
-        intent.putExtra("pack", packNo);
-        intent.putExtra("reverse", reverse);
-        intent.putExtra("sort", sort);
-        intent.putExtra("searchQuery", searchQuery);
-        intent.putExtra("cardPosition", cardPosition);
-        intent.putIntegerArrayListExtra("savedList", savedList);
-        intent.putExtra("savedListSeed", savedListSeed);
-        startActivity(intent);
-        this.finish();
-    }
-
     @Override
     public void onBackPressed() {
         String name = binding.editCollectionOrPackName.getText().toString();
         String desc = binding.editCollectionOrPackDesc.getText().toString();
         if (pack == null || (pack.name.equals(name) && pack.desc.equals(desc))) {
-            startViewPack();
+            super.onBackPressed();
         } else {
             Dialog confirmCancelDialog = new Dialog(this, R.style.dia_view);
             DiaConfirmBinding bindingConfirmCancelDialog = DiaConfirmBinding.inflate(getLayoutInflater());
@@ -209,7 +178,7 @@ public class EditPack extends AppCompatActivity {
             confirmCancelDialog.setTitle(getResources().getString(R.string.discard_changes));
             confirmCancelDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
                     WindowManager.LayoutParams.MATCH_PARENT);
-            bindingConfirmCancelDialog.diaConfirmYes.setOnClickListener(v -> startViewPack());
+            bindingConfirmCancelDialog.diaConfirmYes.setOnClickListener(v -> super.onBackPressed());
             bindingConfirmCancelDialog.diaConfirmNo.setOnClickListener(v -> confirmCancelDialog.dismiss());
             confirmCancelDialog.show();
         }

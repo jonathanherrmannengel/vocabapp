@@ -16,6 +16,7 @@ import de.herrmann_engel.rbv.db.DB_Collection_With_Meta;
 import de.herrmann_engel.rbv.db.DB_Media;
 import de.herrmann_engel.rbv.db.DB_Media_Link_Card;
 import de.herrmann_engel.rbv.db.DB_Pack;
+import de.herrmann_engel.rbv.db.DB_Pack_With_Meta;
 import de.herrmann_engel.rbv.utils.StringTools;
 import io.noties.markwon.Markwon;
 
@@ -130,6 +131,14 @@ public class DB_Helper_Get {
 
     public List<DB_Pack> getAllPacksByCollectionAndNameAndDesc(int collection, String name, String desc) {
         return dbHelper.pack_dao.getAllByCollectionAndNameAndDesc(collection, name, desc);
+    }
+
+    public List<DB_Pack_With_Meta> getAllPacksWithMeta() {
+        return dbHelper.pack_dao.getAllWithMeta();
+    }
+
+    public List<DB_Pack_With_Meta> getAllPacksWithMetaByCollection(int collection) {
+        return dbHelper.pack_dao.getAllByCollectionWithMeta(collection);
     }
 
     //Get All: Cards

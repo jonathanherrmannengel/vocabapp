@@ -25,6 +25,12 @@ public interface DB_Pack_DAO {
     @Query("SELECT * FROM db_pack WHERE collection=:cid AND name=:name AND `desc`=:desc ORDER BY name COLLATE NOCASE ASC, uid DESC")
     List<DB_Pack> getAllByCollectionAndNameAndDesc(int cid, String name, String desc);
 
+    @Query("SELECT *, (SELECT COUNT(*) FROM db_card WHERE pack=db_pack.uid) AS counter, (SELECT name FROM db_collection WHERE uid=db_pack.collection) AS collectionName FROM db_pack ORDER BY name COLLATE NOCASE ASC, uid DESC")
+    List<DB_Pack_With_Meta> getAllWithMeta();
+
+    @Query("SELECT *, (SELECT COUNT(*) FROM db_card WHERE pack=db_pack.uid) AS counter, (SELECT name FROM db_collection WHERE uid=db_pack.collection) AS collectionName FROM db_pack WHERE collection=:cid ORDER BY name COLLATE NOCASE ASC, uid DESC")
+    List<DB_Pack_With_Meta> getAllByCollectionWithMeta(int cid);
+
     @Query("SELECT uid FROM db_pack WHERE collection=:cid ORDER BY name COLLATE NOCASE ASC, uid DESC")
     List<Integer> getAllIDs(int cid);
 

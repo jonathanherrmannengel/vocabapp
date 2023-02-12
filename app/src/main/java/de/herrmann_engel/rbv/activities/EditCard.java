@@ -1,7 +1,6 @@
 package de.herrmann_engel.rbv.activities;
 
 import android.app.Dialog;
-import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -14,7 +13,6 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.util.ArrayList;
 import java.util.Objects;
 
 import de.herrmann_engel.rbv.R;
@@ -27,36 +25,13 @@ import de.herrmann_engel.rbv.db.utils.DB_Helper_Update;
 public class EditCard extends AppCompatActivity {
     private ActivityEditCardBinding binding;
     private DB_Card card;
-    private int collectionNo;
-    private int packNo;
-    private ArrayList<Integer> packNos;
-    private int cardNo;
-    private boolean reverse;
-    private int sort;
-    private String searchQuery;
-    private int cardPosition;
-    private boolean progressGreater;
-    private int progressNumber;
-    private ArrayList<Integer> savedList;
-    private Long savedListSeed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityEditCardBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        collectionNo = getIntent().getExtras().getInt("collection");
-        packNo = getIntent().getExtras().getInt("pack");
-        packNos = getIntent().getExtras().getIntegerArrayList("packs");
-        cardNo = getIntent().getExtras().getInt("card");
-        reverse = getIntent().getExtras().getBoolean("reverse");
-        sort = getIntent().getExtras().getInt("sort");
-        searchQuery = getIntent().getExtras().getString("searchQuery");
-        cardPosition = getIntent().getExtras().getInt("cardPosition");
-        progressGreater = getIntent().getExtras().getBoolean("progressGreater");
-        progressNumber = getIntent().getExtras().getInt("progressNumber");
-        savedList = getIntent().getExtras().getIntegerArrayList("savedList");
-        savedListSeed = getIntent().getExtras().getLong("savedListSeed");
+        int cardNo = getIntent().getExtras().getInt("card");
         DB_Helper_Get dbHelperGet = new DB_Helper_Get(this);
         try {
             card = dbHelperGet.getSingleCard(cardNo);
@@ -103,28 +78,10 @@ public class EditCard extends AppCompatActivity {
         card.notes = binding.editCardNotes.getText().toString();
         DB_Helper_Update dbHelperUpdate = new DB_Helper_Update(this);
         if (dbHelperUpdate.updateCard(card)) {
-            startViewCard();
+            this.finish();
         } else {
             Toast.makeText(this, R.string.error_values, Toast.LENGTH_SHORT).show();
         }
-    }
-
-    private void startViewCard() {
-        Intent intent = new Intent(this, ViewCard.class);
-        intent.putExtra("collection", collectionNo);
-        intent.putExtra("pack", packNo);
-        intent.putIntegerArrayListExtra("packs", packNos);
-        intent.putExtra("card", cardNo);
-        intent.putExtra("reverse", reverse);
-        intent.putExtra("sort", sort);
-        intent.putExtra("searchQuery", searchQuery);
-        intent.putExtra("cardPosition", cardPosition);
-        intent.putExtra("progressGreater", progressGreater);
-        intent.putExtra("progressNumber", progressNumber);
-        intent.putIntegerArrayListExtra("savedList", savedList);
-        intent.putExtra("savedListSeed", savedListSeed);
-        startActivity(intent);
-        this.finish();
     }
 
     @Override
@@ -133,7 +90,7 @@ public class EditCard extends AppCompatActivity {
         String back = binding.editCardBack.getText().toString();
         String notes = binding.editCardNotes.getText().toString();
         if (card == null || (card.front.equals(front) && card.back.equals(back) && card.notes.equals(notes))) {
-            startViewCard();
+            super.onBackPressed();
         } else {
             Dialog confirmCancelDialog = new Dialog(this, R.style.dia_view);
             DiaConfirmBinding bindingConfirmCancelDialog = DiaConfirmBinding.inflate(getLayoutInflater());
@@ -141,7 +98,7 @@ public class EditCard extends AppCompatActivity {
             confirmCancelDialog.setTitle(getResources().getString(R.string.discard_changes));
             confirmCancelDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
                     WindowManager.LayoutParams.MATCH_PARENT);
-            bindingConfirmCancelDialog.diaConfirmYes.setOnClickListener(v -> startViewCard());
+            bindingConfirmCancelDialog.diaConfirmYes.setOnClickListener(v -> super.onBackPressed());
             bindingConfirmCancelDialog.diaConfirmNo.setOnClickListener(v -> confirmCancelDialog.dismiss());
             confirmCancelDialog.show();
         }

@@ -27,7 +27,7 @@ import de.herrmann_engel.rbv.R;
 import de.herrmann_engel.rbv.adapters.AdapterPacks;
 import de.herrmann_engel.rbv.databinding.ActivityDefaultRecBinding;
 import de.herrmann_engel.rbv.databinding.DiaExportBinding;
-import de.herrmann_engel.rbv.db.DB_Pack;
+import de.herrmann_engel.rbv.db.DB_Pack_With_Meta;
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get;
 import de.herrmann_engel.rbv.export_import.AsyncExport;
 import de.herrmann_engel.rbv.export_import.AsyncExportFinish;
@@ -37,7 +37,7 @@ public class ListPacks extends AppCompatActivity implements AsyncExportFinish, A
 
     private ActivityDefaultRecBinding binding;
     private DB_Helper_Get dbHelperGet;
-
+    private AdapterPacks adapter;
     private int collectionNo;
 
     @Override
@@ -45,18 +45,13 @@ public class ListPacks extends AppCompatActivity implements AsyncExportFinish, A
         super.onCreate(savedInstanceState);
         binding = ActivityDefaultRecBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
-        SharedPreferences settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE);
-        if (settings.getBoolean("ui_bg_images", true)) {
-            binding.backgroundImage.setVisibility(View.VISIBLE);
-            binding.backgroundImage.setImageDrawable(AppCompatResources.getDrawable(this, R.drawable.bg_packs));
-        }
+        collectionNo = getIntent().getExtras().getInt("collection");
+        dbHelperGet = new DB_Helper_Get(this);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_list_packs, menu);
-        collectionNo = getIntent().getExtras().getInt("collection");
         if (collectionNo == -1) {
             MenuItem startNewPack = menu.findItem(R.id.start_new_pack);
             startNewPack.setVisible(false);
@@ -65,7 +60,6 @@ public class ListPacks extends AppCompatActivity implements AsyncExportFinish, A
             MenuItem export = menu.findItem(R.id.export_single);
             export.setVisible(false);
         }
-        dbHelperGet = new DB_Helper_Get(this);
         try {
             if (collectionNo > -1) {
                 setTitle(dbHelperGet.getSingleCollection(collectionNo).name);
@@ -73,16 +67,26 @@ public class ListPacks extends AppCompatActivity implements AsyncExportFinish, A
         } catch (Exception e) {
             e.printStackTrace();
         }
-        updateContent();
         return true;
     }
 
-    private void updateContent() {
-        List<DB_Pack> packs;
-        if (collectionNo == -1) {
-            packs = dbHelperGet.getAllPacks();
+    @Override
+    protected void onResume() {
+        super.onResume();
+        SharedPreferences settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE);
+        if (settings.getBoolean("ui_bg_images", true)) {
+            binding.backgroundImage.setVisibility(View.VISIBLE);
+            binding.backgroundImage.setImageDrawable(AppCompatResources.getDrawable(this, R.drawable.bg_packs));
         } else {
-            packs = dbHelperGet.getAllPacksByCollection(collectionNo);
+            binding.backgroundImage.setVisibility(View.GONE);
+        }
+        boolean uiFontSizeBig = settings.getBoolean("ui_font_size", false);
+        if (adapter == null) {
+            adapter = new AdapterPacks(loadContent(), uiFontSizeBig, collectionNo);
+            binding.recDefault.setAdapter(adapter);
+            binding.recDefault.setLayoutManager(new LinearLayoutManager(this));
+        } else {
+            adapter.updateContent(loadContent());
         }
         if (collectionNo >= 0) {
             try {
@@ -103,23 +107,35 @@ public class ListPacks extends AppCompatActivity implements AsyncExportFinish, A
                 Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
             }
         }
-        AdapterPacks adapter = new AdapterPacks(packs, collectionNo);
-        binding.recDefault.setAdapter(adapter);
-        binding.recDefault.setLayoutManager(new LinearLayoutManager(this));
+    }
+
+    private List<DB_Pack_With_Meta> loadContent() {
+        List<DB_Pack_With_Meta> currentList;
+        if (collectionNo == -1) {
+            currentList = dbHelperGet.getAllPacksWithMeta();
+        } else {
+            currentList = dbHelperGet.getAllPacksWithMetaByCollection(collectionNo);
+        }
+        DB_Pack_With_Meta fixedFirstItemPlaceholder = new DB_Pack_With_Meta();
+        if (collectionNo == -1) {
+            fixedFirstItemPlaceholder.counter = dbHelperGet.countCards();
+        } else {
+            fixedFirstItemPlaceholder.counter = dbHelperGet.countCardsInCollection(collectionNo);
+        }
+        currentList.add(0, fixedFirstItemPlaceholder);
+        return currentList;
     }
 
     public void collectionDetails(MenuItem item) {
         Intent intent = new Intent(this, ViewCollection.class);
         intent.putExtra("collection", collectionNo);
         this.startActivity(intent);
-        this.finish();
     }
 
     public void startNewPack(MenuItem menuItem) {
         Intent intent = new Intent(this, NewPack.class);
         intent.putExtra("collection", collectionNo);
         this.startActivity(intent);
-        this.finish();
     }
 
     @Override

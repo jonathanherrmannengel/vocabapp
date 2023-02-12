@@ -137,6 +137,61 @@ public class ListCards extends FileTools {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        //Set title
+        dbHelperGet = new DB_Helper_Get(this);
+        try {
+            if (collectionNo > -1 && packNo == -1) {
+                setTitle(dbHelperGet.getSingleCollection(collectionNo).name);
+            } else if (packNo > -1) {
+                setTitle(dbHelperGet.getSinglePack(packNo).name);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //Colors
+        if (packNo >= 0) {
+            try {
+                int packColors = dbHelperGet.getSinglePack(packNo).colors;
+                TypedArray colors = getResources().obtainTypedArray(R.array.pack_color_main);
+                TypedArray colorsBackground = getResources().obtainTypedArray(R.array.pack_color_background);
+                if (packColors < Math.min(colors.length(), colorsBackground.length()) && packColors >= 0) {
+                    int color = colors.getColor(packColors, 0);
+                    int colorBackground = colorsBackground.getColor(packColors, 0);
+                    Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(new ColorDrawable(color));
+                    Window window = this.getWindow();
+                    window.setStatusBarColor(color);
+                    binding.getRoot().setBackgroundColor(colorBackground);
+                }
+                colors.recycle();
+                colorsBackground.recycle();
+            } catch (Exception e) {
+                Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
+            }
+        } else if (collectionNo >= 0) {
+            try {
+                int packColors = dbHelperGet.getSingleCollection(collectionNo).colors;
+                TypedArray colors = getResources().obtainTypedArray(R.array.pack_color_main);
+                TypedArray colorsBackground = getResources().obtainTypedArray(R.array.pack_color_background);
+                if (packColors < Math.min(colors.length(), colorsBackground.length()) && packColors >= 0) {
+                    int color = colors.getColor(packColors, 0);
+                    int colorBackground = colorsBackground.getColor(packColors, 0);
+                    Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(new ColorDrawable(color));
+                    Window window = this.getWindow();
+                    window.setStatusBarColor(color);
+                    binding.getRoot().setBackgroundColor(colorBackground);
+                }
+                colors.recycle();
+                colorsBackground.recycle();
+            } catch (Exception e) {
+                e.printStackTrace();
+                Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_list_cards, menu);
 
@@ -172,18 +227,6 @@ public class ListCards extends FileTools {
         });
         if (searchQuery != null && !searchQuery.isEmpty()) {
             searchCardsOffItem.setVisible(true);
-        }
-
-        //Set title
-        dbHelperGet = new DB_Helper_Get(this);
-        try {
-            if (collectionNo > -1 && packNo == -1) {
-                setTitle(dbHelperGet.getSingleCollection(collectionNo).name);
-            } else if (packNo > -1) {
-                setTitle(dbHelperGet.getSinglePack(packNo).name);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
 
         //Get cards
@@ -244,46 +287,6 @@ public class ListCards extends FileTools {
                 bindingInfoDialog.diaInfoText.setText(String.join(System.getProperty("line.separator") + System.getProperty("line.separator"), warnings));
                 infoDialog.show();
                 configEditor.apply();
-            }
-        }
-
-        //Colors
-        if (packNo >= 0) {
-            try {
-                int packColors = dbHelperGet.getSinglePack(packNo).colors;
-                TypedArray colors = getResources().obtainTypedArray(R.array.pack_color_main);
-                TypedArray colorsBackground = getResources().obtainTypedArray(R.array.pack_color_background);
-                if (packColors < Math.min(colors.length(), colorsBackground.length()) && packColors >= 0) {
-                    int color = colors.getColor(packColors, 0);
-                    int colorBackground = colorsBackground.getColor(packColors, 0);
-                    Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(new ColorDrawable(color));
-                    Window window = this.getWindow();
-                    window.setStatusBarColor(color);
-                    binding.getRoot().setBackgroundColor(colorBackground);
-                }
-                colors.recycle();
-                colorsBackground.recycle();
-            } catch (Exception e) {
-                Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
-            }
-        } else if (collectionNo >= 0) {
-            try {
-                int packColors = dbHelperGet.getSingleCollection(collectionNo).colors;
-                TypedArray colors = getResources().obtainTypedArray(R.array.pack_color_main);
-                TypedArray colorsBackground = getResources().obtainTypedArray(R.array.pack_color_background);
-                if (packColors < Math.min(colors.length(), colorsBackground.length()) && packColors >= 0) {
-                    int color = colors.getColor(packColors, 0);
-                    int colorBackground = colorsBackground.getColor(packColors, 0);
-                    Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(new ColorDrawable(color));
-                    Window window = this.getWindow();
-                    window.setStatusBarColor(color);
-                    binding.getRoot().setBackgroundColor(colorBackground);
-                }
-                colors.recycle();
-                colorsBackground.recycle();
-            } catch (Exception e) {
-                e.printStackTrace();
-                Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
             }
         }
 
@@ -801,15 +804,7 @@ public class ListCards extends FileTools {
         Intent intent = new Intent(this, ViewPack.class);
         intent.putExtra("collection", collectionNo);
         intent.putExtra("pack", packNo);
-        intent.putExtra("reverse", reverse);
-        intent.putExtra("sort", sort);
-        intent.putExtra("searchQuery", searchQuery);
-        intent.putExtra("cardPosition", ((LinearLayoutManager) Objects.requireNonNull(binding.recDefault.getLayoutManager()))
-                .findFirstVisibleItemPosition());
-        intent.putIntegerArrayListExtra("savedList", savedList);
-        intent.putExtra("savedListSeed", savedListSeed);
         this.startActivity(intent);
-        this.finish();
     }
 
     public void setRecView() {
@@ -849,24 +844,5 @@ public class ListCards extends FileTools {
         binding.recDefault.setLayoutManager(new LinearLayoutManager(this));
         binding.recDefault.scrollToPosition(
                 Math.min(cardPosition, Objects.requireNonNull(binding.recDefault.getAdapter()).getItemCount() - 1));
-    }
-
-    @Override
-    public void onBackPressed() {
-        Intent intent;
-        if (packNo == -2 || packNo == -3) {
-            intent = new Intent(this, AdvancedSearch.class);
-            intent.putExtra("pack", packNo);
-            if (packNo == -2) {
-                intent.putIntegerArrayListExtra("packs", packNos);
-            }
-            intent.putExtra("progressGreater", progressGreater);
-            intent.putExtra("progressNumber", progressNumber);
-        } else {
-            intent = new Intent(this, ListPacks.class);
-            intent.putExtra("collection", collectionNo);
-        }
-        startActivity(intent);
-        this.finish();
     }
 }

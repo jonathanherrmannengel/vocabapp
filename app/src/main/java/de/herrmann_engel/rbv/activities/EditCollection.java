@@ -1,7 +1,6 @@
 package de.herrmann_engel.rbv.activities;
 
 import android.app.Dialog;
-import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.drawable.ColorDrawable;
@@ -39,7 +38,6 @@ public class EditCollection extends AppCompatActivity {
 
     private ActivityEditCollectionOrPackBinding binding;
     private DB_Collection collection;
-    private int collectionNo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,7 +73,7 @@ public class EditCollection extends AppCompatActivity {
         });
         binding.editCollectionOrPackEmojiLayout.setHint(String.format(getString(R.string.optional), getString(R.string.collection_or_pack_emoji)));
         binding.editCollectionOrPackEmojiLayout.setHintTextColor(ColorStateList.valueOf(getResources().getColor(R.color.light_black, getTheme())));
-        collectionNo = getIntent().getExtras().getInt("collection");
+        int collectionNo = getIntent().getExtras().getInt("collection");
         DB_Helper_Get dbHelperGet = new DB_Helper_Get(this);
         try {
             collection = dbHelperGet.getSingleCollection(collectionNo);
@@ -154,7 +152,7 @@ public class EditCollection extends AppCompatActivity {
         }
         DB_Helper_Update dbHelperUpdate = new DB_Helper_Update(this);
         if (dbHelperUpdate.updateCollection(collection)) {
-            startViewCollection();
+            this.finish();
         } else {
             Toast.makeText(this, R.string.error_values, Toast.LENGTH_SHORT).show();
         }
@@ -170,19 +168,12 @@ public class EditCollection extends AppCompatActivity {
         binding.getRoot().setBackgroundColor(background);
     }
 
-    private void startViewCollection() {
-        Intent intent = new Intent(this, ViewCollection.class);
-        intent.putExtra("collection", collectionNo);
-        startActivity(intent);
-        this.finish();
-    }
-
     @Override
     public void onBackPressed() {
         String name = binding.editCollectionOrPackName.getText().toString();
         String desc = binding.editCollectionOrPackDesc.getText().toString();
         if (collection == null || (collection.name.equals(name) && collection.desc.equals(desc))) {
-            startViewCollection();
+            super.onBackPressed();
         } else {
             Dialog confirmCancelDialog = new Dialog(this, R.style.dia_view);
             DiaConfirmBinding bindingConfirmCancelDialog = DiaConfirmBinding.inflate(getLayoutInflater());
@@ -190,7 +181,7 @@ public class EditCollection extends AppCompatActivity {
             confirmCancelDialog.setTitle(getResources().getString(R.string.discard_changes));
             confirmCancelDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
                     WindowManager.LayoutParams.MATCH_PARENT);
-            bindingConfirmCancelDialog.diaConfirmYes.setOnClickListener(v -> startViewCollection());
+            bindingConfirmCancelDialog.diaConfirmYes.setOnClickListener(v -> super.onBackPressed());
             bindingConfirmCancelDialog.diaConfirmNo.setOnClickListener(v -> confirmCancelDialog.dismiss());
             confirmCancelDialog.show();
         }

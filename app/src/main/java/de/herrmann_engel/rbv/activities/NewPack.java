@@ -1,7 +1,6 @@
 package de.herrmann_engel.rbv.activities;
 
 import android.app.Dialog;
-import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -72,17 +71,10 @@ public class NewPack extends AppCompatActivity {
         try {
             DB_Helper_Create dbHelperCreate = new DB_Helper_Create(this);
             dbHelperCreate.createPack(name, desc, collectionNo);
-            startListPacks();
+            this.finish();
         } catch (Exception e) {
             Toast.makeText(this, R.string.error_values, Toast.LENGTH_SHORT).show();
         }
-    }
-
-    private void startListPacks() {
-        Intent intent = new Intent(this, ListPacks.class);
-        intent.putExtra("collection", collectionNo);
-        startActivity(intent);
-        this.finish();
     }
 
     @Override
@@ -90,7 +82,7 @@ public class NewPack extends AppCompatActivity {
         String name = binding.newCollectionOrPackName.getText().toString();
         String desc = binding.newCollectionOrPackDesc.getText().toString();
         if (name.isEmpty() && desc.isEmpty()) {
-            startListPacks();
+            super.onBackPressed();
         } else {
             Dialog confirmCancelDialog = new Dialog(this, R.style.dia_view);
             DiaConfirmBinding bindingConfirmCancelDialog = DiaConfirmBinding.inflate(getLayoutInflater());
@@ -98,7 +90,7 @@ public class NewPack extends AppCompatActivity {
             confirmCancelDialog.setTitle(getResources().getString(R.string.discard_changes));
             confirmCancelDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
                     WindowManager.LayoutParams.MATCH_PARENT);
-            bindingConfirmCancelDialog.diaConfirmYes.setOnClickListener(v -> startListPacks());
+            bindingConfirmCancelDialog.diaConfirmYes.setOnClickListener(v -> super.onBackPressed());
             bindingConfirmCancelDialog.diaConfirmNo.setOnClickListener(v -> confirmCancelDialog.dismiss());
             confirmCancelDialog.show();
         }

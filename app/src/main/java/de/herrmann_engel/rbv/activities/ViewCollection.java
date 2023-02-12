@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.Menu;
@@ -33,6 +34,7 @@ import de.herrmann_engel.rbv.db.utils.DB_Helper_Delete;
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get;
 
 public class ViewCollection extends AppCompatActivity {
+    private ActivityViewCollectionOrPackBinding binding;
     private DB_Helper_Get dbHelperGet;
     private DB_Collection collection;
     private int collectionNo;
@@ -40,12 +42,23 @@ public class ViewCollection extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ActivityViewCollectionOrPackBinding binding = ActivityViewCollectionOrPackBinding.inflate(getLayoutInflater());
+        binding = ActivityViewCollectionOrPackBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        SharedPreferences settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE);
         collectionNo = getIntent().getExtras().getInt("collection");
         dbHelperGet = new DB_Helper_Get(this);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_view_collection, menu);
+        return true;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        SharedPreferences settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE);
         boolean increaseFontSize = settings.getBoolean("ui_font_size", false);
         try {
             collection = dbHelperGet.getSingleCollection(collectionNo);
@@ -54,6 +67,7 @@ public class ViewCollection extends AppCompatActivity {
             if (collection.desc.equals("")) {
                 binding.collectionOrPackDesc.setVisibility(View.GONE);
             } else {
+                binding.collectionOrPackDesc.setVisibility(View.VISIBLE);
                 binding.collectionOrPackDesc.setText(collection.desc);
             }
             if (increaseFontSize) {
@@ -62,7 +76,7 @@ public class ViewCollection extends AppCompatActivity {
                 binding.collectionOrPackDesc.setTextSize(TypedValue.COMPLEX_UNIT_PX,
                         getResources().getDimension(R.dimen.details_desc_size_big));
             }
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 Instant instant = Instant.ofEpochSecond(collection.date);
                 DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)
                         .withLocale(Locale.ROOT)
@@ -86,20 +100,12 @@ public class ViewCollection extends AppCompatActivity {
         } catch (Exception e) {
             Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
         }
-
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_view_collection, menu);
-        return true;
     }
 
     public void editCollection(MenuItem menuItem) {
         Intent intent = new Intent(this, EditCollection.class);
         intent.putExtra("collection", collectionNo);
         startActivity(intent);
-        this.finish();
     }
 
     public void deleteCollection(boolean forceDelete) {
@@ -132,13 +138,5 @@ public class ViewCollection extends AppCompatActivity {
 
     public void deleteCollection(MenuItem menuItem) {
         deleteCollection(false);
-    }
-
-    @Override
-    public void onBackPressed() {
-        Intent intent = new Intent(this, ListPacks.class);
-        intent.putExtra("collection", collectionNo);
-        startActivity(intent);
-        this.finish();
     }
 }

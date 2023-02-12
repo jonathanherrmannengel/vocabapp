@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.Menu;
@@ -21,7 +22,6 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -39,33 +39,27 @@ import de.herrmann_engel.rbv.db.utils.DB_Helper_Delete;
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get;
 
 public class ViewPack extends AppCompatActivity {
+    private ActivityViewCollectionOrPackBinding binding;
     private DB_Helper_Get dbHelperGet;
     private DB_Pack pack;
     private int packNo;
     private int collectionNo;
-    private boolean reverse;
-    private int sort;
-    private String searchQuery;
-    private int cardPosition;
-    private ArrayList<Integer> savedList;
-    private Long savedListSeed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ActivityViewCollectionOrPackBinding binding = ActivityViewCollectionOrPackBinding.inflate(getLayoutInflater());
+        binding = ActivityViewCollectionOrPackBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        SharedPreferences settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE);
         collectionNo = getIntent().getExtras().getInt("collection");
         packNo = getIntent().getExtras().getInt("pack");
-        reverse = getIntent().getExtras().getBoolean("reverse");
-        sort = getIntent().getExtras().getInt("sort");
-        searchQuery = getIntent().getExtras().getString("searchQuery");
-        cardPosition = getIntent().getExtras().getInt("cardPosition");
-        savedList = getIntent().getExtras().getIntegerArrayList("savedList");
-        savedListSeed = getIntent().getExtras().getLong("savedListSeed");
         dbHelperGet = new DB_Helper_Get(this);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        SharedPreferences settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE);
         boolean increaseFontSize = settings.getBoolean("ui_font_size", false);
         try {
             pack = dbHelperGet.getSinglePack(packNo);
@@ -82,7 +76,7 @@ public class ViewPack extends AppCompatActivity {
                 binding.collectionOrPackDesc.setTextSize(TypedValue.COMPLEX_UNIT_PX,
                         getResources().getDimension(R.dimen.details_desc_size_big));
             }
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 Instant instant = Instant.ofEpochSecond(pack.date);
                 DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)
                         .withLocale(Locale.ROOT)
@@ -119,16 +113,8 @@ public class ViewPack extends AppCompatActivity {
 
     public void editPack(MenuItem menuItem) {
         Intent intent = new Intent(this, EditPack.class);
-        intent.putExtra("collection", collectionNo);
         intent.putExtra("pack", packNo);
-        intent.putExtra("reverse", reverse);
-        intent.putExtra("sort", sort);
-        intent.putExtra("searchQuery", searchQuery);
-        intent.putExtra("cardPosition", cardPosition);
-        intent.putIntegerArrayListExtra("savedList", savedList);
-        intent.putExtra("savedListSeed", savedListSeed);
         startActivity(intent);
-        this.finish();
     }
 
     public void deletePack(boolean forceDelete) {
@@ -149,8 +135,8 @@ public class ViewPack extends AppCompatActivity {
                 dbHelperDelete.deletePack(pack, forceDelete);
                 Intent intent = new Intent(this, ListPacks.class);
                 intent.putExtra("collection", collectionNo);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 startActivity(intent);
-                this.finish();
             } else {
                 deletePack(true);
                 confirmDeleteDialog.dismiss();
@@ -176,7 +162,6 @@ public class ViewPack extends AppCompatActivity {
         AdapterCollectionsMovePack adapter = new AdapterCollectionsMovePack(collections, pack, moveDialog);
         bindingMoveDialog.diaRec.setAdapter(adapter);
         bindingMoveDialog.diaRec.setLayoutManager(new LinearLayoutManager(this));
-
         moveDialog.show();
     }
 
@@ -184,23 +169,12 @@ public class ViewPack extends AppCompatActivity {
         try {
             pack = dbHelperGet.getSinglePack(packNo);
             collectionNo = pack.collection;
+            Intent intent = new Intent(this, ListPacks.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            intent.putExtra("collection", collectionNo);
+            this.startActivity(intent);
         } catch (Exception e) {
             Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
         }
-    }
-
-    @Override
-    public void onBackPressed() {
-        Intent intent = new Intent(this, ListCards.class);
-        intent.putExtra("collection", collectionNo);
-        intent.putExtra("pack", packNo);
-        intent.putExtra("reverse", reverse);
-        intent.putExtra("sort", sort);
-        intent.putExtra("searchQuery", searchQuery);
-        intent.putExtra("cardPosition", cardPosition);
-        intent.putIntegerArrayListExtra("savedList", savedList);
-        intent.putExtra("savedListSeed", savedListSeed);
-        startActivity(intent);
-        this.finish();
     }
 }
