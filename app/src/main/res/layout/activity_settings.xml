@@ -54,29 +54,6 @@
                     android:textSize="16sp" />
             </RadioGroup>
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:text="@string/settings_list_other"
-                android:textColor="@android:color/black"
-                android:textSize="20sp" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:orientation="vertical">
-
-                <CheckBox
-                    android:id="@+id/settings_list_no_update"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/settings_list_other_no_update"
-                    android:textColor="@color/light_black"
-                    android:textSize="16sp" />
-            </LinearLayout>
-
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"

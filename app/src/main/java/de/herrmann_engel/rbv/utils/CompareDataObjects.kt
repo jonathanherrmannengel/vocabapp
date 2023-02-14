@@ -1,5 +1,7 @@
 package de.herrmann_engel.rbv.utils
 
+import de.herrmann_engel.rbv.BuildConfig
+
 class CompareDataObjects {
     fun areTheySame(
         object1: Any?,
@@ -12,7 +14,7 @@ class CompareDataObjects {
             return false
         }
         for (field in object1.javaClass.fields) {
-            if (!field.type.isPrimitive) {
+            if (field.type.toString().contains(BuildConfig.APPLICATION_ID)) {
                 if (!areTheySame(field.get(object1), field.get(object2))) {
                     return false
                 }

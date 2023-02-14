@@ -11,6 +11,7 @@ import java.util.List;
 
 import de.herrmann_engel.rbv.Globals;
 import de.herrmann_engel.rbv.db.DB_Card;
+import de.herrmann_engel.rbv.db.DB_Card_With_Meta;
 import de.herrmann_engel.rbv.db.DB_Collection;
 import de.herrmann_engel.rbv.db.DB_Collection_With_Meta;
 import de.herrmann_engel.rbv.db.DB_Media;
@@ -99,6 +100,14 @@ public class DB_Helper_Get {
         throw new Exception();
     }
 
+    public DB_Card_With_Meta getSingleCardWithMeta(int cardId) throws Exception {
+        DB_Card_With_Meta card = dbHelper.card_dao.getOneWithMeta(cardId);
+        if (card == null) {
+            throw new Exception();
+        }
+        return card;
+    }
+
     public DB_Media getSingleMedia(String file) {
         return dbHelper.media_dao.getSingleMedia(file);
     }
@@ -142,7 +151,7 @@ public class DB_Helper_Get {
     }
 
     //Get All: Cards
-    private List<DB_Card> formatCards(List<DB_Card> list) {
+    private List<DB_Card_With_Meta> formatCards(List<DB_Card_With_Meta> list) {
         SharedPreferences settings = context.getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE);
         boolean formatCards = settings.getBoolean("format_cards", false);
         boolean formatCardsNotes = settings.getBoolean("format_card_notes", false);
@@ -151,22 +160,22 @@ public class DB_Helper_Get {
             if (list.size() > LIST_ACCURATE_SIZE) {
                 list.forEach(l -> {
                     if (formatCards) {
-                        l.front = formatString.unformat(l.front);
-                        l.back = formatString.unformat(l.back);
+                        l.card.front = formatString.unformat(l.card.front);
+                        l.card.back = formatString.unformat(l.card.back);
                     }
                     if (formatCardsNotes) {
-                        l.notes = formatString.unformat(l.notes);
+                        l.card.notes = formatString.unformat(l.card.notes);
                     }
                 });
             } else {
                 Markwon markwon = Markwon.create(context);
                 list.forEach(l -> {
                     if (formatCards) {
-                        l.front = formatString.format(l.front).toString();
-                        l.back = formatString.format(l.back).toString();
+                        l.card.front = formatString.format(l.card.front).toString();
+                        l.card.back = formatString.format(l.card.back).toString();
                     }
                     if (formatCardsNotes) {
-                        l.notes = markwon.toMarkdown(l.notes).toString();
+                        l.card.notes = markwon.toMarkdown(l.card.notes).toString();
                     }
                 });
             }
@@ -174,65 +183,66 @@ public class DB_Helper_Get {
         return list;
     }
 
-    public List<DB_Card> getAllCards() {
-        return formatCards(dbHelper.card_dao.getAll());
+    public List<DB_Card> getAllCardsByPackAndFrontAndBackAndNotes(int pack, String front, String back, String notes) {
+        return dbHelper.card_dao.getAllByPackAndFrontAndBackAndNotes(pack, front, back, notes);
     }
 
-    public List<DB_Card> getAllCardsByIds(ArrayList<Integer> ids) {
-        List<DB_Card> list = new ArrayList<>();
-        ids.forEach(id -> {
+    public List<DB_Card_With_Meta> getAllCardsWithMeta() {
+        return formatCards(dbHelper.card_dao.getAllWithMeta());//
+    }
+
+    public List<DB_Card_With_Meta> getAllCardsByPackWithMeta(int pack) {
+        return formatCards(dbHelper.card_dao.getAllByPackWithMeta(pack));
+    }
+
+    public List<DB_Card_With_Meta> getAllCardsByCollectionWithMeta(int collection) {
+        List<DB_Pack> packs = getAllPacksByCollection(collection);
+        List<DB_Card_With_Meta> list = new ArrayList<>();
+        packs.forEach((currentPack) -> list.addAll(getAllCardsByPackWithMeta(currentPack.uid)));
+        return formatCards(list);
+    }
+
+    public List<DB_Card_With_Meta> getAllCardsByProgressWithMeta(boolean progressGreater, int progressNumber) {
+        List<DB_Card_With_Meta> cards = new ArrayList<>();
+        if (progressNumber >= 0) {
+            if (progressGreater) {
+                cards.addAll(dbHelper.card_dao.getAllGreaterEqualWithMeta(progressNumber));
+            } else {
+                cards.addAll(dbHelper.card_dao.getAllLessEqualWithMeta(progressNumber));
+            }
+        } else {
+            cards.addAll(dbHelper.card_dao.getAllWithMeta());
+        }
+        return formatCards(cards);
+    }
+
+    public List<DB_Card_With_Meta> getAllCardsByPacksAndProgressWithMeta(List<Integer> packs, boolean progressGreater, int progressNumber) {
+        List<DB_Card_With_Meta> cards = new ArrayList<>();
+        packs.forEach(pack -> {
+            if (progressNumber >= 0) {
+                if (progressGreater) {
+                    cards.addAll(dbHelper.card_dao.getAllGreaterEqualWithMeta(pack, progressNumber));
+                } else {
+                    cards.addAll(dbHelper.card_dao.getAllLessEqualWithMeta(pack, progressNumber));
+                }
+            } else {
+                cards.addAll(dbHelper.card_dao.getAllByPackWithMeta(pack));
+            }
+        });
+        return formatCards(cards);
+    }
+
+    public List<DB_Card_With_Meta> getAllCardsByMediaWithMeta(int mediaId) {
+        List<Integer> cardIds = dbHelper.media_link_card_dao.getAllCardIdsByMedia(mediaId);
+        List<DB_Card_With_Meta> list = new ArrayList<>();
+        cardIds.forEach(id -> {
             try {
-                list.add(getSingleCard(id));
+                list.add(getSingleCardWithMeta(id));
             } catch (Exception e) {
                 e.printStackTrace();
             }
         });
         return formatCards(list);
-    }
-
-    public List<DB_Card> getAllCardsByProgress(boolean progressGreater, int progressNumber) {
-        List<DB_Card> cards = new ArrayList<>();
-        if (progressNumber >= 0) {
-            if (progressGreater) {
-                cards.addAll(dbHelper.card_dao.getAllGreaterEqual(progressNumber));
-            } else {
-                cards.addAll(dbHelper.card_dao.getAllLessEqual(progressNumber));
-            }
-        } else {
-            cards.addAll(dbHelper.card_dao.getAll());
-        }
-        return formatCards(cards);
-    }
-
-    public List<DB_Card> getAllCardsByCollection(int collection) {
-        List<DB_Pack> packs = getAllPacksByCollection(collection);
-        List<DB_Card> list = new ArrayList<>();
-        packs.forEach((currentPack) -> list.addAll(getAllCardsByPack(currentPack.uid)));
-        return formatCards(list);
-    }
-
-    public List<DB_Card> getAllCardsByPack(int pack) {
-        return formatCards(dbHelper.card_dao.getAll(pack));
-    }
-
-    public List<DB_Card> getAllCardsByPacksAndProgress(List<Integer> packs, boolean progressGreater, int progressNumber) {
-        List<DB_Card> cards = new ArrayList<>();
-        packs.forEach(pack -> {
-            if (progressNumber >= 0) {
-                if (progressGreater) {
-                    cards.addAll(dbHelper.card_dao.getAllGreaterEqual(pack, progressNumber));
-                } else {
-                    cards.addAll(dbHelper.card_dao.getAllLessEqual(pack, progressNumber));
-                }
-            } else {
-                cards.addAll(dbHelper.card_dao.getAll(pack));
-            }
-        });
-        return formatCards(cards);
-    }
-
-    public List<DB_Card> getAllCardsByPackAndFrontAndBackAndNotes(int pack, String front, String back, String notes) {
-        return dbHelper.card_dao.getAllByPackAndFrontAndBackAndNotes(pack, front, back, notes);
     }
 
     //Get All: Media
@@ -251,10 +261,6 @@ public class DB_Helper_Get {
 
     public List<Integer> getAllMediaLinkFileIdsByCard(int card) {
         return dbHelper.media_link_card_dao.getAllMediaIdsByCard(card);
-    }
-
-    public List<Integer> getAllMediaLinkCardIdsByMedia(int file) {
-        return dbHelper.media_link_card_dao.getAllCardIdsByMedia(file);
     }
 
     public List<DB_Media_Link_Card> getAllMediaLinksByFile(int file) {

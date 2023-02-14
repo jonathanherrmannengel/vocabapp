@@ -73,13 +73,6 @@ public class Settings extends FileTools {
             settingsEdit.apply();
         });
 
-        boolean listNoUpdate = settings.getBoolean("list_no_update", true);
-        binding.settingsListNoUpdate.setChecked(listNoUpdate);
-        binding.settingsListNoUpdate.setOnClickListener(v -> {
-            settingsEdit.putBoolean("list_no_update", ((CheckBox) v).isChecked());
-            settingsEdit.apply();
-        });
-
         boolean mediaInGallery = settings.getBoolean("media_in_gallery", true);
         binding.settingsMediaInGallery.setChecked(mediaInGallery);
         binding.settingsMediaInGallery.setOnClickListener(v -> {

@@ -13,7 +13,6 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.util.ArrayList;
 import java.util.Objects;
 
 import de.herrmann_engel.rbv.R;
@@ -25,13 +24,7 @@ import de.herrmann_engel.rbv.db.utils.DB_Helper_Get;
 public class NewCard extends AppCompatActivity {
 
     private ActivityNewCardBinding binding;
-    private int collectionNo;
     private int packNo;
-    private boolean reverse;
-    private int sort;
-    private String searchQuery;
-    private int cardPosition;
-    private ArrayList<Integer> savedList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,13 +32,7 @@ public class NewCard extends AppCompatActivity {
         binding = ActivityNewCardBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        collectionNo = getIntent().getExtras().getInt("collection");
         packNo = getIntent().getExtras().getInt("pack");
-        reverse = getIntent().getExtras().getBoolean("reverse");
-        sort = getIntent().getExtras().getInt("sort");
-        searchQuery = getIntent().getExtras().getString("searchQuery");
-        cardPosition = getIntent().getExtras().getInt("cardPosition");
-        savedList = getIntent().getExtras().getIntegerArrayList("savedList");
         TypedArray colors = getResources().obtainTypedArray(R.array.pack_color_main);
         TypedArray colorsBackground = getResources().obtainTypedArray(R.array.pack_color_background);
         DB_Helper_Get dbHelperGet = new DB_Helper_Get(this);
@@ -80,27 +67,14 @@ public class NewCard extends AppCompatActivity {
         String notes = binding.newCardNotes.getText().toString();
         try {
             DB_Helper_Create dbHelperCreate = new DB_Helper_Create(this);
-            long id = dbHelperCreate.createCard(front, back, notes, packNo);
-            if (savedList != null) {
-                savedList.add((int) id);
-            }
-            startListCards();
+            long cardNo = dbHelperCreate.createCard(front, back, notes, packNo);
+            Intent intent = new Intent(this, ListCards.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            intent.putExtra("cardAdded", (int) cardNo);
+            this.startActivity(intent);
         } catch (Exception e) {
             Toast.makeText(this, R.string.error_values, Toast.LENGTH_SHORT).show();
         }
-    }
-
-    private void startListCards() {
-        Intent intent = new Intent(this, ListCards.class);
-        intent.putExtra("collection", collectionNo);
-        intent.putExtra("pack", packNo);
-        intent.putExtra("reverse", reverse);
-        intent.putExtra("sort", sort);
-        intent.putExtra("searchQuery", searchQuery);
-        intent.putExtra("cardPosition", cardPosition);
-        intent.putIntegerArrayListExtra("savedList", savedList);
-        startActivity(intent);
-        this.finish();
     }
 
     @Override
@@ -109,7 +83,7 @@ public class NewCard extends AppCompatActivity {
         String back = binding.newCardBack.getText().toString();
         String notes = binding.newCardNotes.getText().toString();
         if (front.isEmpty() && back.isEmpty() && notes.isEmpty()) {
-            startListCards();
+            super.onBackPressed();
         } else {
             Dialog confirmCancelDialog = new Dialog(this, R.style.dia_view);
             DiaConfirmBinding bindingConfirmCancelDialog = DiaConfirmBinding.inflate(getLayoutInflater());
@@ -117,7 +91,7 @@ public class NewCard extends AppCompatActivity {
             confirmCancelDialog.setTitle(getResources().getString(R.string.discard_changes));
             confirmCancelDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
                     WindowManager.LayoutParams.MATCH_PARENT);
-            bindingConfirmCancelDialog.diaConfirmYes.setOnClickListener(v -> startListCards());
+            bindingConfirmCancelDialog.diaConfirmYes.setOnClickListener(v -> super.onBackPressed());
             bindingConfirmCancelDialog.diaConfirmNo.setOnClickListener(v -> confirmCancelDialog.dismiss());
             confirmCancelDialog.show();
         }

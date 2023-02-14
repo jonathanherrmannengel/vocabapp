@@ -181,14 +181,6 @@ class AsyncExportWorker(
                         settings.getBoolean("ui_font_size", false).toString()
                     )
                 }
-                if (settings.contains("list_no_update")) {
-                    exportSetting(
-                        "list_no_update",
-                        file.name,
-                        "bool",
-                        settings.getBoolean("list_no_update", true).toString()
-                    )
-                }
                 if (settings.contains("media_in_gallery")) {
                     exportSetting(
                         "media_in_gallery",

@@ -134,13 +134,12 @@ public class ViewPack extends AppCompatActivity {
                 DB_Helper_Delete dbHelperDelete = new DB_Helper_Delete(this);
                 dbHelperDelete.deletePack(pack, forceDelete);
                 Intent intent = new Intent(this, ListPacks.class);
-                intent.putExtra("collection", collectionNo);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 startActivity(intent);
             } else {
                 deletePack(true);
-                confirmDeleteDialog.dismiss();
             }
+            confirmDeleteDialog.dismiss();
         });
         bindingConfirmDeleteDialog.diaConfirmNo.setOnClickListener(v -> confirmDeleteDialog.dismiss());
         confirmDeleteDialog.show();

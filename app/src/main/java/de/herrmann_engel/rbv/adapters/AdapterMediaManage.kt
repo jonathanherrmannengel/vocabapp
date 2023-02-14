@@ -13,6 +13,7 @@ import de.herrmann_engel.rbv.activities.FileTools
 import de.herrmann_engel.rbv.databinding.DiaConfirmBinding
 import de.herrmann_engel.rbv.databinding.DiaRecBinding
 import de.herrmann_engel.rbv.databinding.RecViewBinding
+import de.herrmann_engel.rbv.db.DB_Card_With_Meta
 import de.herrmann_engel.rbv.db.DB_Media
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Delete
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
@@ -39,12 +40,14 @@ class AdapterMediaManage(
             val activity = ContextTools().getActivity(context)
             if (activity != null) {
                 val dbHelperGet = DB_Helper_Get(context)
-                val ids = dbHelperGet.getAllMediaLinkCardIdsByMedia(media[position].uid)
-                val cards = SortCards().sortCards(
-                    dbHelperGet.getAllCardsByIds(ids as java.util.ArrayList<Int>?),
+                val cardsWithMeta: MutableList<DB_Card_With_Meta> =
+                    dbHelperGet.getAllCardsByMediaWithMeta(media[position].uid)
+                SortCards().sortCardsWithMeta(
+                    cardsWithMeta,
                     Globals.SORT_ALPHABETICAL
                 )
                 val dialog = Dialog(context, R.style.dia_view)
+                val cards = cardsWithMeta.map { it.card }
                 if (cards.isEmpty()) {
                     val bindingDialog: DiaConfirmBinding =
                         DiaConfirmBinding.inflate(activity.layoutInflater)

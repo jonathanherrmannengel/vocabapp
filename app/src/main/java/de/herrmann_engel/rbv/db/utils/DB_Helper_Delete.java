@@ -41,7 +41,7 @@ public class DB_Helper_Delete {
         } catch (Exception e) {
             return false;
         }
-        boolean containsCards = dbHelperGet.getAllCardsByPack(pack.uid).size() > 0;
+        boolean containsCards = dbHelperGet.countCardsInPack(pack.uid) > 0;
         if (containsCards && force) {
             dbHelper.card_dao.deleteAllByPack(pack.uid);
         } else if (containsCards) {

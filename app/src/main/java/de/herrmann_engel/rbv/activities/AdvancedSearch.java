@@ -70,8 +70,8 @@ public class AdvancedSearch extends AppCompatActivity {
                 }
             }
             Intent intent = new Intent(this, ListCards.class);
-            intent.putExtra("pack", pack);
             intent.putExtra("collection", -1);
+            intent.putExtra("pack", pack);
             if (pack == -2) {
                 intent.putIntegerArrayListExtra("packs", packList);
             }

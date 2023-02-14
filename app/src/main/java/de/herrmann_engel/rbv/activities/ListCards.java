@@ -1,5 +1,7 @@
 package de.herrmann_engel.rbv.activities;
 
+import static de.herrmann_engel.rbv.Globals.LIST_ACCURATE_SIZE;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
@@ -32,17 +34,16 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Random;
 
 import de.herrmann_engel.rbv.Globals;
 import de.herrmann_engel.rbv.R;
 import de.herrmann_engel.rbv.adapters.AdapterCards;
 import de.herrmann_engel.rbv.databinding.ActivityDefaultRecBinding;
-import de.herrmann_engel.rbv.databinding.DiaConfirmBinding;
 import de.herrmann_engel.rbv.databinding.DiaInfoBinding;
 import de.herrmann_engel.rbv.databinding.DiaListStatsBinding;
 import de.herrmann_engel.rbv.databinding.DiaQueryBinding;
 import de.herrmann_engel.rbv.db.DB_Card;
+import de.herrmann_engel.rbv.db.DB_Card_With_Meta;
 import de.herrmann_engel.rbv.db.DB_Media_Link_Card;
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get;
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Update;
@@ -55,31 +56,28 @@ import io.noties.markwon.linkify.LinkifyPlugin;
 import me.saket.bettermovementmethod.BetterLinkMovementMethod;
 
 public class ListCards extends FileTools {
-    MenuItem changeFrontBackItem;
-    MenuItem sortRandomItem;
-    MenuItem searchCardsItem;
-    MenuItem searchCardsOffItem;
-    MenuItem queryModeItem;
-    MenuItem listStatsItem;
     private ActivityDefaultRecBinding binding;
-    private SharedPreferences settings;
     private DB_Helper_Get dbHelperGet;
     private DB_Helper_Update dbHelperUpdate;
-    private boolean saveList;
+    private AdapterCards adapter;
+    private SharedPreferences settings;
+    private List<DB_Card_With_Meta> cardsList;
+    private List<DB_Card_With_Meta> cardsListFiltered;
     private int collectionNo;
     private int packNo;
     private ArrayList<Integer> packNos;
-    private boolean reverse;
-    private int sort;
-    private String searchQuery;
-    private int cardPosition;
     private boolean progressGreater;
     private int progressNumber;
-    private ArrayList<Integer> savedList;
-    private Long savedListSeed;
-    private List<DB_Card> cardsList;
-    private List<DB_Card> originalCardsList;
-    private List<DB_Card> currentCardsList;
+    private boolean frontBackReverse;
+    private int listSort;
+    private String searchQuery;
+    private int cardPosition;
+    private MenuItem changeFrontBackMenuItem;
+    private MenuItem changeListSortMenuItem;
+    private MenuItem searchCardsMenuItem;
+    private MenuItem searchCardsOffMenuItem;
+    private MenuItem showQueryModeMenuItem;
+    private MenuItem showListStatsMenuItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,25 +86,76 @@ public class ListCards extends FileTools {
         setContentView(binding.getRoot());
 
         settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE);
-        saveList = settings.getBoolean("list_no_update", true);
+        listSort = settings.getInt("default_sort", Globals.SORT_DEFAULT);
 
         collectionNo = getIntent().getExtras().getInt("collection");
         packNo = getIntent().getExtras().getInt("pack");
         packNos = getIntent().getExtras().getIntegerArrayList("packs");
-        reverse = getIntent().getExtras().getBoolean("reverse");
-        sort = getIntent().getExtras().getInt("sort", settings.getInt("default_sort", Globals.SORT_DEFAULT));
-        searchQuery = getIntent().getExtras().getString("searchQuery");
-        cardPosition = getIntent().getExtras().getInt("cardPosition");
         progressGreater = getIntent().getExtras().getBoolean("progressGreater");
         progressNumber = getIntent().getExtras().getInt("progressNumber");
-        savedList = getIntent().getExtras().getIntegerArrayList("savedList");
-        savedListSeed = getIntent().getExtras().getLong("savedListSeed");
 
         if (settings.getBoolean("ui_bg_images", true)) {
             binding.backgroundImage.setVisibility(View.VISIBLE);
             binding.backgroundImage.setImageDrawable(AppCompatResources.getDrawable(this, R.drawable.bg_cards));
         }
     }
+
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        if (cardsList != null) {
+            int cardDeleted = intent.getExtras().getInt("cardDeleted");
+            if (cardDeleted != 0) {
+                cardsList.removeIf(c -> c.card.uid == cardDeleted);
+            }
+            int cardAdded = intent.getExtras().getInt("cardAdded");
+            if (cardAdded != 0 && cardsList.stream().noneMatch(i -> i.card.uid == cardAdded)) {
+                try {
+                    cardsList.add(dbHelperGet.getSingleCardWithMeta(cardAdded));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
+                }
+            }
+            int cardUpdated = intent.getExtras().getInt("cardUpdated");
+            if (cardUpdated != 0) {
+                try {
+                    DB_Card_With_Meta cardWithMeta = dbHelperGet.getSingleCardWithMeta(cardUpdated);
+                    boolean formatCards = settings.getBoolean("format_cards", false);
+                    boolean formatCardsNotes = settings.getBoolean("format_card_notes", false);
+                    StringTools formatString = new StringTools();
+                    if (cardsList.size() > LIST_ACCURATE_SIZE) {
+                        if (formatCards) {
+                            cardWithMeta.card.front = formatString.unformat(cardWithMeta.card.front);
+                            cardWithMeta.card.back = formatString.unformat(cardWithMeta.card.back);
+                        }
+                        if (formatCardsNotes) {
+                            cardWithMeta.card.notes = formatString.unformat(cardWithMeta.card.notes);
+                        }
+                    } else {
+                        Markwon markwon = Markwon.create(this);
+                        if (formatCards) {
+                            cardWithMeta.card.front = formatString.format(cardWithMeta.card.front).toString();
+                            cardWithMeta.card.back = formatString.format(cardWithMeta.card.back).toString();
+                        }
+                        if (formatCardsNotes) {
+                            cardWithMeta.card.notes = markwon.toMarkdown(cardWithMeta.card.notes).toString();
+                        }
+                    } //TODO Migrate to DB_HELPER_GET
+                    DB_Card_With_Meta cardWithMetaOld = cardsListFiltered.stream().filter(i -> i.card.uid == cardWithMeta.card.uid).findFirst().orElse(null);
+                    if (cardWithMetaOld != null) {
+                        int index = cardsList.indexOf(cardWithMetaOld);
+                        if (index != -1) {
+                            cardsList.set(index, cardWithMeta);
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+    }
+
 
     @Override
     protected void notifyFolderSet() {
@@ -116,20 +165,8 @@ public class ListCards extends FileTools {
     protected void notifyMissingAction(int id) {
         try {
             Intent intent = new Intent(this, EditCardMedia.class);
-            intent.putExtra("collection", collectionNo);
-            intent.putExtra("pack", packNo);
-            intent.putIntegerArrayListExtra("packs", packNos);
             intent.putExtra("card", id);
-            intent.putExtra("reverse", reverse);
-            intent.putExtra("sort", sort);
-            intent.putExtra("searchQuery", searchQuery);
-            intent.putExtra("cardPosition", 0);
-            intent.putExtra("progressGreater", progressGreater);
-            intent.putExtra("progressNumber", progressNumber);
-            intent.putIntegerArrayListExtra("savedList", savedList);
-            intent.putExtra("savedListSeed", savedListSeed);
-            this.startActivity(intent);
-            this.finish();
+            startActivity(intent);
         } catch (Exception e) {
             e.printStackTrace();
             Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
@@ -139,6 +176,7 @@ public class ListCards extends FileTools {
     @Override
     public void onResume() {
         super.onResume();
+
         //Set title
         dbHelperGet = new DB_Helper_Get(this);
         try {
@@ -150,6 +188,7 @@ public class ListCards extends FileTools {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         //Colors
         if (packNo >= 0) {
             try {
@@ -167,6 +206,7 @@ public class ListCards extends FileTools {
                 colors.recycle();
                 colorsBackground.recycle();
             } catch (Exception e) {
+                e.printStackTrace();
                 Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
             }
         } else if (collectionNo >= 0) {
@@ -189,83 +229,29 @@ public class ListCards extends FileTools {
                 Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
             }
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_list_cards, menu);
-
-        //Menu items
-        if (packNo < 0) {
-            MenuItem startNewCard = menu.findItem(R.id.start_new_card);
-            startNewCard.setVisible(false);
-            MenuItem packDetails = menu.findItem(R.id.pack_details);
-            packDetails.setVisible(false);
-        }
-        changeFrontBackItem = menu.findItem(R.id.change_front_back);
-        sortRandomItem = menu.findItem(R.id.sort_random);
-        queryModeItem = menu.findItem(R.id.start_query);
-        listStatsItem = menu.findItem(R.id.show_list_stats);
-        searchCardsItem = menu.findItem(R.id.search_cards);
-        searchCardsOffItem = menu.findItem(R.id.search_cards_off);
-        SearchView searchView = (SearchView) searchCardsItem.getActionView();
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                searchCardsOffItem.setVisible(true);
-                searchQuery = query;
-                cardPosition = 0;
-                setRecView();
-                searchCardsItem.collapseActionView();
-                return true;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                return false;
-            }
-        });
-        if (searchQuery != null && !searchQuery.isEmpty()) {
-            searchCardsOffItem.setVisible(true);
-        }
 
         //Get cards
-        if (saveList && savedList != null) {
-            originalCardsList = dbHelperGet.getAllCardsByIds(savedList);
-        } else if (collectionNo == -1 && packNo == -1) {
-            originalCardsList = dbHelperGet.getAllCards();
-        } else if (packNo == -1) {
-            originalCardsList = dbHelperGet.getAllCardsByCollection(collectionNo);
-        } else if (packNo == -2) {
-            originalCardsList = dbHelperGet.getAllCardsByPacksAndProgress(packNos, progressGreater, progressNumber);
-        } else if (packNo == -3) {
-            originalCardsList = dbHelperGet.getAllCardsByProgress(progressGreater, progressNumber);
-        } else {
-            originalCardsList = dbHelperGet.getAllCardsByPack(packNo);
-        }
-        if (saveList && savedList == null && savedListSeed == 0) {
-            cardPosition = 0;
-            if (originalCardsList.size() > Globals.LIST_ACCURATE_SIZE) {
-                generateSavedListSeed();
-                sortList();
+        if (cardsList == null) {
+            if (collectionNo == -1 && packNo == -1) {
+                cardsList = dbHelperGet.getAllCardsWithMeta();
+            } else if (packNo == -1) {
+                cardsList = dbHelperGet.getAllCardsByCollectionWithMeta(collectionNo);
+            } else if (packNo == -2) {
+                cardsList = dbHelperGet.getAllCardsByPacksAndProgressWithMeta(packNos, progressGreater, progressNumber);
+            } else if (packNo == -3) {
+                cardsList = dbHelperGet.getAllCardsByProgressWithMeta(progressGreater, progressNumber);
             } else {
-                sortList();
-                generateSavedList();
+                cardsList = dbHelperGet.getAllCardsByPackWithMeta(packNo);
             }
-        } else if (!saveList) {
-            cardPosition = 0;
-            sortList();
-        } else {
             sortList();
         }
 
         //Warning: Big lists
         if (cardsList.size() > Globals.LIST_ACCURATE_SIZE) {
             SharedPreferences config = this.getSharedPreferences(Globals.CONFIG_NAME, Context.MODE_PRIVATE);
-            boolean warnInaccurateSaved = config.getBoolean("inaccurate_warning_saved", true);
             boolean warnInaccurateFormat = config.getBoolean("inaccurate_warning_format", true);
             boolean formatCardsOrNotes = settings.getBoolean("format_cards", false) || settings.getBoolean("format_card_notes", false);
-            if ((saveList && warnInaccurateSaved) || (formatCardsOrNotes && warnInaccurateFormat)) {
+            if (formatCardsOrNotes && warnInaccurateFormat) {
                 SharedPreferences.Editor configEditor = config.edit();
                 Dialog infoDialog = new Dialog(this, R.style.dia_view);
                 DiaInfoBinding bindingInfoDialog = DiaInfoBinding.inflate(getLayoutInflater());
@@ -275,14 +261,8 @@ public class ListCards extends FileTools {
                         WindowManager.LayoutParams.MATCH_PARENT);
                 List<String> warnings = new ArrayList<>();
                 warnings.add(String.format(getResources().getString(R.string.warn_inaccurate), Globals.LIST_ACCURATE_SIZE));
-                if (saveList) {
-                    configEditor.putBoolean("inaccurate_warning_saved", false);
-                    warnings.add(getResources().getString(R.string.warn_inaccurate_saved));
-                }
-                if (formatCardsOrNotes) {
-                    configEditor.putBoolean("inaccurate_warning_format", false);
-                    warnings.add(getResources().getString(R.string.warn_inaccurate_format));
-                }
+                configEditor.putBoolean("inaccurate_warning_format", false);
+                warnings.add(getResources().getString(R.string.warn_inaccurate_format));
                 warnings.add(getResources().getString(R.string.warn_inaccurate_note));
                 bindingInfoDialog.diaInfoText.setText(String.join(System.getProperty("line.separator") + System.getProperty("line.separator"), warnings));
                 infoDialog.show();
@@ -291,47 +271,177 @@ public class ListCards extends FileTools {
         }
 
         //Display content
-        setRecView();
+        updateContent();
+    }
+
+    @SuppressLint("SetTextI18n")
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_list_cards, menu);
+        MenuItem startNewCardMenuItem = menu.findItem(R.id.start_new_card);
+        MenuItem startPackDetailsMenuItem = menu.findItem(R.id.pack_details);
+        if (packNo < 0) {
+            startNewCardMenuItem.setVisible(false);
+            startPackDetailsMenuItem.setVisible(false);
+        } else {
+            startNewCardMenuItem.setOnMenuItemClickListener(v -> {
+                Intent intent = new Intent(this, NewCard.class);
+                intent.putExtra("pack", packNo);
+                this.startActivity(intent);
+                return false;
+            });
+            startPackDetailsMenuItem.setOnMenuItemClickListener(v -> {
+                Intent intent = new Intent(this, ViewPack.class);
+                intent.putExtra("collection", collectionNo);
+                intent.putExtra("pack", packNo);
+                this.startActivity(intent);
+                return false;
+            });
+        }
+        changeFrontBackMenuItem = menu.findItem(R.id.change_front_back);
+        changeFrontBackMenuItem.setOnMenuItemClickListener(v -> {
+            frontBackReverse = !frontBackReverse;
+            updateContent();
+            return false;
+        });
+        changeListSortMenuItem = menu.findItem(R.id.sort_random);
+        changeListSortMenuItem.setOnMenuItemClickListener(v -> {
+            listSort++;
+            sortList();
+            updateContent(true);
+            return false;
+        });
+        showQueryModeMenuItem = menu.findItem(R.id.start_query);
+        showQueryModeMenuItem.setOnMenuItemClickListener(v -> {
+            Dialog queryModeDialog = new Dialog(this, R.style.dia_view);
+            DiaQueryBinding bindingQueryModeDialog = DiaQueryBinding.inflate(getLayoutInflater());
+            queryModeDialog.setContentView(bindingQueryModeDialog.getRoot());
+            queryModeDialog.setTitle(getResources().getString(R.string.query_mode));
+            queryModeDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
+                    WindowManager.LayoutParams.MATCH_PARENT);
+            dbHelperUpdate = new DB_Helper_Update(this);
+            cardPosition = Math.min(Math.min(((LinearLayoutManager) Objects.requireNonNull(binding.recDefault.getLayoutManager())).findFirstVisibleItemPosition(), cardsListFiltered.size() - 1), Objects.requireNonNull(binding.recDefault.getAdapter()).getItemCount() - 1);
+            nextQuery(queryModeDialog, bindingQueryModeDialog);
+            queryModeDialog.setOnKeyListener((dialogInterface, keyCode, event) -> {
+                if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
+                    queryModeDialog.dismiss();
+                    binding.recDefault.scrollToPosition(Math.min(cardPosition, Objects.requireNonNull(binding.recDefault.getAdapter()).getItemCount() - 1));
+                    return true;
+                }
+                return false;
+            });
+            queryModeDialog.show();
+            return false;
+        });
+        showListStatsMenuItem = menu.findItem(R.id.show_list_stats);
+        showListStatsMenuItem.setOnMenuItemClickListener(v -> {
+            Dialog listStatsDialog = new Dialog(this, R.style.dia_view);
+            DiaListStatsBinding bindingListStatsDialog = DiaListStatsBinding.inflate(getLayoutInflater());
+            listStatsDialog.setContentView(bindingListStatsDialog.getRoot());
+            listStatsDialog.setTitle(getResources().getString(R.string.list_stats));
+            listStatsDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
+                    WindowManager.LayoutParams.MATCH_PARENT);
+
+            bindingListStatsDialog.listStatCardsTotalContent.setText(Integer.toString(cardsListFiltered.size()));
+
+            int statTotalProgress = cardsListFiltered.stream().mapToInt(c -> c.card.known).sum();
+            bindingListStatsDialog.listStatProgressTotalContent.setText(Integer.toString(statTotalProgress));
+            int statMaxProgress = cardsListFiltered.stream().mapToInt(c -> c.card.known).max().orElse(0);
+            bindingListStatsDialog.listStatProgressMaxContent.setText(Integer.toString(statMaxProgress));
+            int statMinProgress = cardsListFiltered.stream().mapToInt(c -> c.card.known).min().orElse(0);
+            bindingListStatsDialog.listStatProgressMinContent.setText(Integer.toString(statMinProgress));
+            double statAvgProgress = cardsListFiltered.stream().mapToInt(c -> c.card.known).average().orElse(0);
+            statAvgProgress = Math.round(statAvgProgress * 100.0) / 100.0;
+            bindingListStatsDialog.listStatProgressAvgContent.setText(Double.toString(statAvgProgress));
+
+            int statProgressTableIs0 = (int) cardsListFiltered.stream().filter(c -> c.card.known == 0).count();
+            int statProgressTableIs1 = (int) cardsListFiltered.stream().filter(c -> c.card.known == 1).count();
+            int statProgressTableIs2 = (int) cardsListFiltered.stream().filter(c -> c.card.known == 2).count();
+            int statProgressTableIs3 = (int) cardsListFiltered.stream().filter(c -> c.card.known == 3).count();
+            int statProgressTableIs4 = (int) cardsListFiltered.stream().filter(c -> c.card.known == 4).count();
+            int statProgressTableIs5OrMore = (int) cardsListFiltered.stream().filter(c -> c.card.known >= 5).count();
+            float percentCurrent = statProgressTableIs0 / ((float) cardsListFiltered.size());
+            bindingListStatsDialog.listStatProgressCounterNumber0.setText(Integer.toString(statProgressTableIs0));
+            bindingListStatsDialog.listStatProgressCounterPercent0.setText(Integer.toString(Math.round(percentCurrent * 100)));
+            percentCurrent = statProgressTableIs1 / ((float) cardsListFiltered.size());
+            bindingListStatsDialog.listStatProgressCounterNumber1.setText(Integer.toString(statProgressTableIs1));
+            bindingListStatsDialog.listStatProgressCounterPercent1.setText(Integer.toString(Math.round(percentCurrent * 100)));
+            percentCurrent = statProgressTableIs2 / ((float) cardsListFiltered.size());
+            bindingListStatsDialog.listStatProgressCounterNumber2.setText(Integer.toString(statProgressTableIs2));
+            bindingListStatsDialog.listStatProgressCounterPercent2.setText(Integer.toString(Math.round(percentCurrent * 100)));
+            percentCurrent = statProgressTableIs3 / ((float) cardsListFiltered.size());
+            bindingListStatsDialog.listStatProgressCounterNumber3.setText(Integer.toString(statProgressTableIs3));
+            bindingListStatsDialog.listStatProgressCounterPercent3.setText(Integer.toString(Math.round(percentCurrent * 100)));
+            percentCurrent = statProgressTableIs4 / ((float) cardsListFiltered.size());
+            bindingListStatsDialog.listStatProgressCounterNumber4.setText(Integer.toString(statProgressTableIs4));
+            bindingListStatsDialog.listStatProgressCounterPercent4.setText(Integer.toString(Math.round(percentCurrent * 100)));
+            percentCurrent = statProgressTableIs5OrMore / ((float) cardsListFiltered.size());
+            bindingListStatsDialog.listStatProgressCounterNumber5.setText(Integer.toString(statProgressTableIs5OrMore));
+            bindingListStatsDialog.listStatProgressCounterPercent5.setText(Integer.toString(Math.round(percentCurrent * 100)));
+
+            listStatsDialog.show();
+            return false;
+        });
+        searchCardsMenuItem = menu.findItem(R.id.search_cards);
+        SearchView searchView = (SearchView) searchCardsMenuItem.getActionView();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                searchCardsMenuItem.collapseActionView();
+                searchCardsOffMenuItem.setVisible(true);
+                searchQuery = query;
+                binding.recDefault.scrollToPosition(0);
+                updateContent();
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+        searchCardsOffMenuItem = menu.findItem(R.id.search_cards_off);
+        searchCardsOffMenuItem.setOnMenuItemClickListener(v -> {
+            searchQuery = "";
+            searchCardsOffMenuItem.setVisible(false);
+            binding.recDefault.scrollToPosition(0);
+            updateContent();
+            return false;
+        });
         return true;
     }
 
-    private void generateSavedList() {
-        savedList = new ArrayList<>();
-        cardsList.forEach(card -> savedList.add(card.uid));
-    }
-
-    private void generateSavedListSeed() {
-        savedListSeed = new Random().nextLong();
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        if (listSort == Globals.SORT_RANDOM) {
+            changeListSortMenuItem.setTitle(R.string.sort_alphabetical);
+        } else if (listSort == Globals.SORT_ALPHABETICAL) {
+            changeListSortMenuItem.setTitle(R.string.sort_normal);
+        } else {
+            listSort = Globals.SORT_DEFAULT;
+            changeListSortMenuItem.setTitle(R.string.sort_random);
+        }
+        showQueryModeMenuItem.setVisible(cardsListFiltered.size() > 0);
+        showListStatsMenuItem.setVisible(cardsListFiltered.size() > 0);
+        changeFrontBackMenuItem.setTitle(frontBackReverse ? R.string.change_back_front : R.string.change_front_back);
+        changeFrontBackMenuItem.setVisible(cardsListFiltered.size() > 0);
+        changeListSortMenuItem.setVisible(cardsListFiltered.size() > 1);
+        searchCardsMenuItem.setVisible(cardsListFiltered.size() > 0);
+        if (searchQuery != null && !searchQuery.isEmpty()) {
+            searchCardsOffMenuItem.setVisible(true);
+        }
+        return true;
     }
 
     private void sortList() {
-        if (savedList != null) {
-            cardsList = originalCardsList;
-        } else if (savedListSeed != 0 && sort == Globals.SORT_RANDOM) {
-            Random random = new Random();
-            random.setSeed(savedListSeed);
-            cardsList = new SortCards().sortCards(originalCardsList, sort, random);
-        } else {
-            cardsList = new SortCards().sortCards(originalCardsList, sort);
-        }
-    }
-
-    public void searchCardsOff(MenuItem menuItem) {
-        searchCardsOffItem.setVisible(false);
-        searchQuery = "";
-        cardPosition = 0;
-        setRecView();
+        new SortCards().sortCardsWithMeta(cardsList, listSort);
     }
 
     private void queryModeSkipAction(Dialog queryModeDialog, DiaQueryBinding bindingQueryModeDialog) {
         cardPosition++;
-        if (cardPosition >= currentCardsList.size()) {
-            cardPosition = 0;
-            if (!saveList) {
-                sortList();
-            }
-            setRecView();
+        if (cardPosition >= cardsListFiltered.size()) {
             queryModeDialog.dismiss();
+            binding.recDefault.scrollToPosition(0);
         } else {
             nextQuery(queryModeDialog, bindingQueryModeDialog);
         }
@@ -340,31 +450,27 @@ public class ListCards extends FileTools {
     private void queryModePreviousAction(Dialog queryModeDialog, DiaQueryBinding bindingQueryModeDialog) {
         cardPosition--;
         if (cardPosition < 0) {
-            cardPosition = 0;
-            if (!saveList) {
-                sortList();
-            }
-            setRecView();
             queryModeDialog.dismiss();
+            binding.recDefault.scrollToPosition(0);
         } else {
             nextQuery(queryModeDialog, bindingQueryModeDialog);
         }
     }
 
-    private void queryModePlusAction(Dialog queryModeDialog, DiaQueryBinding bindingQueryModeDialog, DB_Card card) {
-        int known = card.known + 1;
-        cardsList.stream().filter(i -> i.uid == card.uid).findFirst().get().known = known;
-        originalCardsList.stream().filter(i -> i.uid == card.uid).findFirst().get().known = known;
+    private void queryModeCardKnownChanged(DB_Card card, int known) {
+        cardsListFiltered.stream().filter(i -> i.card.uid == card.uid).findFirst().ifPresent(db_card_with_meta -> db_card_with_meta.card.known = known);
         card.known = known;
         dbHelperUpdate.updateCard(card);
+        adapter.notifyItemChanged(cardPosition);
+    }
+
+    private void queryModePlusAction(Dialog queryModeDialog, DiaQueryBinding bindingQueryModeDialog, DB_Card card) {
+        int known = card.known + 1;
+        queryModeCardKnownChanged(card, known);
         cardPosition++;
-        if (cardPosition >= currentCardsList.size()) {
-            cardPosition = 0;
-            if (!saveList) {
-                sortList();
-            }
-            setRecView();
+        if (cardPosition >= cardsListFiltered.size()) {
             queryModeDialog.dismiss();
+            binding.recDefault.scrollToPosition(0);
         } else {
             nextQuery(queryModeDialog, bindingQueryModeDialog);
         }
@@ -372,18 +478,11 @@ public class ListCards extends FileTools {
 
     private void queryModeMinusAction(Dialog queryModeDialog, DiaQueryBinding bindingQueryModeDialog, DB_Card card) {
         int known = Math.max(0, card.known - 1);
-        cardsList.stream().filter(i -> i.uid == card.uid).findFirst().get().known = known;
-        originalCardsList.stream().filter(i -> i.uid == card.uid).findFirst().get().known = known;
-        card.known = known;
-        dbHelperUpdate.updateCard(card);
+        queryModeCardKnownChanged(card, known);
         cardPosition++;
-        if (cardPosition >= currentCardsList.size()) {
-            cardPosition = 0;
-            if (!saveList) {
-                sortList();
-            }
-            setRecView();
+        if (cardPosition >= cardsListFiltered.size()) {
             queryModeDialog.dismiss();
+            binding.recDefault.scrollToPosition(0);
         } else {
             nextQuery(queryModeDialog, bindingQueryModeDialog);
         }
@@ -393,8 +492,7 @@ public class ListCards extends FileTools {
     private void nextQuery(Dialog queryModeDialog, DiaQueryBinding bindingQueryModeDialog) {
         LayerDrawable rootBackground = (LayerDrawable) bindingQueryModeDialog.getRoot().getBackground();
         try {
-            int position = Math.min(cardPosition, currentCardsList.size() - 1);
-            DB_Card card = dbHelperGet.getSingleCard(currentCardsList.get(position).uid);
+            DB_Card card = dbHelperGet.getSingleCard(cardsListFiltered.get(cardPosition).card.uid);
 
             try {
                 TypedArray colorsBackground = getResources().obtainTypedArray(R.array.pack_color_background);
@@ -419,11 +517,11 @@ public class ListCards extends FileTools {
             SpannableString back;
             StringTools formatString = new StringTools();
             if (settings.getBoolean("format_cards", false)) {
-                front = reverse ? formatString.format(card.back) : formatString.format(card.front);
-                back = reverse ? formatString.format(card.front) : formatString.format(card.back);
+                front = frontBackReverse ? formatString.format(card.back) : formatString.format(card.front);
+                back = frontBackReverse ? formatString.format(card.front) : formatString.format(card.back);
             } else {
-                String frontString = reverse ? card.back : card.front;
-                String backString = reverse ? card.front : card.back;
+                String frontString = frontBackReverse ? card.back : card.front;
+                String backString = frontBackReverse ? card.front : card.back;
                 front = new SpannableString(frontString);
                 back = new SpannableString(backString);
             }
@@ -479,7 +577,7 @@ public class ListCards extends FileTools {
             final GradientDrawable rootBackgroundLeft = (GradientDrawable) rootBackground.findDrawableByLayerId(R.id.dia_query_root_background_left);
             final GradientDrawable rootBackgroundTop = (GradientDrawable) rootBackground.findDrawableByLayerId(R.id.dia_query_root_background_top);
             final GradientDrawable rootBackgroundBottom = (GradientDrawable) rootBackground.findDrawableByLayerId(R.id.dia_query_root_background_bottom);
-            rootBackgroundLeft.setAlpha(position > 0 ? 255 : 0);
+            rootBackgroundLeft.setAlpha(cardPosition > 0 ? 255 : 0);
             rootBackgroundTop.setAlpha(0);
             rootBackgroundBottom.setAlpha(0);
 
@@ -494,7 +592,7 @@ public class ListCards extends FileTools {
                         if (distance < 0) {
                             bindingQueryModeDialog.querySwipeNext.getLayoutParams().width = (int) (2 * Math.abs(distance));
                             bindingQueryModeDialog.querySwipeNext.requestLayout();
-                        } else if (position > 0) {
+                        } else if (cardPosition > 0) {
                             bindingQueryModeDialog.querySwipePrevious.getLayoutParams().width = (int) (2 * Math.abs(distance));
                             bindingQueryModeDialog.querySwipePrevious.requestLayout();
                         }
@@ -559,7 +657,7 @@ public class ListCards extends FileTools {
 
                 @Override
                 public void onSwipeRight() {
-                    if (allowTouchEvent && position > 0) {
+                    if (allowTouchEvent && cardPosition > 0) {
                         allowTouchEvent = false;
                         ValueAnimator growAnimator = ValueAnimator.ofInt(bindingQueryModeDialog.querySwipePrevious.getWidth(), bindingQueryModeDialog.getRoot().getWidth());
                         growAnimator.setDuration(ANIM_GROW_TIME);
@@ -617,7 +715,7 @@ public class ListCards extends FileTools {
                 public void onSwipeBottom() {
                     if (allowTouchEvent && bindingQueryModeDialog.queryHide.getVisibility() == View.VISIBLE) {
                         allowTouchEvent = false;
-                        @SuppressLint("ClickableViewAccessibility") ValueAnimator growAnimator = ValueAnimator.ofInt(bindingQueryModeDialog.querySwipeMinus.getHeight(), bindingQueryModeDialog.getRoot().getHeight());
+                        ValueAnimator growAnimator = ValueAnimator.ofInt(bindingQueryModeDialog.querySwipeMinus.getHeight(), bindingQueryModeDialog.getRoot().getHeight());
                         growAnimator.setDuration(ANIM_GROW_TIME);
                         growAnimator.addUpdateListener(animation -> {
                             bindingQueryModeDialog.querySwipeMinus.getLayoutParams().height = (int) animation.getAnimatedValue();
@@ -646,7 +744,7 @@ public class ListCards extends FileTools {
             bindingQueryModeDialog.queryMinus.setVisibility(View.GONE);
 
             bindingQueryModeDialog.querySkip.setOnClickListener(vv -> queryModeSkipAction(queryModeDialog, bindingQueryModeDialog));
-            if (position == 0) {
+            if (cardPosition == 0) {
                 bindingQueryModeDialog.queryBack.setVisibility(View.INVISIBLE);
             } else {
                 bindingQueryModeDialog.queryBack.setVisibility(View.VISIBLE);
@@ -670,179 +768,35 @@ public class ListCards extends FileTools {
         }
     }
 
-    private void setCardPosition() {
-        cardPosition = ((LinearLayoutManager) Objects.requireNonNull(binding.recDefault.getLayoutManager()))
-                .findFirstVisibleItemPosition();
-        cardPosition = Math.min(cardPosition, Objects.requireNonNull(binding.recDefault.getAdapter()).getItemCount() - 1);
-    }
-
-    public void startQueryMode(MenuItem menuItem) {
-        Dialog queryModeDialog = new Dialog(this, R.style.dia_view);
-        DiaQueryBinding bindingQueryModeDialog = DiaQueryBinding.inflate(getLayoutInflater());
-        queryModeDialog.setContentView(bindingQueryModeDialog.getRoot());
-        queryModeDialog.setTitle(getResources().getString(R.string.query_mode));
-        queryModeDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.MATCH_PARENT);
-        dbHelperUpdate = new DB_Helper_Update(this);
-        setCardPosition();
-        nextQuery(queryModeDialog, bindingQueryModeDialog);
-        queryModeDialog.setOnKeyListener((dialogInterface, keyCode, event) -> {
-            if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
-                if (!saveList || (savedList == null && savedListSeed == 0)) {
-                    Dialog exitQueryModeDialog = new Dialog(ListCards.this, R.style.dia_view);
-                    DiaConfirmBinding bindingExitQueryModeDialog = DiaConfirmBinding.inflate(getLayoutInflater());
-                    exitQueryModeDialog.setContentView(bindingExitQueryModeDialog.getRoot());
-                    exitQueryModeDialog.setTitle(getResources().getString(R.string.query_mode_exit));
-                    exitQueryModeDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
-                            WindowManager.LayoutParams.MATCH_PARENT);
-                    bindingExitQueryModeDialog.diaConfirmYes.setOnClickListener(v -> {
-                        cardPosition = 0;
-                        sortList();
-                        setRecView();
-                        exitQueryModeDialog.dismiss();
-                        queryModeDialog.dismiss();
-                    });
-                    bindingExitQueryModeDialog.diaConfirmNo.setOnClickListener(v -> exitQueryModeDialog.dismiss());
-                    exitQueryModeDialog.show();
-                } else {
-                    setRecView();
-                    queryModeDialog.dismiss();
-                }
-                return true;
-            }
-            return false;
-        });
-        queryModeDialog.show();
-    }
-
-    public void showListStats(MenuItem menuItem) {
-        Dialog listStatsDialog = new Dialog(this, R.style.dia_view);
-        DiaListStatsBinding bindingListStatsDialog = DiaListStatsBinding.inflate(getLayoutInflater());
-        listStatsDialog.setContentView(bindingListStatsDialog.getRoot());
-        listStatsDialog.setTitle(getResources().getString(R.string.list_stats));
-        listStatsDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.MATCH_PARENT);
-
-        bindingListStatsDialog.listStatCardsTotalContent.setText(Integer.toString(currentCardsList.size()));
-
-        int statTotalProgress = currentCardsList.stream().mapToInt(c -> c.known).sum();
-        bindingListStatsDialog.listStatProgressTotalContent.setText(Integer.toString(statTotalProgress));
-        int statMaxProgress = currentCardsList.stream().mapToInt(c -> c.known).max().orElse(0);
-        bindingListStatsDialog.listStatProgressMaxContent.setText(Integer.toString(statMaxProgress));
-        int statMinProgress = currentCardsList.stream().mapToInt(c -> c.known).min().orElse(0);
-        bindingListStatsDialog.listStatProgressMinContent.setText(Integer.toString(statMinProgress));
-        double statAvgProgress = currentCardsList.stream().mapToInt(c -> c.known).average().orElse(0);
-        statAvgProgress = Math.round(statAvgProgress * 100.0) / 100.0;
-        bindingListStatsDialog.listStatProgressAvgContent.setText(Double.toString(statAvgProgress));
-
-        int statProgressTableIs0 = (int) currentCardsList.stream().filter(c -> c.known == 0).count();
-        int statProgressTableIs1 = (int) currentCardsList.stream().filter(c -> c.known == 1).count();
-        int statProgressTableIs2 = (int) currentCardsList.stream().filter(c -> c.known == 2).count();
-        int statProgressTableIs3 = (int) currentCardsList.stream().filter(c -> c.known == 3).count();
-        int statProgressTableIs4 = (int) currentCardsList.stream().filter(c -> c.known == 4).count();
-        int statProgressTableIs5OrMore = (int) currentCardsList.stream().filter(c -> c.known >= 5).count();
-        float percentCurrent = statProgressTableIs0 / ((float) currentCardsList.size());
-        bindingListStatsDialog.listStatProgressCounterNumber0.setText(Integer.toString(statProgressTableIs0));
-        bindingListStatsDialog.listStatProgressCounterPercent0.setText(Integer.toString(Math.round(percentCurrent * 100)));
-        percentCurrent = statProgressTableIs1 / ((float) currentCardsList.size());
-        bindingListStatsDialog.listStatProgressCounterNumber1.setText(Integer.toString(statProgressTableIs1));
-        bindingListStatsDialog.listStatProgressCounterPercent1.setText(Integer.toString(Math.round(percentCurrent * 100)));
-        percentCurrent = statProgressTableIs2 / ((float) currentCardsList.size());
-        bindingListStatsDialog.listStatProgressCounterNumber2.setText(Integer.toString(statProgressTableIs2));
-        bindingListStatsDialog.listStatProgressCounterPercent2.setText(Integer.toString(Math.round(percentCurrent * 100)));
-        percentCurrent = statProgressTableIs3 / ((float) currentCardsList.size());
-        bindingListStatsDialog.listStatProgressCounterNumber3.setText(Integer.toString(statProgressTableIs3));
-        bindingListStatsDialog.listStatProgressCounterPercent3.setText(Integer.toString(Math.round(percentCurrent * 100)));
-        percentCurrent = statProgressTableIs4 / ((float) currentCardsList.size());
-        bindingListStatsDialog.listStatProgressCounterNumber4.setText(Integer.toString(statProgressTableIs4));
-        bindingListStatsDialog.listStatProgressCounterPercent4.setText(Integer.toString(Math.round(percentCurrent * 100)));
-        percentCurrent = statProgressTableIs5OrMore / ((float) currentCardsList.size());
-        bindingListStatsDialog.listStatProgressCounterNumber5.setText(Integer.toString(statProgressTableIs5OrMore));
-        bindingListStatsDialog.listStatProgressCounterPercent5.setText(Integer.toString(Math.round(percentCurrent * 100)));
-
-        listStatsDialog.show();
-    }
-
-    public void startNewCard(MenuItem menuItem) {
-        Intent intent = new Intent(this, NewCard.class);
-        intent.putExtra("collection", collectionNo);
-        intent.putExtra("pack", packNo);
-        intent.putExtra("reverse", reverse);
-        intent.putExtra("sort", sort);
-        intent.putExtra("searchQuery", searchQuery);
-        intent.putExtra("cardPosition", ((LinearLayoutManager) Objects.requireNonNull(binding.recDefault.getLayoutManager()))
-                .findFirstVisibleItemPosition());
-        intent.putIntegerArrayListExtra("savedList", savedList);
-        this.startActivity(intent);
-        this.finish();
-    }
-
-    public void changeFrontBack(MenuItem menuItem) {
-        setCardPosition();
-        reverse = !reverse;
-        setRecView();
-    }
-
-    public void sort(MenuItem menuItem) {
-        sort++;
-        cardPosition = 0;
-        if (saveList && savedListSeed != 0) {
-            generateSavedListSeed();
-        } else {
-            savedListSeed = 0L;
-        }
-        boolean hadSavedList = savedList != null;
-        savedList = null;
-        sortList();
-        if (saveList && hadSavedList) {
-            generateSavedList();
-        }
-        setRecView();
-    }
-
-    public void packDetails(MenuItem menuItem) {
-        Intent intent = new Intent(this, ViewPack.class);
-        intent.putExtra("collection", collectionNo);
-        intent.putExtra("pack", packNo);
-        this.startActivity(intent);
-    }
-
-    public void setRecView() {
-        currentCardsList = cardsList;
-        //Menu Items
-        if (sort == Globals.SORT_RANDOM) {
-            sortRandomItem.setTitle(R.string.sort_alphabetical);
-        } else if (sort == Globals.SORT_ALPHABETICAL) {
-            sortRandomItem.setTitle(R.string.sort_normal);
-        } else {
-            sort = Globals.SORT_DEFAULT;
-            sortRandomItem.setTitle(R.string.sort_random);
-        }
-        queryModeItem.setVisible(currentCardsList.size() > 0);
-        listStatsItem.setVisible(currentCardsList.size() > 0);
-        changeFrontBackItem.setTitle(reverse ? R.string.change_back_front : R.string.change_front_back);
-        changeFrontBackItem.setVisible(currentCardsList.size() > 0);
-        sortRandomItem.setVisible(currentCardsList.size() > 1);
-        searchCardsItem.setVisible(currentCardsList.size() > 0);
+    public void updateContent(boolean recreate) {
+        List<DB_Card_With_Meta> tempCardList = new ArrayList<>(cardsList);
         //Search
         if (searchQuery != null && !searchQuery.isEmpty()) {
-            List<DB_Card> cardsListFiltered = new ArrayList<>(currentCardsList);
             SearchCards searchCards = new SearchCards();
-            cardsListFiltered = searchCards.searchCards(cardsListFiltered, searchQuery);
-            if (cardsListFiltered.size() == 0) {
-                searchCardsOffItem.setVisible(false);
+            List<DB_Card_With_Meta> searchResults = new ArrayList<>(tempCardList);
+            searchCards.searchCards(searchResults, searchQuery);
+            if (searchResults.size() == 0) {
+                searchCardsOffMenuItem.setVisible(false);
                 searchQuery = "";
-                cardPosition = 0;
                 Toast.makeText(this, R.string.search_no_results, Toast.LENGTH_LONG).show();
             } else {
-                currentCardsList = cardsListFiltered;
+                tempCardList = searchResults;
             }
         }
         //Set recycler view
-        AdapterCards adapter = new AdapterCards(currentCardsList, reverse, sort, packNo, packNos, searchQuery, collectionNo, progressGreater, progressNumber, savedList, savedListSeed);
-        binding.recDefault.setAdapter(adapter);
-        binding.recDefault.setLayoutManager(new LinearLayoutManager(this));
-        binding.recDefault.scrollToPosition(
-                Math.min(cardPosition, Objects.requireNonNull(binding.recDefault.getAdapter()).getItemCount() - 1));
+        if (adapter == null || cardsListFiltered == null || recreate || cardsListFiltered.size() == 0 || tempCardList.size() == 0) {
+            cardsListFiltered = tempCardList;
+            adapter = new AdapterCards(cardsListFiltered, settings.getBoolean("ui_font_size", false), frontBackReverse, packNo, collectionNo);
+            binding.recDefault.setAdapter(adapter);
+            binding.recDefault.setLayoutManager(new LinearLayoutManager(this));
+            binding.recDefault.scrollToPosition(0);
+        } else {
+            adapter.updateContent(tempCardList, frontBackReverse);
+        }
+        invalidateOptionsMenu();
+    }
+
+    private void updateContent() {
+        updateContent(false);
     }
 }

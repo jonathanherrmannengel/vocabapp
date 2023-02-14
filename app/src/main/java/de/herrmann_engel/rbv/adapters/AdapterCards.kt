@@ -2,6 +2,7 @@ package de.herrmann_engel.rbv.adapters
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ImageSpan
@@ -9,54 +10,66 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.R
-import de.herrmann_engel.rbv.activities.ListCards
 import de.herrmann_engel.rbv.activities.ViewCard
+import de.herrmann_engel.rbv.adapters.compare.ListCardCompare
 import de.herrmann_engel.rbv.databinding.RecViewBinding
-import de.herrmann_engel.rbv.db.DB_Card
+import de.herrmann_engel.rbv.db.DB_Card_With_Meta
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
-import de.herrmann_engel.rbv.utils.ContextTools
 import de.herrmann_engel.rbv.utils.StringTools
 
 class AdapterCards(
-    private val cards: List<DB_Card>,
-    private val reverse: Boolean,
-    private val sort: Int,
+    private val cards: MutableList<DB_Card_With_Meta>,
+    private var uiFontSizeBig: Boolean,
+    private var reverse: Boolean,
     private val packNo: Int,
-    private val packNos: ArrayList<Int>?,
-    private val searchQuery: String?,
-    private val collectionNo: Int,
-    private val progressGreater: Boolean?,
-    private val progressNumber: Int?,
-    private val savedList: ArrayList<Int>?,
-    private val savedListSeed: Long?
+    private val collectionNo: Int
 ) : RecyclerView.Adapter<AdapterCards.ViewHolder>() {
     class ViewHolder(val binding: RecViewBinding) : RecyclerView.ViewHolder(binding.root)
 
     private val stringTools = StringTools()
 
+    fun updateContent(
+        cardsListNew: List<DB_Card_With_Meta>,
+        reverse: Boolean,
+    ) {
+        val diffResult =
+            DiffUtil.calculateDiff(
+                ListCardCompare(
+                    cards,
+                    cardsListNew,
+                    this.reverse != reverse
+                )
+            )
+        this.reverse = reverse
+        cards.clear()
+        cards.addAll(cardsListNew)
+        diffResult.dispatchUpdatesTo(this)
+    }
+
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         val binding =
             RecViewBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false)
-        val settings =
-            viewGroup.context.getSharedPreferences(Globals.SETTINGS_NAME, Context.MODE_PRIVATE)
-        if (settings.getBoolean("ui_font_size", false)) {
-            binding.recName.setTextSize(
-                TypedValue.COMPLEX_UNIT_PX,
-                viewGroup.context.resources.getDimension(R.dimen.rec_view_font_size_big)
-            )
-            binding.recDesc.setTextSize(
-                TypedValue.COMPLEX_UNIT_PX,
-                viewGroup.context.resources.getDimension(R.dimen.rec_view_font_size_below_big)
-            )
-        }
+        viewGroup.context.getSharedPreferences(Globals.SETTINGS_NAME, Context.MODE_PRIVATE)
         return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         val context = viewHolder.binding.root.context
+        if (uiFontSizeBig) {
+            viewHolder.binding.recName.setTextSize(
+                TypedValue.COMPLEX_UNIT_PX,
+                context.resources.getDimension(R.dimen.rec_view_font_size_big)
+            )
+            viewHolder.binding.recDesc.setTextSize(
+                TypedValue.COMPLEX_UNIT_PX,
+                context.resources.getDimension(R.dimen.rec_view_font_size_below_big)
+            )
+        }
+        viewHolder.binding.recName.setTextColor(Color.BLACK)
         if (cards.isEmpty()) {
             if (packNo < 0) {
                 viewHolder.binding.recName.text =
@@ -86,16 +99,17 @@ class AdapterCards(
                 viewHolder.binding.recName.text = addText
             }
         } else {
-            var cardText = if (reverse) cards[position].back else cards[position].front
+            val card = cards[position].card
+            var cardText = if (reverse) card.back else card.front
             cardText = System.getProperty("line.separator")?.let { cardText.replace(it, " ") }
             cardText = stringTools.shorten(cardText)
             viewHolder.binding.recName.text =
-                String.format("%s (%d)", cardText, cards[position].known)
+                String.format("%s (%d)", cardText, card.known)
             if (packNo < 0) {
                 val dbHelperGet =
                     DB_Helper_Get(context)
                 try {
-                    val color = dbHelperGet.getSinglePack(cards[position].pack).colors
+                    val color = dbHelperGet.getSinglePack(card.pack).colors
                     val colors =
                         context.resources.obtainTypedArray(R.array.pack_color_list)
                     if (color < colors.length() && color >= 0) {
@@ -106,23 +120,13 @@ class AdapterCards(
                     e.printStackTrace()
                 }
             }
-            val extra = cards[position].uid
+            val extra = card.uid
             viewHolder.binding.recName.setOnClickListener {
                 val intent = Intent(context, ViewCard::class.java)
                 intent.putExtra("collection", collectionNo)
                 intent.putExtra("pack", packNo)
-                intent.putIntegerArrayListExtra("packs", packNos)
                 intent.putExtra("card", extra)
-                intent.putExtra("reverse", reverse)
-                intent.putExtra("sort", sort)
-                intent.putExtra("searchQuery", searchQuery)
-                intent.putExtra("cardPosition", viewHolder.bindingAdapterPosition)
-                intent.putExtra("progressGreater", progressGreater)
-                intent.putExtra("progressNumber", progressNumber)
-                intent.putIntegerArrayListExtra("savedList", savedList)
-                intent.putExtra("savedListSeed", savedListSeed)
                 context.startActivity(intent)
-                (ContextTools().getActivity(context) as ListCards).finish()
             }
         }
     }

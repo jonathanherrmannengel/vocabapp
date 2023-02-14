@@ -118,8 +118,8 @@ class AdapterPacks(
         } else if (position == 0) {
             viewHolder.binding.root.setOnClickListener {
                 val intent = Intent(context, ListCards::class.java)
-                intent.putExtra("pack", -1)
                 intent.putExtra("collection", collection)
+                intent.putExtra("pack", -1)
                 context.startActivity(intent)
             }
             viewHolder.binding.recCollectionsName.text =
@@ -152,8 +152,8 @@ class AdapterPacks(
             val extra = currentPack.uid
             viewHolder.binding.root.setOnClickListener {
                 val intent = Intent(context, ListCards::class.java)
-                intent.putExtra("pack", extra)
                 intent.putExtra("collection", collection)
+                intent.putExtra("pack", extra)
                 context.startActivity(intent)
             }
             viewHolder.binding.recCollectionsName.text =

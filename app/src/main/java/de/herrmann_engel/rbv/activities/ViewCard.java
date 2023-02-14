@@ -72,16 +72,7 @@ public class ViewCard extends FileTools {
     private int known;
     private int collectionNo;
     private int packNo;
-    private ArrayList<Integer> packNos;
     private int cardNo;
-    private boolean reverse;
-    private int sort;
-    private String searchQuery;
-    private int cardPosition;
-    private boolean progressGreater;
-    private int progressNumber;
-    private ArrayList<Integer> savedList;
-    private Long savedListSeed;
     private boolean formatCardNotes;
     private ArrayList<DB_Media_Link_Card> imageList;
     private ArrayList<DB_Media_Link_Card> mediaList;
@@ -93,16 +84,7 @@ public class ViewCard extends FileTools {
         setContentView(binding.getRoot());
         collectionNo = getIntent().getExtras().getInt("collection");
         packNo = getIntent().getExtras().getInt("pack");
-        packNos = getIntent().getExtras().getIntegerArrayList("packs");
         cardNo = getIntent().getExtras().getInt("card");
-        reverse = getIntent().getExtras().getBoolean("reverse");
-        sort = getIntent().getExtras().getInt("sort");
-        searchQuery = getIntent().getExtras().getString("searchQuery");
-        cardPosition = getIntent().getExtras().getInt("cardPosition");
-        progressGreater = getIntent().getExtras().getBoolean("progressGreater");
-        progressNumber = getIntent().getExtras().getInt("progressNumber");
-        savedList = getIntent().getExtras().getIntegerArrayList("savedList");
-        savedListSeed = getIntent().getExtras().getLong("savedListSeed");
         dbHelperGet = new DB_Helper_Get(this);
         dbHelperUpdate = new DB_Helper_Update(this);
     }
@@ -261,23 +243,11 @@ public class ViewCard extends FileTools {
         bindingConfirmDeleteDialog.diaConfirmYes.setOnClickListener(v -> {
             DB_Helper_Delete dbHelperDelete = new DB_Helper_Delete(this);
             dbHelperDelete.deleteCard(card);
-            if (savedList != null) {
-                savedList.remove(Integer.valueOf(card.uid));
-            }
             confirmDeleteDialog.dismiss();
             Intent intent = new Intent(this, ListCards.class);
-            intent.putExtra("collection", collectionNo);
-            intent.putExtra("pack", packNo);
-            intent.putIntegerArrayListExtra("packs", packNos);
-            intent.putExtra("reverse", reverse);
-            intent.putExtra("sort", sort);
-            intent.putExtra("searchQuery", searchQuery);
-            intent.putExtra("cardPosition", cardPosition);
-            intent.putExtra("progressGreater", progressGreater);
-            intent.putExtra("progressNumber", progressNumber);
-            intent.putIntegerArrayListExtra("savedList", savedList);
-            startActivity(intent);
-            this.finish();
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            intent.putExtra("cardDeleted", cardNo);
+            this.startActivity(intent);
         });
         bindingConfirmDeleteDialog.diaConfirmNo.setOnClickListener(v -> confirmDeleteDialog.dismiss());
         confirmDeleteDialog.show();
@@ -401,12 +371,15 @@ public class ViewCard extends FileTools {
     }
 
     public void movedCard() {
-        savedList = null;
-        savedListSeed = null;
         try {
             card = dbHelperGet.getSingleCard(cardNo);
             packNo = card.pack;
             updateColors();
+            Intent intent = new Intent(this, ListCards.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            intent.putExtra("collection", collectionNo);
+            intent.putExtra("pack", packNo);
+            this.startActivity(intent);
         } catch (Exception e) {
             Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
         }
@@ -432,18 +405,8 @@ public class ViewCard extends FileTools {
     @Override
     public void onBackPressed() {
         Intent intent = new Intent(this, ListCards.class);
-        intent.putExtra("collection", collectionNo);
-        intent.putExtra("pack", packNo);
-        intent.putIntegerArrayListExtra("packs", packNos);
-        intent.putExtra("reverse", reverse);
-        intent.putExtra("sort", sort);
-        intent.putExtra("searchQuery", searchQuery);
-        intent.putExtra("cardPosition", cardPosition);
-        intent.putExtra("progressGreater", progressGreater);
-        intent.putExtra("progressNumber", progressNumber);
-        intent.putIntegerArrayListExtra("savedList", savedList);
-        intent.putExtra("savedListSeed", savedListSeed);
-        startActivity(intent);
-        this.finish();
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        intent.putExtra("cardUpdated", cardNo);
+        this.startActivity(intent);
     }
 }

@@ -129,8 +129,8 @@ public class ViewCollection extends AppCompatActivity {
                 startActivity(intent);
             } else {
                 deleteCollection(true);
-                confirmDeleteDialog.dismiss();
             }
+            confirmDeleteDialog.dismiss();
         });
         bindingConfirmDeleteDialog.diaConfirmNo.setOnClickListener(v -> confirmDeleteDialog.dismiss());
         confirmDeleteDialog.show();

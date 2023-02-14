@@ -25,26 +25,32 @@ public interface DB_Card_DAO {
     @Query("SELECT * FROM db_card")
     List<DB_Card> getAll();
 
-    @Query("SELECT * FROM db_card WHERE pack=:pid")
-    List<DB_Card> getAll(int pid);
-
-    @Query("SELECT * FROM db_card WHERE known>=:progress")
-    List<DB_Card> getAllGreaterEqual(int progress);
-
-    @Query("SELECT * FROM db_card WHERE known<=:progress")
-    List<DB_Card> getAllLessEqual(int progress);
-
-    @Query("SELECT * FROM db_card WHERE pack=:pid AND known>=:progress")
-    List<DB_Card> getAllGreaterEqual(int pid, int progress);
-
-    @Query("SELECT * FROM db_card WHERE pack=:pid AND known<=:progress")
-    List<DB_Card> getAllLessEqual(int pid, int progress);
-
     @Query("SELECT * FROM db_card WHERE pack=:pid AND front=:front AND back=:back AND notes=:notes")
     List<DB_Card> getAllByPackAndFrontAndBackAndNotes(int pid, String front, String back, String notes);
 
+    @Query("SELECT *, (SELECT colors FROM db_pack WHERE uid=db_card.pack) AS packColor FROM db_card")
+    List<DB_Card_With_Meta> getAllWithMeta();
+
+    @Query("SELECT *, (SELECT colors FROM db_pack WHERE uid=db_card.pack) AS packColor FROM db_card WHERE pack=:pid")
+    List<DB_Card_With_Meta> getAllByPackWithMeta(int pid);
+
+    @Query("SELECT *, (SELECT colors FROM db_pack WHERE uid=db_card.pack) AS packColor FROM db_card WHERE known>=:progress")
+    List<DB_Card_With_Meta> getAllGreaterEqualWithMeta(int progress);
+
+    @Query("SELECT *, (SELECT colors FROM db_pack WHERE uid=db_card.pack) AS packColor FROM db_card WHERE known<=:progress")
+    List<DB_Card_With_Meta> getAllLessEqualWithMeta(int progress);
+
+    @Query("SELECT *, (SELECT colors FROM db_pack WHERE uid=db_card.pack) AS packColor FROM db_card WHERE pack=:pid AND known>=:progress")
+    List<DB_Card_With_Meta> getAllGreaterEqualWithMeta(int pid, int progress);
+
+    @Query("SELECT *, (SELECT colors FROM db_pack WHERE uid=db_card.pack) AS packColor FROM db_card WHERE pack=:pid AND known<=:progress")
+    List<DB_Card_With_Meta> getAllLessEqualWithMeta(int pid, int progress);
+
     @Query("SELECT * FROM db_card WHERE uid=:cid")
     List<DB_Card> getOne(int cid);
+
+    @Query("SELECT *, (SELECT colors FROM db_pack WHERE uid=db_card.pack) AS packColor FROM db_card WHERE uid=:cid")
+    DB_Card_With_Meta getOneWithMeta(int cid);
 
     @Query("SELECT * FROM db_card")
     Cursor getAllExport();

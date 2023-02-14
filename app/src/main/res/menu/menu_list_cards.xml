@@ -15,7 +15,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:icon="@drawable/ic_round_search_off_24"
-        android:onClick="searchCardsOff"
         android:orderInCategory="110"
         android:title="@string/search_off"
         android:visible="false"
@@ -25,7 +24,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:icon="@drawable/ic_round_play_arrow_24"
-        android:onClick="startQueryMode"
         android:orderInCategory="150"
         android:title="@string/query_mode"
         app:showAsAction="ifRoom" />
@@ -34,7 +32,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:icon="@drawable/outline_add_24"
-        android:onClick="startNewCard"
         android:orderInCategory="200"
         android:title="@string/new_card"
         app:showAsAction="ifRoom" />
@@ -43,7 +40,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:icon="@drawable/outline_info_24"
-        android:onClick="packDetails"
         android:orderInCategory="300"
         android:title="@string/pack_details"
         app:showAsAction="ifRoom" />
@@ -51,7 +47,6 @@
         android:id="@+id/show_list_stats"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="showListStats"
         android:orderInCategory="400"
         android:title="@string/list_stats"
         app:showAsAction="never" />
@@ -59,7 +54,6 @@
         android:id="@+id/change_front_back"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="changeFrontBack"
         android:orderInCategory="500"
         android:title="@string/change_front_back"
         app:showAsAction="never" />
@@ -67,7 +61,6 @@
         android:id="@+id/sort_random"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="sort"
         android:orderInCategory="600"
         android:title="@string/sort_random"
         app:showAsAction="never" />
