@@ -7,4 +7,10 @@ public class DB_Card_With_Meta {
     public DB_Card card;
 
     public int packColor;
+
+    public String formattedFront;
+
+    public String formattedBack;
+
+    public String formattedNotes;
 }

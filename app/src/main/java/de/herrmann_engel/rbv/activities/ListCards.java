@@ -309,7 +309,7 @@ public class ListCards extends FileTools {
             queryModeDialog.setOnKeyListener((dialogInterface, keyCode, event) -> {
                 if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
                     queryModeDialog.dismiss();
-                    binding.recDefault.scrollToPosition(Math.min(cardPosition, Objects.requireNonNull(binding.recDefault.getAdapter()).getItemCount() - 1));
+                    binding.recDefault.smoothScrollToPosition(Math.min(cardPosition, Objects.requireNonNull(binding.recDefault.getAdapter()).getItemCount() - 1));
                     return true;
                 }
                 return false;
@@ -442,7 +442,6 @@ public class ListCards extends FileTools {
     }
 
     private void queryModeCardKnownChanged(DB_Card card, int known) {
-        cardsListFiltered.stream().filter(i -> i.card.uid == card.uid).findFirst().ifPresent(db_card_with_meta -> db_card_with_meta.card.known = known);
         card.known = known;
         dbHelperUpdate.updateCard(card);
         adapter.notifyItemChanged(cardPosition);
@@ -476,13 +475,14 @@ public class ListCards extends FileTools {
     private void nextQuery(Dialog queryModeDialog, DiaQueryBinding bindingQueryModeDialog) {
         LayerDrawable rootBackground = (LayerDrawable) bindingQueryModeDialog.getRoot().getBackground();
         try {
-            DB_Card card = dbHelperGet.getSingleCard(cardsListFiltered.get(cardPosition).card.uid);
+            DB_Card_With_Meta cardWithMeta = cardsListFiltered.get(cardPosition);
+            DB_Card card = cardWithMeta.card;
 
             try {
                 TypedArray colorsBackground = getResources().obtainTypedArray(R.array.pack_color_background);
                 TypedArray colorsBackgroundHighlight = getResources()
                         .obtainTypedArray(R.array.pack_color_background_highlight);
-                int packColors = dbHelperGet.getSinglePack(card.pack).colors;
+                int packColors = cardWithMeta.packColor;
                 if (packColors < Math.min(colorsBackground.length(),
                         colorsBackgroundHighlight.length()) && packColors >= 0) {
                     int colorBackground = colorsBackground.getColor(packColors, 0);

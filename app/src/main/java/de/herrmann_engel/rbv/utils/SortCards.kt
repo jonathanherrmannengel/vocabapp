@@ -15,9 +15,15 @@ class SortCards {
                     return@Comparator if (a.card == null || b.card == null) {
                         0
                     } else {
-                        compareCardsAlphabetical(a.card.front, b.card.front).let {
+                        compareCardsAlphabetical(
+                            a.formattedFront ?: a.card.front,
+                            b.formattedFront ?: b.card.front
+                        ).let {
                             if (it == 0) {
-                                compareCardsAlphabetical(a.card.back, b.card.back)
+                                compareCardsAlphabetical(
+                                    a.formattedBack ?: a.card.back,
+                                    b.formattedBack ?: b.card.back
+                                )
                             } else it
                         }
                     }

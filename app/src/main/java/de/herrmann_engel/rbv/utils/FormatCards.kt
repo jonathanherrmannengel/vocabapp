@@ -20,19 +20,19 @@ class FormatCards(val context: Context) {
     private fun formatCard(card: DB_Card_With_Meta, inaccurate: Boolean) {
         if (inaccurate) {
             if (formatCards) {
-                card.card.front = formatString.unformat(card.card.front)
-                card.card.back = formatString.unformat(card.card.back)
+                card.formattedFront = formatString.unformat(card.card.front)
+                card.formattedBack = formatString.unformat(card.card.back)
             }
             if (formatCardsNotes) {
-                card.card.notes = formatString.unformat(card.card.notes)
+                card.formattedNotes = formatString.unformat(card.card.notes)
             }
         } else {
             if (formatCards) {
-                card.card.front = formatString.format(card.card.front).toString()
-                card.card.back = formatString.format(card.card.back).toString()
+                card.formattedFront = formatString.format(card.card.front).toString()
+                card.formattedBack = formatString.format(card.card.back).toString()
             }
             if (formatCardsNotes) {
-                card.card.notes = markwon.toMarkdown(card.card.notes).toString()
+                card.formattedNotes = markwon.toMarkdown(card.card.notes).toString()
             }
         }
     }

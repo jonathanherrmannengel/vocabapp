@@ -18,7 +18,6 @@ import de.herrmann_engel.rbv.activities.ViewCard
 import de.herrmann_engel.rbv.adapters.compare.ListCardCompare
 import de.herrmann_engel.rbv.databinding.RecViewBinding
 import de.herrmann_engel.rbv.db.DB_Card_With_Meta
-import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.utils.StringTools
 
 class AdapterCards(
@@ -99,17 +98,16 @@ class AdapterCards(
                 viewHolder.binding.recName.text = addText
             }
         } else {
-            val card = cards[position].card
-            var cardText = if (reverse) card.back else card.front
+            var cardText = if (reverse) {
+                cards[position].formattedBack ?: cards[position].card.back
+            } else cards[position].formattedFront ?: cards[position].card.front
             cardText = System.getProperty("line.separator")?.let { cardText.replace(it, " ") }
             cardText = stringTools.shorten(cardText)
             viewHolder.binding.recName.text =
-                String.format("%s (%d)", cardText, card.known)
+                String.format("%s (%d)", cardText, cards[position].card.known)
             if (packNo < 0) {
-                val dbHelperGet =
-                    DB_Helper_Get(context)
                 try {
-                    val color = dbHelperGet.getSinglePack(card.pack).colors
+                    val color = cards[position].packColor
                     val colors =
                         context.resources.obtainTypedArray(R.array.pack_color_list)
                     if (color < colors.length() && color >= 0) {
@@ -120,12 +118,11 @@ class AdapterCards(
                     e.printStackTrace()
                 }
             }
-            val extra = card.uid
             viewHolder.binding.recName.setOnClickListener {
                 val intent = Intent(context, ViewCard::class.java)
                 intent.putExtra("collection", collectionNo)
                 intent.putExtra("pack", packNo)
-                intent.putExtra("card", extra)
+                intent.putExtra("card", cards[position].card.uid)
                 context.startActivity(intent)
             }
         }

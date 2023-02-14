@@ -27,19 +27,25 @@ class SearchCards {
             val queryLower = query.lowercase(Locale.getDefault())
             input.removeIf { l: DB_Card_With_Meta ->
                 hasNoMatchInaccurate(
-                    l.card.front,
+                    l.formattedFront ?: l.card.front,
                     queryLower
-                ) && hasNoMatchInaccurate(l.card.back, queryLower) && hasNoMatchInaccurate(
-                    l.card.notes,
+                ) && hasNoMatchInaccurate(
+                    l.formattedBack ?: l.card.back,
+                    queryLower
+                ) && hasNoMatchInaccurate(
+                    l.formattedNotes ?: l.card.notes,
                     queryLower
                 )
             }
         } else {
             input.removeIf { l: DB_Card_With_Meta ->
                 hasNoMatch(
-                    l.card.front,
+                    l.formattedFront ?: l.card.front,
                     query
-                ) && hasNoMatch(l.card.back, query) && hasNoMatch(l.card.notes, query)
+                ) && hasNoMatch(
+                    l.formattedBack ?: l.card.back,
+                    query
+                ) && hasNoMatch(l.formattedNotes ?: l.card.notes, query)
             }
         }
     }

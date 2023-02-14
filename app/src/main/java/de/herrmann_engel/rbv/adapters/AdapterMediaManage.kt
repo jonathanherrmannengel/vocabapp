@@ -41,15 +41,14 @@ class AdapterMediaManage(
             val activity = ContextTools().getActivity(context)
             if (activity != null) {
                 val dbHelperGet = DB_Helper_Get(context)
-                val cardsWithMeta: MutableList<DB_Card_With_Meta> =
+                val cards: MutableList<DB_Card_With_Meta> =
                     dbHelperGet.getAllCardsByMediaWithMeta(media[position].uid)
-                FormatCards(context).formatCards(cardsWithMeta)
+                FormatCards(context).formatCards(cards)
                 SortCards().sortCards(
-                    cardsWithMeta,
+                    cards,
                     Globals.SORT_ALPHABETICAL
                 )
                 val dialog = Dialog(context, R.style.dia_view)
-                val cards = cardsWithMeta.map { it.card }
                 if (cards.isEmpty()) {
                     val bindingDialog: DiaConfirmBinding =
                         DiaConfirmBinding.inflate(activity.layoutInflater)
