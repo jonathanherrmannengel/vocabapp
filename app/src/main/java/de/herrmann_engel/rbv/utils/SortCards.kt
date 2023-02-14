@@ -8,7 +8,7 @@ class SortCards {
         return a.compareTo(b, ignoreCase = true)
     }
 
-    fun sortCardsWithMeta(list: MutableList<DB_Card_With_Meta>, sort: Int) {
+    fun sortCards(list: MutableList<DB_Card_With_Meta>, sort: Int) {
         when (sort) {
             Globals.SORT_ALPHABETICAL -> {
                 list.sortWith(Comparator { a, b ->

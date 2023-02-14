@@ -18,6 +18,7 @@ import de.herrmann_engel.rbv.db.DB_Media
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Delete
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.utils.ContextTools
+import de.herrmann_engel.rbv.utils.FormatCards
 import de.herrmann_engel.rbv.utils.SortCards
 
 
@@ -42,7 +43,8 @@ class AdapterMediaManage(
                 val dbHelperGet = DB_Helper_Get(context)
                 val cardsWithMeta: MutableList<DB_Card_With_Meta> =
                     dbHelperGet.getAllCardsByMediaWithMeta(media[position].uid)
-                SortCards().sortCardsWithMeta(
+                FormatCards(context).formatCards(cardsWithMeta)
+                SortCards().sortCards(
                     cardsWithMeta,
                     Globals.SORT_ALPHABETICAL
                 )

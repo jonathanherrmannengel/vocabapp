@@ -1,7 +1,5 @@
 package de.herrmann_engel.rbv.activities;
 
-import static de.herrmann_engel.rbv.Globals.LIST_ACCURATE_SIZE;
-
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
@@ -47,6 +45,7 @@ import de.herrmann_engel.rbv.db.DB_Card_With_Meta;
 import de.herrmann_engel.rbv.db.DB_Media_Link_Card;
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get;
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Update;
+import de.herrmann_engel.rbv.utils.FormatCards;
 import de.herrmann_engel.rbv.utils.SearchCards;
 import de.herrmann_engel.rbv.utils.SortCards;
 import de.herrmann_engel.rbv.utils.StringTools;
@@ -103,6 +102,7 @@ public class ListCards extends FileTools {
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         if (cardsList != null) {
+            FormatCards formatCards = new FormatCards(this);
             int cardDeleted = intent.getExtras().getInt("cardDeleted");
             if (cardDeleted != 0) {
                 cardsList.removeIf(c -> c.card.uid == cardDeleted);
@@ -110,7 +110,9 @@ public class ListCards extends FileTools {
             int cardAdded = intent.getExtras().getInt("cardAdded");
             if (cardAdded != 0 && cardsList.stream().noneMatch(i -> i.card.uid == cardAdded)) {
                 try {
-                    cardsList.add(dbHelperGet.getSingleCardWithMeta(cardAdded));
+                    DB_Card_With_Meta cardWithMetaNew = dbHelperGet.getSingleCardWithMeta(cardAdded);
+                    formatCards.formatCard(cardWithMetaNew);
+                    cardsList.add(cardWithMetaNew);
                 } catch (Exception e) {
                     e.printStackTrace();
                     Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
@@ -119,33 +121,13 @@ public class ListCards extends FileTools {
             int cardUpdated = intent.getExtras().getInt("cardUpdated");
             if (cardUpdated != 0) {
                 try {
-                    DB_Card_With_Meta cardWithMeta = dbHelperGet.getSingleCardWithMeta(cardUpdated);
-                    boolean formatCards = settings.getBoolean("format_cards", false);
-                    boolean formatCardsNotes = settings.getBoolean("format_card_notes", false);
-                    StringTools formatString = new StringTools();
-                    if (cardsList.size() > LIST_ACCURATE_SIZE) {
-                        if (formatCards) {
-                            cardWithMeta.card.front = formatString.unformat(cardWithMeta.card.front);
-                            cardWithMeta.card.back = formatString.unformat(cardWithMeta.card.back);
-                        }
-                        if (formatCardsNotes) {
-                            cardWithMeta.card.notes = formatString.unformat(cardWithMeta.card.notes);
-                        }
-                    } else {
-                        Markwon markwon = Markwon.create(this);
-                        if (formatCards) {
-                            cardWithMeta.card.front = formatString.format(cardWithMeta.card.front).toString();
-                            cardWithMeta.card.back = formatString.format(cardWithMeta.card.back).toString();
-                        }
-                        if (formatCardsNotes) {
-                            cardWithMeta.card.notes = markwon.toMarkdown(cardWithMeta.card.notes).toString();
-                        }
-                    } //TODO Migrate to DB_HELPER_GET
-                    DB_Card_With_Meta cardWithMetaOld = cardsListFiltered.stream().filter(i -> i.card.uid == cardWithMeta.card.uid).findFirst().orElse(null);
+                    DB_Card_With_Meta cardWithMetaNew = dbHelperGet.getSingleCardWithMeta(cardUpdated);
+                    formatCards.formatCard(cardWithMetaNew);
+                    DB_Card_With_Meta cardWithMetaOld = cardsListFiltered.stream().filter(i -> i.card.uid == cardWithMetaNew.card.uid).findFirst().orElse(null);
                     if (cardWithMetaOld != null) {
                         int index = cardsList.indexOf(cardWithMetaOld);
                         if (index != -1) {
-                            cardsList.set(index, cardWithMeta);
+                            cardsList.set(index, cardWithMetaNew);
                         }
                     }
                 } catch (Exception e) {
@@ -232,6 +214,7 @@ public class ListCards extends FileTools {
 
         //Get cards
         if (cardsList == null) {
+            FormatCards formatCards = new FormatCards(this);
             if (collectionNo == -1 && packNo == -1) {
                 cardsList = dbHelperGet.getAllCardsWithMeta();
             } else if (packNo == -1) {
@@ -243,6 +226,7 @@ public class ListCards extends FileTools {
             } else {
                 cardsList = dbHelperGet.getAllCardsByPackWithMeta(packNo);
             }
+            formatCards.formatCards(cardsList);
             sortList();
         }
 
@@ -434,7 +418,7 @@ public class ListCards extends FileTools {
     }
 
     private void sortList() {
-        new SortCards().sortCardsWithMeta(cardsList, listSort);
+        new SortCards().sortCards(cardsList, listSort);
     }
 
     private void queryModeSkipAction(Dialog queryModeDialog, DiaQueryBinding bindingQueryModeDialog) {

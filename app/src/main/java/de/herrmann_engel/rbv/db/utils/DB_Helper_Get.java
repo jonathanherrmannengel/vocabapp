@@ -1,15 +1,10 @@
 package de.herrmann_engel.rbv.db.utils;
 
-import static android.content.Context.MODE_PRIVATE;
-import static de.herrmann_engel.rbv.Globals.LIST_ACCURATE_SIZE;
-
 import android.content.Context;
-import android.content.SharedPreferences;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import de.herrmann_engel.rbv.Globals;
 import de.herrmann_engel.rbv.db.DB_Card;
 import de.herrmann_engel.rbv.db.DB_Card_With_Meta;
 import de.herrmann_engel.rbv.db.DB_Collection;
@@ -18,8 +13,6 @@ import de.herrmann_engel.rbv.db.DB_Media;
 import de.herrmann_engel.rbv.db.DB_Media_Link_Card;
 import de.herrmann_engel.rbv.db.DB_Pack;
 import de.herrmann_engel.rbv.db.DB_Pack_With_Meta;
-import de.herrmann_engel.rbv.utils.StringTools;
-import io.noties.markwon.Markwon;
 
 public class DB_Helper_Get {
 
@@ -151,55 +144,23 @@ public class DB_Helper_Get {
     }
 
     //Get All: Cards
-    private List<DB_Card_With_Meta> formatCards(List<DB_Card_With_Meta> list) {
-        SharedPreferences settings = context.getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE);
-        boolean formatCards = settings.getBoolean("format_cards", false);
-        boolean formatCardsNotes = settings.getBoolean("format_card_notes", false);
-        if (formatCards || formatCardsNotes) {
-            StringTools formatString = new StringTools();
-            if (list.size() > LIST_ACCURATE_SIZE) {
-                list.forEach(l -> {
-                    if (formatCards) {
-                        l.card.front = formatString.unformat(l.card.front);
-                        l.card.back = formatString.unformat(l.card.back);
-                    }
-                    if (formatCardsNotes) {
-                        l.card.notes = formatString.unformat(l.card.notes);
-                    }
-                });
-            } else {
-                Markwon markwon = Markwon.create(context);
-                list.forEach(l -> {
-                    if (formatCards) {
-                        l.card.front = formatString.format(l.card.front).toString();
-                        l.card.back = formatString.format(l.card.back).toString();
-                    }
-                    if (formatCardsNotes) {
-                        l.card.notes = markwon.toMarkdown(l.card.notes).toString();
-                    }
-                });
-            }
-        }
-        return list;
-    }
-
     public List<DB_Card> getAllCardsByPackAndFrontAndBackAndNotes(int pack, String front, String back, String notes) {
         return dbHelper.card_dao.getAllByPackAndFrontAndBackAndNotes(pack, front, back, notes);
     }
 
     public List<DB_Card_With_Meta> getAllCardsWithMeta() {
-        return formatCards(dbHelper.card_dao.getAllWithMeta());//
+        return dbHelper.card_dao.getAllWithMeta();
     }
 
     public List<DB_Card_With_Meta> getAllCardsByPackWithMeta(int pack) {
-        return formatCards(dbHelper.card_dao.getAllByPackWithMeta(pack));
+        return dbHelper.card_dao.getAllByPackWithMeta(pack);
     }
 
     public List<DB_Card_With_Meta> getAllCardsByCollectionWithMeta(int collection) {
         List<DB_Pack> packs = getAllPacksByCollection(collection);
         List<DB_Card_With_Meta> list = new ArrayList<>();
         packs.forEach((currentPack) -> list.addAll(getAllCardsByPackWithMeta(currentPack.uid)));
-        return formatCards(list);
+        return list;
     }
 
     public List<DB_Card_With_Meta> getAllCardsByProgressWithMeta(boolean progressGreater, int progressNumber) {
@@ -213,7 +174,7 @@ public class DB_Helper_Get {
         } else {
             cards.addAll(dbHelper.card_dao.getAllWithMeta());
         }
-        return formatCards(cards);
+        return cards;
     }
 
     public List<DB_Card_With_Meta> getAllCardsByPacksAndProgressWithMeta(List<Integer> packs, boolean progressGreater, int progressNumber) {
@@ -229,7 +190,7 @@ public class DB_Helper_Get {
                 cards.addAll(dbHelper.card_dao.getAllByPackWithMeta(pack));
             }
         });
-        return formatCards(cards);
+        return cards;
     }
 
     public List<DB_Card_With_Meta> getAllCardsByMediaWithMeta(int mediaId) {
@@ -242,7 +203,7 @@ public class DB_Helper_Get {
                 e.printStackTrace();
             }
         });
-        return formatCards(list);
+        return list;
     }
 
     //Get All: Media

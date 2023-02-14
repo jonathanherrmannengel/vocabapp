@@ -293,7 +293,7 @@ public class ViewCard extends FileTools {
                 }
             });
             StringTools stringTools = new StringTools();
-            String htmlDocument = "<!doctype html><html><head><meta charset=\"utf-8\"><title>print</title><style>#main-title{margin-bottom: 30px;}.title{text-align:center;color: #000007;}.title:not(.first-title)::before{margin-bottom:20px;margin-top:30px;display:block;content:' ';width:100%;height:1px;outline:2px solid #555;outline-offset:-1px;}.image-div,.media-div{text-align:center}.image{padding:10px;max-width:30%;max-height:10%;object-fit:contain;}</style></head>";
+            String htmlDocument = "<!doctype html><html><head><meta charset=\"utf-8\"><title>print</title><style>div{inline-size:100%;overflow-wrap:break-word;}#main-title{margin-bottom: 30px;}.title{text-align:center;color: #000007;}.title:not(.first-title)::before{margin-bottom:20px;margin-top:30px;display:block;content:' ';width:100%;height:1px;outline:2px solid #555;outline-offset:-1px;}.image-div,.media-div{text-align:center}.image{padding:10px;max-width:30%;max-height:10%;object-fit:contain;}</style></head>";
             String title = stringTools.shorten(binding.cardFront.getText().toString(), 30);
             if (bindingPrintDialog.diaPrintIncludeProgress.isChecked()) {
                 title += " (" + binding.cardKnown.getText() + ")";
