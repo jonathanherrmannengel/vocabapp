@@ -160,15 +160,13 @@ class AsyncImportWorker(
                                     val date = Integer.parseInt((line?.get(6) ?: "0")).toLong()
                                     val notes = line?.get(7) ?: ""
                                     val sameNamed =
-                                        helperGet.getAllCardsByPackAndFrontAndBackAndNotes(
+                                        helperGet.getSingleCardIdByPackAndFrontAndBackAndNotes(
                                             currentPack,
                                             front,
                                             back,
                                             notes
                                         )
-                                    if (sameNamed.size == 0 ||
-                                        mode == Globals.IMPORT_MODE_DUPLICATES
-                                    ) {
+                                    if (sameNamed == 0 || mode == Globals.IMPORT_MODE_DUPLICATES) {
                                         val cardUidNew = helperCreate.createCard(
                                             front,
                                             back,
@@ -179,7 +177,7 @@ class AsyncImportWorker(
                                         ).toInt()
                                         cardUidConverter.insertPair(cardUidOld, cardUidNew)
                                     } else if (mode == Globals.IMPORT_MODE_INTEGRATE) {
-                                        cardUidConverter.insertPair(cardUidOld, sameNamed[0].uid)
+                                        cardUidConverter.insertPair(cardUidOld, sameNamed)
                                     }
                                 } catch (e: Exception) {
                                     e.printStackTrace()

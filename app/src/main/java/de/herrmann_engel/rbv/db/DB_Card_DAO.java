@@ -25,9 +25,6 @@ public interface DB_Card_DAO {
     @Query("SELECT * FROM db_card")
     List<DB_Card> getAll();
 
-    @Query("SELECT * FROM db_card WHERE pack=:pid AND front=:front AND back=:back AND notes=:notes")
-    List<DB_Card> getAllByPackAndFrontAndBackAndNotes(int pid, String front, String back, String notes);
-
     @Query("SELECT *, (SELECT colors FROM db_pack WHERE uid=db_card.pack) AS packColor FROM db_card")
     List<DB_Card_With_Meta> getAllWithMeta();
 
@@ -51,6 +48,9 @@ public interface DB_Card_DAO {
 
     @Query("SELECT *, (SELECT colors FROM db_pack WHERE uid=db_card.pack) AS packColor FROM db_card WHERE uid=:cid")
     DB_Card_With_Meta getOneWithMeta(int cid);
+
+    @Query("SELECT uid FROM db_card WHERE pack=:pid AND front=:front AND back=:back AND notes=:notes LIMIT 1")
+    int getOneIdByPackAndFrontAndBackAndNotes(int pid, String front, String back, String notes);
 
     @Query("SELECT * FROM db_card")
     Cursor getAllExport();

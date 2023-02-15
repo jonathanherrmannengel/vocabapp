@@ -101,6 +101,10 @@ public class DB_Helper_Get {
         return card;
     }
 
+    public int getSingleCardIdByPackAndFrontAndBackAndNotes(int pack, String front, String back, String notes) {
+        return dbHelper.card_dao.getOneIdByPackAndFrontAndBackAndNotes(pack, front, back, notes);
+    }
+
     public DB_Media getSingleMedia(String file) {
         return dbHelper.media_dao.getSingleMedia(file);
     }
@@ -144,9 +148,6 @@ public class DB_Helper_Get {
     }
 
     //Get All: Cards
-    public List<DB_Card> getAllCardsByPackAndFrontAndBackAndNotes(int pack, String front, String back, String notes) {
-        return dbHelper.card_dao.getAllByPackAndFrontAndBackAndNotes(pack, front, back, notes);
-    }
 
     public List<DB_Card_With_Meta> getAllCardsWithMeta() {
         return dbHelper.card_dao.getAllWithMeta();
