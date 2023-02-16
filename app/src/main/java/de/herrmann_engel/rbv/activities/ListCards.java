@@ -111,7 +111,7 @@ public class ListCards extends FileTools {
             if (cardAdded != 0 && cardsList.stream().noneMatch(i -> i.card.uid == cardAdded)) {
                 try {
                     DB_Card_With_Meta cardWithMetaNew = dbHelperGet.getSingleCardWithMeta(cardAdded);
-                    formatCards.formatCard(cardWithMetaNew);
+                    formatCards.formatCard(cardWithMetaNew, false);
                     cardsList.add(cardWithMetaNew);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -122,9 +122,9 @@ public class ListCards extends FileTools {
             if (cardUpdated != 0) {
                 try {
                     DB_Card_With_Meta cardWithMetaNew = dbHelperGet.getSingleCardWithMeta(cardUpdated);
-                    formatCards.formatCard(cardWithMetaNew);
                     DB_Card_With_Meta cardWithMetaOld = cardsListFiltered.stream().filter(i -> i.card.uid == cardWithMetaNew.card.uid).findFirst().orElse(null);
-                    if (cardWithMetaOld != null) {
+                    if (cardWithMetaNew != null && cardWithMetaOld != null) {
+                        formatCards.formatCard(cardWithMetaNew, cardWithMetaOld.formattingIsInaccurate);
                         int index = cardsList.indexOf(cardWithMetaOld);
                         if (index != -1) {
                             cardsList.set(index, cardWithMetaNew);

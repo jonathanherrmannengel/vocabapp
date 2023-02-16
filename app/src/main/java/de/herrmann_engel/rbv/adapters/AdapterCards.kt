@@ -118,11 +118,12 @@ class AdapterCards(
                     e.printStackTrace()
                 }
             }
+            val extra = cards[position].card.uid
             viewHolder.binding.recName.setOnClickListener {
                 val intent = Intent(context, ViewCard::class.java)
                 intent.putExtra("collection", collectionNo)
                 intent.putExtra("pack", packNo)
-                intent.putExtra("card", cards[position].card.uid)
+                intent.putExtra("card", extra)
                 context.startActivity(intent)
             }
         }

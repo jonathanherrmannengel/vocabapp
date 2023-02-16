@@ -17,7 +17,8 @@ class FormatCards(val context: Context) {
     private val formatString = StringTools()
     private val markwon = Markwon.create(context)
 
-    private fun formatCard(card: DB_Card_With_Meta, inaccurate: Boolean) {
+    fun formatCard(card: DB_Card_With_Meta, inaccurate: Boolean) {
+        card.formattingIsInaccurate = inaccurate
         if (inaccurate) {
             if (formatCards) {
                 card.formattedFront = formatString.unformat(card.card.front)
@@ -35,10 +36,6 @@ class FormatCards(val context: Context) {
                 card.formattedNotes = markwon.toMarkdown(card.card.notes).toString()
             }
         }
-    }
-
-    fun formatCard(card: DB_Card_With_Meta) {
-        formatCard(card, false)
     }
 
     fun formatCards(list: MutableList<DB_Card_With_Meta>) {

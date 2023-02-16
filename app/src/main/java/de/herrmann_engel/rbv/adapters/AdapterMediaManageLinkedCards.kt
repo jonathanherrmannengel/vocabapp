@@ -30,9 +30,10 @@ class AdapterMediaManageLinkedCards(
         cardText = System.getProperty("line.separator")?.let { cardText.replace(it, " ") }
         cardText = StringTools().shorten(cardText)
         viewHolder.binding.recName.text = cardText
+        val extra = cards[position].card.uid
         viewHolder.binding.recName.setOnClickListener {
             val intent = Intent(context, EditCardMedia::class.java)
-            intent.putExtra("card", cards[position].card.uid)
+            intent.putExtra("card", extra)
             context.startActivity(intent)
             dialog.dismiss()
         }
