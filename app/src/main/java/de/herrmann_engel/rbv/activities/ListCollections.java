@@ -223,7 +223,9 @@ public class ListCollections extends FileTools implements AsyncImportFinish, Asy
                 } else {
                     Toast.makeText(this, R.string.import_warn, Toast.LENGTH_LONG).show();
                 }
-                updateSettingsAndContent();
+                if (adapter != null) {
+                    updateSettingsAndContent();
+                }
             } else {
                 Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show();
             }
