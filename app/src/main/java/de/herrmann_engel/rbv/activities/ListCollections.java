@@ -107,14 +107,7 @@ public class ListCollections extends FileTools implements AsyncImportFinish, Asy
         } else {
             binding.backgroundImage.setVisibility(View.GONE);
         }
-        boolean uiFontSizeBig = settings.getBoolean("ui_font_size", false);
-        if (adapter == null) {
-            adapter = new AdapterCollections(loadContent(), uiFontSizeBig);
-            binding.recDefault.setAdapter(adapter);
-            binding.recDefault.setLayoutManager(new LinearLayoutManager(this));
-        } else {
-            adapter.updateSettingsAndContent(loadContent(), uiFontSizeBig);
-        }
+        updateSettingsAndContent();
     }
 
     @Override
@@ -141,6 +134,18 @@ public class ListCollections extends FileTools implements AsyncImportFinish, Asy
         fixedFirstItemPlaceholder.counter = dbHelperGet.countPacks();
         currentList.add(0, fixedFirstItemPlaceholder);
         return currentList;
+    }
+
+    private void updateSettingsAndContent() {
+        SharedPreferences settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE);
+        boolean uiFontSizeBig = settings.getBoolean("ui_font_size", false);
+        if (adapter == null) {
+            adapter = new AdapterCollections(loadContent(), uiFontSizeBig);
+            binding.recDefault.setAdapter(adapter);
+            binding.recDefault.setLayoutManager(new LinearLayoutManager(this));
+        } else {
+            adapter.updateSettingsAndContent(loadContent(), uiFontSizeBig);
+        }
     }
 
     public void startNewCollection(MenuItem menuItem) {
@@ -218,9 +223,7 @@ public class ListCollections extends FileTools implements AsyncImportFinish, Asy
                 } else {
                     Toast.makeText(this, R.string.import_warn, Toast.LENGTH_LONG).show();
                 }
-                if (adapter != null) {
-                    adapter.updateContent(loadContent());
-                }
+                updateSettingsAndContent();
             } else {
                 Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show();
             }

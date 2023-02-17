@@ -41,10 +41,6 @@ class AdapterCollections(
         updateContent(collectionListNew, updateAllContent)
     }
 
-    fun updateContent(collectionListNew: List<DB_Collection_With_Meta>) {
-        updateContent(collectionListNew, false)
-    }
-
     private fun updateContent(
         collectionListNew: List<DB_Collection_With_Meta>,
         updateAllContent: Boolean

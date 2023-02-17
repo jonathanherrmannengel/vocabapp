@@ -249,7 +249,8 @@ public class ListCards extends FileTools {
                 if (warnInaccurateFormat) {
                     configEditor.putBoolean("inaccurate_warning_format", false);
                     warnings.add(getResources().getString(R.string.warn_inaccurate_list));
-                } else {
+                }
+                if (warnInaccurateNoFormat) {
                     configEditor.putBoolean("inaccurate_warning_no_format", false);
                 }
                 warnings.add(getResources().getString(R.string.warn_inaccurate_search));
