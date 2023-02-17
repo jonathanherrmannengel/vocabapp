@@ -233,9 +233,10 @@ public class ListCards extends FileTools {
         //Warning: Big lists
         if (cardsList.size() > Globals.LIST_ACCURATE_SIZE) {
             SharedPreferences config = this.getSharedPreferences(Globals.CONFIG_NAME, Context.MODE_PRIVATE);
-            boolean warnInaccurateFormat = config.getBoolean("inaccurate_warning_format", true);
-            boolean formatCardsOrNotes = settings.getBoolean("format_cards", false) || settings.getBoolean("format_card_notes", false);
-            if (formatCardsOrNotes && warnInaccurateFormat) {
+            boolean formatCards = settings.getBoolean("format_cards", false);
+            boolean warnInaccurateFormat = formatCards && config.getBoolean("inaccurate_warning_format", true);
+            boolean warnInaccurateNoFormat = !formatCards && config.getBoolean("inaccurate_warning_no_format", true);
+            if (warnInaccurateFormat || warnInaccurateNoFormat) {
                 SharedPreferences.Editor configEditor = config.edit();
                 Dialog infoDialog = new Dialog(this, R.style.dia_view);
                 DiaInfoBinding bindingInfoDialog = DiaInfoBinding.inflate(getLayoutInflater());
@@ -245,8 +246,13 @@ public class ListCards extends FileTools {
                         WindowManager.LayoutParams.MATCH_PARENT);
                 List<String> warnings = new ArrayList<>();
                 warnings.add(String.format(getResources().getString(R.string.warn_inaccurate), Globals.LIST_ACCURATE_SIZE));
-                configEditor.putBoolean("inaccurate_warning_format", false);
-                warnings.add(getResources().getString(R.string.warn_inaccurate_format));
+                if (warnInaccurateFormat) {
+                    configEditor.putBoolean("inaccurate_warning_format", false);
+                    warnings.add(getResources().getString(R.string.warn_inaccurate_list));
+                } else {
+                    configEditor.putBoolean("inaccurate_warning_no_format", false);
+                }
+                warnings.add(getResources().getString(R.string.warn_inaccurate_search));
                 warnings.add(getResources().getString(R.string.warn_inaccurate_note));
                 bindingInfoDialog.diaInfoText.setText(String.join(System.getProperty("line.separator") + System.getProperty("line.separator"), warnings));
                 infoDialog.show();

@@ -160,6 +160,7 @@
     <string name="settings_media">Media files</string>
     <string name="settings_media_in_gallery">Show media files in other apps (e.g. gallery)</string>
     <string name="warn_inaccurate">This list contains more than %d flashcards.</string>
-    <string name="warn_inaccurate_format">List display and search results may be inaccurate.</string>
+    <string name="warn_inaccurate_list">List display may be inaccurate.</string>
+    <string name="warn_inaccurate_search">Search results may be inaccurate.</string>
     <string name="warn_inaccurate_note">This warning will not be shown again.</string>
 </resources>

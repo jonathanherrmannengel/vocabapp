@@ -154,7 +154,8 @@
     <string name="settings_media">Mediendateien</string>
     <string name="settings_media_in_gallery">Mediendateien in anderen Apps (etwa Galerie) anzeigen</string>
     <string name="warn_inaccurate">Mehr als %d Karteikarten in dieser Liste.</string>
-    <string name="warn_inaccurate_format">Listendarstellung und Suchergebnisse können ungenau sein.</string>
+    <string name="warn_inaccurate_list">Listendarstellung kann ungenau sein.</string>
+    <string name="warn_inaccurate_search">Suchergebnisse können ungenau sein.</string>
     <string name="warn_inaccurate_note">Diese Warnung wird nicht erneut angezeigt.</string>
 
 </resources>
