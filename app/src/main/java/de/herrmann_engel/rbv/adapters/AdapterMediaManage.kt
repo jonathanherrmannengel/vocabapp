@@ -36,13 +36,15 @@ class AdapterMediaManage(
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         val context = viewHolder.binding.root.context
-        viewHolder.binding.recName.text = media[position].file
+        val currentMedia = media[position]
+        val fileName = currentMedia.file
+        viewHolder.binding.recName.text = fileName
         viewHolder.binding.recName.setOnClickListener {
             val activity = ContextTools().getActivity(context)
             if (activity != null) {
                 val dbHelperGet = DB_Helper_Get(context)
                 val cards: MutableList<DB_Card_With_Meta> =
-                    dbHelperGet.getAllCardsByMediaWithMeta(media[position].uid)
+                    dbHelperGet.getAllCardsByMediaWithMeta(currentMedia.uid)
                 FormatCards(context).formatCards(cards)
                 SortCards().sortCards(
                     cards,
@@ -61,10 +63,8 @@ class AdapterMediaManage(
                     bindingDialog.diaConfirmDesc.text =
                         context.resources.getString(R.string.media_no_card)
                     bindingDialog.diaConfirmDesc.visibility = View.VISIBLE
-                    val currentMedia = media[position]
                     bindingDialog.diaConfirmYes.setOnClickListener {
                         val dbHelperDelete = DB_Helper_Delete(context)
-                        val fileName = currentMedia.file
                         dbHelperDelete.deleteMedia(currentMedia.uid)
                         media.remove(currentMedia)
                         notifyItemRemoved(position)

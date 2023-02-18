@@ -14,7 +14,7 @@ import de.herrmann_engel.rbv.utils.ContextTools
 
 
 class AdapterMediaLinkCardImages(
-    private val media: ArrayList<DB_Media_Link_Card>
+    private val mediaLinks: ArrayList<DB_Media_Link_Card>
 ) : RecyclerView.Adapter<AdapterMediaLinkCardImages.ViewHolder>() {
     class ViewHolder(val binding: RecViewImageBinding) : RecyclerView.ViewHolder(binding.root)
 
@@ -33,24 +33,26 @@ class AdapterMediaLinkCardImages(
                 R.color.warn_red
             )
         )
-        val uri =
-            (ContextTools().getActivity(context) as FileTools).getImageUri(media[position].file)
+        val currentMediaLink = mediaLinks[position]
+        val fileId = currentMediaLink.file
+        val uri = (ContextTools().getActivity(context) as FileTools).getImageUri(fileId)
         if (uri != null) {
             Picasso.get().load(uri).fit().centerCrop().into(viewHolder.binding.recImg)
             viewHolder.binding.recImg.setBackgroundColor(Color.TRANSPARENT)
         }
-        val currentMedia = media[position]
         viewHolder.binding.recImg.setOnClickListener {
             if (uri != null) {
-                (ContextTools().getActivity(context) as FileTools).showImageDialog(currentMedia.file)
-            } else if (!(ContextTools().getActivity(context) as FileTools).existsMediaFile(currentMedia.file)) {
-                (ContextTools().getActivity(context) as FileTools).showMissingDialog(currentMedia.card)
+                (ContextTools().getActivity(context) as FileTools).showImageDialog(fileId)
+            } else if (!(ContextTools().getActivity(context) as FileTools).existsMediaFile(fileId)) {
+                (ContextTools().getActivity(context) as FileTools).showMissingDialog(
+                    currentMediaLink.card
+                )
             }
         }
     }
 
     override fun getItemCount(): Int {
-        return media.size
+        return mediaLinks.size
     }
 
 }

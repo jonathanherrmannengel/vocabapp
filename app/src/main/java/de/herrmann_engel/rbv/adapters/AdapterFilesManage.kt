@@ -35,9 +35,9 @@ class AdapterFilesManage(
             viewHolder.binding.recFilesShare.visibility = View.GONE
             viewHolder.binding.recFilesDelete.visibility = View.GONE
         } else {
-            viewHolder.binding.recFilesName.text = files[position].name
-            viewHolder.binding.recFilesShare.visibility = View.VISIBLE
             val currentFile = files[position]
+            viewHolder.binding.recFilesName.text = currentFile.name
+            viewHolder.binding.recFilesShare.visibility = View.VISIBLE
             viewHolder.binding.recFilesShare.setOnClickListener {
                 (ContextTools().getActivity(context) as FileTools).shareFile(currentFile.name)
             }
@@ -51,7 +51,10 @@ class AdapterFilesManage(
                     context.resources.getString(R.string.delete_file_without_media_info)
                 )
                 dialog.setOnDismissListener {
-                    if (!(ContextTools().getActivity(context) as FileTools).existsMediaFile(currentFile.name)) {
+                    if (!(ContextTools().getActivity(context) as FileTools).existsMediaFile(
+                            currentFile.name
+                        )
+                    ) {
                         files.remove(currentFile)
                         notifyItemRemoved(position)
                         notifyItemRangeChanged(position, files.size)

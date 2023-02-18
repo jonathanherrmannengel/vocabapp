@@ -15,7 +15,7 @@ import de.herrmann_engel.rbv.utils.ContextTools
 
 
 class AdapterMediaLinkCardAll(
-    private val media: ArrayList<DB_Media_Link_Card>,
+    private val mediaLinks: ArrayList<DB_Media_Link_Card>,
     private val onlyImages: Boolean
 ) : RecyclerView.Adapter<AdapterMediaLinkCardAll.ViewHolder>() {
     class ViewHolder(val binding: RecViewBinding) : RecyclerView.ViewHolder(binding.root)
@@ -28,19 +28,20 @@ class AdapterMediaLinkCardAll(
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         val context = viewHolder.binding.root.context
+        val currentMediaLink = mediaLinks[position]
+        val fileId = currentMediaLink.file
         val dbHelperGet = DB_Helper_Get(context)
-        val currentMedia = dbHelperGet.getSingleMedia(media[position].file)
+        val currentMedia = dbHelperGet.getSingleMedia(fileId)
         if (currentMedia != null) {
             val fileName = currentMedia.file
             val fileNameSpannable = SpannableString(fileName)
             fileNameSpannable.setSpan(UnderlineSpan(), 0, fileName.length, 0)
             viewHolder.binding.recName.text = fileNameSpannable
-            val currentMediaFile = media[position].file
             viewHolder.binding.recName.setOnClickListener {
                 if (onlyImages) {
-                    (ContextTools().getActivity(context) as FileTools).showImageDialog(currentMediaFile)
+                    (ContextTools().getActivity(context) as FileTools).showImageDialog(fileId)
                 } else {
-                    (ContextTools().getActivity(context) as FileTools).openFile(currentMediaFile)
+                    (ContextTools().getActivity(context) as FileTools).openFile(fileId)
                 }
             }
         } else {
@@ -55,6 +56,6 @@ class AdapterMediaLinkCardAll(
     }
 
     override fun getItemCount(): Int {
-        return media.size
+        return mediaLinks.size
     }
 }
