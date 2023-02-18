@@ -73,10 +73,11 @@ class AdapterPacksMoveCard(
                 Toast.makeText(context, R.string.error, Toast.LENGTH_SHORT).show()
             }
         }
+        val currentPackId = pack[position].uid
         viewHolder.binding.recName.setOnClickListener {
             val updateHelper =
                 DB_Helper_Update(context)
-            card.pack = pack[position].uid
+            card.pack = currentPackId
             updateHelper.updateCard(card)
             (ContextTools().getActivity(context) as ViewCard).movedCard()
             dialog.dismiss()

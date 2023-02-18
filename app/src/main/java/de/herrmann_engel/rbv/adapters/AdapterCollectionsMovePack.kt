@@ -53,10 +53,11 @@ class AdapterCollectionsMovePack(
         }
         colors.recycle()
         viewHolder.binding.recName.text = collection[position].name
+        val currentCollectionId = collection[position].uid
         viewHolder.binding.recName.setOnClickListener {
             val updateHelper =
                 DB_Helper_Update(context)
-            pack.collection = collection[position].uid
+            pack.collection = currentCollectionId
             updateHelper.updatePack(pack)
             (ContextTools().getActivity(context) as ViewPack).movedPack()
             dialog.dismiss()

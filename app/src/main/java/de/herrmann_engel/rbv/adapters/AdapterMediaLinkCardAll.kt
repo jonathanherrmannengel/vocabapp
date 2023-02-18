@@ -35,11 +35,12 @@ class AdapterMediaLinkCardAll(
             val fileNameSpannable = SpannableString(fileName)
             fileNameSpannable.setSpan(UnderlineSpan(), 0, fileName.length, 0)
             viewHolder.binding.recName.text = fileNameSpannable
+            val currentMediaFile = media[position].file
             viewHolder.binding.recName.setOnClickListener {
                 if (onlyImages) {
-                    (ContextTools().getActivity(context) as FileTools).showImageDialog(media[position].file)
+                    (ContextTools().getActivity(context) as FileTools).showImageDialog(currentMediaFile)
                 } else {
-                    (ContextTools().getActivity(context) as FileTools).openFile(media[position].file)
+                    (ContextTools().getActivity(context) as FileTools).openFile(currentMediaFile)
                 }
             }
         } else {

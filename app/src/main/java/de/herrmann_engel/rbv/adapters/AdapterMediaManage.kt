@@ -61,11 +61,12 @@ class AdapterMediaManage(
                     bindingDialog.diaConfirmDesc.text =
                         context.resources.getString(R.string.media_no_card)
                     bindingDialog.diaConfirmDesc.visibility = View.VISIBLE
+                    val currentMedia = media[position]
                     bindingDialog.diaConfirmYes.setOnClickListener {
                         val dbHelperDelete = DB_Helper_Delete(context)
-                        val fileName = media[position].file
-                        dbHelperDelete.deleteMedia(media[position].uid)
-                        media.remove(media[position])
+                        val fileName = currentMedia.file
+                        dbHelperDelete.deleteMedia(currentMedia.uid)
+                        media.remove(currentMedia)
                         notifyItemRemoved(position)
                         notifyItemRangeChanged(position, media.size)
                         dialog.dismiss()

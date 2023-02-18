@@ -39,11 +39,12 @@ class AdapterMediaLinkCardImages(
             Picasso.get().load(uri).fit().centerCrop().into(viewHolder.binding.recImg)
             viewHolder.binding.recImg.setBackgroundColor(Color.TRANSPARENT)
         }
+        val currentMedia = media[position]
         viewHolder.binding.recImg.setOnClickListener {
             if (uri != null) {
-                (ContextTools().getActivity(context) as FileTools).showImageDialog(media[position].file)
-            } else if (!(ContextTools().getActivity(context) as FileTools).existsMediaFile(media[position].file)) {
-                (ContextTools().getActivity(context) as FileTools).showMissingDialog(media[position].card)
+                (ContextTools().getActivity(context) as FileTools).showImageDialog(currentMedia.file)
+            } else if (!(ContextTools().getActivity(context) as FileTools).existsMediaFile(currentMedia.file)) {
+                (ContextTools().getActivity(context) as FileTools).showMissingDialog(currentMedia.card)
             }
         }
     }
