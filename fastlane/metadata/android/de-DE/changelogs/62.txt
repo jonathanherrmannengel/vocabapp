@@ -1,0 +1,4 @@
+Größere UX-Verbesserungen.
+Einstellungen: Entfernen der Einstellung "Reihenfolge in offenen Listen nicht aktualisieren".
+Kleinere UI-Änderungen.
+Fehlerbehebungen.

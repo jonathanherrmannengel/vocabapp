@@ -1,0 +1,4 @@
+Major UX-improvements.
+Settings: Remove setting "Don't update open lists order".
+Minor UI-changes.
+Bugfixes.

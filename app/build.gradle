@@ -9,8 +9,8 @@ android {
         applicationId "de.herrmann_engel.rbv"
         minSdk 25
         targetSdk 33
-        versionCode 61
-        versionName '3.2.0'
+        versionCode 62
+        versionName '3.2.1'
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -42,7 +42,7 @@ dependencies {
     implementation "androidx.core:core-ktx:1.9.0"
     implementation "androidx.room:room-runtime:$room_version"
     annotationProcessor "androidx.room:room-compiler:$room_version"
-    implementation 'androidx.appcompat:appcompat:1.6.0'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.8.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.3-native-mt'
