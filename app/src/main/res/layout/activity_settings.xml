@@ -3,7 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background"
     android:gravity="center"
     android:padding="30dp">
 
@@ -20,7 +19,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/settings_list_default_sort"
-                android:textColor="@android:color/black"
+                android:textColor="@color/default_text"
                 android:textSize="20sp" />
 
             <RadioGroup
@@ -66,7 +65,7 @@
                 android:layout_height="wrap_content"
                 android:paddingTop="10dp"
                 android:text="@string/settings_format"
-                android:textColor="@android:color/black"
+                android:textColor="@color/default_text"
                 android:textSize="20sp" />
 
             <LinearLayout
@@ -97,7 +96,7 @@
                         android:background="@android:color/transparent"
                         android:contentDescription="@string/info"
                         android:src="@drawable/outline_info_24"
-                        app:tint="@color/ijblue" />
+                        app:tint="@color/button" />
                 </LinearLayout>
 
                 <CheckBox
@@ -121,7 +120,7 @@
                 android:layout_height="wrap_content"
                 android:paddingTop="10dp"
                 android:text="@string/settings_ui"
-                android:textColor="@android:color/black"
+                android:textColor="@color/default_text"
                 android:textSize="20sp" />
 
             <LinearLayout
@@ -145,6 +144,14 @@
                     android:text="@string/settings_ui_increase_font_size"
                     android:textColor="@color/light_black"
                     android:textSize="16sp" />
+
+                <CheckBox
+                    android:id="@+id/settings_ui_dark_mode"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/settings_ui_dark_mode"
+                    android:textColor="@color/light_black"
+                    android:textSize="16sp" />
             </LinearLayout>
 
             <View
@@ -159,7 +166,7 @@
                 android:layout_height="wrap_content"
                 android:paddingTop="10dp"
                 android:text="@string/settings_media"
-                android:textColor="@android:color/black"
+                android:textColor="@color/default_text"
                 android:textSize="20sp" />
 
             <LinearLayout

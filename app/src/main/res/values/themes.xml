@@ -1,30 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Base application theme. -->
-    <style name="Theme.RBV" parent="Theme.Material3.Light">
+    <style name="Theme.RBV" parent="Theme.Material3.DayNight">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/ijblue</item>
         <item name="colorOnPrimary">@color/white</item>
         <item name="colorSecondary">@color/highlight</item>
         <item name="android:textColorLink">@color/hyperlink</item>
         <!-- Status bar color. -->
+        <item name="android:statusBarColor">@color/statusbar_back</item>
         <item name="actionBarTheme">@style/Theme.RBV.ActionBar</item>
         <item name="actionOverflowMenuStyle">@style/Theme.RBV.ActionBarOverflow</item>
         <!-- Default background color. -->
-        <item name="android:windowBackground">@color/background</item>
+        <item name="android:windowBackground">@color/background_default</item>
         <!-- No animations. -->
         <item name="android:windowAnimationStyle">@null</item>
     </style>
 
     <style name="Theme.RBV.ActionBar" parent="@style/ThemeOverlay.Material3.ActionBar">
-        <item name="colorSurface">@color/ijblue</item>
-        <item name="colorOnSurface">@color/white</item>
-        <item name="android:editTextColor">@color/light_grey</item>
-        <item name="android:textColorHint">@color/light_grey_alpha</item>
+        <item name="colorSurface">@color/statusbar_back</item>
+        <item name="colorOnSurface">@android:color/white</item>
+        <item name="android:editTextColor">@color/light_grey_statusbar</item>
+        <item name="android:textColorHint">@color/light_grey_statusbar_alpha</item>
         <item name="android:tint">?attr/colorOnSurface</item>
     </style>
 
     <style name="Theme.RBV.ActionBarOverflow" parent="@style/Widget.Material3.PopupMenu.Overflow">
-        <item name="android:popupBackground">@color/white</item>
+        <item name="android:popupBackground">@color/background_default</item>
     </style>
 </resources>

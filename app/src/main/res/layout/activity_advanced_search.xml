@@ -2,7 +2,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background"
     android:gravity="center"
     android:padding="10dp">
 
@@ -20,7 +19,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:text="@string/advanced_search_packs"
-                android:textColor="@android:color/black"
+                android:textColor="@color/default_text"
                 android:textSize="20sp" />
 
             <RadioGroup
@@ -65,7 +64,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:text="@string/advanced_search_progress"
-                android:textColor="@android:color/black"
+                android:textColor="@color/default_text"
                 android:textSize="20sp" />
 
             <RadioGroup

@@ -4,9 +4,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.res.TypedArray;
-import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.Window;
@@ -90,29 +88,23 @@ public class EditCardMedia extends FileTools {
         dbHelperGet = new DB_Helper_Get(this);
         try {
             DB_Card card = dbHelperGet.getSingleCard(cardNo);
-            TypedArray colors = getResources().obtainTypedArray(R.array.pack_color_main);
+            TypedArray colorsStatusBar = getResources().obtainTypedArray(R.array.pack_color_statusbar);
             TypedArray colorsBackground = getResources().obtainTypedArray(R.array.pack_color_background);
             int packColors = dbHelperGet.getSinglePack(card.pack).colors;
-            if (packColors < Math.min(colors.length(), colorsBackground.length()) && packColors >= 0) {
-                int color = colors.getColor(packColors, 0);
+            if (packColors < Math.min(colorsStatusBar.length(), colorsBackground.length()) && packColors >= 0) {
+                int colorStatusBar = colorsStatusBar.getColor(packColors, 0);
                 int colorBackground = colorsBackground.getColor(packColors, 0);
-                Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(new ColorDrawable(color));
+                Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(new ColorDrawable(colorStatusBar));
                 Window window = this.getWindow();
-                window.setStatusBarColor(color);
+                window.setStatusBarColor(colorStatusBar);
                 binding.getRoot().setBackgroundColor(colorBackground);
             }
-            colors.recycle();
+            colorsStatusBar.recycle();
             colorsBackground.recycle();
         } catch (Exception e) {
             e.printStackTrace();
             Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
         }
-        GradientDrawable gradientDrawable = new GradientDrawable();
-        gradientDrawable.setShape(GradientDrawable.RECTANGLE);
-        gradientDrawable.setColor(Color.argb(75, 200, 200, 250));
-        gradientDrawable.setStroke(2, Color.rgb(170, 170, 220));
-        gradientDrawable.setCornerRadius(8);
-        binding.addMediaButton.setBackground(gradientDrawable);
         binding.addMediaButton.setOnClickListener(v -> {
             String folder = getCardMediaFolder();
             if (folder == null || folder.isEmpty()) {

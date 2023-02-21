@@ -30,7 +30,7 @@ public class AdvancedSearch extends AppCompatActivity {
 
         DB_Helper_Get dbHelperGet = new DB_Helper_Get(this);
         List<DB_Pack> packs = dbHelperGet.getAllPacks();
-        AdapterPacksAdvancedSearch adapter = new AdapterPacksAdvancedSearch(packs);
+        AdapterPacksAdvancedSearch adapter = new AdapterPacksAdvancedSearch(packs, packList);
         binding.recAdvancedSearch.setAdapter(adapter);
         binding.recAdvancedSearch.setLayoutManager(new LinearLayoutManager(this));
         if (pack == -3) {

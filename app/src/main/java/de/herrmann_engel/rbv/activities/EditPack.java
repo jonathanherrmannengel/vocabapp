@@ -47,7 +47,7 @@ public class EditPack extends AppCompatActivity {
         binding.editCollectionOrPackDescLayout.setHint(String.format(getString(R.string.optional), getString(R.string.collection_or_pack_desc)));
         EmojiPopup emojiPopup = new EmojiPopup(binding.getRoot(), binding.editCollectionOrPackEmoji,
                 new EmojiTheming(
-                        getResources().getColor(R.color.light_grey, getTheme()),
+                        getResources().getColor(R.color.light_grey_default, getTheme()),
                         getResources().getColor(R.color.light_black, getTheme()),
                         getResources().getColor(R.color.highlight, getTheme()),
                         getResources().getColor(R.color.button, getTheme()),
@@ -97,13 +97,15 @@ public class EditPack extends AppCompatActivity {
             });
             TypedArray colorNames = getResources().obtainTypedArray(R.array.pack_color_names);
             TypedArray colors = getResources().obtainTypedArray(R.array.pack_color_main);
+            TypedArray colorsStatusBar = getResources().obtainTypedArray(R.array.pack_color_statusbar);
             TypedArray colorsBackground = getResources().obtainTypedArray(R.array.pack_color_background);
-            for (int i = 0; i < colorNames.length() && i < colors.length() && i < colorsBackground.length(); i++) {
+            for (int i = 0; i < colorNames.length() && i < colors.length() && i < colorsStatusBar.length() && i < colorsBackground.length(); i++) {
                 String colorName = colorNames.getString(i);
                 int color = colors.getColor(i, 0);
+                int colorStatusBar = colorsStatusBar.getColor(i, 0);
                 int colorBackground = colorsBackground.getColor(i, 0);
                 if (pack.colors == i) {
-                    setColors(color, colorBackground);
+                    setColors(color, colorStatusBar, colorBackground);
                 }
                 ImageButton colorView = new ImageButton(this);
                 colorView.setImageDrawable(new ColorDrawable(color));
@@ -116,7 +118,7 @@ public class EditPack extends AppCompatActivity {
                 int finalI = i;
                 colorView.setOnClickListener(
                         v -> {
-                            setColors(color, colorBackground);
+                            setColors(color, colorStatusBar, colorBackground);
                             pack.colors = finalI;
                         });
                 colorView.setContentDescription(colorName);
@@ -155,10 +157,10 @@ public class EditPack extends AppCompatActivity {
         }
     }
 
-    private void setColors(int main, int background) {
-        Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(new ColorDrawable(main));
+    private void setColors(int main, int statusBar, int background) {
+        Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(new ColorDrawable(statusBar));
         Window window = this.getWindow();
-        window.setStatusBarColor(main);
+        window.setStatusBarColor(statusBar);
         binding.editCollectionOrPackNameLayout.setBoxStrokeColor(main);
         binding.editCollectionOrPackDescLayout.setBoxStrokeColor(main);
         binding.editCollectionOrPackEmojiLayout.setBoxStrokeColor(main);

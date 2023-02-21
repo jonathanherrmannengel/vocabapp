@@ -2,7 +2,7 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/dia_query_root_background_main">
         <shape android:shape="rectangle">
-            <solid android:color="@color/background" />
+            <solid android:color="@color/background_default" />
         </shape>
     </item>
     <item

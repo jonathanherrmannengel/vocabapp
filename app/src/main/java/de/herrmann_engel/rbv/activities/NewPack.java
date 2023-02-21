@@ -1,6 +1,7 @@
 package de.herrmann_engel.rbv.activities;
 
 import android.app.Dialog;
+import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -38,18 +39,22 @@ public class NewPack extends AppCompatActivity {
         binding.newCollectionOrPackDescLayout.setHint(String.format(getString(R.string.optional), getString(R.string.collection_or_pack_desc)));
 
         TypedArray colors = getResources().obtainTypedArray(R.array.pack_color_main);
+        TypedArray colorsStatusBar = getResources().obtainTypedArray(R.array.pack_color_statusbar);
         TypedArray colorsBackground = getResources().obtainTypedArray(R.array.pack_color_background);
         DB_Helper_Get dbHelperGet = new DB_Helper_Get(this);
         try {
             int packColors = dbHelperGet.getSingleCollection(collectionNo).colors;
-            if (packColors < Math.min(colors.length(), colorsBackground.length()) && packColors >= 0) {
+            if (packColors < colors.length() && packColors < colorsStatusBar.length() && packColors < colorsBackground.length() && packColors >= 0) {
                 int color = colors.getColor(packColors, 0);
+                int colorStatusBar = colorsStatusBar.getColor(packColors, 0);
                 int colorBackground = colorsBackground.getColor(packColors, 0);
-                Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(new ColorDrawable(color));
+                Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(new ColorDrawable(colorStatusBar));
                 Window window = this.getWindow();
-                window.setStatusBarColor(color);
+                window.setStatusBarColor(colorStatusBar);
                 binding.newCollectionOrPackNameLayout.setBoxStrokeColor(color);
+                binding.newCollectionOrPackNameLayout.setHintTextColor(ColorStateList.valueOf(color));
                 binding.newCollectionOrPackDescLayout.setBoxStrokeColor(color);
+                binding.newCollectionOrPackDescLayout.setHintTextColor(ColorStateList.valueOf(color));
                 binding.getRoot().setBackgroundColor(colorBackground);
             }
             colors.recycle();

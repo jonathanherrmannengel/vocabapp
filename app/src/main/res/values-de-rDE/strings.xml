@@ -151,6 +151,7 @@
     <string name="settings_ui">Nutzeroberfläche</string>
     <string name="settings_ui_background_images">Hintergrundbilder anzeigen</string>
     <string name="settings_ui_increase_font_size">Schriftgröße erhöhen</string>
+    <string name="settings_ui_dark_mode">Dunkelmodus (β)</string>
     <string name="settings_media">Mediendateien</string>
     <string name="settings_media_in_gallery">Mediendateien in anderen Apps (etwa Galerie) anzeigen</string>
     <string name="warn_inaccurate">Mehr als %d Karteikarten in dieser Liste.</string>

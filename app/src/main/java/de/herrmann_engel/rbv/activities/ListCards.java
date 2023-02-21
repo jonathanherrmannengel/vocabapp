@@ -175,17 +175,17 @@ public class ListCards extends FileTools {
         if (packNo >= 0) {
             try {
                 int packColors = dbHelperGet.getSinglePack(packNo).colors;
-                TypedArray colors = getResources().obtainTypedArray(R.array.pack_color_main);
-                TypedArray colorsBackground = getResources().obtainTypedArray(R.array.pack_color_background);
-                if (packColors < Math.min(colors.length(), colorsBackground.length()) && packColors >= 0) {
-                    int color = colors.getColor(packColors, 0);
+                TypedArray colorsStatusBar = getResources().obtainTypedArray(R.array.pack_color_statusbar);
+                TypedArray colorsBackground = getResources().obtainTypedArray(R.array.pack_color_background_list);
+                if (packColors < Math.min(colorsStatusBar.length(), colorsBackground.length()) && packColors >= 0) {
+                    int colorStatusBar = colorsStatusBar.getColor(packColors, 0);
                     int colorBackground = colorsBackground.getColor(packColors, 0);
-                    Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(new ColorDrawable(color));
+                    Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(new ColorDrawable(colorStatusBar));
                     Window window = this.getWindow();
-                    window.setStatusBarColor(color);
+                    window.setStatusBarColor(colorStatusBar);
                     binding.getRoot().setBackgroundColor(colorBackground);
                 }
-                colors.recycle();
+                colorsStatusBar.recycle();
                 colorsBackground.recycle();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -194,17 +194,17 @@ public class ListCards extends FileTools {
         } else if (collectionNo >= 0) {
             try {
                 int packColors = dbHelperGet.getSingleCollection(collectionNo).colors;
-                TypedArray colors = getResources().obtainTypedArray(R.array.pack_color_main);
-                TypedArray colorsBackground = getResources().obtainTypedArray(R.array.pack_color_background);
-                if (packColors < Math.min(colors.length(), colorsBackground.length()) && packColors >= 0) {
-                    int color = colors.getColor(packColors, 0);
+                TypedArray colorsStatusBar = getResources().obtainTypedArray(R.array.pack_color_statusbar);
+                TypedArray colorsBackground = getResources().obtainTypedArray(R.array.pack_color_background_list);
+                if (packColors < Math.min(colorsStatusBar.length(), colorsBackground.length()) && packColors >= 0) {
+                    int colorStatusBar = colorsStatusBar.getColor(packColors, 0);
                     int colorBackground = colorsBackground.getColor(packColors, 0);
-                    Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(new ColorDrawable(color));
+                    Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(new ColorDrawable(colorStatusBar));
                     Window window = this.getWindow();
-                    window.setStatusBarColor(color);
+                    window.setStatusBarColor(colorStatusBar);
                     binding.getRoot().setBackgroundColor(colorBackground);
                 }
-                colors.recycle();
+                colorsStatusBar.recycle();
                 colorsBackground.recycle();
             } catch (Exception e) {
                 e.printStackTrace();

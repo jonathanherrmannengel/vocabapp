@@ -176,22 +176,22 @@ public class ViewCard extends FileTools {
 
     private void updateColors() {
         try {
-            TypedArray colors = getResources().obtainTypedArray(R.array.pack_color_main);
+            TypedArray colorsStatusBar = getResources().obtainTypedArray(R.array.pack_color_statusbar);
             TypedArray colorsBackground = getResources().obtainTypedArray(R.array.pack_color_background);
             TypedArray colorsBackgroundLight = getResources().obtainTypedArray(R.array.pack_color_background_light);
             int packColors = dbHelperGet.getSinglePack(card.pack).colors;
-            if (packColors < Math.min(Math.min(colors.length(), colorsBackground.length()),
+            if (packColors < Math.min(Math.min(colorsStatusBar.length(), colorsBackground.length()),
                     colorsBackgroundLight.length()) && packColors >= 0) {
-                int color = colors.getColor(packColors, 0);
+                int colorStatusBar = colorsStatusBar.getColor(packColors, 0);
                 int colorBackground = colorsBackground.getColor(packColors, 0);
                 int colorBackgroundLight = colorsBackgroundLight.getColor(packColors, 0);
-                Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(new ColorDrawable(color));
+                Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(new ColorDrawable(colorStatusBar));
                 Window window = this.getWindow();
-                window.setStatusBarColor(color);
+                window.setStatusBarColor(colorStatusBar);
                 binding.getRoot().setBackgroundColor(colorBackground);
                 binding.cardKnownProgress.setBackgroundColor(colorBackgroundLight);
             }
-            colors.recycle();
+            colorsStatusBar.recycle();
             colorsBackground.recycle();
             colorsBackgroundLight.recycle();
         } catch (Exception e) {

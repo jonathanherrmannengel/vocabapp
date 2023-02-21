@@ -85,17 +85,17 @@ public class ViewPack extends AppCompatActivity {
             } else {
                 binding.collectionOrPackDate.setText(new Date(pack.date * 1000).toString());
             }
-            TypedArray colors = getResources().obtainTypedArray(R.array.pack_color_main);
+            TypedArray colorsStatusBar = getResources().obtainTypedArray(R.array.pack_color_statusbar);
             TypedArray colorsBackground = getResources().obtainTypedArray(R.array.pack_color_background);
-            if (pack.colors < Math.min(colors.length(), colorsBackground.length()) && pack.colors >= 0) {
-                int color = colors.getColor(pack.colors, 0);
+            if (pack.colors < Math.min(colorsStatusBar.length(), colorsBackground.length()) && pack.colors >= 0) {
+                int colorStatusBar = colorsStatusBar.getColor(pack.colors, 0);
                 int colorBackground = colorsBackground.getColor(pack.colors, 0);
-                Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(new ColorDrawable(color));
+                Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(new ColorDrawable(colorStatusBar));
                 Window window = this.getWindow();
-                window.setStatusBarColor(color);
+                window.setStatusBarColor(colorStatusBar);
                 binding.getRoot().setBackgroundColor(colorBackground);
             }
-            colors.recycle();
+            colorsStatusBar.recycle();
             colorsBackground.recycle();
         } catch (Exception e) {
             Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();

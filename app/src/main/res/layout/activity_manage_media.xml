@@ -7,7 +7,7 @@
 
     <Button
         android:id="@+id/manage_files_button"
-        style="@style/material_button"
+        style="@style/media_button"
         android:layout_centerHorizontal="true"
         android:layout_margin="12dp"
         android:text="@string/manage_files_without_media"

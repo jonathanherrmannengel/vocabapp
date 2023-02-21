@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape>
+            <solid android:color="@color/media_button_background" />
+            <corners android:radius="8dp" />
+            <stroke
+                android:width="2dp"
+                android:color="@color/media_button_stroke" />
+        </shape>
+    </item>
+</layer-list>

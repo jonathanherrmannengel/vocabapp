@@ -17,7 +17,7 @@
         android:gravity="center"
         android:importantForAccessibility="no"
         android:padding="12dp"
-        android:textColor="@android:color/black"
+        android:textColor="@color/default_text"
         android:textSize="@dimen/rec_view_font_size_default" />
 
     <LinearLayout
@@ -40,7 +40,7 @@
             android:id="@+id/rec_collections_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@android:color/black"
+            android:textColor="@color/default_text"
             android:textSize="@dimen/rec_view_font_size_default" />
 
         <TextView
@@ -59,6 +59,6 @@
         android:layout_gravity="end"
         android:gravity="center_vertical|end"
         android:padding="8dp"
-        android:textColor="@android:color/black"
+        android:textColor="@color/default_text"
         android:textSize="@dimen/rec_view_font_size_default" />
 </LinearLayout>

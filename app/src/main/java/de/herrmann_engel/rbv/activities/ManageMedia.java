@@ -1,8 +1,6 @@
 package de.herrmann_engel.rbv.activities;
 
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -23,12 +21,6 @@ public class ManageMedia extends FileTools {
         super.onCreate(savedInstanceState);
         binding = ActivityManageMediaBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        GradientDrawable gradientDrawable = new GradientDrawable();
-        gradientDrawable.setShape(GradientDrawable.RECTANGLE);
-        gradientDrawable.setColor(Color.argb(75, 200, 200, 250));
-        gradientDrawable.setStroke(2, Color.rgb(170, 170, 220));
-        gradientDrawable.setCornerRadius(8);
-        binding.manageFilesButton.setBackground(gradientDrawable);
         binding.manageFilesButton.setOnClickListener(v -> {
             Intent intent = new Intent(this, ManageFiles.class);
             startActivity(intent);

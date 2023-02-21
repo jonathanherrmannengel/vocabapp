@@ -15,7 +15,8 @@ import de.herrmann_engel.rbv.utils.ContextTools
 import de.herrmann_engel.rbv.utils.StringTools
 
 class AdapterPacksAdvancedSearch(
-    private val pack: List<DB_Pack>
+    private val pack: List<DB_Pack>,
+    private val packList: ArrayList<Int>
 ) : RecyclerView.Adapter<AdapterPacksAdvancedSearch.ViewHolder>() {
     class ViewHolder(val binding: RecViewSmallBinding) : RecyclerView.ViewHolder(binding.root)
 
@@ -68,6 +69,7 @@ class AdapterPacksAdvancedSearch(
             }
             viewHolder.binding.recSmallCheckbox.contentDescription = checkBoxContentDescription
             val extra = pack[position].uid
+            viewHolder.binding.recSmallCheckbox.isChecked = packList.contains(extra)
             viewHolder.binding.recSmallCheckbox.setOnClickListener {
                 if ((it as CheckBox).isChecked) {
                     (ContextTools().getActivity(context) as AdvancedSearch).addToPackList(extra)

@@ -1,10 +1,15 @@
 package de.herrmann_engel.rbv.activities;
 
+import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO;
+import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES;
+
 import android.app.Dialog;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.WindowManager;
 import android.widget.CheckBox;
+
+import androidx.appcompat.app.AppCompatDelegate;
 
 import de.herrmann_engel.rbv.Globals;
 import de.herrmann_engel.rbv.R;
@@ -71,6 +76,19 @@ public class Settings extends FileTools {
         binding.settingsUiIncreaseFontSize.setOnClickListener(v -> {
             settingsEdit.putBoolean("ui_font_size", ((CheckBox) v).isChecked());
             settingsEdit.apply();
+        });
+
+        boolean uiDarkMode = settings.getBoolean("ui_dark_mode", false);
+        binding.settingsUiDarkMode.setChecked(uiDarkMode);
+        binding.settingsUiDarkMode.setOnClickListener(v -> {
+            boolean checked = ((CheckBox) v).isChecked();
+            settingsEdit.putBoolean("ui_dark_mode", checked);
+            settingsEdit.apply();
+            if (checked) {
+                AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_YES);
+            } else {
+                AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_NO);
+            }
         });
 
         boolean mediaInGallery = settings.getBoolean("media_in_gallery", true);

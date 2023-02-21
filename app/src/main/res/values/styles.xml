@@ -2,6 +2,9 @@
 <resources>
 
     <style name="dia_view" parent="android:Theme.Dialog">
+        <item name="android:windowNoTitle">false</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:background">@color/background_default</item>
         <item name="android:windowTitleStyle">@style/dia_view_title</item>
     </style>
 
@@ -26,5 +29,10 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:background">@android:color/transparent</item>
+    </style>
+
+    <style name="media_button" parent="material_button">
+        <item name="android:background">@drawable/media_button</item>
+        <item name="backgroundTint">@null</item>
     </style>
 </resources>

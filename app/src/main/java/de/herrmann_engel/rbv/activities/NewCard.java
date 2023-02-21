@@ -33,20 +33,20 @@ public class NewCard extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         packNo = getIntent().getExtras().getInt("pack");
-        TypedArray colors = getResources().obtainTypedArray(R.array.pack_color_main);
+        TypedArray colorsStatusBar = getResources().obtainTypedArray(R.array.pack_color_statusbar);
         TypedArray colorsBackground = getResources().obtainTypedArray(R.array.pack_color_background);
         DB_Helper_Get dbHelperGet = new DB_Helper_Get(this);
         try {
             int packColors = dbHelperGet.getSinglePack(packNo).colors;
-            if (packColors < Math.min(colors.length(), colorsBackground.length()) && packColors >= 0) {
-                int color = colors.getColor(packColors, 0);
+            if (packColors < Math.min(colorsStatusBar.length(), colorsBackground.length()) && packColors >= 0) {
+                int colorStatusBar = colorsStatusBar.getColor(packColors, 0);
                 int colorBackground = colorsBackground.getColor(packColors, 0);
-                Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(new ColorDrawable(color));
+                Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(new ColorDrawable(colorStatusBar));
                 Window window = this.getWindow();
-                window.setStatusBarColor(color);
+                window.setStatusBarColor(colorStatusBar);
                 binding.getRoot().setBackgroundColor(colorBackground);
             }
-            colors.recycle();
+            colorsStatusBar.recycle();
             colorsBackground.recycle();
         } catch (Exception e) {
             Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();

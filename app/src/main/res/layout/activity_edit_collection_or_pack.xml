@@ -2,7 +2,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background"
     android:gravity="center">
 
     <ScrollView
@@ -32,7 +31,7 @@
                     android:layout_height="wrap_content"
                     android:ems="10"
                     android:inputType="text"
-                    android:textColor="@android:color/black" />
+                    android:textColor="@color/default_text" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -51,7 +50,7 @@
                     android:layout_height="wrap_content"
                     android:ems="10"
                     android:inputType="text"
-                    android:textColor="@android:color/black" />
+                    android:textColor="@color/default_text" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -71,7 +70,7 @@
                     android:inputType="text"
                     android:longClickable="false"
                     android:textAlignment="center"
-                    android:textColor="@android:color/black" />
+                    android:textColor="@color/default_text" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <TextView

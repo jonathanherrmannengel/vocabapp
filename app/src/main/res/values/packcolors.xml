@@ -8,38 +8,50 @@
     </array>
     <array name="pack_color_main">
         <item>@color/ijblue</item>
+        <item>@color/ijred</item>
+        <item>@color/ijgreen</item>
+        <item>@color/ijyellow</item>
+    </array>
+    <array name="pack_color_statusbar">
+        <item>@color/statusbar_back</item>
         <item>#550000</item>
         <item>#104422</item>
         <item>#c7a700</item>
     </array>
     <array name="pack_color_background">
         <item>@color/background</item>
-        <item>#ffcccc</item>
-        <item>#bbddbb</item>
-        <item>#ffffbb</item>
+        <item>@color/background1</item>
+        <item>@color/background2</item>
+        <item>@color/background3</item>
+    </array>
+    <array name="pack_color_background_list">
+        <item>@color/background_list</item>
+        <item>@color/background_list1</item>
+        <item>@color/background_list2</item>
+        <item>@color/background_list3</item>
     </array>
     <array name="pack_color_background_light">
         <item>@color/light_grey</item>
-        <item>#ffd0d0</item>
-        <item>#bfdfbf</item>
-        <item>#fefeaf</item>
+        <item>@color/light_grey1</item>
+        <item>@color/light_grey2</item>
+        <item>@color/light_grey3</item>
     </array>
     <array name="pack_color_background_light_alpha">
         <item>@color/light_grey_alpha</item>
-        <item>#40ffd0d0</item>
-        <item>#40bfdfbf</item>
-        <item>#40fefeaf</item>
+        <item>@color/light_grey_alpha1</item>
+        <item>@color/light_grey_alpha2</item>
+        <item>@color/light_grey_alpha3</item>
     </array>
     <array name="pack_color_background_highlight">
-        <item>#aabbff</item>
-        <item>#ff9999</item>
-        <item>#aaffbb</item>
-        <item>#ffff77</item>
+        <item>@color/pack_color_background_highlight</item>
+        <item>@color/pack_color_background_highlight1</item>
+        <item>@color/pack_color_background_highlight2</item>
+        <item>@color/pack_color_background_highlight3</item>
     </array>
     <array name="pack_color_list">
-        <item>#000020</item>
-        <item>#5a0000</item>
-        <item>#003a00</item>
-        <item>#503f00</item>
+        <item>@color/pack_color_list</item>
+        <item>@color/pack_color_list1</item>
+        <item>@color/pack_color_list2</item>
+        <item>@color/pack_color_list3</item>
     </array>
 </resources>

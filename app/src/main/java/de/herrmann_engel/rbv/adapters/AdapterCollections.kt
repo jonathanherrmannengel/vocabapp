@@ -150,6 +150,12 @@ class AdapterCollections(
             viewHolder.binding.recCollectionsDesc.visibility = View.GONE
             viewHolder.binding.recCollectionsPreviewText.visibility = View.GONE
             viewHolder.binding.recCollectionsNumberText.visibility = View.GONE
+            viewHolder.binding.recCollectionsName.setTextColor(
+                ContextCompat.getColor(
+                    context,
+                    R.color.default_text
+                )
+            )
             background.mutate()
             background.setStroke(0, Color.rgb(0, 0, 0))
             background.setColor(Color.argb(0, 0, 0, 0))
@@ -172,20 +178,44 @@ class AdapterCollections(
             viewHolder.binding.recCollectionsPreviewText.text = "…"
             viewHolder.binding.recCollectionsNumberText.text =
                 collection[position].counter.toString()
-            viewHolder.binding.recCollectionsName.setTextColor(Color.rgb(0, 0, 0))
-            viewHolder.binding.recCollectionsPreviewText.setTextColor(Color.rgb(0, 0, 0))
+            viewHolder.binding.recCollectionsName.setTextColor(
+                ContextCompat.getColor(
+                    context,
+                    R.color.default_text
+                )
+            )
+            viewHolder.binding.recCollectionsPreviewText.setTextColor(
+                ContextCompat.getColor(
+                    context,
+                    R.color.default_text
+                )
+            )
             viewHolder.binding.recCollectionsPreviewText.setBackgroundColor(
-                Color.rgb(
-                    185,
-                    185,
-                    185
+                ContextCompat.getColor(
+                    context,
+                    R.color.pack_default_item_background
                 )
             )
             background.mutate()
-            background.setStroke(2, Color.rgb(85, 85, 85))
-            background.setColor(Color.argb(75, 185, 185, 185))
+            background.setStroke(
+                2, ContextCompat.getColor(
+                    context,
+                    R.color.pack_default_item_stroke
+                )
+            )
+            background.setColor(
+                ContextCompat.getColor(
+                    context,
+                    R.color.pack_default_item_background_alpha
+                )
+            )
             backgroundBehind.mutate()
-            backgroundBehind.setStroke(1, Color.rgb(185, 185, 185))
+            backgroundBehind.setStroke(
+                1, ContextCompat.getColor(
+                    context,
+                    R.color.pack_default_item_background
+                )
+            )
         } else {
             val currentCollection = collection[position].collection
             val extra = currentCollection.uid

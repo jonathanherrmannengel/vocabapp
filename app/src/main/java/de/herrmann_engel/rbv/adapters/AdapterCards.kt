@@ -2,7 +2,6 @@ package de.herrmann_engel.rbv.adapters
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ImageSpan
@@ -68,7 +67,12 @@ class AdapterCards(
                 context.resources.getDimension(R.dimen.rec_view_font_size_below_big)
             )
         }
-        viewHolder.binding.recName.setTextColor(Color.BLACK)
+        viewHolder.binding.recName.setTextColor(
+            ContextCompat.getColor(
+                context,
+                R.color.default_text
+            )
+        )
         if (cards.isEmpty()) {
             if (packNo < 0) {
                 viewHolder.binding.recName.text =
