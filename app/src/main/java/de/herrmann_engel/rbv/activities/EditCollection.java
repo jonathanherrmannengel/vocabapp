@@ -72,7 +72,6 @@ public class EditCollection extends AppCompatActivity {
             }
         });
         binding.editCollectionOrPackEmojiLayout.setHint(String.format(getString(R.string.optional), getString(R.string.collection_or_pack_emoji)));
-        binding.editCollectionOrPackEmojiLayout.setHintTextColor(ColorStateList.valueOf(getResources().getColor(R.color.light_black, getTheme())));
         int collectionNo = getIntent().getExtras().getInt("collection");
         DB_Helper_Get dbHelperGet = new DB_Helper_Get(this);
         try {
@@ -165,8 +164,11 @@ public class EditCollection extends AppCompatActivity {
         Window window = this.getWindow();
         window.setStatusBarColor(statusBar);
         binding.editCollectionOrPackNameLayout.setBoxStrokeColor(main);
+        binding.editCollectionOrPackNameLayout.setHintTextColor(ColorStateList.valueOf(main));
         binding.editCollectionOrPackDescLayout.setBoxStrokeColor(main);
+        binding.editCollectionOrPackDescLayout.setHintTextColor(ColorStateList.valueOf(main));
         binding.editCollectionOrPackEmojiLayout.setBoxStrokeColor(main);
+        binding.editCollectionOrPackEmojiLayout.setHintTextColor(ColorStateList.valueOf(main));
         binding.getRoot().setBackgroundColor(background);
     }
 

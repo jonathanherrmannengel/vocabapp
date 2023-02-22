@@ -1,6 +1,7 @@
 package de.herrmann_engel.rbv.activities;
 
 import android.app.Dialog;
+import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
@@ -162,8 +163,11 @@ public class EditPack extends AppCompatActivity {
         Window window = this.getWindow();
         window.setStatusBarColor(statusBar);
         binding.editCollectionOrPackNameLayout.setBoxStrokeColor(main);
+        binding.editCollectionOrPackNameLayout.setHintTextColor(ColorStateList.valueOf(main));
         binding.editCollectionOrPackDescLayout.setBoxStrokeColor(main);
+        binding.editCollectionOrPackDescLayout.setHintTextColor(ColorStateList.valueOf(main));
         binding.editCollectionOrPackEmojiLayout.setBoxStrokeColor(main);
+        binding.editCollectionOrPackEmojiLayout.setHintTextColor(ColorStateList.valueOf(main));
         binding.getRoot().setBackgroundColor(background);
     }
 
