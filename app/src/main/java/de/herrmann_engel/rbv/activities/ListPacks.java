@@ -179,16 +179,13 @@ public class ListPacks extends AppCompatActivity implements AsyncExportFinish, A
                 WindowManager.LayoutParams.MATCH_PARENT);
         bindingStartExportDialog.diaExportIncludeSettings.setChecked(false);
         bindingStartExportDialog.diaExportIncludeSettings.setVisibility(View.GONE);
-        bindingStartExportDialog.diaExportIncludeMedia.setChecked(false);
+        bindingStartExportDialog.diaExportIncludeMedia.setChecked(true);
         bindingStartExportDialog.diaExportIncludeMediaWarnNoFiles.setVisibility(bindingStartExportDialog.diaExportIncludeMedia.isChecked() ? View.VISIBLE : View.GONE);
-        bindingStartExportDialog.diaExportIncludeMediaWarnAllMedia.setVisibility(bindingStartExportDialog.diaExportIncludeMedia.isChecked() ? View.VISIBLE : View.GONE);
         bindingStartExportDialog.diaExportIncludeMedia.setOnCheckedChangeListener((v, c) -> {
             if (c) {
                 bindingStartExportDialog.diaExportIncludeMediaWarnNoFiles.setVisibility(View.VISIBLE);
-                bindingStartExportDialog.diaExportIncludeMediaWarnAllMedia.setVisibility(View.VISIBLE);
             } else {
                 bindingStartExportDialog.diaExportIncludeMediaWarnNoFiles.setVisibility(View.GONE);
-                bindingStartExportDialog.diaExportIncludeMediaWarnAllMedia.setVisibility(View.GONE);
             }
         });
         bindingStartExportDialog.diaExportStart.setOnClickListener(v -> {

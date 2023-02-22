@@ -49,9 +49,16 @@ public class DB_Helper_Export {
         return dbHelper.media_dao.getAllExport();
     }
 
+    public Cursor getAllMediaByCollection(int collection) {
+        return dbHelper.media_dao.getAllExportByCollection(collection);
+    }
 
     public Cursor getAllMediaLinks() {
         return dbHelper.media_link_card_dao.getAllExport();
+    }
+
+    public Cursor getAllMediaLinksByCollection(int collection) {
+        return dbHelper.media_link_card_dao.getAllExportByCollection(collection);
     }
 
 }

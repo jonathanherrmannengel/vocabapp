@@ -42,7 +42,6 @@
     <string name="import_export_include_settings">Include app settings</string>
     <string name="import_export_include_media">Include media links</string>
     <string name="import_export_include_media_warn_no_files">Backup only contains media references, no files. You need to backup and restore them on your own.</string>
-    <string name="import_export_include_media_warn_all_media">Backup contains all media references, also those not used in this filing box.</string>
     <string name="import_export_lines_progress">~%d lines.</string>
     <string name="edit_collection">Edit filing box</string>
     <string name="edit_pack">Edit deck</string>

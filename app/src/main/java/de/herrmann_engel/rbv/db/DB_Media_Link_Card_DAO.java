@@ -32,6 +32,9 @@ public interface DB_Media_Link_Card_DAO {
     @Query("SELECT * FROM db_media_link_card")
     Cursor getAllExport();
 
+    @Query("SELECT * FROM db_media_link_card WHERE cardId IN (SELECT uid FROM db_card WHERE pack IN (SELECT uid FROM db_pack WHERE collection=:collection))")
+    Cursor getAllExportByCollection(int collection);
+
     @Query("DELETE FROM db_media_link_card WHERE fileId=:file AND cardId=:card")
     void deleteMediaLinkCard(int file, int card);
 

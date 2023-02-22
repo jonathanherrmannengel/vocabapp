@@ -42,7 +42,6 @@
     <string name="import_export_include_settings">App-Einstellungen einschließen</string>
     <string name="import_export_include_media">Medien-Referenzen einschließen</string>
     <string name="import_export_include_media_warn_no_files">Die Sicherung enthält nur die Medien-Referenzen, nicht die Dateien selbst. Diese musst Du selbstständig sichern und wiederherstellen.</string>
-    <string name="import_export_include_media_warn_all_media">Die Sicherung enthält alle Medien-Referenzen, auch die nicht in diesem Karteikasten verwendeten.</string>
     <string name="import_export_lines_progress">~%d Zeilen.</string>
     <string name="edit_pack">Kartenstapel bearbeiten</string>
     <string name="edit_card">Karteikarte bearbeiten</string>

@@ -277,7 +277,6 @@ public class ListCollections extends FileTools implements AsyncImportFinish, Asy
         bindingStartExportDialog.diaExportIncludeSettings.setChecked(false);
         bindingStartExportDialog.diaExportIncludeMedia.setChecked(true);
         bindingStartExportDialog.diaExportIncludeMediaWarnNoFiles.setVisibility(bindingStartExportDialog.diaExportIncludeMedia.isChecked() ? View.VISIBLE : View.GONE);
-        bindingStartExportDialog.diaExportIncludeMediaWarnAllMedia.setVisibility(View.GONE);
         bindingStartExportDialog.diaExportIncludeMedia.setOnCheckedChangeListener((v, c) -> {
             if (c) {
                 bindingStartExportDialog.diaExportIncludeMediaWarnNoFiles.setVisibility(View.VISIBLE);

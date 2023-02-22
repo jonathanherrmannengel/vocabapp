@@ -148,7 +148,6 @@ public class DB_Helper_Get {
     }
 
     //Get All: Cards
-
     public List<DB_Card_With_Meta> getAllCardsWithMeta() {
         return dbHelper.card_dao.getAllWithMeta();
     }

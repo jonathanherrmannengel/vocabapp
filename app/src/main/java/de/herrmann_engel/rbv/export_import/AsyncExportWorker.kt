@@ -125,13 +125,17 @@ class AsyncExportWorker(
                 if (!exportCSV(
                         "media",
                         file.name,
-                        dbHelperExport.allMedia,
+                        if (singleCollection) {
+                            dbHelperExport.getAllMediaByCollection(collectionNo)
+                        } else dbHelperExport.allMedia,
                         true
                     )
                     || !exportCSV(
                         "media_link_card",
                         file.name,
-                        dbHelperExport.allMediaLinks,
+                        if (singleCollection) {
+                            dbHelperExport.getAllMediaLinksByCollection(collectionNo)
+                        } else dbHelperExport.allMediaLinks,
                         true
                     )
                 ) {

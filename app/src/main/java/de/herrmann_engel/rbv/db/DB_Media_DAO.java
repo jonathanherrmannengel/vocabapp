@@ -29,6 +29,9 @@ public interface DB_Media_DAO {
     @Query("SELECT * FROM db_media")
     Cursor getAllExport();
 
+    @Query("SELECT * FROM db_media WHERE uid IN (SELECT fileId FROM db_media_link_card WHERE cardId IN (SELECT uid FROM db_card WHERE pack IN (SELECT uid FROM db_pack WHERE collection=:collection)))")
+    Cursor getAllExportByCollection(int collection);
+
     @Query("DELETE FROM db_media WHERE uid=:id")
     void deleteMedia(int id);
 
