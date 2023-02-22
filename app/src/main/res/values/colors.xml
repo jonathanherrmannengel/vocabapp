@@ -13,6 +13,9 @@
     <color name="ijgreen">#104422</color>
     <color name="ijyellow">#c7a700</color>
     <color name="statusbar_back">@color/ijblue</color>
+    <color name="statusbar_back1">@color/ijred</color>
+    <color name="statusbar_back2">@color/ijgreen</color>
+    <color name="statusbar_back3">@color/ijyellow</color>
     <color name="background_default">#f1f1ff</color>
     <color name="icon_background">@color/background_default</color>
     <color name="background">@color/background_default</color>

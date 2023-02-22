@@ -13,6 +13,9 @@
     <color name="ijgreen">#aeffaa</color>
     <color name="ijyellow">#fff0aa</color>
     <color name="statusbar_back">#020123</color>
+    <color name="statusbar_back1">#230202</color>
+    <color name="statusbar_back2">#021302</color>
+    <color name="statusbar_back3">#3f3a01</color>
     <color name="background_default">#090913</color>
     <color name="icon_background">#f1f1ff</color><!-- day theme value -->
     <color name="background">#191740</color>

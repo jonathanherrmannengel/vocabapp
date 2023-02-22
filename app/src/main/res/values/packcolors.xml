@@ -14,9 +14,9 @@
     </array>
     <array name="pack_color_statusbar">
         <item>@color/statusbar_back</item>
-        <item>#550000</item>
-        <item>#104422</item>
-        <item>#c7a700</item>
+        <item>@color/statusbar_back1</item>
+        <item>@color/statusbar_back2</item>
+        <item>@color/statusbar_back3</item>
     </array>
     <array name="pack_color_background">
         <item>@color/background</item>

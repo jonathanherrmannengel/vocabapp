@@ -23,6 +23,7 @@
 
     <style name="Theme.RBV.ActionBar" parent="@style/ThemeOverlay.Material3.ActionBar">
         <item name="colorSurface">@color/statusbar_back</item>
+        <item name="elevationOverlayColor">@color/statusbar_back</item>
         <item name="colorOnSurface">@android:color/white</item>
         <item name="android:editTextColor">@color/light_grey_statusbar</item>
         <item name="android:textColorHint">@color/light_grey_statusbar_alpha</item>
