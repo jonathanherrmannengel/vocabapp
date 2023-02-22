@@ -1,5 +1,6 @@
 package de.herrmann_engel.rbv.activities;
 
+import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
 import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO;
 import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES;
 
@@ -78,18 +79,13 @@ public class Settings extends FileTools {
             settingsEdit.apply();
         });
 
-        boolean uiDarkMode = settings.getBoolean("ui_dark_mode", false);
-        binding.settingsUiDarkMode.setChecked(uiDarkMode);
-        binding.settingsUiDarkMode.setOnClickListener(v -> {
-            boolean checked = ((CheckBox) v).isChecked();
-            settingsEdit.putBoolean("ui_dark_mode", checked);
-            settingsEdit.apply();
-            if (checked) {
-                AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_YES);
-            } else {
-                AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_NO);
-            }
-        });
+        int uiMode = settings.getInt("ui_mode", Globals.UI_MODE_DAY);
+        binding.settingsUiModeAuto.setChecked(uiMode == Globals.UI_MODE_AUTO);
+        binding.settingsUiModeDay.setChecked(uiMode == Globals.UI_MODE_DAY);
+        binding.settingsUiModeNight.setChecked(uiMode == Globals.UI_MODE_NIGHT);
+        binding.settingsUiModeAuto.setOnClickListener(v -> setUiMode(Globals.UI_MODE_AUTO));
+        binding.settingsUiModeDay.setOnClickListener(v -> setUiMode(Globals.UI_MODE_DAY));
+        binding.settingsUiModeNight.setOnClickListener(v -> setUiMode(Globals.UI_MODE_NIGHT));
 
         boolean mediaInGallery = settings.getBoolean("media_in_gallery", true);
         binding.settingsMediaInGallery.setChecked(mediaInGallery);
@@ -114,4 +110,17 @@ public class Settings extends FileTools {
         settingsEdit.putInt("default_sort", sort);
         settingsEdit.apply();
     }
+
+    private void setUiMode(int uiMode) {
+        settingsEdit.putInt("ui_mode", uiMode);
+        settingsEdit.apply();
+        if (uiMode == Globals.UI_MODE_NIGHT) {
+            AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_YES);
+        } else if (uiMode == Globals.UI_MODE_DAY) {
+            AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_NO);
+        } else {
+            AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_FOLLOW_SYSTEM);
+        }
+    }
+
 }

@@ -185,12 +185,12 @@ class AsyncExportWorker(
                         settings.getBoolean("ui_font_size", false).toString()
                     )
                 }
-                if (settings.contains("ui_dark_mode")) {
+                if (settings.contains("ui_mode")) {
                     exportSetting(
-                        "ui_dark_mode",
+                        "ui_mode",
                         file.name,
-                        "bool",
-                        settings.getBoolean("ui_dark_mode", false).toString()
+                        "int",
+                        settings.getInt("ui_mode", Globals.UI_MODE_DAY).toString()
                     )
                 }
                 if (settings.contains("media_in_gallery")) {

@@ -14,6 +14,9 @@ object Globals {
     const val IMPORT_MODE_INTEGRATE = 2
     const val SORT_DEFAULT = 0
     const val SORT_RANDOM = 1
+    const val UI_MODE_AUTO = 0
+    const val UI_MODE_DAY = 1
+    const val UI_MODE_NIGHT = 2
     const val SORT_ALPHABETICAL = 2
     const val IMAGE_PREVIEW_MAX = 9
     const val LIST_ACCURATE_SIZE = 15000

@@ -1,5 +1,9 @@
 package de.herrmann_engel.rbv.activities;
 
+import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
+import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO;
+import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES;
+
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
@@ -14,6 +18,7 @@ import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -225,6 +230,15 @@ public class ListCollections extends FileTools implements AsyncImportFinish, Asy
                 }
                 if (adapter != null) {
                     updateSettingsAndContent();
+                }
+                SharedPreferences settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE);
+                int uiMode = settings.getInt("ui_mode", Globals.UI_MODE_DAY);
+                if (uiMode == Globals.UI_MODE_NIGHT) {
+                    AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_YES);
+                } else if (uiMode == Globals.UI_MODE_DAY) {
+                    AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_NO);
+                } else {
+                    AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_FOLLOW_SYSTEM);
                 }
             } else {
                 Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show();

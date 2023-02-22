@@ -156,7 +156,10 @@
     <string name="settings_ui">Customize UI</string>
     <string name="settings_ui_background_images">Show background images</string>
     <string name="settings_ui_increase_font_size">Increase font size</string>
-    <string name="settings_ui_dark_mode">Dark mode (β)</string>
+    <string name="settings_ui_mode">Color mode:</string>
+    <string name="settings_ui_mode_auto">Auto</string>
+    <string name="settings_ui_mode_day">Light</string>
+    <string name="settings_ui_mode_night">Dark</string>
     <string name="settings_media">Media files</string>
     <string name="settings_media_in_gallery">Show media files in other apps (e.g. gallery)</string>
     <string name="warn_inaccurate">This list contains more than %d flashcards.</string>
