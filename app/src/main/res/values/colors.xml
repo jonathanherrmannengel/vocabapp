@@ -19,6 +19,10 @@
     <color name="background1">#ffcccc</color>
     <color name="background2">#bbddbb</color>
     <color name="background3">#ffffbb</color>
+    <color name="background_query">@color/background</color>
+    <color name="background_query1">@color/background1</color>
+    <color name="background_query2">@color/background2</color>
+    <color name="background_query3">@color/background3</color>
     <color name="background_list">@color/background</color>
     <color name="background_list1">@color/background1</color>
     <color name="background_list2">@color/background2</color>

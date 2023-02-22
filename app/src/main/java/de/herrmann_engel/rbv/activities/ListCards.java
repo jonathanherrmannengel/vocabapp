@@ -486,19 +486,19 @@ public class ListCards extends FileTools {
             DB_Card card = cardWithMeta.card;
 
             try {
-                TypedArray colorsBackground = getResources().obtainTypedArray(R.array.pack_color_background);
+                TypedArray colorsBackgroundQuery = getResources().obtainTypedArray(R.array.pack_color_background_query);
                 TypedArray colorsBackgroundHighlight = getResources()
                         .obtainTypedArray(R.array.pack_color_background_highlight);
                 int packColors = cardWithMeta.packColor;
-                if (packColors < Math.min(colorsBackground.length(),
+                if (packColors < Math.min(colorsBackgroundQuery.length(),
                         colorsBackgroundHighlight.length()) && packColors >= 0) {
-                    int colorBackground = colorsBackground.getColor(packColors, 0);
+                    int colorBackgroundQuery = colorsBackgroundQuery.getColor(packColors, 0);
                     int colorBackgroundHighlight = colorsBackgroundHighlight.getColor(packColors, 0);
                     GradientDrawable rootBackgroundMain = (GradientDrawable) rootBackground.findDrawableByLayerId(R.id.dia_query_root_background_main);
-                    rootBackgroundMain.setColor(colorBackground);
+                    rootBackgroundMain.setColor(colorBackgroundQuery);
                     bindingQueryModeDialog.queryHide.setBackgroundColor(colorBackgroundHighlight);
                 }
-                colorsBackground.recycle();
+                colorsBackgroundQuery.recycle();
                 colorsBackgroundHighlight.recycle();
             } catch (Exception e) {
                 e.printStackTrace();

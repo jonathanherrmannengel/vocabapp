@@ -24,6 +24,12 @@
         <item>@color/background2</item>
         <item>@color/background3</item>
     </array>
+    <array name="pack_color_background_query">
+        <item>@color/background_query</item>
+        <item>@color/background_query1</item>
+        <item>@color/background_query2</item>
+        <item>@color/background_query3</item>
+    </array>
     <array name="pack_color_background_list">
         <item>@color/background_list</item>
         <item>@color/background_list1</item>
