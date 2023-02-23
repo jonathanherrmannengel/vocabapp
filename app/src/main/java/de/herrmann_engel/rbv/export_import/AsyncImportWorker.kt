@@ -21,6 +21,7 @@ class AsyncImportWorker(
 ) {
 
     private var progress = 0
+    private var lastProgressSentTime = 0L
 
     fun execute() {
         listener.importCardsResult(execute2())
@@ -250,7 +251,9 @@ class AsyncImportWorker(
                         }
                     }
                     progress++
-                    if (progress % 1000 == 0) {
+                    val currentTime = System.currentTimeMillis()
+                    if (progress % 1000 == 0 && currentTime - lastProgressSentTime > 1000) {
+                        lastProgressSentTime = currentTime
                         listenerProgress.importCardsProgress(
                             String.format(
                                 context.getString(R.string.import_export_lines_progress),

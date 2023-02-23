@@ -20,6 +20,7 @@ class AsyncExportWorker(
     private val exportFileUri: Uri?
 ) {
     private var progress = 0
+    private var lastProgressSentTime = 0L
     fun execute() {
         listener.exportCardsResult(exportFile())
     }
@@ -59,7 +60,9 @@ class AsyncExportWorker(
                     csvWrite.writeNext(row)
                     cursor.moveToNext()
                     progress++
-                    if (progress % 1000 == 0) {
+                    val currentTime = System.currentTimeMillis()
+                    if (progress % 1000 == 0 && currentTime - lastProgressSentTime > 1000) {
+                        lastProgressSentTime = currentTime
                         listenerProgress.exportCardsProgress(
                             String.format(
                                 context.getString(R.string.import_export_lines_progress),
