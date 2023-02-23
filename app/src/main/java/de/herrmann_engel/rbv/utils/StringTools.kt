@@ -37,7 +37,7 @@ class StringTools {
     private fun generateTypefacePattern(i: Int): Pattern {
         val regex = String.format(
             "%s%d%s%d%s",
-            "(^|\\s|_)([*]{",
+            "(^|\\s|[(]|_)([*]{",
             i,
             "}[^\\s*][^\\n]*?(?<![\\s*])[*]{",
             i,
@@ -98,7 +98,7 @@ class StringTools {
         }
         var offset = 0
         if (formatCardUnderlinePattern == null) {
-            val regex = "(^|\\s|[*])(_[^\\s_][^\\n]*?(?<![\\s_])_)"
+            val regex = "(^|\\s|[(]|[*])(_[^\\s_][^\\n]*?(?<![\\s_])_)"
             formatCardUnderlinePattern = Pattern.compile(regex)
         }
         val matcher = formatCardUnderlinePattern!!.matcher(modifiedInput)

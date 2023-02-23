@@ -22,6 +22,9 @@ public interface DB_Card_DAO {
     @Query("SELECT COUNT(*) FROM db_card WHERE pack=:pid")
     int countCardsInPack(int pid);
 
+    @Query("SELECT COUNT(*) FROM db_card WHERE pack IN (SELECT uid FROM db_pack WHERE collection=:cid)")
+    int countCardsInCollection(int cid);
+
     @Query("SELECT * FROM db_card")
     List<DB_Card> getAll();
 
