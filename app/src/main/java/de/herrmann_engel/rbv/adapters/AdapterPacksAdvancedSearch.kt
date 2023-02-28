@@ -3,7 +3,6 @@ package de.herrmann_engel.rbv.adapters
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CheckBox
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import de.herrmann_engel.rbv.R
@@ -70,8 +69,8 @@ class AdapterPacksAdvancedSearch(
             viewHolder.binding.recSmallCheckbox.contentDescription = checkBoxContentDescription
             val extra = pack[position].uid
             viewHolder.binding.recSmallCheckbox.isChecked = packList.contains(extra)
-            viewHolder.binding.recSmallCheckbox.setOnClickListener {
-                if ((it as CheckBox).isChecked) {
+            viewHolder.binding.recSmallCheckbox.setOnCheckedChangeListener { _, checked ->
+                if (checked) {
                     (ContextTools().getActivity(context) as AdvancedSearch).addToPackList(extra)
                 } else {
                     (ContextTools().getActivity(context) as AdvancedSearch).removeFromPackList(extra)
