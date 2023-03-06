@@ -2,10 +2,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/menu_edit_save"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:icon="@drawable/round_save_24"
-        android:onClick="saveChanges"
         android:orderInCategory="100"
         android:title="@string/save_changes"
         app:showAsAction="ifRoom" />

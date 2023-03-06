@@ -39,15 +39,15 @@ class AdapterFilesManage(
             viewHolder.binding.recFilesName.text = currentFile.name
             viewHolder.binding.recFilesShare.visibility = View.VISIBLE
             viewHolder.binding.recFilesShare.setOnClickListener {
-                (ContextTools().getActivity(context) as FileTools).shareFile(currentFile.name)
+                (ContextTools().getActivity(context) as FileTools).shareFile(currentFile.name!!)
             }
             viewHolder.binding.recFilesOpen.visibility = View.VISIBLE
             viewHolder.binding.recFilesOpen.setOnClickListener {
-                (ContextTools().getActivity(context) as FileTools).openFile(currentFile.name)
+                (ContextTools().getActivity(context) as FileTools).openFile(currentFile.name!!)
             }
             viewHolder.binding.recFilesDelete.setOnClickListener {
                 val dialog = (ContextTools().getActivity(context) as FileTools).showDeleteDialog(
-                    currentFile.name,
+                    currentFile.name!!,
                     context.resources.getString(R.string.delete_file_without_media_info)
                 )
                 dialog.setOnDismissListener {
