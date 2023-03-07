@@ -71,12 +71,12 @@
                     android:orientation="horizontal">
 
                     <ImageButton
+                        android:id="@+id/card_plus"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_margin="6dp"
                         android:background="@android:color/transparent"
                         android:contentDescription="@string/card_plus"
-                        android:onClick="updateCardKnownPlus"
                         android:src="@drawable/outline_done_24"
                         android:tooltipText="@string/card_plus"
                         app:tint="@color/dark_green" />
@@ -98,7 +98,6 @@
                         android:layout_margin="6dp"
                         android:background="@android:color/transparent"
                         android:contentDescription="@string/card_minus"
-                        android:onClick="updateCardKnownMinus"
                         android:src="@drawable/outline_close_24"
                         android:tooltipText="@string/card_minus" />
                 </LinearLayout>

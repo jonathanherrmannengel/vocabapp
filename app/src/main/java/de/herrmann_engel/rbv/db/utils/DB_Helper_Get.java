@@ -17,11 +17,9 @@ import de.herrmann_engel.rbv.db.DB_Pack_With_Meta;
 public class DB_Helper_Get {
 
     private final DB_Helper dbHelper;
-    private final Context context;
 
     public DB_Helper_Get(Context context) {
         dbHelper = new DB_Helper(context);
-        this.context = context;
     }
 
     //Check if has content

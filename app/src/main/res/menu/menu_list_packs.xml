@@ -6,16 +6,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:icon="@drawable/outline_add_24"
-        android:onClick="startNewPack"
         android:orderInCategory="100"
         android:title="@string/new_pack"
         app:showAsAction="ifRoom" />
     <item
-        android:id="@+id/collection_details"
+        android:id="@+id/pack_details"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:icon="@drawable/outline_info_24"
-        android:onClick="collectionDetails"
         android:orderInCategory="200"
         android:title="@string/collection_details"
         app:showAsAction="ifRoom" />
@@ -24,7 +22,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:icon="@drawable/outline_file_upload_24"
-        android:onClick="export"
         android:orderInCategory="200"
         android:title="@string/export_cards"
         app:showAsAction="ifRoom" />

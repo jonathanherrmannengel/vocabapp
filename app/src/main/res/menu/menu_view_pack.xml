@@ -2,26 +2,25 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/menu_view_pack_edit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:icon="@drawable/baseline_edit_24"
-        android:onClick="editPack"
         android:orderInCategory="100"
         android:title="@string/edit"
         app:showAsAction="ifRoom" />
     <item
+        android:id="@+id/menu_view_pack_delete"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:icon="@drawable/baseline_delete_24"
-        android:onClick="deletePack"
         android:orderInCategory="200"
         android:title="@string/delete"
         app:showAsAction="ifRoom" />
     <item
-        android:id="@+id/move_pack"
+        android:id="@+id/menu_view_pack_move"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="movePack"
         android:orderInCategory="300"
         android:title="@string/move"
         app:showAsAction="never" />

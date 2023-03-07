@@ -58,12 +58,12 @@ class AdapterOSS(private val licenses: List<OSSLicenses>) :
                     WindowManager.LayoutParams.MATCH_PARENT,
                     WindowManager.LayoutParams.MATCH_PARENT
                 )
-                if (license.project.dev == "") {
+                if (license.project.dev.isEmpty()) {
                     bindingOssDialog.diaOssProjectDev.visibility = View.GONE
                 } else {
                     bindingOssDialog.diaOssProjectDev.text = license.project.dev
                 }
-                if (license.project.url == "") {
+                if (license.project.url.isEmpty()) {
                     bindingOssDialog.diaOssProjectUrl.visibility = View.GONE
                 } else {
                     bindingOssDialog.diaOssProjectUrl.text = license.project.url

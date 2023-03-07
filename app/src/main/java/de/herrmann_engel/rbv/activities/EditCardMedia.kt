@@ -21,8 +21,8 @@ import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 
 class EditCardMedia : FileTools() {
     private lateinit var binding: ActivityEditCardMediaBinding
+    private lateinit var dbHelperGet: DB_Helper_Get
     private var cardNo = 0
-    private val dbHelperGet = DB_Helper_Get(this)
     private val openFile = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result: ActivityResult ->
@@ -116,6 +116,7 @@ class EditCardMedia : FileTools() {
         } ?: run {
             Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show()
         }
+        dbHelperGet = DB_Helper_Get(this)
     }
 
     override fun onResume() {

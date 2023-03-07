@@ -10,7 +10,6 @@ import android.text.InputFilter
 import android.text.TextWatcher
 import android.util.DisplayMetrics
 import android.view.Menu
-import android.view.View
 import android.view.View.OnFocusChangeListener
 import android.view.WindowManager
 import android.widget.ImageButton
@@ -55,7 +54,7 @@ class EditPack : AppCompatActivity() {
         )
         binding.editCollectionOrPackEmoji.filters = arrayOf<InputFilter>(OnlyEmojisInputFilter())
         binding.editCollectionOrPackEmoji.onFocusChangeListener =
-            OnFocusChangeListener { _: View?, hasFocus: Boolean ->
+            OnFocusChangeListener { _, hasFocus: Boolean ->
                 if (hasFocus) {
                     if (!emojiPopup.isShowing) {
                         emojiPopup.show()

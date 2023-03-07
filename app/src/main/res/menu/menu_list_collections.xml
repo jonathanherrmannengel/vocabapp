@@ -2,56 +2,53 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/menu_list_collections_new"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:icon="@drawable/outline_add_24"
-        android:onClick="startNewCollection"
         android:orderInCategory="100"
         android:title="@string/new_collection"
         app:showAsAction="ifRoom" />
     <item
+        android:id="@+id/menu_list_collections_import"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:icon="@drawable/outline_file_download_24"
-        android:onClick="importCards"
         android:orderInCategory="200"
         android:title="@string/import_cards"
         app:showAsAction="ifRoom" />
     <item
-        android:id="@+id/export_all"
+        android:id="@+id/menu_list_collections_export"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="exportAll"
         android:orderInCategory="200"
         android:title="@string/export_all"
         app:showAsAction="never" />
     <item
-        android:id="@+id/start_advanced_search"
+        android:id="@+id/menu_list_collections_start_advanced_search"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="startAdvancedSearch"
         android:orderInCategory="200"
         android:title="@string/advanced_search"
         app:showAsAction="never" />
     <item
-        android:id="@+id/start_manage_media"
+        android:id="@+id/menu_list_collections_start_manage_media"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="startManageMedia"
         android:orderInCategory="200"
         android:title="@string/manage_media"
         app:showAsAction="never" />
     <item
+        android:id="@+id/menu_list_collections_start_settings"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="startSettings"
         android:orderInCategory="200"
         android:title="@string/settings"
         app:showAsAction="never" />
     <item
+        android:id="@+id/menu_list_collections_start_about_app"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="startAboutApp"
         android:orderInCategory="200"
         android:title="@string/licenses"
         app:showAsAction="never" />

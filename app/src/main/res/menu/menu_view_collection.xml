@@ -2,18 +2,18 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/menu_view_collection_edit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:icon="@drawable/baseline_edit_24"
-        android:onClick="editCollection"
         android:orderInCategory="100"
         android:title="@string/edit"
         app:showAsAction="ifRoom" />
     <item
+        android:id="@+id/menu_view_collection_delete"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:icon="@drawable/baseline_delete_24"
-        android:onClick="deleteCollection"
         android:orderInCategory="200"
         android:title="@string/delete"
         app:showAsAction="ifRoom" />
