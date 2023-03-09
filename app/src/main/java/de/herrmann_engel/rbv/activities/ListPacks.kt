@@ -33,8 +33,8 @@ class ListPacks : AppCompatActivity(), AsyncExportFinish, AsyncExportProgress {
         super.onCreate(savedInstanceState)
         binding = ActivityDefaultRecBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        collectionNo = intent.extras!!.getInt("collection")
         dbHelperGet = DB_Helper_Get(this)
+        collectionNo = intent.extras!!.getInt("collection")
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

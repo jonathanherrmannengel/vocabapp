@@ -82,6 +82,7 @@ class EditCardMedia : FileTools() {
             layoutInflater
         )
         setContentView(binding.root)
+        dbHelperGet = DB_Helper_Get(this)
         intent.extras?.getInt("card")?.also {
             try {
                 cardNo = it
@@ -116,7 +117,6 @@ class EditCardMedia : FileTools() {
         } ?: run {
             Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show()
         }
-        dbHelperGet = DB_Helper_Get(this)
     }
 
     override fun onResume() {

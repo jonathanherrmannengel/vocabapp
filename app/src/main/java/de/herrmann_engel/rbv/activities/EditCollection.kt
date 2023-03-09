@@ -39,6 +39,7 @@ class EditCollection : AppCompatActivity() {
             layoutInflater
         )
         setContentView(binding.root)
+        val dbHelperGet = DB_Helper_Get(this)
         binding.editCollectionOrPackDescLayout.hint =
             String.format(getString(R.string.optional), getString(R.string.collection_or_pack_desc))
         val emojiPopup = EmojiPopup(
@@ -73,7 +74,6 @@ class EditCollection : AppCompatActivity() {
             getString(R.string.collection_or_pack_emoji)
         )
         val collectionNo = intent.extras!!.getInt("collection")
-        val dbHelperGet = DB_Helper_Get(this)
         try {
             collection = dbHelperGet.getSingleCollection(collectionNo)
             collection?.let {

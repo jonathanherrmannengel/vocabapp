@@ -39,13 +39,13 @@ class ViewPack : AppCompatActivity() {
             layoutInflater
         )
         setContentView(binding.root)
+        dbHelperGet = DB_Helper_Get(this)
         intent.extras?.let {
             collectionNo = it.getInt("collection")
             packNo = it.getInt("pack")
         } ?: run {
             Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show()
         }
-        dbHelperGet = DB_Helper_Get(this)
     }
 
     public override fun onResume() {

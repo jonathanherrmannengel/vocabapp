@@ -67,6 +67,8 @@ class ListCards : FileTools() {
         super.onCreate(savedInstanceState)
         binding = ActivityDefaultRecBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        dbHelperGet = DB_Helper_Get(this)
+        dbHelperUpdate = DB_Helper_Update(this)
         settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE)
         listSort = settings!!.getInt("default_sort", Globals.SORT_DEFAULT)
         collectionNo = intent.extras!!.getInt("collection")
@@ -83,8 +85,6 @@ class ListCards : FileTools() {
                 )
             )
         }
-        dbHelperGet = DB_Helper_Get(this)
-        dbHelperUpdate = DB_Helper_Update(this)
     }
 
     override fun onNewIntent(intent: Intent) {

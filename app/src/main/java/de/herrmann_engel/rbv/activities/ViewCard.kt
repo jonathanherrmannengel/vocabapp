@@ -64,6 +64,9 @@ class ViewCard : FileTools() {
         super.onCreate(savedInstanceState)
         binding = ActivityViewCardBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        dbHelperGet = DB_Helper_Get(this)
+        dbHelperUpdate = DB_Helper_Update(this)
+
         intent.extras?.let {
             collectionNo = it.getInt("collection")
             packNo = it.getInt("pack")
@@ -71,9 +74,6 @@ class ViewCard : FileTools() {
         } ?: run {
             Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show()
         }
-
-        dbHelperGet = DB_Helper_Get(this)
-        dbHelperUpdate = DB_Helper_Update(this)
 
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {

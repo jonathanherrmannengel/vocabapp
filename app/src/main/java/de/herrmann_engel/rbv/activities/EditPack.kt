@@ -39,6 +39,7 @@ class EditPack : AppCompatActivity() {
             layoutInflater
         )
         setContentView(binding.root)
+        val dbHelperGet = DB_Helper_Get(this)
         binding.editCollectionOrPackDescLayout.hint =
             String.format(getString(R.string.optional), getString(R.string.collection_or_pack_desc))
         val emojiPopup = EmojiPopup(
@@ -73,7 +74,6 @@ class EditPack : AppCompatActivity() {
             getString(R.string.collection_or_pack_emoji)
         )
         val packNo = intent.extras!!.getInt("pack")
-        val dbHelperGet = DB_Helper_Get(this)
         try {
             pack = dbHelperGet.getSinglePack(packNo)
             pack?.let {

@@ -23,8 +23,8 @@ class EditCard : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityEditCardBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        val cardNo = intent.extras!!.getInt("card")
         val dbHelperGet = DB_Helper_Get(this)
+        val cardNo = intent.extras!!.getInt("card")
         try {
             card = dbHelperGet.getSingleCard(cardNo)
             binding.editCardFront.setText(card!!.front)
