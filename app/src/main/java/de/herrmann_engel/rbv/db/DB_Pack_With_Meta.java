@@ -12,19 +12,15 @@ public class DB_Pack_With_Meta {
     public String collectionName;
 
     @Override
-    public boolean equals(Object object) {
-        if (object == this) {
-            return true;
-        }
-        if (!(object instanceof DB_Pack_With_Meta comparePack)) {
-            return false;
-        }
-        if (counter != comparePack.counter || !Objects.equals(collectionName, comparePack.collectionName)) {
-            return false;
-        }
-        if (pack == null || comparePack.pack == null) {
-            return pack == comparePack.pack;
-        }
-        return pack.equals(comparePack.pack);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DB_Pack_With_Meta that = (DB_Pack_With_Meta) o;
+        return counter == that.counter && Objects.equals(pack, that.pack) && Objects.equals(collectionName, that.collectionName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(pack, counter, collectionName);
     }
 }

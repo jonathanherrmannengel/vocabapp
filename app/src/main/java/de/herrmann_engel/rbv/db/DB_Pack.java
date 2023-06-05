@@ -25,14 +25,15 @@ public class DB_Pack {
     public String emoji;
 
     @Override
-    public boolean equals(Object object) {
-        if (object == this) {
-            return true;
-        }
-        if (!(object instanceof DB_Pack comparePack)) {
-            return false;
-        }
-        return uid == comparePack.uid && Objects.equals(name, comparePack.name) && Objects.equals(desc, comparePack.desc) && colors == comparePack.colors && collection == comparePack.collection && Objects.equals(emoji, comparePack.emoji);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DB_Pack db_pack = (DB_Pack) o;
+        return uid == db_pack.uid && colors == db_pack.colors && collection == db_pack.collection && Objects.equals(name, db_pack.name) && Objects.equals(desc, db_pack.desc) && Objects.equals(emoji, db_pack.emoji);
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(uid, name, desc, colors, collection, emoji);
+    }
 }

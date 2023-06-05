@@ -20,19 +20,15 @@ public class DB_Card_With_Meta {
     public boolean formattingIsInaccurate;
 
     @Override
-    public boolean equals(Object object) {
-        if (object == this) {
-            return true;
-        }
-        if (!(object instanceof DB_Card_With_Meta compareCard)) {
-            return false;
-        }
-        if (packColor != compareCard.packColor || !Objects.equals(formattedFront, compareCard.formattedFront) || !Objects.equals(formattedNotes, compareCard.formattedNotes) || !Objects.equals(formattedBack, compareCard.formattedBack) || formattingIsInaccurate != compareCard.formattingIsInaccurate) {
-            return false;
-        }
-        if (card == null || compareCard.card == null) {
-            return card == compareCard.card;
-        }
-        return card.equals(compareCard.card);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DB_Card_With_Meta that = (DB_Card_With_Meta) o;
+        return packColor == that.packColor && formattingIsInaccurate == that.formattingIsInaccurate && Objects.equals(card, that.card) && Objects.equals(formattedFront, that.formattedFront) && Objects.equals(formattedBack, that.formattedBack) && Objects.equals(formattedNotes, that.formattedNotes);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(card, packColor, formattedFront, formattedBack, formattedNotes, formattingIsInaccurate);
     }
 }

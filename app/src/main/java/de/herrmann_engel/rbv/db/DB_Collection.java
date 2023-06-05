@@ -23,14 +23,15 @@ public class DB_Collection {
     public String emoji;
 
     @Override
-    public boolean equals(Object object) {
-        if (object == this) {
-            return true;
-        }
-        if (!(object instanceof DB_Collection compareCollection)) {
-            return false;
-        }
-        return uid == compareCollection.uid && Objects.equals(name, compareCollection.name) && Objects.equals(desc, compareCollection.desc) && colors == compareCollection.colors && Objects.equals(emoji, compareCollection.emoji);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DB_Collection that = (DB_Collection) o;
+        return uid == that.uid && colors == that.colors && Objects.equals(name, that.name) && Objects.equals(desc, that.desc) && Objects.equals(emoji, that.emoji);
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(uid, name, desc, colors, emoji);
+    }
 }

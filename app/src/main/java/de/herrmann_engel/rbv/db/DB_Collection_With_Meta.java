@@ -2,6 +2,8 @@ package de.herrmann_engel.rbv.db;
 
 import androidx.room.Embedded;
 
+import java.util.Objects;
+
 public class DB_Collection_With_Meta {
 
     @Embedded
@@ -9,19 +11,15 @@ public class DB_Collection_With_Meta {
     public int counter;
 
     @Override
-    public boolean equals(Object object) {
-        if (object == this) {
-            return true;
-        }
-        if (!(object instanceof DB_Collection_With_Meta compareCollection)) {
-            return false;
-        }
-        if (counter != compareCollection.counter) {
-            return false;
-        }
-        if (collection == null || compareCollection.collection == null) {
-            return collection == compareCollection.collection;
-        }
-        return collection.equals(compareCollection.collection);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DB_Collection_With_Meta that = (DB_Collection_With_Meta) o;
+        return counter == that.counter && Objects.equals(collection, that.collection);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(collection, counter);
     }
 }
