@@ -75,6 +75,7 @@ class AsyncImportWorker(
                                 )
                             }
                         }
+
                         line?.get(0) == "packs" -> {
                             if (collectionUidConverter.getSize() == 0 &&
                                 mode != Globals.IMPORT_MODE_SKIP
@@ -146,6 +147,7 @@ class AsyncImportWorker(
                                 }
                             }
                         }
+
                         line?.get(0) == "cards" -> {
                             val currentPack =
                                 packUidConverter.getNewValue(
@@ -186,6 +188,7 @@ class AsyncImportWorker(
                                 }
                             }
                         }
+
                         line?.get(0) == "media" && includeMedia -> {
                             try {
                                 val mediaUidOld = Integer.parseInt((line?.get(1) ?: "0"))
@@ -207,6 +210,7 @@ class AsyncImportWorker(
                                 errorLevel = Globals.IMPORT_ERROR_LEVEL_WARN
                             }
                         }
+
                         line?.get(0) == "media_link_card" && includeMedia -> {
                             try {
                                 val currentMedia =
@@ -229,6 +233,7 @@ class AsyncImportWorker(
                                 errorLevel = Globals.IMPORT_ERROR_LEVEL_WARN
                             }
                         }
+
                         line?.get(0) == "app_setting" && includeSettings -> {
                             val settings =
                                 context.getSharedPreferences(
@@ -242,6 +247,7 @@ class AsyncImportWorker(
                                     val value = line?.get(3)!!.toInt()
                                     editor.putInt(name, value)
                                 }
+
                                 line?.get(2) == "bool" -> {
                                     val value = line?.get(3)!!.toBoolean()
                                     editor.putBoolean(name, value)

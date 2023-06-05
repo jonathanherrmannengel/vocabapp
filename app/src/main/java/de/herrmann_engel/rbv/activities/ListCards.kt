@@ -431,8 +431,7 @@ class ListCards : FileTools() {
                 searchCardsMenuItem!!.collapseActionView()
                 searchCardsOffMenuItem!!.isVisible = true
                 searchQuery = query
-                binding.recDefault.scrollToPosition(0)
-                updateContent()
+                updateContent(true)
                 return true
             }
 
@@ -444,8 +443,7 @@ class ListCards : FileTools() {
         searchCardsOffMenuItem!!.setOnMenuItemClickListener {
             searchQuery = ""
             searchCardsOffMenuItem!!.isVisible = false
-            binding.recDefault.scrollToPosition(0)
-            updateContent()
+            updateContent(true)
             false
         }
         return true
@@ -456,9 +454,11 @@ class ListCards : FileTools() {
             Globals.SORT_RANDOM -> {
                 changeListSortMenuItem!!.setTitle(R.string.sort_alphabetical)
             }
+
             Globals.SORT_ALPHABETICAL -> {
                 changeListSortMenuItem!!.setTitle(R.string.sort_normal)
             }
+
             else -> {
                 listSort = Globals.SORT_DEFAULT
                 changeListSortMenuItem!!.setTitle(R.string.sort_random)
@@ -891,9 +891,8 @@ class ListCards : FileTools() {
         var tempCardList: MutableList<DB_Card_With_Meta> = ArrayList(cardsList!!)
         //Search
         if (searchQuery != null && searchQuery!!.isNotEmpty()) {
-            val searchCards = SearchCards()
             val searchResults: MutableList<DB_Card_With_Meta> = ArrayList(tempCardList)
-            searchCards.searchCards(searchResults, searchQuery!!)
+            SearchCards().searchCards(searchResults, searchQuery!!)
             if (searchResults.isEmpty()) {
                 searchCardsOffMenuItem!!.isVisible = false
                 searchQuery = ""

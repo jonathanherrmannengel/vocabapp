@@ -21,7 +21,12 @@ import de.herrmann_engel.rbv.databinding.DiaExportBinding
 import de.herrmann_engel.rbv.databinding.DiaImportBinding
 import de.herrmann_engel.rbv.db.DB_Collection_With_Meta
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
-import de.herrmann_engel.rbv.export_import.*
+import de.herrmann_engel.rbv.export_import.AsyncExport
+import de.herrmann_engel.rbv.export_import.AsyncExportFinish
+import de.herrmann_engel.rbv.export_import.AsyncExportProgress
+import de.herrmann_engel.rbv.export_import.AsyncImport
+import de.herrmann_engel.rbv.export_import.AsyncImportFinish
+import de.herrmann_engel.rbv.export_import.AsyncImportProgress
 import java.io.File
 
 class ListCollections : FileTools(), AsyncImportFinish, AsyncImportProgress, AsyncExportFinish,
@@ -119,9 +124,11 @@ class ListCollections : FileTools(), AsyncImportFinish, AsyncImportProgress, Asy
                         R.id.dia_import_radio_integrate -> {
                             Globals.IMPORT_MODE_INTEGRATE
                         }
+
                         R.id.dia_import_radio_duplicates -> {
                             Globals.IMPORT_MODE_DUPLICATES
                         }
+
                         else -> {
                             Globals.IMPORT_MODE_SKIP
                         }
@@ -280,9 +287,11 @@ class ListCollections : FileTools(), AsyncImportFinish, AsyncImportProgress, Asy
                     Globals.UI_MODE_NIGHT -> {
                         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
                     }
+
                     Globals.UI_MODE_DAY -> {
                         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
                     }
+
                     else -> {
                         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
                     }

@@ -23,9 +23,11 @@ class Settings : FileTools() {
             Globals.SORT_ALPHABETICAL -> {
                 binding.settingsSortAlphabetical.isChecked = true
             }
+
             Globals.SORT_RANDOM -> {
                 binding.settingsSortRandom.isChecked = true
             }
+
             else -> {
                 binding.settingsSortNormal.isChecked = true
             }
@@ -83,9 +85,11 @@ class Settings : FileTools() {
             Globals.UI_MODE_NIGHT -> {
                 binding.settingsUiModeNight.isChecked = true
             }
+
             Globals.UI_MODE_DAY -> {
                 binding.settingsUiModeDay.isChecked = true
             }
+
             else -> {
                 binding.settingsUiModeAuto.isChecked = true
             }
@@ -103,9 +107,11 @@ class Settings : FileTools() {
                 Globals.UI_MODE_NIGHT -> {
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
                 }
+
                 Globals.UI_MODE_DAY -> {
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
                 }
+
                 else -> {
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
                 }

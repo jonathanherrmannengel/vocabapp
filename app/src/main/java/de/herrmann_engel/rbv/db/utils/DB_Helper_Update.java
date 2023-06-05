@@ -21,7 +21,7 @@ public class DB_Helper_Update {
         } catch (Exception e) {
             return false;
         }
-        if (collection.name.equals("")) {
+        if (collection.name.isEmpty()) {
             return false;
         }
         dbHelper.collection_dao.update(collection);
@@ -35,7 +35,7 @@ public class DB_Helper_Update {
         } catch (Exception e) {
             return false;
         }
-        if (pack.name.equals("")) {
+        if (pack.name.isEmpty()) {
             return false;
         }
         dbHelper.pack_dao.update(pack);
@@ -49,7 +49,7 @@ public class DB_Helper_Update {
         } catch (Exception e) {
             return false;
         }
-        if (card.front.equals("") || card.back.equals("")) {
+        if (card.front.isEmpty() || card.back.isEmpty()) {
             return false;
         }
         dbHelper.card_dao.update(card);

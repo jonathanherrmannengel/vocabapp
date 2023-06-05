@@ -33,7 +33,7 @@ class NewCollection : AppCompatActivity() {
             override fun handleOnBackPressed() {
                 val name = binding.newCollectionOrPackName.text.toString()
                 val desc = binding.newCollectionOrPackDesc.text.toString()
-                if (name.isEmpty() && desc.isEmpty()) {
+                if (name.isBlank() && desc.isBlank()) {
                     finish()
                 } else {
                     val confirmCancelDialog = Dialog(this@NewCollection, R.style.dia_view)

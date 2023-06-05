@@ -9,8 +9,8 @@ android {
         applicationId "de.herrmann_engel.rbv"
         minSdk 25
         targetSdk 33
-        versionCode 63
-        versionName '3.2.2'
+        versionCode 66
+        versionName '3.2.3'
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -26,31 +26,34 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+        debug {
+            applicationIdSuffix '.test'
+        }
     }
     buildFeatures {
         viewBinding true
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
     namespace 'de.herrmann_engel.rbv'
 }
 
 dependencies {
-    final def room_version = "2.5.0"
-    implementation "androidx.core:core-ktx:1.9.0"
+    final def room_version = "2.5.1"
+    implementation "androidx.core:core-ktx:1.10.1"
     implementation "androidx.room:room-runtime:$room_version"
     annotationProcessor "androidx.room:room-compiler:$room_version"
     implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.google.android.material:material:1.8.0'
+    implementation 'com.google.android.material:material:1.9.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.3-native-mt'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4'
     implementation 'com.opencsv:opencsv:5.7.1'
     implementation 'io.noties.markwon:core:4.6.2'
     implementation 'io.noties.markwon:linkify:4.6.2'
     implementation 'me.saket:better-link-movement-method:2.2.0'
-    implementation "com.vanniktech:emoji-twitter:0.15.0"
+    implementation "com.vanniktech:emoji-twitter:0.16.0"
     implementation 'com.squareup.picasso:picasso:2.8'
     implementation 'com.atlassian.commonmark:commonmark:0.13.0'
     //match Markwon version of commonmark

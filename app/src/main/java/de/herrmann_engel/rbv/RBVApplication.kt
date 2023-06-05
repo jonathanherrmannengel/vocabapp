@@ -1,7 +1,10 @@
 package de.herrmann_engel.rbv
 
 import android.app.Application
-import androidx.appcompat.app.AppCompatDelegate.*
+import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO
+import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES
+import androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode
 import com.vanniktech.emoji.EmojiManager.install
 import com.vanniktech.emoji.twitter.TwitterEmojiProvider
 import de.herrmann_engel.rbv.Globals.UI_MODE_DAY

@@ -48,7 +48,7 @@ class NewCard : AppCompatActivity() {
                 val front = binding.newCardFront.text.toString()
                 val back = binding.newCardBack.text.toString()
                 val notes = binding.newCardNotes.text.toString()
-                if (front.isEmpty() && back.isEmpty() && notes.isEmpty()) {
+                if (front.isBlank() && back.isBlank() && notes.isBlank()) {
                     finish()
                 } else {
                     val confirmCancelDialog = Dialog(this@NewCard, R.style.dia_view)

@@ -29,9 +29,11 @@ class SortCards {
                     }
                 })
             }
+
             Globals.SORT_RANDOM -> {
                 list.shuffle()
             }
+
             else -> {
                 list.sortWith(compareBy<DB_Card_With_Meta?> { it?.card?.known }.thenByDescending { it?.card?.date })
             }

@@ -2,7 +2,7 @@ package de.herrmann_engel.rbv.utils
 
 import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.db.DB_Card_With_Meta
-import java.util.*
+import java.util.Locale
 import java.util.regex.Pattern
 
 class SearchCards {

@@ -2,7 +2,6 @@ package de.herrmann_engel.rbv.adapters.compare
 
 import androidx.recyclerview.widget.DiffUtil
 import de.herrmann_engel.rbv.db.DB_Pack_With_Meta
-import de.herrmann_engel.rbv.utils.CompareDataObjects
 
 class ListPackCompare(
     private val oldList: List<DB_Pack_With_Meta>,
@@ -27,7 +26,7 @@ class ListPackCompare(
     }
 
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-        return CompareDataObjects().areTheySame(oldList[oldItemPosition], newList[newItemPosition])
+        return oldList[oldItemPosition] == newList[newItemPosition]
     }
 
 }

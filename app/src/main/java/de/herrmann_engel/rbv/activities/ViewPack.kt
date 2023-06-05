@@ -25,7 +25,8 @@ import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
-import java.util.*
+import java.util.Date
+import java.util.Locale
 
 class ViewPack : AppCompatActivity() {
     private lateinit var binding: ActivityViewCollectionOrPackBinding
@@ -59,6 +60,7 @@ class ViewPack : AppCompatActivity() {
             if (pack!!.desc.isNullOrEmpty()) {
                 binding.collectionOrPackDesc.visibility = View.GONE
             } else {
+                binding.collectionOrPackDesc.visibility = View.VISIBLE
                 binding.collectionOrPackDesc.text = pack!!.desc
             }
             if (increaseFontSize) {

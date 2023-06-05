@@ -6,7 +6,7 @@ import android.text.SpannableStringBuilder
 import android.text.style.StyleSpan
 import android.text.style.UnderlineSpan
 import java.text.BreakIterator
-import java.util.*
+import java.util.Locale
 import java.util.regex.Pattern
 
 class StringTools {
@@ -22,12 +22,15 @@ class StringTools {
             3 -> {
                 Typeface.BOLD_ITALIC
             }
+
             2 -> {
                 Typeface.BOLD
             }
+
             1 -> {
                 Typeface.ITALIC
             }
+
             else -> {
                 Typeface.NORMAL
             }
@@ -54,18 +57,21 @@ class StringTools {
                 }
                 formatCardBoldItalicPattern
             }
+
             2 -> {
                 if (formatCardBoldPattern == null) {
                     formatCardBoldPattern = generateTypefacePattern(i)
                 }
                 formatCardBoldPattern
             }
+
             1 -> {
                 if (formatCardItalicPattern == null) {
                     formatCardItalicPattern = generateTypefacePattern(i)
                 }
                 formatCardItalicPattern
             }
+
             else -> {
                 null
             }

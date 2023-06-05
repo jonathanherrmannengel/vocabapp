@@ -22,7 +22,8 @@ import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
-import java.util.*
+import java.util.Date
+import java.util.Locale
 
 class ViewCollection : AppCompatActivity() {
     private lateinit var binding: ActivityViewCollectionOrPackBinding
