@@ -61,17 +61,22 @@ class AdapterOSS(private val licenses: List<OSSLicenses>) :
                 if (license.project.dev.isEmpty()) {
                     bindingOssDialog.diaOssProjectDev.visibility = View.GONE
                 } else {
-                    bindingOssDialog.diaOssProjectDev.text = license.project.dev
+                    bindingOssDialog.diaOssProjectDevText.text = license.project.dev
                 }
                 if (license.project.url.isEmpty()) {
                     bindingOssDialog.diaOssProjectUrl.visibility = View.GONE
                 } else {
-                    bindingOssDialog.diaOssProjectUrl.text = license.project.url
+                    bindingOssDialog.diaOssProjectUrlText.text = license.project.url
+                }
+                if (license.project.code.isEmpty()) {
+                    bindingOssDialog.diaOssProjectCode.visibility = View.GONE
+                } else {
+                    bindingOssDialog.diaOssProjectCodeText.text = license.project.code
                 }
                 if (license.licenseLink == null) {
                     bindingOssDialog.diaOssLicenseShort.visibility = View.GONE
                 } else {
-                    bindingOssDialog.diaOssLicenseShort.text = license.licenseLink
+                    bindingOssDialog.diaOssLicenseShortText.text = license.licenseLink
                 }
                 try {
                     bindingOssDialog.diaOssLicense.text =

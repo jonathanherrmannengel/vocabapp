@@ -29,9 +29,10 @@ class AppLicenses : AppCompatActivity() {
             var currentTag: String? = ""
             var project: OSSProject
             var licenseIdentifierTmp: String? = ""
-            var projectNameTmp: String? = ""
-            var projectDevTmp: String? = ""
-            var projectUrlTmp: String? = ""
+            var projectNameTmp = ""
+            var projectDevTmp = ""
+            var projectUrlTmp = ""
+            var projectCodeTmp = ""
             while (eventType != XmlResourceParser.END_DOCUMENT) {
                 if (eventType == XmlResourceParser.START_TAG) {
                     if (parser.name == "item" && !projectRunning) {
@@ -43,12 +44,18 @@ class AppLicenses : AppCompatActivity() {
                     currentTag = ""
                     if (parser.name == "item" && projectRunning) {
                         projectRunning = false
-                        project = OSSProject(projectNameTmp!!, projectDevTmp!!, projectUrlTmp!!)
+                        project = OSSProject(
+                            projectNameTmp,
+                            projectDevTmp,
+                            projectUrlTmp,
+                            projectCodeTmp
+                        )
                         licenses.add(OSSLicenses(licenseIdentifierTmp, project))
                         licenseIdentifierTmp = ""
                         projectNameTmp = ""
                         projectDevTmp = ""
                         projectUrlTmp = ""
+                        projectCodeTmp = ""
                     }
                 } else if (eventType == XmlResourceParser.TEXT) {
                     when (currentTag) {
@@ -56,6 +63,7 @@ class AppLicenses : AppCompatActivity() {
                         "projectName" -> projectNameTmp = parser.text
                         "projectDev" -> projectDevTmp = parser.text
                         "projectUrl" -> projectUrlTmp = parser.text
+                        "projectCode" -> projectCodeTmp = parser.text
                     }
                 }
                 eventType = parser.next()

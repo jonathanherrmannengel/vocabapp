@@ -4,44 +4,49 @@
         <identifier>GPLv3</identifier>
         <projectName>App</projectName>
         <projectDev>Jonathan Herrmann-Engel</projectDev>
-        <projectUrl>https://github.com/jonathanherrmannengel/vocabapp</projectUrl>
+        <projectCode>https://github.com/jonathanherrmannengel/vocabapp</projectCode>
+        <projectUrl>https://herrmann-engel.de/projekte/rbv/</projectUrl>
     </item>
     <item>
         <identifier>Apache-2.0</identifier>
         <projectName>Material Icons</projectName>
         <projectDev>Google</projectDev>
+        <projectCode>https://github.com/google/material-design-icons</projectCode>
         <projectUrl>https://fonts.google.com/icons?selected=Material+Icons</projectUrl>
     </item>
     <item>
         <identifier>Apache-2.0</identifier>
         <projectName>OpenCSV (com.opencsv)</projectName>
+        <projectCode>https://sourceforge.net/p/opencsv/source/ci/master/tree/</projectCode>
         <projectUrl>http://opencsv.sourceforge.net/</projectUrl>
     </item>
     <item>
         <identifier>Apache-2.0</identifier>
         <projectName>Markwon (io.noties.markwon:core / io.noties.markwon:linkify)</projectName>
-        <projectUrl>https://github.com/noties/Markwon/</projectUrl>
+        <projectCode>https://github.com/noties/Markwon/</projectCode>
+        <projectUrl>https://noties.io/Markwon/</projectUrl>
     </item>
     <item>
         <identifier>BSD-2-clause-commonmark</identifier>
         <projectName>commonmark-java</projectName>
-        <projectUrl>https://github.com/commonmark/commonmark-java</projectUrl>
+        <projectCode>https://github.com/commonmark/commonmark-java</projectCode>
     </item>
     <item>
         <identifier>Apache-2.0</identifier>
         <projectName>Picasso (com.squareup.picasso)</projectName>
-        <projectUrl>https://github.com/square/picasso</projectUrl>
+        <projectCode>https://github.com/square/picasso</projectCode>
+        <projectUrl>https://square.github.io/picasso/</projectUrl>
     </item>
     <item>
         <identifier>Apache-2.0</identifier>
         <projectName>Emoji (com.vanniktech:emoji-twitter)</projectName>
-        <projectUrl>https://github.com/vanniktech/Emoji</projectUrl>
+        <projectCode>https://github.com/vanniktech/Emoji</projectCode>
     </item>
     <item>
         <identifier>Apache-2.0</identifier>
         <projectDev>Saket Narayan</projectDev>
         <projectName>BetterLinkMovementMethod (me.saket:better-link-movement-method)</projectName>
-        <projectUrl>https://github.com/saket/Better-Link-Movement-Method</projectUrl>
+        <projectCode>https://github.com/saket/Better-Link-Movement-Method</projectCode>
     </item>
     <item>
         <identifier>Apache-2.0</identifier>

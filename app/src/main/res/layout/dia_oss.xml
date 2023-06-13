@@ -10,45 +10,115 @@
         android:layout_height="wrap_content"
         android:gravity="center">
 
-        <TextView
+        <LinearLayout
             android:id="@+id/dia_oss_project_dev"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_gravity="center_horizontal"
+            android:layout_marginStart="20dp"
             android:layout_marginTop="10dp"
-            android:background="@android:color/transparent"
-            android:gravity="center"
-            android:textColor="@color/light_black"
-            android:textSize="16sp" />
+            android:layout_marginEnd="20dp">
 
-        <TextView
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/licenses_emoji_project_dev" />
+
+            <TextView
+                android:id="@+id/dia_oss_project_dev_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:textAlignment="center"
+                android:textColor="@color/light_black"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/dia_oss_project_url"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/dia_oss_project_dev"
-            android:layout_centerHorizontal="true"
-            android:layout_gravity="center_horizontal"
+            android:layout_marginStart="20dp"
             android:layout_marginTop="10dp"
-            android:autoLink="web"
-            android:background="@android:color/transparent"
-            android:gravity="center"
-            android:textColor="@color/light_black"
-            android:textSize="12sp" />
+            android:layout_marginEnd="20dp">
 
-        <TextView
-            android:id="@+id/dia_oss_license_short"
-            android:layout_width="wrap_content"
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/licenses_emoji_project_url" />
+
+            <TextView
+                android:id="@+id/dia_oss_project_url_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:autoLink="web"
+                android:textAlignment="center"
+                android:textColor="@color/light_black"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/dia_oss_project_code"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/dia_oss_project_url"
-            android:layout_centerHorizontal="true"
-            android:layout_gravity="center_horizontal"
+            android:layout_marginStart="20dp"
             android:layout_marginTop="10dp"
-            android:autoLink="web"
-            android:background="@android:color/transparent"
-            android:gravity="center"
-            android:textColor="@color/light_black"
-            android:textSize="12sp" />
+            android:layout_marginEnd="20dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/licenses_emoji_project_code" />
+
+            <TextView
+                android:id="@+id/dia_oss_project_code_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:autoLink="web"
+                android:textAlignment="center"
+                android:textColor="@color/light_black"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/dia_oss_license_short"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/dia_oss_project_code"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="20dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/licenses_emoji_license_short" />
+
+            <TextView
+                android:id="@+id/dia_oss_license_short_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:autoLink="web"
+                android:textAlignment="center"
+                android:textColor="@color/light_black"
+                android:textSize="12sp" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/dia_oss_license"
