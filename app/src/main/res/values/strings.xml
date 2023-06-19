@@ -134,7 +134,7 @@
     <string name="list_stat_progress_counter_known_3">3</string>
     <string name="list_stat_progress_counter_known_4">4</string>
     <string name="list_stat_progress_counter_known_5">5+</string>
-    <string name="print_include_headlines">Include headlines</string>
+    <string name="print_include_headings">Include headings</string>
     <string name="print_include_progress">Include progress</string>
     <string name="print_include_notes">Include notes</string>
     <string name="print_include_images">Include images</string>

@@ -283,7 +283,7 @@ class ViewCard : FileTools() {
                     }
                     htmlDocument += "<h1 id=\"main-title\" class=\"title\" dir=\"auto\">$title</h1>"
                     htmlDocument += "<article>"
-                    if (bindingPrintDialog.diaPrintIncludeHeadlines.isChecked) {
+                    if (bindingPrintDialog.diaPrintIncludeHeadings.isChecked) {
                         htmlDocument += "<h2 class=\"title\" dir=\"auto\">" + getString(
                             R.string.card_front
                         ) + "</h2>"
@@ -295,7 +295,7 @@ class ViewCard : FileTools() {
                     )
                     htmlDocument += "</div></article>"
                     htmlDocument += "<article>"
-                    if (bindingPrintDialog.diaPrintIncludeHeadlines.isChecked) {
+                    if (bindingPrintDialog.diaPrintIncludeHeadings.isChecked) {
                         htmlDocument += "<h2 class=\"title border-top\" dir=\"auto\">" + getString(R.string.card_back) + "</h2>"
                         htmlDocument += "<div>"
                     } else {
@@ -308,7 +308,7 @@ class ViewCard : FileTools() {
                     htmlDocument += "</div></article>"
                     if (card!!.notes != null && card!!.notes.isNotEmpty() && bindingPrintDialog.diaPrintIncludeNotes.isChecked) {
                         htmlDocument += "<article>"
-                        if (bindingPrintDialog.diaPrintIncludeHeadlines.isChecked) {
+                        if (bindingPrintDialog.diaPrintIncludeHeadings.isChecked) {
                             htmlDocument += "<h2 class=\"title border-top\" dir=\"auto\">" + getString(
                                 R.string.card_notes
                             ) + "</h2>"
@@ -331,7 +331,7 @@ class ViewCard : FileTools() {
                     }
                     if (imageList!!.isNotEmpty() && bindingPrintDialog.diaPrintIncludeImages.isChecked) {
                         htmlDocument += "<article>"
-                        if (bindingPrintDialog.diaPrintIncludeHeadlines.isChecked) {
+                        if (bindingPrintDialog.diaPrintIncludeHeadings.isChecked) {
                             htmlDocument += "<h2 class=\"title border-top\" dir=\"auto\">" + getString(
                                 R.string.image_media
                             ) + "</h2>"
@@ -352,7 +352,7 @@ class ViewCard : FileTools() {
                     }
                     if (mediaList!!.isNotEmpty() && bindingPrintDialog.diaPrintIncludeMedia.isChecked) {
                         htmlDocument += "<article>"
-                        if (bindingPrintDialog.diaPrintIncludeHeadlines.isChecked) {
+                        if (bindingPrintDialog.diaPrintIncludeHeadings.isChecked) {
                             htmlDocument += "<h2 class=\"title border-top\" dir=\"auto\">" + getString(
                                 R.string.all_media
                             ) + "</h2>"

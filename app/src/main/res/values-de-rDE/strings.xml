@@ -124,7 +124,7 @@
     <string name="list_stat_progress_counter_known_3">3</string>
     <string name="list_stat_progress_counter_known_4">4</string>
     <string name="list_stat_progress_counter_known_5">5+</string>
-    <string name="print_include_headlines">Überschriften einschließen</string>
+    <string name="print_include_headings">Überschriften einschließen</string>
     <string name="print_include_progress">Lernfortschritt einschließen</string>
     <string name="print_include_notes">Notizen einschließen</string>
     <string name="print_include_images">Bilder einschließen</string>
