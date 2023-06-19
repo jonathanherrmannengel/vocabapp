@@ -274,21 +274,33 @@ class ViewCard : FileTools() {
                     }
                     val stringTools = StringTools()
                     var htmlDocument =
-                        "<!doctype html><html><head><meta charset=\"utf-8\"><title>print</title><style>div{inline-size:100%;overflow-wrap:break-word;}#main-title{margin-bottom: 30px;}.title{text-align:center;color: #000007;}.title:not(.first-title)::before{margin-bottom:20px;margin-top:30px;display:block;content:' ';width:100%;height:1px;outline:2px solid #555;outline-offset:-1px;}.image-div,.media-div{text-align:center}.image{padding:10px;max-width:30%;max-height:10%;object-fit:contain;}</style></head>"
+                        "<!doctype html><html><head><meta charset=\"utf-8\"><title>" + getString(
+                            R.string.print
+                        ) + "</title><style>div{inline-size:100%;overflow-wrap:break-word;}#main-title{margin-bottom: 30px;}.title{text-align:center;color: #000007;}.border-top::before{margin-bottom:20px;margin-top:30px;display:block;content:' ';width:100%;height:1px;outline:2px solid #555;outline-offset:-1px;}.image-div,.media-div{text-align:center}.image{padding:10px;max-width:30%;max-height:10%;object-fit:contain;}</style></head>"
                     var title = stringTools.shorten(binding.cardFront.text.toString(), 30)
                     if (bindingPrintDialog.diaPrintIncludeProgress.isChecked) {
                         title += " (" + binding.cardKnown.text + ")"
                     }
-                    htmlDocument += "<h1 id=\"main-title\" class=\"title first-title\" dir=\"auto\">$title</h1>"
+                    htmlDocument += "<h1 id=\"main-title\" class=\"title\" dir=\"auto\">$title</h1>"
                     htmlDocument += "<article>"
-                    htmlDocument += "<h2 class=\"title first-title\" dir=\"auto\">" + getString(R.string.card_front) + "</h2><div>"
+                    if (bindingPrintDialog.diaPrintIncludeHeadlines.isChecked) {
+                        htmlDocument += "<h2 class=\"title\" dir=\"auto\">" + getString(
+                            R.string.card_front
+                        ) + "</h2>"
+                    }
+                    htmlDocument += "<div>"
                     htmlDocument += HtmlCompat.toHtml(
                         (binding.cardFront.text as SpannableString),
                         HtmlCompat.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE
                     )
                     htmlDocument += "</div></article>"
                     htmlDocument += "<article>"
-                    htmlDocument += "<h2 class=\"title\" dir=\"auto\">" + getString(R.string.card_back) + "</h2><div>"
+                    if (bindingPrintDialog.diaPrintIncludeHeadlines.isChecked) {
+                        htmlDocument += "<h2 class=\"title border-top\" dir=\"auto\">" + getString(R.string.card_back) + "</h2>"
+                        htmlDocument += "<div>"
+                    } else {
+                        htmlDocument += "<div class=\"border-top\">"
+                    }
                     htmlDocument += HtmlCompat.toHtml(
                         (binding.cardBack.text as SpannableString),
                         HtmlCompat.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE
@@ -296,7 +308,14 @@ class ViewCard : FileTools() {
                     htmlDocument += "</div></article>"
                     if (card!!.notes != null && card!!.notes.isNotEmpty() && bindingPrintDialog.diaPrintIncludeNotes.isChecked) {
                         htmlDocument += "<article>"
-                        htmlDocument += "<h2 class=\"title\" dir=\"auto\">" + getString(R.string.card_notes) + "</h2><div dir=\"auto\">"
+                        if (bindingPrintDialog.diaPrintIncludeHeadlines.isChecked) {
+                            htmlDocument += "<h2 class=\"title border-top\" dir=\"auto\">" + getString(
+                                R.string.card_notes
+                            ) + "</h2>"
+                            htmlDocument += "<div dir=\"auto\">"
+                        } else {
+                            htmlDocument += "<div dir=\"auto\" class=\"border-top\">"
+                        }
                         htmlDocument += if (formatCardNotes) {
                             val parser = Parser.builder().build()
                             val document = parser.parse(card!!.notes)
@@ -312,7 +331,14 @@ class ViewCard : FileTools() {
                     }
                     if (imageList!!.isNotEmpty() && bindingPrintDialog.diaPrintIncludeImages.isChecked) {
                         htmlDocument += "<article>"
-                        htmlDocument += "<h2 class=\"title\" dir=\"auto\">" + getString(R.string.image_media) + "</h2><div>"
+                        if (bindingPrintDialog.diaPrintIncludeHeadlines.isChecked) {
+                            htmlDocument += "<h2 class=\"title border-top\" dir=\"auto\">" + getString(
+                                R.string.image_media
+                            ) + "</h2>"
+                            htmlDocument += "<div>"
+                        } else {
+                            htmlDocument += "<div class=\"border-top\">"
+                        }
                         for (i in imageList!!) {
                             val currentMedia = dbHelperGet.getSingleMedia(i.file)
                             if (currentMedia != null) {
@@ -326,7 +352,14 @@ class ViewCard : FileTools() {
                     }
                     if (mediaList!!.isNotEmpty() && bindingPrintDialog.diaPrintIncludeMedia.isChecked) {
                         htmlDocument += "<article>"
-                        htmlDocument += "<h2 class=\"title\" dir=\"auto\">" + getString(R.string.all_media) + "</h2><div>"
+                        if (bindingPrintDialog.diaPrintIncludeHeadlines.isChecked) {
+                            htmlDocument += "<h2 class=\"title border-top\" dir=\"auto\">" + getString(
+                                R.string.all_media
+                            ) + "</h2>"
+                            htmlDocument += "<div>"
+                        } else {
+                            htmlDocument += "<div class=\"border-top\">"
+                        }
                         for (i in mediaList!!) {
                             val currentMedia = dbHelperGet.getSingleMedia(i.file)
                             if (currentMedia != null) {
