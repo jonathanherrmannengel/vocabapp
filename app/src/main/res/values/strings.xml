@@ -77,6 +77,7 @@
     <string name="delete_file_title">delete file</string>
     <string name="delete_file_info">Media deleted from database. Also delete file from disk?</string>
     <string name="delete_file_without_media_info">Delete file from disk?</string>
+    <string name="delete_multiple_cards">You are about to delete %1$d flashcards. Continue?</string>
     <string name="delete_pack_with_cards">This deck contains flashcards. If you proceed these flashcards will also be deleted. Delete anyway?</string>
     <string name="delete_collection_with_packs">This filing box contains decks. If you proceed these decks and their flashcards will also be deleted. Delete anyway?</string>
     <string name="move">move</string>
@@ -134,6 +135,7 @@
     <string name="list_stat_progress_counter_known_3">3</string>
     <string name="list_stat_progress_counter_known_4">4</string>
     <string name="list_stat_progress_counter_known_5">5+</string>
+    <string name="selected_title" translatable="false">%1$d/%2$d</string>
     <string name="print_include_headings">Include headings</string>
     <string name="print_include_progress">Include progress</string>
     <string name="print_include_notes">Include notes</string>

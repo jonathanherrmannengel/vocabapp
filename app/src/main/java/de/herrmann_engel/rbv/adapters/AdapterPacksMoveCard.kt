@@ -10,7 +10,7 @@ import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.R
-import de.herrmann_engel.rbv.activities.ViewCard
+import de.herrmann_engel.rbv.activities.CardActionsActivity
 import de.herrmann_engel.rbv.databinding.RecViewBinding
 import de.herrmann_engel.rbv.db.DB_Card
 import de.herrmann_engel.rbv.db.DB_Pack
@@ -22,7 +22,7 @@ import de.herrmann_engel.rbv.utils.StringTools
 class AdapterPacksMoveCard(
     private val pack: List<DB_Pack>,
     private val collectionNo: Int,
-    private val card: DB_Card,
+    private val cards: ArrayList<DB_Card>,
     private val dialog: Dialog
 ) : RecyclerView.Adapter<AdapterPacksMoveCard.ViewHolder>() {
     class ViewHolder(val binding: RecViewBinding) : RecyclerView.ViewHolder(binding.root)
@@ -77,9 +77,15 @@ class AdapterPacksMoveCard(
         viewHolder.binding.recName.setOnClickListener {
             val updateHelper =
                 DB_Helper_Update(context)
-            card.pack = currentPackId
-            updateHelper.updateCard(card)
-            (ContextTools().getActivity(context) as ViewCard).movedCard()
+            val cardIds = arrayListOf<Int>()
+            for (card in cards) {
+                if (card.pack != currentPackId) {
+                    cardIds.add(card.uid)
+                    card.pack = currentPackId
+                    updateHelper.updateCard(card)
+                }
+            }
+            (ContextTools().getActivity(context) as CardActionsActivity).movedCards(cardIds)
             dialog.dismiss()
         }
     }

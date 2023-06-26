@@ -2,6 +2,7 @@
 <resources>
     <color name="white">#FF000000</color>
     <color name="default_text">#c7c7d0</color>
+    <color name="background_select">#77a0a0b5</color>
     <color name="button">#ccccff</color>
     <color name="warn_red">#ff00ee</color>
     <color name="highlight">#d9b0ef</color>

@@ -11,6 +11,8 @@
         <item name="android:statusBarColor">@color/statusbar_back</item>
         <item name="actionBarTheme">@style/Theme.RBV.ActionBar</item>
         <item name="actionOverflowMenuStyle">@style/Theme.RBV.ActionBarOverflow</item>
+        <!-- Action mode color. -->
+        <item name="actionModeStyle">@style/Theme.RBV.ActionMode</item>
         <!-- Default background color. -->
         <item name="android:windowBackground">@color/background_default</item>
         <!-- No animations. -->
@@ -28,6 +30,10 @@
         <item name="android:editTextColor">@color/light_grey_statusbar</item>
         <item name="android:textColorHint">@color/light_grey_statusbar_alpha</item>
         <item name="android:tint">?attr/colorOnSurface</item>
+    </style>
+
+    <style name="Theme.RBV.ActionMode" parent="@style/Widget.Material3.ActionMode">
+        <item name="background">@android:color/transparent</item>
     </style>
 
     <style name="Theme.RBV.ActionBarOverflow" parent="@style/Widget.Material3.PopupMenu.Overflow">

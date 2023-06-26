@@ -40,7 +40,7 @@ import java.util.*
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
-class ListCards : FileTools() {
+class ListCards : CardActionsActivity() {
     private lateinit var binding: ActivityDefaultRecBinding
     private lateinit var dbHelperGet: DB_Helper_Get
     private lateinit var dbHelperUpdate: DB_Helper_Update
@@ -93,7 +93,7 @@ class ListCards : FileTools() {
             val formatCards = FormatCards(this)
             val cardDeleted = intent.extras!!.getInt("cardDeleted")
             if (cardDeleted != 0) {
-                cardsList!!.removeIf { c: DB_Card_With_Meta? -> c!!.card.uid == cardDeleted }
+                deleteCardFromList(cardDeleted)
             }
             val cardAdded = intent.extras!!.getInt("cardAdded")
             if (cardAdded != 0 && cardsList!!.stream()
@@ -160,7 +160,7 @@ class ListCards : FileTools() {
         }
 
         //Colors
-        if (packNo >= 0) {
+        if (packNo > -1) {
             try {
                 val packColors = dbHelperGet.getSinglePack(packNo).colors
                 val colorsStatusBar = resources.obtainTypedArray(R.array.pack_color_statusbar)
@@ -922,5 +922,23 @@ class ListCards : FileTools() {
 
     private fun updateContent() {
         updateContent(false)
+    }
+
+    private fun deleteCardFromList(cardId: Int) {
+        cardsList!!.removeIf { c: DB_Card_With_Meta? -> c!!.card.uid == cardId }
+    }
+
+    override fun deletedCards(cardIds: ArrayList<Int>) {
+        for (cardId in cardIds) {
+            deleteCardFromList(cardId)
+        }
+        updateContent()
+    }
+
+    override fun movedCards(cardIds: ArrayList<Int>) {
+        for (cardId in cardIds) {
+            deleteCardFromList(cardId)
+        }
+        updateContent()
     }
 }

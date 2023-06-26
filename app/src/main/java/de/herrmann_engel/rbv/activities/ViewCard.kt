@@ -22,18 +22,13 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
-import androidx.recyclerview.widget.LinearLayoutManager
 import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.R
-import de.herrmann_engel.rbv.adapters.AdapterPacksMoveCard
+import de.herrmann_engel.rbv.actions.CardActions
 import de.herrmann_engel.rbv.databinding.ActivityViewCardBinding
-import de.herrmann_engel.rbv.databinding.DiaConfirmBinding
 import de.herrmann_engel.rbv.databinding.DiaPrintBinding
-import de.herrmann_engel.rbv.databinding.DiaRecBinding
 import de.herrmann_engel.rbv.db.DB_Card
 import de.herrmann_engel.rbv.db.DB_Media_Link_Card
-import de.herrmann_engel.rbv.db.DB_Pack
-import de.herrmann_engel.rbv.db.utils.DB_Helper_Delete
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Update
 import de.herrmann_engel.rbv.utils.StringTools
@@ -49,7 +44,7 @@ import java.time.format.FormatStyle
 import java.util.Date
 import java.util.Locale
 
-class ViewCard : FileTools() {
+class ViewCard : CardActionsActivity() {
     private lateinit var binding: ActivityViewCardBinding
     private lateinit var dbHelperGet: DB_Helper_Get
     private lateinit var dbHelperUpdate: DB_Helper_Update
@@ -198,27 +193,7 @@ class ViewCard : FileTools() {
                 return@setOnMenuItemClickListener true
             }
             menu.findItem(R.id.menu_view_card_delete).setOnMenuItemClickListener {
-                val confirmDeleteDialog = Dialog(this, R.style.dia_view)
-                val bindingConfirmDeleteDialog = DiaConfirmBinding.inflate(
-                    layoutInflater
-                )
-                confirmDeleteDialog.setContentView(bindingConfirmDeleteDialog.root)
-                confirmDeleteDialog.setTitle(resources.getString(R.string.delete))
-                confirmDeleteDialog.window!!.setLayout(
-                    WindowManager.LayoutParams.MATCH_PARENT,
-                    WindowManager.LayoutParams.MATCH_PARENT
-                )
-                bindingConfirmDeleteDialog.diaConfirmYes.setOnClickListener {
-                    val dbHelperDelete = DB_Helper_Delete(this)
-                    dbHelperDelete.deleteCard(card)
-                    confirmDeleteDialog.dismiss()
-                    val intent = Intent(this, ListCards::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-                    intent.putExtra("cardDeleted", cardNo)
-                    this.startActivity(intent)
-                }
-                bindingConfirmDeleteDialog.diaConfirmNo.setOnClickListener { confirmDeleteDialog.dismiss() }
-                confirmDeleteDialog.show()
+                CardActions(this).delete(card!!)
                 return@setOnMenuItemClickListener true
             }
             menu.findItem(R.id.menu_view_card_edit_media).setOnMenuItemClickListener {
@@ -378,25 +353,7 @@ class ViewCard : FileTools() {
                 menu.findItem(R.id.menu_view_card_move).isVisible = false
             } else {
                 menu.findItem(R.id.menu_view_card_move).setOnMenuItemClickListener {
-                    val moveDialog = Dialog(this, R.style.dia_view)
-                    val bindingMoveDialog = DiaRecBinding.inflate(
-                        layoutInflater
-                    )
-                    moveDialog.setContentView(bindingMoveDialog.root)
-                    moveDialog.setTitle(resources.getString(R.string.move_card))
-                    moveDialog.window!!.setLayout(
-                        WindowManager.LayoutParams.MATCH_PARENT,
-                        WindowManager.LayoutParams.MATCH_PARENT
-                    )
-                    val packs: List<DB_Pack> = if (collectionNo == -1) {
-                        dbHelperGet.allPacks
-                    } else {
-                        dbHelperGet.getAllPacksByCollection(collectionNo)
-                    }
-                    val adapter = AdapterPacksMoveCard(packs, collectionNo, card!!, moveDialog)
-                    bindingMoveDialog.diaRec.adapter = adapter
-                    bindingMoveDialog.diaRec.layoutManager = LinearLayoutManager(this)
-                    moveDialog.show()
+                    CardActions(this).move(card!!, collectionNo)
                     return@setOnMenuItemClickListener true
                 }
             }
@@ -438,7 +395,7 @@ class ViewCard : FileTools() {
 
     }
 
-    fun movedCard() {
+    override fun movedCards(cardIds: ArrayList<Int>) {
         try {
             card = dbHelperGet.getSingleCard(cardNo)
             packNo = card!!.pack
@@ -451,6 +408,13 @@ class ViewCard : FileTools() {
         } catch (e: Exception) {
             Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show()
         }
+    }
+
+    override fun deletedCards(cardIds: ArrayList<Int>) {
+        val intent = Intent(this, ListCards::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+        intent.putExtra("cardDeleted", cardNo)
+        this.startActivity(intent)
     }
 
     private fun setMediaButtons() {

@@ -1,22 +1,33 @@
 package de.herrmann_engel.rbv.adapters
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.Typeface.BOLD
+import android.graphics.Typeface.NORMAL
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ImageSpan
 import android.util.TypedValue
+import android.view.ActionMode
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.R
+import de.herrmann_engel.rbv.actions.CardActions
 import de.herrmann_engel.rbv.activities.ViewCard
 import de.herrmann_engel.rbv.adapters.compare.ListCardCompare
 import de.herrmann_engel.rbv.databinding.RecViewBinding
+import de.herrmann_engel.rbv.db.DB_Card
 import de.herrmann_engel.rbv.db.DB_Card_With_Meta
+import de.herrmann_engel.rbv.utils.ContextTools
 import de.herrmann_engel.rbv.utils.StringTools
 
 class AdapterCards(
@@ -29,6 +40,66 @@ class AdapterCards(
     class ViewHolder(val binding: RecViewBinding) : RecyclerView.ViewHolder(binding.root)
 
     private val stringTools = StringTools()
+    private var contextualMenuMode: ActionMode? = null
+    private var contextualMenuModeActivity: Activity? = null
+    private val contextualMenuModeCardIdList: MutableList<Int> = ArrayList()
+    private val contextualMenuModeCallback = object : ActionMode.Callback {
+        override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
+            val inflater: MenuInflater = mode.menuInflater
+            inflater.inflate(R.menu.menu_list_cards_context, menu)
+            return true
+        }
+
+        override fun onPrepareActionMode(mode: ActionMode, menu: Menu): Boolean {
+            menu.findItem(R.id.menu_list_cards_context_delete).isVisible =
+                contextualMenuModeCardIdList.isNotEmpty()
+            menu.findItem(R.id.menu_list_cards_context_move).isVisible =
+                contextualMenuModeCardIdList.isNotEmpty() && packNo > -1
+            return true
+        }
+
+        override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
+            return when (item.itemId) {
+                R.id.menu_list_cards_context_delete -> {
+                    val contextualMenuModeCardList: ArrayList<DB_Card> = ArrayList()
+                    for (id in contextualMenuModeCardIdList) {
+                        cards.find { c -> c.card.uid == id }
+                            ?.let { contextualMenuModeCardList.add(it.card) }
+                    }
+                    contextualMenuModeActivity?.let {
+                        CardActions(it).delete(
+                            contextualMenuModeCardList
+                        )
+                    }
+                    mode.finish()
+                    true
+                }
+                R.id.menu_list_cards_context_move -> {
+                    val contextualMenuModeCardList: ArrayList<DB_Card> = ArrayList()
+                    for (id in contextualMenuModeCardIdList) {
+                        cards.find { c -> c.card.uid == id }
+                            ?.let { contextualMenuModeCardList.add(it.card) }
+                    }
+                    contextualMenuModeActivity?.let {
+                        CardActions(it).move(
+                            contextualMenuModeCardList,
+                            collectionNo
+                        )
+                    }
+                    mode.finish()
+                    true
+                }
+                else -> false
+            }
+        }
+
+        override fun onDestroyActionMode(mode: ActionMode) {
+            for (id in contextualMenuModeCardIdList) {
+                contextualMenuModeFormatCard(id)
+            }
+            contextualMenuMode = null
+        }
+    }
 
     fun updateContent(
         cardsListNew: List<DB_Card_With_Meta>,
@@ -73,6 +144,18 @@ class AdapterCards(
                 R.color.default_text
             )
         )
+        if (contextualMenuMode != null && contextualMenuModeCardIdList.contains(cards[position].card.uid)) {
+            viewHolder.binding.recName.setTypeface(null, BOLD)
+            viewHolder.binding.root.setBackgroundColor(
+                ContextCompat.getColor(
+                    viewHolder.binding.root.context,
+                    R.color.background_select
+                )
+            )
+        } else {
+            viewHolder.binding.recName.setTypeface(null, NORMAL)
+            viewHolder.binding.root.setBackgroundColor(Color.TRANSPARENT)
+        }
         if (cards.isEmpty()) {
             if (packNo < 0) {
                 viewHolder.binding.recName.text =
@@ -124,16 +207,63 @@ class AdapterCards(
             }
             val extra = cards[position].card.uid
             viewHolder.binding.recName.setOnClickListener {
-                val intent = Intent(context, ViewCard::class.java)
-                intent.putExtra("collection", collectionNo)
-                intent.putExtra("pack", packNo)
-                intent.putExtra("card", extra)
-                context.startActivity(intent)
+                if (contextualMenuMode != null) {
+                    if (contextualMenuModeCardIdList.contains(extra)) {
+                        contextualMenuModeCardIdList.remove(extra)
+                        if (contextualMenuModeCardIdList.isEmpty()) {
+                            contextualMenuMode?.invalidate()
+                        }
+                        contextualMenuModeFormatCard(extra)
+                        contextualMenuModeSelectedTitle()
+                    } else {
+                        contextualMenuModeSelectItem(extra)
+                    }
+                } else {
+                    val intent = Intent(context, ViewCard::class.java)
+                    intent.putExtra("collection", collectionNo)
+                    intent.putExtra("pack", packNo)
+                    intent.putExtra("card", extra)
+                    context.startActivity(intent)
+                }
+            }
+            viewHolder.binding.recName.setOnLongClickListener {
+                if (contextualMenuMode != null) {
+                    return@setOnLongClickListener false
+                }
+                contextualMenuModeCardIdList.clear()
+                contextualMenuModeActivity = ContextTools().getActivity(context)
+                contextualMenuMode =
+                    ContextTools().getActivity(context)?.startActionMode(contextualMenuModeCallback)
+                contextualMenuModeSelectItem(extra)
+                return@setOnLongClickListener true
             }
         }
     }
 
     override fun getItemCount(): Int {
         return 1.coerceAtLeast(cards.size)
+    }
+
+    private fun contextualMenuModeSelectItem(id: Int) {
+        contextualMenuModeCardIdList.add(id)
+        if (contextualMenuModeCardIdList.size == 1) {
+            contextualMenuMode?.invalidate()
+        }
+        contextualMenuModeFormatCard(id)
+        contextualMenuModeSelectedTitle()
+    }
+
+    private fun contextualMenuModeFormatCard(id: Int) {
+        notifyItemChanged(cards.indexOfFirst { c -> c.card.uid == id })
+    }
+
+    private fun contextualMenuModeSelectedTitle() {
+        contextualMenuMode?.title = contextualMenuModeActivity?.resources?.let {
+            String.format(
+                it.getString(R.string.selected_title),
+                contextualMenuModeCardIdList.size,
+                cards.size
+            )
+        }
     }
 }

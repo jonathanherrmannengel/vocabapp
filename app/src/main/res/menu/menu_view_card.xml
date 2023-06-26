@@ -18,24 +18,25 @@
         android:title="@string/delete"
         app:showAsAction="ifRoom" />
     <item
+        android:id="@+id/menu_view_card_move"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:icon="@drawable/ic_folder_open_24"
+        android:orderInCategory="300"
+        android:title="@string/move"
+        app:showAsAction="ifRoom" />
+    <item
         android:id="@+id/menu_view_card_edit_media"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orderInCategory="300"
+        android:orderInCategory="400"
         android:title="@string/edit_card_media"
         app:showAsAction="never" />
     <item
         android:id="@+id/menu_view_card_print"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orderInCategory="400"
-        android:title="@string/print"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/menu_view_card_move"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:orderInCategory="500"
-        android:title="@string/move"
+        android:title="@string/print"
         app:showAsAction="never" />
 </menu>
