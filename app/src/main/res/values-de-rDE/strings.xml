@@ -73,6 +73,7 @@
     <string name="delete_file_info">Datenbankeintrag gelöscht. Auch Datei vom Dateisystem löschen?</string>
     <string name="delete_file_without_media_info">Datei vom Dateisystem löschen?</string>
     <string name="delete_multiple_cards">Du bist dabei %1$d Karteikarten zu löschen. Mit Löschen fortfahren?</string>
+    <string name="delete_multiple_packs">Du bist dabei %1$d Kartenstapel mit %2$d Karteikarten zu löschen. Mit Löschen fortfahren?</string>
     <string name="delete_pack_with_cards">Dieser Kartenstapel enthält Karteikarten. Wenn Du das Löschen fortsetzt, werden auch die enthaltenen Karteikarten gelöscht. Trotzdem löschen?</string>
     <string name="delete_collection_with_packs">Dieser Karteikasten enthält Kartenstapel. Wenn Du das Löschen fortsetzt, werden auch die enthaltenen Kartenstapel samt Karteikarten gelöscht. Trotzdem löschen?</string>
     <string name="move">Verschieben</string>

@@ -1,14 +1,20 @@
 package de.herrmann_engel.rbv.adapters
 
+import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
+import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.LayerDrawable
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ImageSpan
 import android.util.TypedValue
+import android.view.ActionMode
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
@@ -16,14 +22,17 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import de.herrmann_engel.rbv.R
+import de.herrmann_engel.rbv.actions.PackActions
 import de.herrmann_engel.rbv.activities.ListCards
 import de.herrmann_engel.rbv.adapters.compare.ListPackCompare
 import de.herrmann_engel.rbv.databinding.RecViewCollectionOrPackBinding
+import de.herrmann_engel.rbv.db.DB_Pack
 import de.herrmann_engel.rbv.db.DB_Pack_With_Meta
+import de.herrmann_engel.rbv.utils.ContextTools
 import de.herrmann_engel.rbv.utils.StringTools
 
 class AdapterPacks(
-    private val pack: MutableList<DB_Pack_With_Meta>,
+    private val packs: MutableList<DB_Pack_With_Meta>,
     private val uiFontSizeBig: Boolean,
     private val collection: Int
 ) : RecyclerView.Adapter<AdapterPacks.ViewHolder>() {
@@ -31,6 +40,67 @@ class AdapterPacks(
         RecyclerView.ViewHolder(binding.root)
 
     private val stringTools = StringTools()
+    private var contextualMenuMode: ActionMode? = null
+    private var contextualMenuModeActivity: Activity? = null
+    private val contextualMenuModePackIdList: MutableList<Int> = ArrayList()
+    private val contextualMenuModeCallback = object : ActionMode.Callback {
+        override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
+            val inflater: MenuInflater = mode.menuInflater
+            inflater.inflate(R.menu.menu_list_cards_context, menu)
+            return true
+        }
+
+        override fun onPrepareActionMode(mode: ActionMode, menu: Menu): Boolean {
+            menu.findItem(R.id.menu_list_cards_context_delete).isVisible =
+                contextualMenuModePackIdList.isNotEmpty()
+            menu.findItem(R.id.menu_list_cards_context_move).isVisible =
+                contextualMenuModePackIdList.isNotEmpty() && collection > -1
+            return true
+        }
+
+        override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
+            return when (item.itemId) {
+                R.id.menu_list_cards_context_delete -> {
+                    val contextualMenuModePackList: ArrayList<DB_Pack> = ArrayList()
+                    for (id in contextualMenuModePackIdList) {
+                        packs.find { p -> p.pack?.uid == id }
+                            ?.let { contextualMenuModePackList.add(it.pack) }
+                    }
+                    contextualMenuModeActivity?.let {
+                        PackActions(it).delete(
+                            contextualMenuModePackList
+                        )
+                    }
+                    mode.finish()
+                    true
+                }
+
+                R.id.menu_list_cards_context_move -> {
+                    val contextualMenuModePackList: ArrayList<DB_Pack> = ArrayList()
+                    for (id in contextualMenuModePackIdList) {
+                        packs.find { p -> p.pack?.uid == id }
+                            ?.let { contextualMenuModePackList.add(it.pack) }
+                    }
+                    contextualMenuModeActivity?.let {
+                        PackActions(it).move(
+                            contextualMenuModePackList
+                        )
+                    }
+                    mode.finish()
+                    true
+                }
+
+                else -> false
+            }
+        }
+
+        override fun onDestroyActionMode(mode: ActionMode) {
+            for (id in contextualMenuModePackIdList) {
+                contextualMenuModeFormatPack(id)
+            }
+            contextualMenuMode = null
+        }
+    }
 
     fun updateContent(
         packListNew: List<DB_Pack_With_Meta>
@@ -38,12 +108,12 @@ class AdapterPacks(
         val diffResult =
             DiffUtil.calculateDiff(
                 ListPackCompare(
-                    pack,
+                    packs,
                     packListNew
                 )
             )
-        pack.clear()
-        pack.addAll(packListNew)
+        packs.clear()
+        packs.addAll(packListNew)
         diffResult.dispatchUpdatesTo(this)
     }
 
@@ -58,6 +128,7 @@ class AdapterPacks(
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         val context = viewHolder.binding.root.context
+        viewHolder.binding.recCollectionsName.setTypeface(null, Typeface.NORMAL)
         if (uiFontSizeBig) {
             viewHolder.binding.recCollectionsName.setTextSize(
                 TypedValue.COMPLEX_UNIT_PX,
@@ -81,7 +152,7 @@ class AdapterPacks(
         viewHolder.binding.recCollectionsName.textAlignment = View.TEXT_ALIGNMENT_INHERIT
         viewHolder.binding.recCollectionsPreviewText.visibility = View.VISIBLE
         viewHolder.binding.recCollectionsNumberText.visibility = View.VISIBLE
-        if (position == 0 && pack.size == 1) {
+        if (position == 0 && packs.size == 1) {
             if (collection == -1) {
                 viewHolder.binding.recCollectionsName.text =
                     context.resources.getString(R.string.welcome_pack)
@@ -138,7 +209,7 @@ class AdapterPacks(
                     context.resources.getString(R.string.all_cards_desc_by_pack)
                 }
             viewHolder.binding.recCollectionsPreviewText.text = "…"
-            viewHolder.binding.recCollectionsNumberText.text = pack[position].counter.toString()
+            viewHolder.binding.recCollectionsNumberText.text = packs[position].counter.toString()
 
             viewHolder.binding.recCollectionsName.setTextColor(
                 ContextCompat.getColor(
@@ -179,16 +250,43 @@ class AdapterPacks(
                 )
             )
         } else {
-            val currentPack = pack[position].pack
+            val currentPack = packs[position].pack
             val extra = currentPack.uid
             viewHolder.binding.root.setOnClickListener {
-                val intent = Intent(context, ListCards::class.java)
-                intent.putExtra("collection", collection)
-                intent.putExtra("pack", extra)
-                context.startActivity(intent)
+                if (contextualMenuMode != null) {
+                    if (contextualMenuModePackIdList.contains(extra)) {
+                        contextualMenuModePackIdList.remove(extra)
+                        if (contextualMenuModePackIdList.isEmpty()) {
+                            contextualMenuMode?.invalidate()
+                        }
+                        contextualMenuModeFormatPack(extra)
+                        contextualMenuModeSelectedTitle()
+                    } else {
+                        contextualMenuModeSelectItem(extra)
+                    }
+                } else {
+                    val intent = Intent(context, ListCards::class.java)
+                    intent.putExtra("collection", collection)
+                    intent.putExtra("pack", extra)
+                    context.startActivity(intent)
+                }
+            }
+            viewHolder.binding.root.setOnLongClickListener {
+                if (contextualMenuMode != null) {
+                    return@setOnLongClickListener false
+                }
+                contextualMenuModePackIdList.clear()
+                contextualMenuModeActivity = ContextTools().getActivity(context)
+                contextualMenuMode =
+                    ContextTools().getActivity(context)?.startActionMode(contextualMenuModeCallback)
+                contextualMenuModeSelectItem(extra)
+                return@setOnLongClickListener true
             }
             viewHolder.binding.recCollectionsName.text =
                 stringTools.shorten(currentPack.name)
+            if (contextualMenuMode != null && contextualMenuModePackIdList.contains(packs[position].pack.uid)) {
+                viewHolder.binding.recCollectionsName.setTypeface(null, Typeface.BOLD)
+            }
             if (currentPack.desc.isNullOrEmpty()) {
                 viewHolder.binding.recCollectionsDesc.visibility = View.GONE
             } else {
@@ -198,17 +296,19 @@ class AdapterPacks(
             }
             val emojiText = currentPack.emoji
             viewHolder.binding.recCollectionsPreviewText.text =
-                if (emojiText.isNullOrEmpty()) {
+                if (contextualMenuMode != null && contextualMenuModePackIdList.contains(packs[position].pack.uid)) {
+                    "✔️"
+                } else if (emojiText.isNullOrEmpty()) {
                     val pattern = Regex("^(\\P{M}\\p{M}*+).*")
                     currentPack.name.replace(pattern, "$1")
                 } else {
                     emojiText
                 }
-            viewHolder.binding.recCollectionsNumberText.text = pack[position].counter.toString()
+            viewHolder.binding.recCollectionsNumberText.text = packs[position].counter.toString()
             if (collection == -1) {
                 try {
                     viewHolder.binding.recCollectionsParent.visibility = View.VISIBLE
-                    viewHolder.binding.recCollectionsParent.text = pack[position].collectionName
+                    viewHolder.binding.recCollectionsParent.text = packs[position].collectionName
                 } catch (e: Exception) {
                     Toast.makeText(context, R.string.error, Toast.LENGTH_SHORT).show()
                 }
@@ -245,6 +345,29 @@ class AdapterPacks(
     }
 
     override fun getItemCount(): Int {
-        return pack.size
+        return packs.size
+    }
+
+    private fun contextualMenuModeSelectItem(id: Int) {
+        contextualMenuModePackIdList.add(id)
+        if (contextualMenuModePackIdList.size == 1) {
+            contextualMenuMode?.invalidate()
+        }
+        contextualMenuModeFormatPack(id)
+        contextualMenuModeSelectedTitle()
+    }
+
+    private fun contextualMenuModeFormatPack(id: Int) {
+        notifyItemChanged(packs.indexOfFirst { p -> p.pack?.uid == id })
+    }
+
+    private fun contextualMenuModeSelectedTitle() {
+        contextualMenuMode?.title = contextualMenuModeActivity?.resources?.let {
+            String.format(
+                it.getString(R.string.selected_title),
+                contextualMenuModePackIdList.size,
+                packs.size - 1
+            )
+        }
     }
 }

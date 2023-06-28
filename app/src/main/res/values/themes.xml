@@ -28,11 +28,11 @@
         <item name="android:tint">?attr/colorOnSurface</item>
     </style>
 
-    <style name="Theme.RBV.ActionMode" parent="@style/Widget.Material3.ActionMode">
-        <item name="background">@android:color/transparent</item>
-    </style>
-
     <style name="Theme.RBV.ActionBarOverflow" parent="@style/Widget.Material3.PopupMenu.Overflow">
         <item name="android:popupBackground">@color/background_default</item>
+    </style>
+
+    <style name="Theme.RBV.ActionMode" parent="@style/Widget.Material3.ActionMode">
+        <item name="background">@android:color/transparent</item>
     </style>
 </resources>

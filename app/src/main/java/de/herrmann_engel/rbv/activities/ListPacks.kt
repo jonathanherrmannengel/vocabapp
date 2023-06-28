@@ -8,7 +8,6 @@ import android.view.Menu
 import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -24,7 +23,7 @@ import de.herrmann_engel.rbv.export_import.AsyncExportFinish
 import de.herrmann_engel.rbv.export_import.AsyncExportProgress
 import java.io.File
 
-class ListPacks : AppCompatActivity(), AsyncExportFinish, AsyncExportProgress {
+class ListPacks : PackActionsActivity(), AsyncExportFinish, AsyncExportProgress {
     private lateinit var binding: ActivityDefaultRecBinding
     private lateinit var dbHelperGet: DB_Helper_Get
     private var adapter: AdapterPacks? = null
@@ -194,5 +193,15 @@ class ListPacks : AppCompatActivity(), AsyncExportFinish, AsyncExportProgress {
 
     override fun exportCardsProgress(progress: String) {
         runOnUiThread { Toast.makeText(this, progress, Toast.LENGTH_SHORT).show() }
+    }
+
+
+    override fun deletedPacks(packIds: ArrayList<Int>) {
+        adapter!!.updateContent(loadContent())
+
+    }
+
+    override fun movedPacks(packIds: ArrayList<Int>) {
+        adapter!!.updateContent(loadContent())
     }
 }

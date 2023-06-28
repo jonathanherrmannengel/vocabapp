@@ -74,6 +74,7 @@ class AdapterCards(
                     mode.finish()
                     true
                 }
+
                 R.id.menu_list_cards_context_move -> {
                     val contextualMenuModeCardList: ArrayList<DB_Card> = ArrayList()
                     for (id in contextualMenuModeCardIdList) {
@@ -89,6 +90,7 @@ class AdapterCards(
                     mode.finish()
                     true
                 }
+
                 else -> false
             }
         }

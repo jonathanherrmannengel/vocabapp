@@ -1,6 +1,5 @@
 package de.herrmann_engel.rbv.activities
 
-import android.app.Dialog
 import android.content.Intent
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
@@ -8,18 +7,12 @@ import android.os.Bundle
 import android.util.TypedValue
 import android.view.Menu
 import android.view.View
-import android.view.WindowManager
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.LinearLayoutManager
 import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.R
-import de.herrmann_engel.rbv.adapters.AdapterCollectionsMovePack
+import de.herrmann_engel.rbv.actions.PackActions
 import de.herrmann_engel.rbv.databinding.ActivityViewCollectionOrPackBinding
-import de.herrmann_engel.rbv.databinding.DiaConfirmBinding
-import de.herrmann_engel.rbv.databinding.DiaRecBinding
 import de.herrmann_engel.rbv.db.DB_Pack
-import de.herrmann_engel.rbv.db.utils.DB_Helper_Delete
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import java.time.Instant
 import java.time.ZoneId
@@ -28,7 +21,7 @@ import java.time.format.FormatStyle
 import java.util.Date
 import java.util.Locale
 
-class ViewPack : AppCompatActivity() {
+class ViewPack : PackActionsActivity() {
     private lateinit var binding: ActivityViewCollectionOrPackBinding
     private lateinit var dbHelperGet: DB_Helper_Get
     private var pack: DB_Pack? = null
@@ -112,28 +105,14 @@ class ViewPack : AppCompatActivity() {
                 return@setOnMenuItemClickListener true
             }
             menu.findItem(R.id.menu_view_pack_delete).setOnMenuItemClickListener {
-                deletePack(false)
+                PackActions(this).delete(pack!!)
                 return@setOnMenuItemClickListener true
             }
             if (collectionNo == -1) {
                 menu.findItem(R.id.menu_view_pack_move).isVisible = false
             } else {
                 menu.findItem(R.id.menu_view_pack_move).setOnMenuItemClickListener {
-                    val moveDialog = Dialog(this, R.style.dia_view)
-                    val bindingMoveDialog = DiaRecBinding.inflate(
-                        layoutInflater
-                    )
-                    moveDialog.setContentView(bindingMoveDialog.root)
-                    moveDialog.setTitle(resources.getString(R.string.move_pack))
-                    moveDialog.window!!.setLayout(
-                        WindowManager.LayoutParams.MATCH_PARENT,
-                        WindowManager.LayoutParams.MATCH_PARENT
-                    )
-                    val collections = dbHelperGet.allCollections
-                    val adapter = AdapterCollectionsMovePack(collections, pack!!, moveDialog)
-                    bindingMoveDialog.diaRec.adapter = adapter
-                    bindingMoveDialog.diaRec.layoutManager = LinearLayoutManager(this)
-                    moveDialog.show()
+                    PackActions(this).move(pack!!)
                     return@setOnMenuItemClickListener true
                 }
             }
@@ -141,38 +120,13 @@ class ViewPack : AppCompatActivity() {
         return true
     }
 
-    private fun deletePack(forceDelete: Boolean) {
-        val confirmDeleteDialog = Dialog(this, R.style.dia_view)
-        val bindingConfirmDeleteDialog = DiaConfirmBinding.inflate(
-            layoutInflater
-        )
-        confirmDeleteDialog.setContentView(bindingConfirmDeleteDialog.root)
-        confirmDeleteDialog.setTitle(resources.getString(R.string.delete))
-        confirmDeleteDialog.window!!.setLayout(
-            WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.MATCH_PARENT
-        )
-        if (dbHelperGet.countCardsInPack(pack!!.uid) > 0 && !forceDelete) {
-            bindingConfirmDeleteDialog.diaConfirmDesc.setText(R.string.delete_pack_with_cards)
-            bindingConfirmDeleteDialog.diaConfirmDesc.visibility = View.VISIBLE
-        }
-        bindingConfirmDeleteDialog.diaConfirmYes.setOnClickListener {
-            if (dbHelperGet.countCardsInPack(pack!!.uid) == 0 || forceDelete) {
-                val dbHelperDelete = DB_Helper_Delete(this)
-                dbHelperDelete.deletePack(pack, forceDelete)
-                val intent = Intent(this, ListPacks::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-                startActivity(intent)
-            } else {
-                deletePack(true)
-            }
-            confirmDeleteDialog.dismiss()
-        }
-        bindingConfirmDeleteDialog.diaConfirmNo.setOnClickListener { confirmDeleteDialog.dismiss() }
-        confirmDeleteDialog.show()
+    override fun deletedPacks(packIds: ArrayList<Int>) {
+        val intent = Intent(this, ListPacks::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+        startActivity(intent)
     }
 
-    fun movedPack() {
+    override fun movedPacks(packIds: ArrayList<Int>) {
         try {
             pack = dbHelperGet.getSinglePack(packNo)
             collectionNo = pack!!.collection

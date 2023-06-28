@@ -78,6 +78,7 @@
     <string name="delete_file_info">Media deleted from database. Also delete file from disk?</string>
     <string name="delete_file_without_media_info">Delete file from disk?</string>
     <string name="delete_multiple_cards">You are about to delete %1$d flashcards. Continue?</string>
+    <string name="delete_multiple_packs">You are about to delete %1$d decks with %2$d flashcards. Continue?</string>
     <string name="delete_pack_with_cards">This deck contains flashcards. If you proceed these flashcards will also be deleted. Delete anyway?</string>
     <string name="delete_collection_with_packs">This filing box contains decks. If you proceed these decks and their flashcards will also be deleted. Delete anyway?</string>
     <string name="move">move</string>
