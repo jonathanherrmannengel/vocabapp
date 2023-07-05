@@ -297,7 +297,7 @@ class AdapterPacks(
             val emojiText = currentPack.emoji
             viewHolder.binding.recCollectionsPreviewText.text =
                 if (contextualMenuMode != null && contextualMenuModePackIdList.contains(packs[position].pack.uid)) {
-                    "✔️"
+                    "✔"
                 } else if (emojiText.isNullOrEmpty()) {
                     val pattern = Regex("^(\\P{M}\\p{M}*+).*")
                     currentPack.name.replace(pattern, "$1")
@@ -325,12 +325,25 @@ class AdapterPacks(
                 color >= 0
             ) {
                 viewHolder.binding.recCollectionsName.setTextColor(colors.getColor(color, 0))
-                viewHolder.binding.recCollectionsPreviewText.setTextColor(colors.getColor(color, 0))
+                viewHolder.binding.recCollectionsPreviewText.setTextColor(
+                    if (contextualMenuMode != null && contextualMenuModePackIdList.contains(packs[position].pack.uid)) {
+                        ContextCompat.getColor(
+                            context,
+                            R.color.default_text
+                        )
+                    } else {
+                        colors.getColor(color, 0)
+                    }
+                )
                 viewHolder.binding.recCollectionsPreviewText.setBackgroundColor(
-                    colorsBackground.getColor(
-                        color,
-                        0
-                    )
+                    if (contextualMenuMode != null && contextualMenuModePackIdList.contains(packs[position].pack.uid)) {
+                        Color.TRANSPARENT
+                    } else {
+                        colorsBackground.getColor(
+                            color,
+                            0
+                        )
+                    }
                 )
                 background.mutate()
                 background.setStroke(2, colors.getColor(color, 0))

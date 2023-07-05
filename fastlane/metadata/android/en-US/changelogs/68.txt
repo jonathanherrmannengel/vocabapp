@@ -1,0 +1,2 @@
+Long touch an item in a deck or flashcard list to move or delete multiple decks / flashcards at once.
+Printing: Headings are now optional.

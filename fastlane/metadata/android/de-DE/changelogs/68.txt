@@ -1,0 +1,2 @@
+Langes Berühren eines Listeneintrages einer Kartenstapel- oder Karteikartenliste ermöglicht es Dir, mehrere Kartenstapel bzw. Karteikarten auf einmal zu verschieben oder zu löschen.
+Drucken: Überschriften sind jetzt optional.
