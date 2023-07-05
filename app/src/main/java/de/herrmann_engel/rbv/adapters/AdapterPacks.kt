@@ -284,7 +284,7 @@ class AdapterPacks(
             }
             viewHolder.binding.recCollectionsName.text =
                 stringTools.shorten(currentPack.name)
-            if (contextualMenuMode != null && contextualMenuModePackIdList.contains(packs[position].pack.uid)) {
+            if (contextualMenuMode != null && contextualMenuModePackIdList.contains(currentPack.uid)) {
                 viewHolder.binding.recCollectionsName.setTypeface(null, Typeface.BOLD)
             }
             if (currentPack.desc.isNullOrEmpty()) {
@@ -296,7 +296,7 @@ class AdapterPacks(
             }
             val emojiText = currentPack.emoji
             viewHolder.binding.recCollectionsPreviewText.text =
-                if (contextualMenuMode != null && contextualMenuModePackIdList.contains(packs[position].pack.uid)) {
+                if (contextualMenuMode != null && contextualMenuModePackIdList.contains(currentPack.uid)) {
                     "✔"
                 } else if (emojiText.isNullOrEmpty()) {
                     val pattern = Regex("^(\\P{M}\\p{M}*+).*")
@@ -326,7 +326,10 @@ class AdapterPacks(
             ) {
                 viewHolder.binding.recCollectionsName.setTextColor(colors.getColor(color, 0))
                 viewHolder.binding.recCollectionsPreviewText.setTextColor(
-                    if (contextualMenuMode != null && contextualMenuModePackIdList.contains(packs[position].pack.uid)) {
+                    if (contextualMenuMode != null && contextualMenuModePackIdList.contains(
+                            currentPack.uid
+                        )
+                    ) {
                         ContextCompat.getColor(
                             context,
                             R.color.default_text
@@ -336,7 +339,10 @@ class AdapterPacks(
                     }
                 )
                 viewHolder.binding.recCollectionsPreviewText.setBackgroundColor(
-                    if (contextualMenuMode != null && contextualMenuModePackIdList.contains(packs[position].pack.uid)) {
+                    if (contextualMenuMode != null && contextualMenuModePackIdList.contains(
+                            currentPack.uid
+                        )
+                    ) {
                         Color.TRANSPARENT
                     } else {
                         colorsBackground.getColor(
