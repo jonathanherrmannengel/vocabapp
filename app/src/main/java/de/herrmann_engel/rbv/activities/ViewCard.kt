@@ -1,32 +1,22 @@
 package de.herrmann_engel.rbv.activities
 
-import android.app.Dialog
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
-import android.print.PrintAttributes
-import android.print.PrintManager
-import android.text.SpannableString
 import android.text.util.Linkify
 import android.util.TypedValue
 import android.view.Menu
 import android.view.View
-import android.view.WindowManager
-import android.webkit.WebResourceRequest
-import android.webkit.WebView
-import android.webkit.WebViewClient
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
-import androidx.core.text.HtmlCompat
 import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.actions.CardActions
 import de.herrmann_engel.rbv.databinding.ActivityViewCardBinding
-import de.herrmann_engel.rbv.databinding.DiaPrintBinding
 import de.herrmann_engel.rbv.db.DB_Card
 import de.herrmann_engel.rbv.db.DB_Media_Link_Card
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
@@ -35,8 +25,6 @@ import de.herrmann_engel.rbv.utils.StringTools
 import io.noties.markwon.Markwon
 import io.noties.markwon.linkify.LinkifyPlugin
 import me.saket.bettermovementmethod.BetterLinkMovementMethod
-import org.commonmark.parser.Parser
-import org.commonmark.renderer.html.HtmlRenderer
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -203,150 +191,7 @@ class ViewCard : CardActionsActivity() {
                 return@setOnMenuItemClickListener true
             }
             menu.findItem(R.id.menu_view_card_print).setOnMenuItemClickListener {
-                val printDialog = Dialog(this, R.style.dia_view)
-                val bindingPrintDialog = DiaPrintBinding.inflate(
-                    layoutInflater
-                )
-                printDialog.setContentView(bindingPrintDialog.root)
-                printDialog.setTitle(resources.getString(R.string.print))
-                printDialog.window!!.setLayout(
-                    WindowManager.LayoutParams.MATCH_PARENT,
-                    WindowManager.LayoutParams.MATCH_PARENT
-                )
-                if (card!!.notes == null || card!!.notes.isEmpty()) {
-                    bindingPrintDialog.diaPrintIncludeNotesLayout.visibility = View.GONE
-                    bindingPrintDialog.diaPrintIncludeNotes.isChecked = false
-                }
-                if (imageList!!.isEmpty() || imageList!!.size > Globals.IMAGE_PREVIEW_MAX) {
-                    bindingPrintDialog.diaPrintIncludeImagesLayout.visibility = View.GONE
-                    bindingPrintDialog.diaPrintIncludeImages.isChecked = false
-                }
-                if (mediaList!!.isEmpty()) {
-                    bindingPrintDialog.diaPrintIncludeMediaLayout.visibility = View.GONE
-                    bindingPrintDialog.diaPrintIncludeMedia.isChecked = false
-                }
-                bindingPrintDialog.diaPrintStart.setOnClickListener {
-                    Toast.makeText(this, R.string.wait, Toast.LENGTH_LONG).show()
-                    printDialog.dismiss()
-                    val printManager = getSystemService(PRINT_SERVICE) as PrintManager
-                    val jobName = "rbv_flashcard_$cardNo"
-                    val builder = PrintAttributes.Builder()
-                    builder.setMediaSize(PrintAttributes.MediaSize.ISO_A4)
-                    val attributes = builder.build()
-                    val webView = WebView(this)
-                    webView.webViewClient = object : WebViewClient() {
-                        override fun shouldOverrideUrlLoading(
-                            view: WebView,
-                            request: WebResourceRequest
-                        ): Boolean {
-                            return false
-                        }
-
-                        override fun onPageFinished(view: WebView, url: String) {
-                            val adapter = webView.createPrintDocumentAdapter(jobName)
-                            printManager.print(jobName, adapter, attributes)
-                        }
-                    }
-                    val stringTools = StringTools()
-                    var htmlDocument =
-                        "<!doctype html><html><head><meta charset=\"utf-8\"><title>" + getString(
-                            R.string.print
-                        ) + "</title><style>div{inline-size:100%;overflow-wrap:break-word;}#main-title{margin-bottom: 30px;}.title{text-align:center;color: #000007;}.border-top::before{margin-bottom:20px;margin-top:30px;display:block;content:' ';width:100%;height:1px;outline:2px solid #555;outline-offset:-1px;}.image-div,.media-div{text-align:center}.image{padding:10px;max-width:30%;max-height:10%;object-fit:contain;}</style></head>"
-                    var title = stringTools.shorten(binding.cardFront.text.toString(), 30)
-                    if (bindingPrintDialog.diaPrintIncludeProgress.isChecked) {
-                        title += " (" + binding.cardKnown.text + ")"
-                    }
-                    htmlDocument += "<h1 id=\"main-title\" class=\"title\" dir=\"auto\">$title</h1>"
-                    htmlDocument += "<article>"
-                    if (bindingPrintDialog.diaPrintIncludeHeadings.isChecked) {
-                        htmlDocument += "<h2 class=\"title\" dir=\"auto\">" + getString(
-                            R.string.card_front
-                        ) + "</h2>"
-                    }
-                    htmlDocument += "<div>"
-                    htmlDocument += HtmlCompat.toHtml(
-                        (binding.cardFront.text as SpannableString),
-                        HtmlCompat.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE
-                    )
-                    htmlDocument += "</div></article>"
-                    htmlDocument += "<article>"
-                    if (bindingPrintDialog.diaPrintIncludeHeadings.isChecked) {
-                        htmlDocument += "<h2 class=\"title border-top\" dir=\"auto\">" + getString(R.string.card_back) + "</h2>"
-                        htmlDocument += "<div>"
-                    } else {
-                        htmlDocument += "<div class=\"border-top\">"
-                    }
-                    htmlDocument += HtmlCompat.toHtml(
-                        (binding.cardBack.text as SpannableString),
-                        HtmlCompat.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE
-                    )
-                    htmlDocument += "</div></article>"
-                    if (card!!.notes != null && card!!.notes.isNotEmpty() && bindingPrintDialog.diaPrintIncludeNotes.isChecked) {
-                        htmlDocument += "<article>"
-                        if (bindingPrintDialog.diaPrintIncludeHeadings.isChecked) {
-                            htmlDocument += "<h2 class=\"title border-top\" dir=\"auto\">" + getString(
-                                R.string.card_notes
-                            ) + "</h2>"
-                            htmlDocument += "<div dir=\"auto\">"
-                        } else {
-                            htmlDocument += "<div dir=\"auto\" class=\"border-top\">"
-                        }
-                        htmlDocument += if (formatCardNotes) {
-                            val parser = Parser.builder().build()
-                            val document = parser.parse(card!!.notes)
-                            val renderer = HtmlRenderer.builder().build()
-                            renderer.render(document)
-                        } else {
-                            HtmlCompat.toHtml(
-                                (binding.cardNotes.text as SpannableString),
-                                HtmlCompat.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE
-                            )
-                        }
-                        htmlDocument += "</div></article>"
-                    }
-                    if (imageList!!.isNotEmpty() && bindingPrintDialog.diaPrintIncludeImages.isChecked) {
-                        htmlDocument += "<article>"
-                        if (bindingPrintDialog.diaPrintIncludeHeadings.isChecked) {
-                            htmlDocument += "<h2 class=\"title border-top\" dir=\"auto\">" + getString(
-                                R.string.image_media
-                            ) + "</h2>"
-                            htmlDocument += "<div>"
-                        } else {
-                            htmlDocument += "<div class=\"border-top\">"
-                        }
-                        for (i in imageList!!) {
-                            val currentMedia = dbHelperGet.getSingleMedia(i.file)
-                            if (currentMedia != null) {
-                                val uri = getImageUri(currentMedia.uid)
-                                if (uri != null) {
-                                    htmlDocument += "<div class=\"image-div\"><img class=\"image\" alt=\"" + currentMedia.file + "\" src=\"" + uri + "\"></div>"
-                                }
-                            }
-                        }
-                        htmlDocument += "</div></article>"
-                    }
-                    if (mediaList!!.isNotEmpty() && bindingPrintDialog.diaPrintIncludeMedia.isChecked) {
-                        htmlDocument += "<article>"
-                        if (bindingPrintDialog.diaPrintIncludeHeadings.isChecked) {
-                            htmlDocument += "<h2 class=\"title border-top\" dir=\"auto\">" + getString(
-                                R.string.all_media
-                            ) + "</h2>"
-                            htmlDocument += "<div>"
-                        } else {
-                            htmlDocument += "<div class=\"border-top\">"
-                        }
-                        for (i in mediaList!!) {
-                            val currentMedia = dbHelperGet.getSingleMedia(i.file)
-                            if (currentMedia != null) {
-                                htmlDocument += "<div class=\"media-div\">" + currentMedia.file + "</div>"
-                            }
-                        }
-                        htmlDocument += "</div></article>"
-                    }
-                    htmlDocument += "</html>"
-                    webView.loadDataWithBaseURL(null, htmlDocument, "text/HTML", "UTF-8", null)
-                }
-                printDialog.show()
+                CardActions(this).print(card!!)
                 return@setOnMenuItemClickListener true
             }
             if (packNo < 0) {

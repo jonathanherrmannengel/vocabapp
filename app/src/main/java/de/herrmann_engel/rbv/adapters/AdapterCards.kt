@@ -55,6 +55,8 @@ class AdapterCards(
                 contextualMenuModeCardIdList.isNotEmpty()
             menu.findItem(R.id.menu_list_cards_context_move).isVisible =
                 contextualMenuModeCardIdList.isNotEmpty() && packNo > -1
+            menu.findItem(R.id.menu_list_cards_context_print).isVisible =
+                contextualMenuModeCardIdList.isNotEmpty()
             return true
         }
 
@@ -85,6 +87,21 @@ class AdapterCards(
                         CardActions(it).move(
                             contextualMenuModeCardList,
                             collectionNo
+                        )
+                    }
+                    mode.finish()
+                    true
+                }
+
+                R.id.menu_list_cards_context_print -> {
+                    val contextualMenuModeCardList: ArrayList<DB_Card> = ArrayList()
+                    for (id in contextualMenuModeCardIdList) {
+                        cards.find { c -> c.card.uid == id }
+                            ?.let { contextualMenuModeCardList.add(it.card) }
+                    }
+                    contextualMenuModeActivity?.let {
+                        CardActions(it).print(
+                            contextualMenuModeCardList
                         )
                     }
                     mode.finish()

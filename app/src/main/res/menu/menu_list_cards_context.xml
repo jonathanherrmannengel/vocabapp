@@ -17,4 +17,12 @@
         android:orderInCategory="200"
         android:title="@string/move"
         app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/menu_list_cards_context_print"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:icon="@drawable/round_print_24"
+        android:orderInCategory="300"
+        android:title="@string/print"
+        app:showAsAction="ifRoom" />
 </menu>

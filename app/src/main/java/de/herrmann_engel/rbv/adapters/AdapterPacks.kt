@@ -55,6 +55,7 @@ class AdapterPacks(
                 contextualMenuModePackIdList.isNotEmpty()
             menu.findItem(R.id.menu_list_cards_context_move).isVisible =
                 contextualMenuModePackIdList.isNotEmpty() && collection > -1
+            menu.findItem(R.id.menu_list_cards_context_print).isVisible = false
             return true
         }
 
