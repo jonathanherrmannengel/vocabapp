@@ -14,6 +14,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import de.herrmann_engel.rbv.Globals
+import de.herrmann_engel.rbv.Globals.MAX_SIZE_COUNTER
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.adapters.AdapterCollections
 import de.herrmann_engel.rbv.databinding.ActivityDefaultRecBinding
@@ -252,7 +253,11 @@ class ListCollections : FileTools(), AsyncImportFinish, AsyncImportProgress, Asy
     }
 
     private fun loadContent(): MutableList<DB_Collection_With_Meta> {
-        val currentList = dbHelperGet.allCollectionsWithMeta
+        val currentList = if (dbHelperGet.countCollections() > MAX_SIZE_COUNTER) {
+            dbHelperGet.allCollectionsWithMetaNoCounter
+        } else {
+            dbHelperGet.allCollectionsWithMeta
+        }
         val fixedFirstItemPlaceholder = DB_Collection_With_Meta()
         fixedFirstItemPlaceholder.counter = dbHelperGet.countPacks()
         currentList.add(0, fixedFirstItemPlaceholder)

@@ -36,8 +36,16 @@ public class DB_Helper_Get {
     }
 
     //Count
+    public int countCollections() {
+        return dbHelper.collection_dao.countCollections();
+    }
+
     public int countPacks() {
         return dbHelper.pack_dao.countPacks();
+    }
+
+    public int countPacksInCollection(int collection) {
+        return dbHelper.pack_dao.countPacksInCollection(collection);
     }
 
     public int countCards() {
@@ -119,6 +127,10 @@ public class DB_Helper_Get {
         return dbHelper.collection_dao.getAllWithMeta();
     }
 
+    public List<DB_Collection_With_Meta> getAllCollectionsWithMetaNoCounter() {
+        return dbHelper.collection_dao.getAllWithMetaNoCounter();
+    }
+
     //Get All: Packs
     public List<DB_Pack> getAllPacks() {
         return dbHelper.pack_dao.getAll();
@@ -136,8 +148,16 @@ public class DB_Helper_Get {
         return dbHelper.pack_dao.getAllWithMeta();
     }
 
+    public List<DB_Pack_With_Meta> getAllPacksWithMetaNoCounter() {
+        return dbHelper.pack_dao.getAllWithMetaNoCounter();
+    }
+
     public List<DB_Pack_With_Meta> getAllPacksWithMetaByCollection(int collection) {
         return dbHelper.pack_dao.getAllByCollectionWithMeta(collection);
+    }
+
+    public List<DB_Pack_With_Meta> getAllPacksWithMetaNoCounterByCollection(int collection) {
+        return dbHelper.pack_dao.getAllByCollectionWithMetaNoCounter(collection);
     }
 
     //Get All: Cards

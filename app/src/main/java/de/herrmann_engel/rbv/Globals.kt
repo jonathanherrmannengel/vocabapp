@@ -20,4 +20,8 @@ object Globals {
     const val SORT_ALPHABETICAL = 2
     const val IMAGE_PREVIEW_MAX = 9
     const val LIST_ACCURATE_SIZE = 15000
+    const val MAX_SIZE_PRINT_CONTEXTUAL_MENU = 100
+    const val MAX_SIZE_SELECT_CONTEXTUAL_MENU = 1000
+    const val MAX_SIZE_SELECT_CONTEXTUAL_MENU_PACKS = 75
+    const val MAX_SIZE_COUNTER = 40
 }

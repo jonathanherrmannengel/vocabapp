@@ -18,6 +18,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
                 android:gravity="center"
+                android:importantForAccessibility="no"
                 android:labelFor="@id/edit_card_front"
                 android:text="@string/card_front"
                 android:textColor="@color/light_black" />
@@ -38,6 +39,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
                 android:gravity="center"
+                android:importantForAccessibility="no"
                 android:labelFor="@id/edit_card_back"
                 android:text="@string/card_back"
                 android:textColor="@color/light_black" />
@@ -58,6 +60,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
                 android:gravity="center"
+                android:importantForAccessibility="no"
                 android:labelFor="@id/edit_card_notes"
                 android:text="@string/card_notes"
                 android:textColor="@color/light_black" />

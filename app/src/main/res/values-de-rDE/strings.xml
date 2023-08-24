@@ -19,6 +19,9 @@
     <string name="share">Teilen</string>
     <string name="options">Optionen</string>
     <string name="print">Drucken</string>
+    <string name="select_all">Alles auswählen</string>
+    <string name="selected">Ausgewählt</string>
+    <string name="items">Einträge</string>
     <string name="welcome_collection">Willkommen. Erstelle einen neuen Karteikasten (+) oder importiere ein Karteikasten-Backup (↓).</string>
     <string name="welcome_pack">Es sind noch keine Kartenstapel in diesem Karteikasten vorhanden.</string>
     <string name="welcome_pack_create">Erstelle einen neuen Kartenstapel (+).</string>
@@ -126,6 +129,7 @@
     <string name="list_stat_progress_counter_known_3">3</string>
     <string name="list_stat_progress_counter_known_4">4</string>
     <string name="list_stat_progress_counter_known_5">5+</string>
+    <string name="selected_title">%1$d von %2$d</string>
     <string name="print_include_headings">Überschriften einschließen</string>
     <string name="print_include_progress">Lernfortschritt einschließen</string>
     <string name="print_include_notes">Notizen einschließen</string>

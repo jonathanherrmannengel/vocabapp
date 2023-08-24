@@ -153,9 +153,17 @@ class ListPacks : PackActionsActivity(), AsyncExportFinish, AsyncExportProgress 
 
     private fun loadContent(): MutableList<DB_Pack_With_Meta> {
         val currentList: MutableList<DB_Pack_With_Meta> = if (collectionNo == -1) {
-            dbHelperGet.allPacksWithMeta
+            if (dbHelperGet.countPacks() > Globals.MAX_SIZE_COUNTER) {
+                dbHelperGet.allPacksWithMetaNoCounter
+            } else {
+                dbHelperGet.allPacksWithMeta
+            }
         } else {
-            dbHelperGet.getAllPacksWithMetaByCollection(collectionNo)
+            if (dbHelperGet.countPacksInCollection(collectionNo) > Globals.MAX_SIZE_COUNTER) {
+                dbHelperGet.getAllPacksWithMetaNoCounterByCollection(collectionNo)
+            } else {
+                dbHelperGet.getAllPacksWithMetaByCollection(collectionNo)
+            }
         }
         val fixedFirstItemPlaceholder = DB_Pack_With_Meta()
         if (collectionNo == -1) {

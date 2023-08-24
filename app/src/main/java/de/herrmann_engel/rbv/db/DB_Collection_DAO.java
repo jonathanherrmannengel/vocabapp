@@ -15,6 +15,9 @@ public interface DB_Collection_DAO {
     @Query("SELECT EXISTS (SELECT 1 FROM db_collection LIMIT 1)")
     boolean hasCollections();
 
+    @Query("SELECT COUNT(*) FROM db_collection")
+    int countCollections();
+
     @Query("SELECT * FROM db_collection ORDER BY name COLLATE NOCASE ASC, uid DESC")
     List<DB_Collection> getAll();
 
@@ -23,6 +26,9 @@ public interface DB_Collection_DAO {
 
     @Query("SELECT *, (SELECT COUNT(*) FROM db_pack WHERE collection=db_collection.uid) AS counter FROM db_collection ORDER BY name COLLATE NOCASE ASC, uid DESC")
     List<DB_Collection_With_Meta> getAllWithMeta();
+
+    @Query("SELECT *, -1 AS counter FROM db_collection ORDER BY name COLLATE NOCASE ASC, uid DESC")
+    List<DB_Collection_With_Meta> getAllWithMetaNoCounter();
 
     @Query("SELECT uid FROM db_collection ORDER BY name COLLATE NOCASE ASC, uid DESC")
     List<Integer> getAllIDs();

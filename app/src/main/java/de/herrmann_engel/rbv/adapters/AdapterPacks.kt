@@ -16,11 +16,14 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import android.view.View.IMPORTANT_FOR_ACCESSIBILITY_NO
+import android.view.View.IMPORTANT_FOR_ACCESSIBILITY_YES
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import de.herrmann_engel.rbv.Globals.MAX_SIZE_SELECT_CONTEXTUAL_MENU_PACKS
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.actions.PackActions
 import de.herrmann_engel.rbv.activities.ListCards
@@ -41,6 +44,7 @@ class AdapterPacks(
 
     private val stringTools = StringTools()
     private var contextualMenuMode: ActionMode? = null
+    private val contextualMenuModePayload = "contextualMode"
     private var contextualMenuModeActivity: Activity? = null
     private val contextualMenuModePackIdList: MutableList<Int> = ArrayList()
     private val contextualMenuModeCallback = object : ActionMode.Callback {
@@ -56,6 +60,8 @@ class AdapterPacks(
             menu.findItem(R.id.menu_list_cards_context_move).isVisible =
                 contextualMenuModePackIdList.isNotEmpty() && collection > -1
             menu.findItem(R.id.menu_list_cards_context_print).isVisible = false
+            menu.findItem(R.id.menu_list_cards_context_select_all).isVisible =
+                contextualMenuModePackIdList.size < packs.size - 1 && packs.size - 1 <= MAX_SIZE_SELECT_CONTEXTUAL_MENU_PACKS
             return true
         }
 
@@ -90,6 +96,20 @@ class AdapterPacks(
                     mode.finish()
                     true
                 }
+
+                R.id.menu_list_cards_context_select_all -> {
+                    packs.forEach {
+                        if (it.pack != null) {
+                            val pack = it.pack.uid
+                            if (!contextualMenuModePackIdList.contains(pack)
+                            ) {
+                                contextualMenuModeSelectItem(pack)
+                            }
+                        }
+                    }
+                    true
+                }
+
 
                 else -> false
             }
@@ -129,6 +149,9 @@ class AdapterPacks(
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         val context = viewHolder.binding.root.context
+        viewHolder.binding.recCollectionsPreviewText.contentDescription = null
+        viewHolder.binding.recCollectionsPreviewText.importantForAccessibility =
+            IMPORTANT_FOR_ACCESSIBILITY_NO
         viewHolder.binding.recCollectionsName.setTypeface(null, Typeface.NORMAL)
         if (uiFontSizeBig) {
             viewHolder.binding.recCollectionsName.setTextSize(
@@ -210,7 +233,18 @@ class AdapterPacks(
                     context.resources.getString(R.string.all_cards_desc_by_pack)
                 }
             viewHolder.binding.recCollectionsPreviewText.text = "…"
-            viewHolder.binding.recCollectionsNumberText.text = packs[position].counter.toString()
+            if (packs[position].counter != -1) {
+                viewHolder.binding.recCollectionsNumberText.visibility = View.VISIBLE
+                viewHolder.binding.recCollectionsNumberText.text =
+                    packs[position].counter.toString()
+                viewHolder.binding.recCollectionsNumberText.contentDescription = String.format(
+                    "%d %s",
+                    packs[position].counter,
+                    context.resources.getString(R.string.items)
+                )
+            } else {
+                viewHolder.binding.recCollectionsNumberText.visibility = View.GONE
+            }
 
             viewHolder.binding.recCollectionsName.setTextColor(
                 ContextCompat.getColor(
@@ -257,11 +291,14 @@ class AdapterPacks(
                 if (contextualMenuMode != null) {
                     if (contextualMenuModePackIdList.contains(extra)) {
                         contextualMenuModePackIdList.remove(extra)
-                        if (contextualMenuModePackIdList.isEmpty()) {
+                        if (contextualMenuModePackIdList.size == packs.size - 2) {
                             contextualMenuMode?.invalidate()
                         }
                         contextualMenuModeFormatPack(extra)
                         contextualMenuModeSelectedTitle()
+                        if (contextualMenuModePackIdList.isEmpty()) {
+                            contextualMenuMode?.finish()
+                        }
                     } else {
                         contextualMenuModeSelectItem(extra)
                     }
@@ -286,6 +323,10 @@ class AdapterPacks(
             viewHolder.binding.recCollectionsName.text =
                 stringTools.shorten(currentPack.name)
             if (contextualMenuMode != null && contextualMenuModePackIdList.contains(currentPack.uid)) {
+                viewHolder.binding.recCollectionsPreviewText.contentDescription =
+                    context.resources.getString(R.string.selected)
+                viewHolder.binding.recCollectionsPreviewText.importantForAccessibility =
+                    IMPORTANT_FOR_ACCESSIBILITY_YES
                 viewHolder.binding.recCollectionsName.setTypeface(null, Typeface.BOLD)
             }
             if (currentPack.desc.isNullOrEmpty()) {
@@ -305,7 +346,18 @@ class AdapterPacks(
                 } else {
                     emojiText
                 }
-            viewHolder.binding.recCollectionsNumberText.text = packs[position].counter.toString()
+            if (packs[position].counter != -1) {
+                viewHolder.binding.recCollectionsNumberText.visibility = View.VISIBLE
+                viewHolder.binding.recCollectionsNumberText.text =
+                    packs[position].counter.toString()
+                viewHolder.binding.recCollectionsNumberText.contentDescription = String.format(
+                    "%d %s",
+                    packs[position].counter,
+                    context.resources.getString(R.string.items)
+                )
+            } else {
+                viewHolder.binding.recCollectionsNumberText.visibility = View.GONE
+            }
             if (collection == -1) {
                 try {
                     viewHolder.binding.recCollectionsParent.visibility = View.VISIBLE
@@ -370,7 +422,7 @@ class AdapterPacks(
 
     private fun contextualMenuModeSelectItem(id: Int) {
         contextualMenuModePackIdList.add(id)
-        if (contextualMenuModePackIdList.size == 1) {
+        if (contextualMenuModePackIdList.size == 1 || contextualMenuModePackIdList.size == packs.size - 1) {
             contextualMenuMode?.invalidate()
         }
         contextualMenuModeFormatPack(id)
@@ -378,7 +430,7 @@ class AdapterPacks(
     }
 
     private fun contextualMenuModeFormatPack(id: Int) {
-        notifyItemChanged(packs.indexOfFirst { p -> p.pack?.uid == id })
+        notifyItemChanged(packs.indexOfFirst { p -> p.pack?.uid == id }, contextualMenuModePayload)
     }
 
     private fun contextualMenuModeSelectedTitle() {

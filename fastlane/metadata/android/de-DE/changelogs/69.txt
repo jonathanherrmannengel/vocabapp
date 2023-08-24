@@ -1,0 +1,3 @@
+Bis zu 100 Karteikarten auf einmal drucken.
+In Listen mit maximal 1000 Karteikarten bzw. 75 Kartenstapeln lassen sich alle Einträge auf einmal auswählen.
+In Karteikästen- und Kartenstapel-Listen werden die Eintrags-Zähler ab einer Listengröße von 41 nicht angezeigt, um die Leistung zu verbessern.

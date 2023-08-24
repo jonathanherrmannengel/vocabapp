@@ -20,6 +20,8 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import de.herrmann_engel.rbv.Globals
+import de.herrmann_engel.rbv.Globals.MAX_SIZE_PRINT_CONTEXTUAL_MENU
+import de.herrmann_engel.rbv.Globals.MAX_SIZE_SELECT_CONTEXTUAL_MENU
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.actions.CardActions
 import de.herrmann_engel.rbv.activities.ViewCard
@@ -41,6 +43,7 @@ class AdapterCards(
 
     private val stringTools = StringTools()
     private var contextualMenuMode: ActionMode? = null
+    private val contextualMenuModePayload = "contextualMode"
     private var contextualMenuModeActivity: Activity? = null
     private val contextualMenuModeCardIdList: MutableList<Int> = ArrayList()
     private val contextualMenuModeCallback = object : ActionMode.Callback {
@@ -56,7 +59,9 @@ class AdapterCards(
             menu.findItem(R.id.menu_list_cards_context_move).isVisible =
                 contextualMenuModeCardIdList.isNotEmpty() && packNo > -1
             menu.findItem(R.id.menu_list_cards_context_print).isVisible =
-                contextualMenuModeCardIdList.isNotEmpty()
+                contextualMenuModeCardIdList.isNotEmpty() && contextualMenuModeCardIdList.size <= MAX_SIZE_PRINT_CONTEXTUAL_MENU
+            menu.findItem(R.id.menu_list_cards_context_select_all).isVisible =
+                contextualMenuModeCardIdList.size < cards.size && cards.size <= MAX_SIZE_SELECT_CONTEXTUAL_MENU
             return true
         }
 
@@ -105,6 +110,17 @@ class AdapterCards(
                         )
                     }
                     mode.finish()
+                    true
+                }
+
+                R.id.menu_list_cards_context_select_all -> {
+                    cards.forEach {
+                        val card = it.card.uid
+                        if (!contextualMenuModeCardIdList.contains(card)
+                        ) {
+                            contextualMenuModeSelectItem(card)
+                        }
+                    }
                     true
                 }
 
@@ -163,18 +179,6 @@ class AdapterCards(
                 R.color.default_text
             )
         )
-        if (contextualMenuMode != null && contextualMenuModeCardIdList.contains(cards[position].card.uid)) {
-            viewHolder.binding.recName.setTypeface(null, BOLD)
-            viewHolder.binding.root.setBackgroundColor(
-                ContextCompat.getColor(
-                    viewHolder.binding.root.context,
-                    R.color.background_select
-                )
-            )
-        } else {
-            viewHolder.binding.recName.setTypeface(null, NORMAL)
-            viewHolder.binding.root.setBackgroundColor(Color.TRANSPARENT)
-        }
         if (cards.isEmpty()) {
             if (packNo < 0) {
                 viewHolder.binding.recName.text =
@@ -211,6 +215,13 @@ class AdapterCards(
             cardText = stringTools.shorten(cardText)
             viewHolder.binding.recName.text =
                 String.format("%s (%d)", cardText, cards[position].card.known)
+            viewHolder.binding.recName.contentDescription =
+                String.format(
+                    "%s (%s: %d)",
+                    cardText,
+                    context.resources.getString(R.string.card_known),
+                    cards[position].card.known
+                )
             if (packNo < 0) {
                 try {
                     val color = cards[position].packColor
@@ -229,11 +240,14 @@ class AdapterCards(
                 if (contextualMenuMode != null) {
                     if (contextualMenuModeCardIdList.contains(extra)) {
                         contextualMenuModeCardIdList.remove(extra)
-                        if (contextualMenuModeCardIdList.isEmpty()) {
+                        if (contextualMenuModeCardIdList.size == cards.size - 1 || contextualMenuModeCardIdList.size == MAX_SIZE_PRINT_CONTEXTUAL_MENU) {
                             contextualMenuMode?.invalidate()
                         }
                         contextualMenuModeFormatCard(extra)
                         contextualMenuModeSelectedTitle()
+                        if (contextualMenuModeCardIdList.isEmpty()) {
+                            contextualMenuMode?.finish()
+                        }
                     } else {
                         contextualMenuModeSelectItem(extra)
                     }
@@ -257,6 +271,23 @@ class AdapterCards(
                 return@setOnLongClickListener true
             }
         }
+        if (contextualMenuMode != null && contextualMenuModeCardIdList.contains(cards[position].card.uid)) {
+            viewHolder.binding.recName.contentDescription = String.format(
+                "%s: %s",
+                context.resources.getString(R.string.selected),
+                viewHolder.binding.recName.contentDescription
+            )
+            viewHolder.binding.recName.setTypeface(null, BOLD)
+            viewHolder.binding.root.setBackgroundColor(
+                ContextCompat.getColor(
+                    viewHolder.binding.root.context,
+                    R.color.background_select
+                )
+            )
+        } else {
+            viewHolder.binding.recName.setTypeface(null, NORMAL)
+            viewHolder.binding.root.setBackgroundColor(Color.TRANSPARENT)
+        }
     }
 
     override fun getItemCount(): Int {
@@ -265,7 +296,7 @@ class AdapterCards(
 
     private fun contextualMenuModeSelectItem(id: Int) {
         contextualMenuModeCardIdList.add(id)
-        if (contextualMenuModeCardIdList.size == 1) {
+        if (contextualMenuModeCardIdList.size == 1 || contextualMenuModeCardIdList.size == cards.size || contextualMenuModeCardIdList.size > MAX_SIZE_PRINT_CONTEXTUAL_MENU) {
             contextualMenuMode?.invalidate()
         }
         contextualMenuModeFormatCard(id)
@@ -273,7 +304,7 @@ class AdapterCards(
     }
 
     private fun contextualMenuModeFormatCard(id: Int) {
-        notifyItemChanged(cards.indexOfFirst { c -> c.card.uid == id })
+        notifyItemChanged(cards.indexOfFirst { c -> c.card.uid == id }, contextualMenuModePayload)
     }
 
     private fun contextualMenuModeSelectedTitle() {

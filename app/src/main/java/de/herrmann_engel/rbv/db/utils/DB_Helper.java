@@ -9,7 +9,7 @@ import de.herrmann_engel.rbv.db.DB_Media_DAO;
 import de.herrmann_engel.rbv.db.DB_Media_Link_Card_DAO;
 import de.herrmann_engel.rbv.db.DB_Pack_DAO;
 
-public class DB_Helper {
+class DB_Helper {
 
     final DB_Collection_DAO collection_dao;
     final DB_Pack_DAO pack_dao;

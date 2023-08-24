@@ -25,4 +25,12 @@
         android:orderInCategory="300"
         android:title="@string/print"
         app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/menu_list_cards_context_select_all"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:icon="@drawable/sharp_check_circle_24"
+        android:orderInCategory="400"
+        android:title="@string/select_all"
+        app:showAsAction="ifRoom" />
 </menu>

@@ -232,6 +232,8 @@ class ViewCard : CardActionsActivity() {
 
     private fun updateCardKnown() {
         binding.cardKnown.text = known.toString()
+        binding.cardKnown.contentDescription =
+            String.format("%s: %d", resources.getString(R.string.card_known), known)
         binding.cardMinus.setColorFilter(Color.argb(255, 255, 255, 255))
         binding.cardMinus.setColorFilter(
             ContextCompat.getColor(this, if (known > 0) R.color.dark_red else R.color.dark_grey),

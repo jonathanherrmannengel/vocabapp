@@ -16,6 +16,9 @@ public interface DB_Pack_DAO {
     @Query("SELECT COUNT(*) FROM db_pack")
     int countPacks();
 
+    @Query("SELECT COUNT(*) FROM db_pack WHERE collection=:cid")
+    int countPacksInCollection(int cid);
+
     @Query("SELECT * FROM db_pack ORDER BY name COLLATE NOCASE ASC, uid DESC")
     List<DB_Pack> getAll();
 
@@ -28,8 +31,14 @@ public interface DB_Pack_DAO {
     @Query("SELECT *, (SELECT COUNT(*) FROM db_card WHERE pack=db_pack.uid) AS counter, (SELECT name FROM db_collection WHERE uid=db_pack.collection) AS collectionName FROM db_pack ORDER BY name COLLATE NOCASE ASC, uid DESC")
     List<DB_Pack_With_Meta> getAllWithMeta();
 
+    @Query("SELECT *, -1 AS counter, (SELECT name FROM db_collection WHERE uid=db_pack.collection) AS collectionName FROM db_pack ORDER BY name COLLATE NOCASE ASC, uid DESC")
+    List<DB_Pack_With_Meta> getAllWithMetaNoCounter();
+
     @Query("SELECT *, (SELECT COUNT(*) FROM db_card WHERE pack=db_pack.uid) AS counter, (SELECT name FROM db_collection WHERE uid=db_pack.collection) AS collectionName FROM db_pack WHERE collection=:cid ORDER BY name COLLATE NOCASE ASC, uid DESC")
     List<DB_Pack_With_Meta> getAllByCollectionWithMeta(int cid);
+
+    @Query("SELECT *, -1 AS counter, (SELECT name FROM db_collection WHERE uid=db_pack.collection) AS collectionName FROM db_pack WHERE collection=:cid ORDER BY name COLLATE NOCASE ASC, uid DESC")
+    List<DB_Pack_With_Meta> getAllByCollectionWithMetaNoCounter(int cid);
 
     @Query("SELECT uid FROM db_pack WHERE collection=:cid ORDER BY name COLLATE NOCASE ASC, uid DESC")
     List<Integer> getAllIDs(int cid);

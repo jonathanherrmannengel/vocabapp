@@ -22,7 +22,7 @@ import de.herrmann_engel.rbv.db.DB_Collection_With_Meta
 import de.herrmann_engel.rbv.utils.StringTools
 
 class AdapterCollections(
-    private val collection: MutableList<DB_Collection_With_Meta>,
+    private val collections: MutableList<DB_Collection_With_Meta>,
     private var uiFontSizeBig: Boolean
 ) :
     RecyclerView.Adapter<AdapterCollections.ViewHolder>() {
@@ -48,13 +48,13 @@ class AdapterCollections(
         val diffResult =
             DiffUtil.calculateDiff(
                 ListCollectionCompare(
-                    collection,
+                    collections,
                     collectionListNew,
                     updateAllContent
                 )
             )
-        collection.clear()
-        collection.addAll(collectionListNew)
+        collections.clear()
+        collections.addAll(collectionListNew)
         diffResult.dispatchUpdatesTo(this)
     }
 
@@ -97,7 +97,7 @@ class AdapterCollections(
         viewHolder.binding.recCollectionsName.textAlignment = View.TEXT_ALIGNMENT_INHERIT
         viewHolder.binding.recCollectionsPreviewText.visibility = View.VISIBLE
         viewHolder.binding.recCollectionsNumberText.visibility = View.VISIBLE
-        if (position == 0 && collection.size == 1) {
+        if (position == 0 && collections.size == 1) {
             val welcomeText =
                 SpannableString(context.resources.getString(R.string.welcome_collection))
             val welcomeTextDrawableAdd = ContextCompat.getDrawable(
@@ -176,8 +176,18 @@ class AdapterCollections(
             viewHolder.binding.recCollectionsDesc.text =
                 viewHolder.binding.recCollectionsDesc.resources.getString(R.string.all_packs_desc)
             viewHolder.binding.recCollectionsPreviewText.text = "…"
-            viewHolder.binding.recCollectionsNumberText.text =
-                collection[position].counter.toString()
+            if (collections[position].counter != -1) {
+                viewHolder.binding.recCollectionsNumberText.visibility = View.VISIBLE
+                viewHolder.binding.recCollectionsNumberText.text =
+                    collections[position].counter.toString()
+                viewHolder.binding.recCollectionsNumberText.contentDescription = String.format(
+                    "%d %s",
+                    collections[position].counter,
+                    context.resources.getString(R.string.items)
+                )
+            } else {
+                viewHolder.binding.recCollectionsNumberText.visibility = View.GONE
+            }
             viewHolder.binding.recCollectionsName.setTextColor(
                 ContextCompat.getColor(
                     context,
@@ -217,7 +227,7 @@ class AdapterCollections(
                 )
             )
         } else {
-            val currentCollection = collection[position].collection
+            val currentCollection = collections[position].collection
             val extra = currentCollection.uid
             viewHolder.binding.root.setOnClickListener {
                 val intent = Intent(
@@ -244,8 +254,18 @@ class AdapterCollections(
                 } else {
                     emojiText
                 }
-            viewHolder.binding.recCollectionsNumberText.text =
-                collection[position].counter.toString()
+            if (collections[position].counter != -1) {
+                viewHolder.binding.recCollectionsNumberText.visibility = View.VISIBLE
+                viewHolder.binding.recCollectionsNumberText.text =
+                    collections[position].counter.toString()
+                viewHolder.binding.recCollectionsNumberText.contentDescription = String.format(
+                    "%d %s",
+                    collections[position].counter,
+                    context.resources.getString(R.string.items)
+                )
+            } else {
+                viewHolder.binding.recCollectionsNumberText.visibility = View.GONE
+            }
             val color = currentCollection.colors
             val colors =
                 context.resources.obtainTypedArray(R.array.pack_color_list)
@@ -279,6 +299,6 @@ class AdapterCollections(
     }
 
     override fun getItemCount(): Int {
-        return collection.size
+        return collections.size
     }
 }
