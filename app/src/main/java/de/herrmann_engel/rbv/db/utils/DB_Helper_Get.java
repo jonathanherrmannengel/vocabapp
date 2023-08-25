@@ -170,10 +170,7 @@ public class DB_Helper_Get {
     }
 
     public List<DB_Card_With_Meta> getAllCardsByCollectionWithMeta(int collection) {
-        List<DB_Pack> packs = getAllPacksByCollection(collection);
-        List<DB_Card_With_Meta> list = new ArrayList<>();
-        packs.forEach((currentPack) -> list.addAll(getAllCardsByPackWithMeta(currentPack.uid)));
-        return list;
+        return dbHelper.card_dao.getAllByCollectionWithMeta(collection);
     }
 
     public List<DB_Card_With_Meta> getAllCardsByProgressWithMeta(boolean progressGreater, int progressNumber) {

@@ -34,6 +34,9 @@ public interface DB_Card_DAO {
     @Query("SELECT *, (SELECT colors FROM db_pack WHERE uid=db_card.pack) AS packColor FROM db_card WHERE pack=:pid")
     List<DB_Card_With_Meta> getAllByPackWithMeta(int pid);
 
+    @Query("SELECT *, (SELECT colors FROM db_pack WHERE uid=db_card.pack) AS packColor FROM db_card WHERE pack IN (SELECT uid FROM db_pack WHERE collection=:cid)")
+    List<DB_Card_With_Meta> getAllByCollectionWithMeta(int cid);
+
     @Query("SELECT *, (SELECT colors FROM db_pack WHERE uid=db_card.pack) AS packColor FROM db_card WHERE known>=:progress")
     List<DB_Card_With_Meta> getAllGreaterEqualWithMeta(int progress);
 
