@@ -49,6 +49,9 @@ public interface DB_Card_DAO {
     @Query("SELECT *, (SELECT colors FROM db_pack WHERE uid=db_card.pack) AS packColor FROM db_card WHERE pack=:pid AND known<=:progress")
     List<DB_Card_With_Meta> getAllLessEqualWithMeta(int pid, int progress);
 
+    @Query("SELECT db_card.*, (SELECT colors FROM db_pack WHERE uid=db_card.pack) AS packColor FROM db_card INNER JOIN db_media_link_card ON db_card.uid = db_media_link_card.cardId WHERE db_media_link_card.fileId=:fileId")
+    List<DB_Card_With_Meta> getAllByMedia(int fileId);
+
     @Query("SELECT * FROM db_card WHERE uid=:cid")
     List<DB_Card> getOne(int cid);
 

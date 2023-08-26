@@ -35,6 +35,10 @@ public class DB_Helper_Get {
         return dbHelper.media_dao.hasMedia();
     }
 
+    public boolean mediaHasLink(int file) {
+        return dbHelper.media_link_card_dao.mediaHasLink(file);
+    }
+
     //Count
     public int countCollections() {
         return dbHelper.collection_dao.countCollections();
@@ -204,16 +208,7 @@ public class DB_Helper_Get {
     }
 
     public List<DB_Card_With_Meta> getAllCardsByMediaWithMeta(int mediaId) {
-        List<Integer> cardIds = dbHelper.media_link_card_dao.getAllCardIdsByMedia(mediaId);
-        List<DB_Card_With_Meta> list = new ArrayList<>();
-        cardIds.forEach(id -> {
-            try {
-                list.add(getSingleCardWithMeta(id));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
-        return list;
+        return dbHelper.card_dao.getAllByMedia(mediaId);
     }
 
     //Get All: Media
@@ -232,10 +227,6 @@ public class DB_Helper_Get {
 
     public List<Integer> getAllMediaLinkFileIdsByCard(int card) {
         return dbHelper.media_link_card_dao.getAllMediaIdsByCard(card);
-    }
-
-    public List<DB_Media_Link_Card> getAllMediaLinksByFile(int file) {
-        return dbHelper.media_link_card_dao.getAllByMedia(file);
     }
 
     public List<DB_Media_Link_Card> getImageMediaLinksByCard(int card) {

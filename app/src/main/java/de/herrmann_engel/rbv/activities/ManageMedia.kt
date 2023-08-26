@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import de.herrmann_engel.rbv.adapters.AdapterMediaManage
 import de.herrmann_engel.rbv.databinding.ActivityManageMediaBinding
 import de.herrmann_engel.rbv.db.DB_Media
+import de.herrmann_engel.rbv.db.utils.DB_Helper_Delete
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 
 class ManageMedia : FileTools() {
@@ -33,6 +34,8 @@ class ManageMedia : FileTools() {
 
     override fun notifyMissingAction(id: Int) {}
     private fun setRecView() {
+        val dbHelperDelete = DB_Helper_Delete(this)
+        dbHelperDelete.deleteDeadMediaLinks()
         val dbHelperGet = DB_Helper_Get(this)
         val mediaList = dbHelperGet.allMedia as ArrayList<DB_Media>
         val adapter = AdapterMediaManage(mediaList)

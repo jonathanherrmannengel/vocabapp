@@ -100,7 +100,7 @@ class AdapterMediaLinkCard(
         mediaLinks.remove(currentMediaLink)
         notifyItemRemoved(position)
         notifyItemRangeChanged(position, mediaLinks.size)
-        if (dbHelperGet.getAllMediaLinksByFile(fileId).size == 0) {
+        if (!dbHelperGet.mediaHasLink(fileId)) {
             dbHelperDelete.deleteMedia(fileId)
             return true
         }

@@ -61,7 +61,7 @@ public class DB_Helper_Delete {
         List<Integer> fileIds = dbHelperGet.getAllMediaLinkFileIdsByCard(card.uid);
         dbHelper.media_link_card_dao.deleteMediaLinksByCard(card.uid);
         fileIds.forEach(fileId -> {
-            if (dbHelperGet.getAllMediaLinksByFile(fileId).isEmpty()) {
+            if (!dbHelperGet.mediaHasLink(fileId)) {
                 deleteMedia(fileId);
             }
         });
@@ -70,10 +70,15 @@ public class DB_Helper_Delete {
     }
 
     public void deleteMedia(int file) {
+        dbHelper.media_link_card_dao.deleteMediaLinksByMedia(file);
         dbHelper.media_dao.deleteMedia(file);
     }
 
     public void deleteMediaLink(int file, int card) {
         dbHelper.media_link_card_dao.deleteMediaLinkCard(file, card);
+    }
+
+    public void deleteDeadMediaLinks() {
+        dbHelper.media_link_card_dao.deleteDeadMediaLinks();
     }
 }
