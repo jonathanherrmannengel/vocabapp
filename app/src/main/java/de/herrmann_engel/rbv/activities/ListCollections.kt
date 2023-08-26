@@ -21,6 +21,7 @@ import de.herrmann_engel.rbv.databinding.ActivityDefaultRecBinding
 import de.herrmann_engel.rbv.databinding.DiaExportBinding
 import de.herrmann_engel.rbv.databinding.DiaImportBinding
 import de.herrmann_engel.rbv.db.DB_Collection_With_Meta
+import de.herrmann_engel.rbv.db.utils.DB_Helper_Delete
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.export_import.AsyncExport
 import de.herrmann_engel.rbv.export_import.AsyncExportFinish
@@ -28,6 +29,8 @@ import de.herrmann_engel.rbv.export_import.AsyncExportProgress
 import de.herrmann_engel.rbv.export_import.AsyncImport
 import de.herrmann_engel.rbv.export_import.AsyncImportFinish
 import de.herrmann_engel.rbv.export_import.AsyncImportProgress
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 import java.io.File
 
 class ListCollections : FileTools(), AsyncImportFinish, AsyncImportProgress, AsyncExportFinish,
@@ -80,7 +83,6 @@ class ListCollections : FileTools(), AsyncImportFinish, AsyncImportProgress, Asy
         setContentView(binding.root)
         dbHelperGet = DB_Helper_Get(this)
         setTitle(R.string.app_name)
-        handleNoMediaFile()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -233,6 +235,7 @@ class ListCollections : FileTools(), AsyncImportFinish, AsyncImportProgress, Asy
             binding.backgroundImage.visibility = View.GONE
         }
         updateSettingsAndContent()
+        MainScope().launch { cleanUp() }
     }
 
     public override fun onDestroy() {
@@ -250,6 +253,12 @@ class ListCollections : FileTools(), AsyncImportFinish, AsyncImportProgress, Asy
         } catch (e: Exception) {
             e.printStackTrace()
         }
+    }
+
+    private fun cleanUp() {
+        handleNoMediaFile()
+        val dbHelperDelete = DB_Helper_Delete(this)
+        dbHelperDelete.deleteDeadMediaLinks()
     }
 
     private fun loadContent(): MutableList<DB_Collection_With_Meta> {
