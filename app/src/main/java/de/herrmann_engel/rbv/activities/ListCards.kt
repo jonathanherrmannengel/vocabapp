@@ -507,6 +507,7 @@ class ListCards : CardActionsActivity() {
 
     private fun queryModeCardKnownChanged(card: DB_Card, known: Int) {
         card.known = known
+        card.lastRepetition = System.currentTimeMillis() / 1000L
         dbHelperUpdate.updateCard(card)
         adapter!!.notifyItemChanged(cardPosition)
     }

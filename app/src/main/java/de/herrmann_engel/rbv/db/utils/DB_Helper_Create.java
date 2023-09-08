@@ -54,7 +54,7 @@ public class DB_Helper_Create {
         return createPack(name, desc, collection, 0, null, System.currentTimeMillis() / 1000L);
     }
 
-    public long createCard(String front, String back, String notes, int pack, int known, long date) throws Exception {
+    public long createCard(String front, String back, String notes, int pack, int known, long date, long lastRepetition) throws Exception {
         DB_Helper_Get dbHelperGet = new DB_Helper_Get(dbHelper.context);
         dbHelperGet.getSinglePack(pack);
         if (!front.isEmpty() && !back.isEmpty()) {
@@ -65,13 +65,14 @@ public class DB_Helper_Create {
             card.known = known;
             card.date = date;
             card.notes = notes;
+            card.lastRepetition = lastRepetition;
             return dbHelper.card_dao.insert(card);
         }
         throw new Exception();
     }
 
     public long createCard(String front, String back, String notes, int pack) throws Exception {
-        return createCard(front, back, notes, pack, 0, System.currentTimeMillis() / 1000L);
+        return createCard(front, back, notes, pack, 0, System.currentTimeMillis() / 1000L, 0);
     }
 
     public long createMedia(String file, String mime) throws Exception {

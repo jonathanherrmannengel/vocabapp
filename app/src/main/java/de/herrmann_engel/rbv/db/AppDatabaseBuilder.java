@@ -47,13 +47,19 @@ public class AppDatabaseBuilder {
             database.execSQL("CREATE TABLE IF NOT EXISTS `db_media_link_card` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `fileId` INTEGER NOT NULL, `cardId` INTEGER NOT NULL)");
         }
     };
+    private final Migration MIGRATION_7_8 = new Migration(7, 8) {
+        @Override
+        public void migrate(SupportSQLiteDatabase database) {
+            database.execSQL("ALTER TABLE db_card ADD COLUMN last_repetition INTEGER DEFAULT 0 NOT NULL");
+        }
+    };
 
     public AppDatabase get(Context context) {
         return Room.databaseBuilder(
                         context,
                         AppDatabase.class, Globals.DB_NAME)
                 .allowMainThreadQueries()
-                .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_6, MIGRATION_6_7)
+                .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_6, MIGRATION_6_7, MIGRATION_7_8)
                 .build();
     }
 }

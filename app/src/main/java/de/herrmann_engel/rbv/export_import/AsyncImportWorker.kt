@@ -162,6 +162,8 @@ class AsyncImportWorker(
                                     val known = Integer.parseInt((line?.get(5) ?: "0"))
                                     val date = Integer.parseInt((line?.get(6) ?: "0")).toLong()
                                     val notes = line?.get(7) ?: ""
+                                    val lastRepetition =
+                                        Integer.parseInt((line?.get(8) ?: "0")).toLong()
                                     val sameNamed =
                                         helperGet.getSingleCardIdByPackAndFrontAndBackAndNotes(
                                             currentPack,
@@ -176,7 +178,8 @@ class AsyncImportWorker(
                                             notes,
                                             currentPack,
                                             known,
-                                            date
+                                            date,
+                                            lastRepetition
                                         ).toInt()
                                         cardUidConverter.insertPair(cardUidOld, cardUidNew)
                                     } else if (mode == Globals.IMPORT_MODE_INTEGRATE) {

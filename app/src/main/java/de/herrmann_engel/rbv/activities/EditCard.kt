@@ -104,7 +104,7 @@ class EditCard : AppCompatActivity() {
 
     private fun close() {
         if (backToList) {
-            val intent = Intent(this@EditCard, ListCards::class.java)
+            val intent = Intent(this, ListCards::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
             intent.putExtra("cardUpdated", card!!.uid)
             startActivity(intent)

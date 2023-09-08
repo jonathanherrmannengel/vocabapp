@@ -23,6 +23,8 @@ public class DB_Card {
     public long date;
     @ColumnInfo(name = "notes")
     public String notes;
+    @ColumnInfo(name = "last_repetition")
+    public long lastRepetition;
 
     @Override
     public boolean equals(Object o) {
