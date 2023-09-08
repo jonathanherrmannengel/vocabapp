@@ -113,6 +113,7 @@
     <string name="query_mode">Abfrage-Modus</string>
     <string name="query_show">Lösung anzeigen</string>
     <string name="query_notes">Notizen anzeigen</string>
+    <string name="query_edit">Karteikarte bearbeiten</string>
     <string name="query_notes_title">Karteikarten Notizen</string>
     <string name="query_media_image_title">Bilddateien</string>
     <string name="query_media_all_title">Alle Mediendateien</string>

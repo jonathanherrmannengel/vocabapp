@@ -133,7 +133,7 @@ class ViewPack : PackActionsActivity() {
             val intent = Intent(this, ListPacks::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK
             intent.putExtra("collection", collectionNo)
-            this.startActivity(intent)
+            startActivity(intent)
         } catch (e: Exception) {
             Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show()
         }

@@ -1,6 +1,7 @@
 package de.herrmann_engel.rbv.activities
 
 import android.app.Dialog
+import android.content.Intent
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.text.InputType
@@ -18,6 +19,7 @@ import de.herrmann_engel.rbv.db.utils.DB_Helper_Update
 
 class EditCard : AppCompatActivity() {
     private lateinit var binding: ActivityEditCardBinding
+    private var backToList = false
     private var card: DB_Card? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,6 +27,7 @@ class EditCard : AppCompatActivity() {
         setContentView(binding.root)
         val dbHelperGet = DB_Helper_Get(this)
         val cardNo = intent.extras!!.getInt("card")
+        backToList = intent.extras!!.getBoolean("backToList")
         try {
             card = dbHelperGet.getSingleCard(cardNo)
             binding.editCardFront.setText(card!!.front)
@@ -62,7 +65,7 @@ class EditCard : AppCompatActivity() {
                 val back = binding.editCardBack.text.toString()
                 val notes = binding.editCardNotes.text.toString()
                 if (card == null || card!!.front == front && card!!.back == back && card!!.notes == notes) {
-                    finish()
+                    close()
                 } else {
                     val confirmCancelDialog = Dialog(this@EditCard, R.style.dia_view)
                     val bindingConfirmCancelDialog = DiaConfirmBinding.inflate(
@@ -74,7 +77,7 @@ class EditCard : AppCompatActivity() {
                         WindowManager.LayoutParams.MATCH_PARENT,
                         WindowManager.LayoutParams.MATCH_PARENT
                     )
-                    bindingConfirmCancelDialog.diaConfirmYes.setOnClickListener { finish() }
+                    bindingConfirmCancelDialog.diaConfirmYes.setOnClickListener { close() }
                     bindingConfirmCancelDialog.diaConfirmNo.setOnClickListener { confirmCancelDialog.dismiss() }
                     confirmCancelDialog.show()
                 }
@@ -90,12 +93,23 @@ class EditCard : AppCompatActivity() {
             card!!.notes = binding.editCardNotes.text.toString()
             val dbHelperUpdate = DB_Helper_Update(this)
             if (dbHelperUpdate.updateCard(card)) {
-                finish()
+                close()
             } else {
                 Toast.makeText(this, R.string.error_values, Toast.LENGTH_SHORT).show()
             }
             return@setOnMenuItemClickListener true
         }
         return true
+    }
+
+    private fun close() {
+        if (backToList) {
+            val intent = Intent(this@EditCard, ListCards::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+            intent.putExtra("cardUpdated", card!!.uid)
+            startActivity(intent)
+        } else {
+            finish()
+        }
     }
 }

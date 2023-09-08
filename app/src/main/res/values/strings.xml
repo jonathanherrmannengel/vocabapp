@@ -118,6 +118,7 @@
     <string name="query_mode">query mode</string>
     <string name="query_show">show solution</string>
     <string name="query_notes">show notes</string>
+    <string name="query_edit">edit flashcard</string>
     <string name="query_notes_title">flashcard notes</string>
     <string name="query_media_all" translatable="false">@string/show_all_media</string>
     <string name="query_media_all_title">all media files</string>

@@ -58,8 +58,8 @@
 
                 <ImageButton
                     android:id="@+id/query_back"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
                     android:layout_margin="6dp"
                     android:background="@android:color/transparent"
                     android:contentDescription="@string/back"
@@ -68,8 +68,8 @@
 
                 <ImageButton
                     android:id="@+id/query_plus"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
                     android:layout_margin="6dp"
                     android:background="@android:color/transparent"
                     android:contentDescription="@string/card_plus"
@@ -78,8 +78,8 @@
 
                 <ImageButton
                     android:id="@+id/query_minus"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
                     android:layout_margin="6dp"
                     android:background="@android:color/transparent"
                     android:contentDescription="@string/card_minus"
@@ -88,8 +88,8 @@
 
                 <ImageButton
                     android:id="@+id/query_skip"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
                     android:layout_margin="6dp"
                     android:background="@android:color/transparent"
                     android:contentDescription="@string/skip"
@@ -113,6 +113,12 @@
                 android:id="@+id/query_button_notes"
                 style="@style/material_button"
                 android:text="@string/query_notes"
+                android:textSize="14sp" />
+
+            <Button
+                android:id="@+id/query_button_edit"
+                style="@style/material_button"
+                android:text="@string/query_edit"
                 android:textSize="14sp" />
         </LinearLayout>
     </ScrollView>

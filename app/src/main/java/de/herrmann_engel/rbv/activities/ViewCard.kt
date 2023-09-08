@@ -251,7 +251,7 @@ class ViewCard : CardActionsActivity() {
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK
             intent.putExtra("collection", collectionNo)
             intent.putExtra("pack", packNo)
-            this.startActivity(intent)
+            startActivity(intent)
         } catch (e: Exception) {
             Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show()
         }
@@ -261,7 +261,7 @@ class ViewCard : CardActionsActivity() {
         val intent = Intent(this, ListCards::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
         intent.putExtra("cardDeleted", cardNo)
-        this.startActivity(intent)
+        startActivity(intent)
     }
 
     private fun setMediaButtons() {

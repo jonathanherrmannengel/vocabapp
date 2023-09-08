@@ -63,6 +63,8 @@ class ListCards : CardActionsActivity() {
     private var searchCardsOffMenuItem: MenuItem? = null
     private var showQueryModeMenuItem: MenuItem? = null
     private var showListStatsMenuItem: MenuItem? = null
+    private lateinit var queryModeDialog: Dialog
+    private lateinit var bindingQueryModeDialog: DiaQueryBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityDefaultRecBinding.inflate(layoutInflater)
@@ -85,6 +87,10 @@ class ListCards : CardActionsActivity() {
                 )
             )
         }
+        queryModeDialog = Dialog(this, R.style.dia_view)
+        bindingQueryModeDialog = DiaQueryBinding.inflate(
+            layoutInflater
+        )
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -270,6 +276,9 @@ class ListCards : CardActionsActivity() {
 
         //Display content
         updateContent()
+        if (queryModeDialog.isShowing) {
+            nextQuery(true)
+        }
     }
 
     @SuppressLint("SetTextI18n")
@@ -310,10 +319,6 @@ class ListCards : CardActionsActivity() {
         }
         showQueryModeMenuItem = menu.findItem(R.id.start_query)
         showQueryModeMenuItem!!.setOnMenuItemClickListener {
-            val queryModeDialog = Dialog(this, R.style.dia_view)
-            val bindingQueryModeDialog = DiaQueryBinding.inflate(
-                layoutInflater
-            )
             queryModeDialog.setContentView(bindingQueryModeDialog.root)
             queryModeDialog.setTitle(resources.getString(R.string.query_mode))
             queryModeDialog.window!!.setLayout(
@@ -324,7 +329,7 @@ class ListCards : CardActionsActivity() {
                 (binding.recDefault.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
                     .coerceAtMost(cardsListFiltered!!.size - 1)
                     .coerceAtMost(binding.recDefault.adapter!!.itemCount - 1)
-            nextQuery(queryModeDialog, bindingQueryModeDialog)
+            nextQuery()
             queryModeDialog.setOnKeyListener { _, keyCode: Int, event: KeyEvent ->
                 if (keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
                     queryModeDialog.dismiss()
@@ -480,29 +485,23 @@ class ListCards : CardActionsActivity() {
         SortCards().sortCards(cardsList!!, listSort)
     }
 
-    private fun queryModeSkipAction(
-        queryModeDialog: Dialog,
-        bindingQueryModeDialog: DiaQueryBinding
-    ) {
+    private fun queryModeSkipAction() {
         cardPosition++
         if (cardPosition >= cardsListFiltered!!.size) {
             queryModeDialog.dismiss()
             binding.recDefault.scrollToPosition(0)
         } else {
-            nextQuery(queryModeDialog, bindingQueryModeDialog)
+            nextQuery()
         }
     }
 
-    private fun queryModePreviousAction(
-        queryModeDialog: Dialog,
-        bindingQueryModeDialog: DiaQueryBinding
-    ) {
+    private fun queryModePreviousAction() {
         cardPosition--
         if (cardPosition < 0) {
             queryModeDialog.dismiss()
             binding.recDefault.scrollToPosition(0)
         } else {
-            nextQuery(queryModeDialog, bindingQueryModeDialog)
+            nextQuery()
         }
     }
 
@@ -512,11 +511,7 @@ class ListCards : CardActionsActivity() {
         adapter!!.notifyItemChanged(cardPosition)
     }
 
-    private fun queryModePlusAction(
-        queryModeDialog: Dialog,
-        bindingQueryModeDialog: DiaQueryBinding,
-        card: DB_Card
-    ) {
+    private fun queryModePlusAction(card: DB_Card) {
         val known = card.known + 1
         queryModeCardKnownChanged(card, known)
         cardPosition++
@@ -524,15 +519,11 @@ class ListCards : CardActionsActivity() {
             queryModeDialog.dismiss()
             binding.recDefault.scrollToPosition(0)
         } else {
-            nextQuery(queryModeDialog, bindingQueryModeDialog)
+            nextQuery()
         }
     }
 
-    private fun queryModeMinusAction(
-        queryModeDialog: Dialog,
-        bindingQueryModeDialog: DiaQueryBinding,
-        card: DB_Card
-    ) {
+    private fun queryModeMinusAction(card: DB_Card) {
         val known = 0.coerceAtLeast(card.known - 1)
         queryModeCardKnownChanged(card, known)
         cardPosition++
@@ -540,35 +531,20 @@ class ListCards : CardActionsActivity() {
             queryModeDialog.dismiss()
             binding.recDefault.scrollToPosition(0)
         } else {
-            nextQuery(queryModeDialog, bindingQueryModeDialog)
+            nextQuery()
         }
     }
 
+    private fun nextQuery() {
+        nextQuery(false)
+    }
+
     @SuppressLint("ClickableViewAccessibility")
-    private fun nextQuery(queryModeDialog: Dialog, bindingQueryModeDialog: DiaQueryBinding) {
-        val rootBackground = bindingQueryModeDialog.root.background as LayerDrawable
+    private fun nextQuery(onlyUpdate: Boolean) {
         try {
             val cardWithMeta = cardsListFiltered!![cardPosition]
             val card = cardWithMeta.card
-            try {
-                val colorsBackgroundQuery =
-                    resources.obtainTypedArray(R.array.pack_color_background_query)
-                val colorsBackgroundHighlight = resources
-                    .obtainTypedArray(R.array.pack_color_background_highlight)
-                val packColors = cardWithMeta.packColor
-                if (packColors >= 0 && packColors < colorsBackgroundQuery.length() && packColors < colorsBackgroundHighlight.length()) {
-                    val colorBackgroundQuery = colorsBackgroundQuery.getColor(packColors, 0)
-                    val colorBackgroundHighlight = colorsBackgroundHighlight.getColor(packColors, 0)
-                    val rootBackgroundMain =
-                        rootBackground.findDrawableByLayerId(R.id.dia_query_root_background_main) as GradientDrawable
-                    rootBackgroundMain.setColor(colorBackgroundQuery)
-                    bindingQueryModeDialog.queryHide.setBackgroundColor(colorBackgroundHighlight)
-                }
-                colorsBackgroundQuery.recycle()
-                colorsBackgroundHighlight.recycle()
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+
             val front: SpannableString
             val back: SpannableString
             val formatString = StringTools()
@@ -589,31 +565,7 @@ class ListCards : CardActionsActivity() {
             }
             bindingQueryModeDialog.queryShow.text = front
             bindingQueryModeDialog.queryHide.text = back
-            bindingQueryModeDialog.queryHide.visibility = View.GONE
-            val imageList =
-                dbHelperGet.getImageMediaLinksByCard(card.uid) as ArrayList<DB_Media_Link_Card>
-            if (imageList.isEmpty()) {
-                bindingQueryModeDialog.queryButtonMediaImage.visibility = View.INVISIBLE
-            } else {
-                bindingQueryModeDialog.queryButtonMediaImage.visibility = View.VISIBLE
-                bindingQueryModeDialog.queryButtonMediaImage.setOnClickListener {
-                    showImageListDialog(
-                        imageList
-                    )
-                }
-            }
-            val mediaList =
-                dbHelperGet.getAllMediaLinksByCard(card.uid) as ArrayList<DB_Media_Link_Card>
-            if (mediaList.isEmpty()) {
-                bindingQueryModeDialog.queryButtonMediaOther.visibility = View.INVISIBLE
-            } else {
-                bindingQueryModeDialog.queryButtonMediaOther.visibility = View.VISIBLE
-                bindingQueryModeDialog.queryButtonMediaOther.setOnClickListener {
-                    showMediaListDialog(
-                        mediaList
-                    )
-                }
-            }
+
             if (card.notes == null || card.notes.isEmpty()) {
                 bindingQueryModeDialog.queryButtonNotes.visibility = View.INVISIBLE
             } else {
@@ -649,6 +601,8 @@ class ListCards : CardActionsActivity() {
                     infoDialog.show()
                 }
             }
+
+            val rootBackground = bindingQueryModeDialog.root.background as LayerDrawable
             val rootBackgroundLeft =
                 rootBackground.findDrawableByLayerId(R.id.dia_query_root_background_left) as GradientDrawable
             val rootBackgroundTop =
@@ -656,8 +610,6 @@ class ListCards : CardActionsActivity() {
             val rootBackgroundBottom =
                 rootBackground.findDrawableByLayerId(R.id.dia_query_root_background_bottom) as GradientDrawable
             rootBackgroundLeft.alpha = if (cardPosition > 0) 255 else 0
-            rootBackgroundTop.alpha = 0
-            rootBackgroundBottom.alpha = 0
             bindingQueryModeDialog.root.setOnTouchListener(object : SwipeEvents() {
                 val ANIM_GROW_TIME = 150
                 val ANIM_DISPlAY_TIME = 300
@@ -721,7 +673,7 @@ class ListCards : CardActionsActivity() {
                             override fun onAnimationEnd(animation: Animator) {
                                 Handler(Looper.getMainLooper()).postDelayed(
                                     {
-                                        queryModeSkipAction(queryModeDialog, bindingQueryModeDialog)
+                                        queryModeSkipAction()
                                         allowTouchEvent = true
                                         onMoveCancel()
                                     },
@@ -752,10 +704,7 @@ class ListCards : CardActionsActivity() {
                             override fun onAnimationEnd(animation: Animator) {
                                 Handler(Looper.getMainLooper()).postDelayed(
                                     {
-                                        queryModePreviousAction(
-                                            queryModeDialog,
-                                            bindingQueryModeDialog
-                                        )
+                                        queryModePreviousAction()
                                         allowTouchEvent = true
                                         onMoveCancel()
                                     },
@@ -786,11 +735,7 @@ class ListCards : CardActionsActivity() {
                             override fun onAnimationEnd(animation: Animator) {
                                 Handler(Looper.getMainLooper()).postDelayed(
                                     {
-                                        queryModePlusAction(
-                                            queryModeDialog,
-                                            bindingQueryModeDialog,
-                                            card
-                                        )
+                                        queryModePlusAction(card)
                                         allowTouchEvent = true
                                         onMoveCancel()
                                     },
@@ -821,11 +766,7 @@ class ListCards : CardActionsActivity() {
                             override fun onAnimationEnd(animation: Animator) {
                                 Handler(Looper.getMainLooper()).postDelayed(
                                     {
-                                        queryModeMinusAction(
-                                            queryModeDialog,
-                                            bindingQueryModeDialog,
-                                            card
-                                        )
+                                        queryModeMinusAction(card)
                                         allowTouchEvent = true
                                         onMoveCancel()
                                     },
@@ -839,47 +780,94 @@ class ListCards : CardActionsActivity() {
                     }
                 }
             })
-            bindingQueryModeDialog.queryPlus.visibility = View.GONE
-            bindingQueryModeDialog.queryMinus.visibility = View.GONE
-            bindingQueryModeDialog.querySkip.setOnClickListener {
-                queryModeSkipAction(
-                    queryModeDialog,
-                    bindingQueryModeDialog
-                )
+            bindingQueryModeDialog.queryPlus.setOnClickListener {
+                queryModePlusAction(card)
             }
-            if (cardPosition == 0) {
-                bindingQueryModeDialog.queryBack.visibility = View.INVISIBLE
-            } else {
-                bindingQueryModeDialog.queryBack.visibility = View.VISIBLE
-                bindingQueryModeDialog.queryBack.setOnClickListener {
-                    queryModePreviousAction(
-                        queryModeDialog,
-                        bindingQueryModeDialog
-                    )
-                }
+            bindingQueryModeDialog.queryMinus.setOnClickListener {
+                queryModeMinusAction(card)
             }
-            bindingQueryModeDialog.queryButtonHide.visibility = View.VISIBLE
-            bindingQueryModeDialog.queryButtonHide.setOnClickListener {
-                bindingQueryModeDialog.queryButtonHide.visibility = View.GONE
-                bindingQueryModeDialog.queryHide.visibility = View.VISIBLE
-                bindingQueryModeDialog.queryPlus.visibility = View.VISIBLE
-                bindingQueryModeDialog.queryMinus.visibility = View.VISIBLE
-                bindingQueryModeDialog.queryPlus.setOnClickListener {
-                    queryModePlusAction(
-                        queryModeDialog,
-                        bindingQueryModeDialog,
-                        card
-                    )
+
+            if (!onlyUpdate) {
+                try {
+                    val colorsBackgroundQuery =
+                        resources.obtainTypedArray(R.array.pack_color_background_query)
+                    val colorsBackgroundHighlight = resources
+                        .obtainTypedArray(R.array.pack_color_background_highlight)
+                    val packColors = cardWithMeta.packColor
+                    if (packColors >= 0 && packColors < colorsBackgroundQuery.length() && packColors < colorsBackgroundHighlight.length()) {
+                        val colorBackgroundQuery = colorsBackgroundQuery.getColor(packColors, 0)
+                        val colorBackgroundHighlight =
+                            colorsBackgroundHighlight.getColor(packColors, 0)
+                        val rootBackgroundMain =
+                            rootBackground.findDrawableByLayerId(R.id.dia_query_root_background_main) as GradientDrawable
+                        rootBackgroundMain.setColor(colorBackgroundQuery)
+                        bindingQueryModeDialog.queryHide.setBackgroundColor(colorBackgroundHighlight)
+                    }
+                    colorsBackgroundQuery.recycle()
+                    colorsBackgroundHighlight.recycle()
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
-                bindingQueryModeDialog.queryMinus.setOnClickListener {
-                    queryModeMinusAction(
-                        queryModeDialog,
-                        bindingQueryModeDialog,
-                        card
-                    )
+
+                val imageList =
+                    dbHelperGet.getImageMediaLinksByCard(card.uid) as ArrayList<DB_Media_Link_Card>
+                if (imageList.isEmpty()) {
+                    bindingQueryModeDialog.queryButtonMediaImage.visibility = View.INVISIBLE
+                } else {
+                    bindingQueryModeDialog.queryButtonMediaImage.visibility = View.VISIBLE
+                    bindingQueryModeDialog.queryButtonMediaImage.setOnClickListener {
+                        showImageListDialog(
+                            imageList
+                        )
+                    }
                 }
-                rootBackgroundTop.alpha = 255
-                rootBackgroundBottom.alpha = 255
+                val mediaList =
+                    dbHelperGet.getAllMediaLinksByCard(card.uid) as ArrayList<DB_Media_Link_Card>
+                if (mediaList.isEmpty()) {
+                    bindingQueryModeDialog.queryButtonMediaOther.visibility = View.INVISIBLE
+                } else {
+                    bindingQueryModeDialog.queryButtonMediaOther.visibility = View.VISIBLE
+                    bindingQueryModeDialog.queryButtonMediaOther.setOnClickListener {
+                        showMediaListDialog(
+                            mediaList
+                        )
+                    }
+                }
+
+                rootBackgroundTop.alpha = 0
+                rootBackgroundBottom.alpha = 0
+
+                bindingQueryModeDialog.queryPlus.visibility = View.GONE
+                bindingQueryModeDialog.queryMinus.visibility = View.GONE
+                bindingQueryModeDialog.querySkip.setOnClickListener {
+                    queryModeSkipAction()
+                }
+                if (cardPosition == 0) {
+                    bindingQueryModeDialog.queryBack.visibility = View.INVISIBLE
+                } else {
+                    bindingQueryModeDialog.queryBack.visibility = View.VISIBLE
+                    bindingQueryModeDialog.queryBack.setOnClickListener {
+                        queryModePreviousAction()
+                    }
+                }
+                bindingQueryModeDialog.queryHide.visibility = View.GONE
+                bindingQueryModeDialog.queryButtonEdit.visibility = View.INVISIBLE
+                bindingQueryModeDialog.queryButtonHide.visibility = View.VISIBLE
+                bindingQueryModeDialog.queryButtonHide.setOnClickListener {
+                    bindingQueryModeDialog.queryButtonHide.visibility = View.GONE
+                    bindingQueryModeDialog.queryHide.visibility = View.VISIBLE
+                    bindingQueryModeDialog.queryPlus.visibility = View.VISIBLE
+                    bindingQueryModeDialog.queryMinus.visibility = View.VISIBLE
+                    rootBackgroundTop.alpha = 255
+                    rootBackgroundBottom.alpha = 255
+                    bindingQueryModeDialog.queryButtonEdit.visibility = View.VISIBLE
+                    bindingQueryModeDialog.queryButtonEdit.setOnClickListener {
+                        val intent = Intent(this, EditCard::class.java)
+                        intent.putExtra("card", card.uid)
+                        intent.putExtra("backToList", true)
+                        this.startActivity(intent)
+                    }
+                }
             }
         } catch (e: Exception) {
             e.printStackTrace()
