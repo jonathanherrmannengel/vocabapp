@@ -83,6 +83,7 @@ class ListCollections : FileTools(), AsyncImportFinish, AsyncImportProgress, Asy
         setContentView(binding.root)
         dbHelperGet = DB_Helper_Get(this)
         setTitle(R.string.app_name)
+        MainScope().launch { cleanUp() }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -235,7 +236,6 @@ class ListCollections : FileTools(), AsyncImportFinish, AsyncImportProgress, Asy
             binding.backgroundImage.visibility = View.GONE
         }
         updateSettingsAndContent()
-        MainScope().launch { cleanUp() }
     }
 
     public override fun onDestroy() {
