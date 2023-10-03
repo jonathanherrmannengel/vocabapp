@@ -320,7 +320,6 @@ class ListCards : CardActionsActivity() {
         showQueryModeMenuItem = menu.findItem(R.id.start_query)
         showQueryModeMenuItem!!.setOnMenuItemClickListener {
             queryModeDialog.setContentView(bindingQueryModeDialog.root)
-            queryModeDialog.setTitle(resources.getString(R.string.query_mode))
             queryModeDialog.window!!.setLayout(
                 WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.MATCH_PARENT
@@ -789,6 +788,15 @@ class ListCards : CardActionsActivity() {
             }
 
             if (!onlyUpdate) {
+                queryModeDialog.setTitle(
+                    String.format(
+                        resources.getString(R.string.query_mode_title),
+                        resources.getString(R.string.query_mode),
+                        cardPosition + 1,
+                        cardsListFiltered!!.size
+                    )
+                )
+
                 try {
                     val colorsBackgroundQuery =
                         resources.obtainTypedArray(R.array.pack_color_background_query)

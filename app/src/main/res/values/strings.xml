@@ -116,6 +116,7 @@
     <string name="back">back</string>
     <string name="card_known">progress</string>
     <string name="query_mode">query mode</string>
+    <string name="query_mode_title">%1$s (%2$d of %3$d)</string>
     <string name="query_show">show solution</string>
     <string name="query_notes">show notes</string>
     <string name="query_edit">edit flashcard</string>

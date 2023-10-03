@@ -111,6 +111,7 @@
     <string name="back">zurück</string>
     <string name="card_known">Fortschritt</string>
     <string name="query_mode">Abfrage-Modus</string>
+    <string name="query_mode_title">%1$s (%2$d von %3$d)</string>
     <string name="query_show">Lösung anzeigen</string>
     <string name="query_notes">Notizen anzeigen</string>
     <string name="query_edit">Karteikarte bearbeiten</string>
