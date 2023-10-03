@@ -102,11 +102,11 @@
                 android:textColorHint="@color/light_black" />
 
             <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_margin="30dp"
-            android:background="@color/button"
-            android:importantForAccessibility="no" />
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_margin="30dp"
+                android:background="@color/button"
+                android:importantForAccessibility="no" />
 
             <TextView
                 android:layout_width="wrap_content"

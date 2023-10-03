@@ -34,6 +34,10 @@ class SortCards {
                 list.shuffle()
             }
 
+            Globals.SORT_REPETITION -> {
+                list.sortWith(compareByDescending<DB_Card_With_Meta?> { it?.card?.lastRepetition }.thenByDescending { it?.card?.date })
+            }
+
             else -> {
                 list.sortWith(compareBy<DB_Card_With_Meta?> { it?.card?.known }.thenByDescending { it?.card?.date })
             }

@@ -108,6 +108,7 @@
     <string name="sort_random">sort randomly</string>
     <string name="sort_normal">sort by progress</string>
     <string name="sort_alphabetical">sort alphabetical by flashcard front</string>
+    <string name="sort_repetition">sort by last repetition</string>
     <string name="collection_details">filing box details</string>
     <string name="pack_details">deck details</string>
     <string name="card_plus">got it right</string>

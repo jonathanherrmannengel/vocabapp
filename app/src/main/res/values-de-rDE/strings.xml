@@ -103,6 +103,7 @@
     <string name="sort_random">Zufallssortierung</string>
     <string name="sort_normal">Sortierung nach Lernfortschritt</string>
     <string name="sort_alphabetical">Alphabetische Sortierung nach Karteikarten-Vorderseite</string>
+    <string name="sort_repetition">Sortiertung nach letzter Wiederholung</string>
     <string name="collection_details">Karteikasten-Details</string>
     <string name="pack_details">Kartenstapel-Details</string>
     <string name="card_plus">Gewusst</string>

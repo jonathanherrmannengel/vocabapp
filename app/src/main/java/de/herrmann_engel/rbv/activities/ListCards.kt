@@ -472,6 +472,10 @@ class ListCards : CardActionsActivity() {
             }
 
             Globals.SORT_ALPHABETICAL -> {
+                changeListSortMenuItem!!.setTitle(R.string.sort_repetition)
+            }
+
+            Globals.SORT_REPETITION -> {
                 changeListSortMenuItem!!.setTitle(R.string.sort_normal)
             }
 

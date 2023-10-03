@@ -28,6 +28,10 @@ class Settings : FileTools() {
                 binding.settingsSortRandom.isChecked = true
             }
 
+            Globals.SORT_REPETITION -> {
+                binding.settingsSortRepetition.isChecked = true
+            }
+
             else -> {
                 binding.settingsSortNormal.isChecked = true
             }
@@ -38,6 +42,8 @@ class Settings : FileTools() {
                 sortNew = Globals.SORT_ALPHABETICAL
             } else if (id == R.id.settings_sort_random) {
                 sortNew = Globals.SORT_RANDOM
+            } else if (id == R.id.settings_sort_repetition) {
+                sortNew = Globals.SORT_REPETITION
             }
             settingsEdit.putInt("default_sort", sortNew)
             settingsEdit.apply()
