@@ -53,6 +53,8 @@ class ListCards : CardActionsActivity() {
     private var packNos: ArrayList<Int>? = null
     private var progressGreater = false
     private var progressNumber = 0
+    private var repetitionOlder = false
+    private var repetitionNumber = 0
     private var frontBackReverse = false
     private var listSort = 0
     private var searchQuery: String? = null
@@ -78,6 +80,8 @@ class ListCards : CardActionsActivity() {
         packNos = intent.extras!!.getIntegerArrayList("packs")
         progressGreater = intent.extras!!.getBoolean("progressGreater")
         progressNumber = intent.extras!!.getInt("progressNumber")
+        repetitionOlder = intent.extras!!.getBoolean("repetitionOlder")
+        repetitionNumber = intent.extras!!.getInt("repetitionNumber")
         if (settings!!.getBoolean("ui_bg_images", true)) {
             binding.backgroundImage.visibility = View.VISIBLE
             binding.backgroundImage.setImageDrawable(
@@ -214,13 +218,21 @@ class ListCards : CardActionsActivity() {
             } else if (packNo == -1) {
                 dbHelperGet.getAllCardsByCollectionWithMeta(collectionNo)
             } else if (packNo == -2) {
-                dbHelperGet.getAllCardsByPacksAndProgressWithMeta(
+                dbHelperGet.getAllCardsWithMetaFiltered(
                     packNos,
                     progressGreater,
-                    progressNumber
+                    progressNumber,
+                    repetitionOlder,
+                    repetitionNumber
                 )
             } else if (packNo == -3) {
-                dbHelperGet.getAllCardsByProgressWithMeta(progressGreater, progressNumber)
+                dbHelperGet.getAllCardsWithMetaFiltered(
+                    null,
+                    progressGreater,
+                    progressNumber,
+                    repetitionOlder,
+                    repetitionNumber
+                )
             } else {
                 dbHelperGet.getAllCardsByPackWithMeta(packNo)
             }

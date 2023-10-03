@@ -102,6 +102,55 @@
                 android:textColorHint="@color/light_black" />
 
             <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_margin="30dp"
+            android:background="@color/button"
+            android:importantForAccessibility="no" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/advanced_search_repetition"
+                android:textColor="@color/default_text"
+                android:textSize="20sp" />
+
+            <RadioGroup
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="10dp">
+
+                <RadioButton
+                    android:id="@+id/advanced_search_repetition_newer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/advanced_search_repetition_newer"
+                    android:textColor="@color/light_black"
+                    android:textSize="16sp" />
+
+                <RadioButton
+                    android:id="@+id/advanced_search_repetition_older"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/advanced_search_repetition_older"
+                    android:textColor="@color/light_black"
+                    android:textSize="16sp" />
+            </RadioGroup>
+
+            <EditText
+                android:id="@+id/advanced_search_repetition_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:hint="@string/advanced_search_repetition_value"
+                android:inputType="number"
+                android:textAlignment="center"
+                android:textColor="@color/light_black"
+                android:textColorHint="@color/light_black" />
+
+            <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_margin="30dp"

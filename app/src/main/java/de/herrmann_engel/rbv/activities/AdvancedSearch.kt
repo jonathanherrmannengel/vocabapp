@@ -15,6 +15,8 @@ class AdvancedSearch : AppCompatActivity() {
     private var pack = -3
     private var progressGreater = false
     private var progressNumber = -1
+    private var repetitionOlder = false
+    private var repetitionNumber = -1
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAdvancedSearchBinding.inflate(
@@ -52,6 +54,19 @@ class AdvancedSearch : AppCompatActivity() {
                 Integer.valueOf(progressNumber).toString()
             )
         }
+        binding.advancedSearchRepetitionOlder.isChecked = repetitionOlder
+        binding.advancedSearchRepetitionOlder.setOnClickListener {
+            repetitionOlder = true
+        }
+        binding.advancedSearchRepetitionNewer.isChecked = !repetitionOlder
+        binding.advancedSearchRepetitionNewer.setOnClickListener {
+            repetitionOlder = false
+        }
+        if (repetitionNumber >= 0) {
+            binding.advancedSearchRepetitionValue.setText(
+                Integer.valueOf(repetitionNumber).toString()
+            )
+        }
         binding.advancedSearchGo.setOnClickListener {
             val progressValueInputTemp = binding.advancedSearchProgressValue.text.toString()
             if (progressValueInputTemp.isEmpty()) {
@@ -62,6 +77,15 @@ class AdvancedSearch : AppCompatActivity() {
                     progressNumber = progressNumberTemp
                 }
             }
+            val repetitionValueInputTemp = binding.advancedSearchRepetitionValue.text.toString()
+            if (repetitionValueInputTemp.isEmpty()) {
+                repetitionNumber = -1
+            } else {
+                val repetitionNumberTemp = repetitionValueInputTemp.toInt()
+                if (repetitionNumberTemp >= 0) {
+                    repetitionNumber = repetitionNumberTemp
+                }
+            }
             val intent = Intent(this, ListCards::class.java)
             intent.putExtra("collection", -1)
             intent.putExtra("pack", pack)
@@ -70,6 +94,8 @@ class AdvancedSearch : AppCompatActivity() {
             }
             intent.putExtra("progressGreater", progressGreater)
             intent.putExtra("progressNumber", progressNumber)
+            intent.putExtra("repetitionOlder", repetitionOlder)
+            intent.putExtra("repetitionNumber", repetitionNumber)
             startActivity(intent)
         }
     }

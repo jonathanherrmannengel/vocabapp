@@ -160,6 +160,10 @@
     <string name="advanced_search_progress_greater">greater or equal</string>
     <string name="advanced_search_progress_less">less or equal</string>
     <string name="advanced_search_progress_value">progress value</string>
+    <string name="advanced_search_repetition">Select last repetition</string>
+    <string name="advanced_search_repetition_newer">not longer than x days ago</string>
+    <string name="advanced_search_repetition_older">longer than x days ago</string>
+    <string name="advanced_search_repetition_value">last repetition value</string>
     <string name="advanced_search_packs_checkbox_description">deck “%1$s” (in filing box: “%2$s”)</string>
     <string name="settings_list_default_sort">Flashcard list: Default sort</string>
     <string name="settings_format">Formatting</string>
