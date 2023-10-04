@@ -322,9 +322,28 @@ class ListCards : CardActionsActivity() {
             updateContent()
             false
         }
-        changeListSortMenuItem = menu.findItem(R.id.sort_random)
-        changeListSortMenuItem!!.setOnMenuItemClickListener {
-            listSort++
+        changeListSortMenuItem = menu.findItem(R.id.sort_menu)
+        val sortMenu = changeListSortMenuItem!!.subMenu
+        sortMenu?.findItem(R.id.sort_menu_default)?.setOnMenuItemClickListener {
+            listSort = Globals.SORT_DEFAULT
+            sortList()
+            updateContent(true)
+            false
+        }
+        sortMenu?.findItem(R.id.sort_menu_random)?.setOnMenuItemClickListener {
+            listSort = Globals.SORT_RANDOM
+            sortList()
+            updateContent(true)
+            false
+        }
+        sortMenu?.findItem(R.id.sort_menu_alphabetical)?.setOnMenuItemClickListener {
+            listSort = Globals.SORT_ALPHABETICAL
+            sortList()
+            updateContent(true)
+            false
+        }
+        sortMenu?.findItem(R.id.sort_menu_repetition)?.setOnMenuItemClickListener {
+            listSort = Globals.SORT_REPETITION
             sortList()
             updateContent(true)
             false
@@ -466,24 +485,6 @@ class ListCards : CardActionsActivity() {
     }
 
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
-        when (listSort) {
-            Globals.SORT_RANDOM -> {
-                changeListSortMenuItem!!.setTitle(R.string.sort_alphabetical)
-            }
-
-            Globals.SORT_ALPHABETICAL -> {
-                changeListSortMenuItem!!.setTitle(R.string.sort_repetition)
-            }
-
-            Globals.SORT_REPETITION -> {
-                changeListSortMenuItem!!.setTitle(R.string.sort_normal)
-            }
-
-            else -> {
-                listSort = Globals.SORT_DEFAULT
-                changeListSortMenuItem!!.setTitle(R.string.sort_random)
-            }
-        }
         showQueryModeMenuItem!!.isVisible = cardsListFiltered!!.isNotEmpty()
         showListStatsMenuItem!!.isVisible = cardsListFiltered!!.isNotEmpty()
         changeFrontBackMenuItem!!.setTitle(if (frontBackReverse) R.string.change_back_front else R.string.change_front_back)

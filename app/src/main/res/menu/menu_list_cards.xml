@@ -58,10 +58,33 @@
         android:title="@string/change_front_back"
         app:showAsAction="never" />
     <item
-        android:id="@+id/sort_random"
+        android:id="@+id/sort_menu"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orderInCategory="600"
-        android:title="@string/sort_random"
-        app:showAsAction="never" />
+        android:title="@string/sort_menu"
+        app:showAsAction="never">
+        <menu>
+            <item
+                android:id="@+id/sort_menu_default"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:title="@string/sort_normal_short" />
+            <item
+                android:id="@+id/sort_menu_random"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:title="@string/sort_random_short" />
+            <item
+                android:id="@+id/sort_menu_alphabetical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:title="@string/sort_alphabetical_short" />
+            <item
+                android:id="@+id/sort_menu_repetition"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:title="@string/sort_repetition_short" />
+        </menu>
+    </item>
 </menu>
