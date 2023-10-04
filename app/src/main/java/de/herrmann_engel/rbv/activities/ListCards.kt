@@ -122,7 +122,7 @@ class ListCards : CardActionsActivity() {
             if (cardUpdated != 0) {
                 try {
                     val cardWithMetaNew = dbHelperGet.getSingleCardWithMeta(cardUpdated)
-                    val cardWithMetaOld = cardsListFiltered!!.stream()
+                    val cardWithMetaOld = cardsList!!.stream()
                         .filter { i: DB_Card_With_Meta? -> i!!.card.uid == cardWithMetaNew!!.card.uid }
                         .findFirst().orElse(null)
                     if (cardWithMetaNew != null && cardWithMetaOld != null) {
@@ -130,9 +130,14 @@ class ListCards : CardActionsActivity() {
                             cardWithMetaNew,
                             cardWithMetaOld.formattingIsInaccurate
                         )
-                        val index = cardsList!!.indexOf(cardWithMetaOld)
+                        var index = cardsList!!.indexOf(cardWithMetaOld)
                         if (index != -1) {
                             cardsList!![index] = cardWithMetaNew
+                        }
+                        index = cardsListFiltered!!.indexOf(cardWithMetaOld)
+                        if (index != -1) {
+                            cardsListFiltered!![index] = cardWithMetaNew
+                            adapter!!.notifyItemChanged(index)
                         }
                     }
                 } catch (e: Exception) {
@@ -287,9 +292,10 @@ class ListCards : CardActionsActivity() {
         }
 
         //Display content
-        updateContent()
         if (queryModeDialog.isShowing) {
             nextQuery(true)
+        } else {
+            updateContent()
         }
     }
 
@@ -363,6 +369,7 @@ class ListCards : CardActionsActivity() {
             queryModeDialog.setOnKeyListener { _, keyCode: Int, event: KeyEvent ->
                 if (keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
                     queryModeDialog.dismiss()
+                    updateContent()
                     binding.recDefault.smoothScrollToPosition(
                         cardPosition.coerceAtMost(binding.recDefault.adapter!!.itemCount - 1)
                     )
@@ -505,6 +512,7 @@ class ListCards : CardActionsActivity() {
         cardPosition++
         if (cardPosition >= cardsListFiltered!!.size) {
             queryModeDialog.dismiss()
+            updateContent()
             binding.recDefault.scrollToPosition(0)
         } else {
             nextQuery()
@@ -515,6 +523,7 @@ class ListCards : CardActionsActivity() {
         cardPosition--
         if (cardPosition < 0) {
             queryModeDialog.dismiss()
+            updateContent()
             binding.recDefault.scrollToPosition(0)
         } else {
             nextQuery()
@@ -534,6 +543,7 @@ class ListCards : CardActionsActivity() {
         cardPosition++
         if (cardPosition >= cardsListFiltered!!.size) {
             queryModeDialog.dismiss()
+            updateContent()
             binding.recDefault.scrollToPosition(0)
         } else {
             nextQuery()
@@ -546,6 +556,7 @@ class ListCards : CardActionsActivity() {
         cardPosition++
         if (cardPosition >= cardsListFiltered!!.size) {
             queryModeDialog.dismiss()
+            updateContent()
             binding.recDefault.scrollToPosition(0)
         } else {
             nextQuery()
