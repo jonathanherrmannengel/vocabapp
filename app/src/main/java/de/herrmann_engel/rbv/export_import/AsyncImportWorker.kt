@@ -162,8 +162,11 @@ class AsyncImportWorker(
                                     val known = Integer.parseInt((line?.get(5) ?: "0"))
                                     val date = Integer.parseInt((line?.get(6) ?: "0")).toLong()
                                     val notes = line?.get(7) ?: ""
-                                    val lastRepetition =
+                                    val lastRepetition = if (line!!.size >= 9) {
                                         Integer.parseInt((line?.get(8) ?: "0")).toLong()
+                                    } else {
+                                        0L
+                                    }
                                     val sameNamed =
                                         helperGet.getSingleCardIdByPackAndFrontAndBackAndNotes(
                                             currentPack,
