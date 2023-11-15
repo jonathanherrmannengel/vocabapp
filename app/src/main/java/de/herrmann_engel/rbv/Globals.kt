@@ -1,8 +1,8 @@
 package de.herrmann_engel.rbv
 
 object Globals {
-    const val DB_NAME = "rbv_db"
-    const val EXPORT_FILE_NAME = "rbv_backup"
+    const val DB_NAME = BuildConfig.DB_NAME
+    const val EXPORT_FILE_NAME = BuildConfig.EXPORT_FILE_NAME
     const val EXPORT_FILE_EXTENSION = "csv"
     const val SETTINGS_NAME = "rbv_settings"
     const val CONFIG_NAME = "rbv_config"
