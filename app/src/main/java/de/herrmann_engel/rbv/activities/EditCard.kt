@@ -2,6 +2,7 @@ package de.herrmann_engel.rbv.activities
 
 import android.app.Dialog
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.text.InputType
@@ -41,19 +42,31 @@ class EditCard : AppCompatActivity() {
                 binding.editCardBack.isSingleLine = false
             }
             binding.editCardNotes.setText(card!!.notes)
-            binding.editCardNotes.hint =
+            binding.editCardNotesLayout.hint =
                 String.format(getString(R.string.optional), getString(R.string.card_notes))
+            val colors = resources.obtainTypedArray(R.array.pack_color_main)
             val colorsStatusBar = resources.obtainTypedArray(R.array.pack_color_statusbar)
             val colorsBackground = resources.obtainTypedArray(R.array.pack_color_background)
             val packColors = dbHelperGet.getSinglePack(card!!.pack).colors
-            if (packColors >= 0 && packColors < colorsStatusBar.length() && packColors < colorsBackground.length()) {
+            if (packColors >= 0 && packColors < colors.length() && packColors < colorsStatusBar.length() && packColors < colorsBackground.length()) {
+                val color = colors.getColor(packColors, 0)
                 val colorStatusBar = colorsStatusBar.getColor(packColors, 0)
                 val colorBackground = colorsBackground.getColor(packColors, 0)
                 supportActionBar?.setBackgroundDrawable(ColorDrawable(colorStatusBar))
                 val window = this.window
                 window.statusBarColor = colorStatusBar
+                binding.editCardFrontLayout.boxStrokeColor = color
+                binding.editCardFrontLayout.hintTextColor =
+                    ColorStateList.valueOf(color)
+                binding.editCardBackLayout.boxStrokeColor = color
+                binding.editCardBackLayout.hintTextColor =
+                    ColorStateList.valueOf(color)
+                binding.editCardNotesLayout.boxStrokeColor = color
+                binding.editCardNotesLayout.hintTextColor =
+                    ColorStateList.valueOf(color)
                 binding.root.setBackgroundColor(colorBackground)
             }
+            colors.recycle()
             colorsStatusBar.recycle()
             colorsBackground.recycle()
         } catch (e: Exception) {

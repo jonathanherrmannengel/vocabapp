@@ -14,9 +14,6 @@ public interface DB_Media_Link_Card_DAO {
     @Query("SELECT EXISTS (SELECT 1 FROM db_media_link_card  WHERE fileId=:file LIMIT 1)")
     boolean mediaHasLink(int file);
 
-    @Query("SELECT * FROM db_media_link_card")
-    List<DB_Media_Link_Card> getAll();
-
     @Query("SELECT * FROM db_media_link_card WHERE cardId=:card")
     List<DB_Media_Link_Card> getAllByCard(int card);
 

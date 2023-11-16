@@ -2,6 +2,7 @@ package de.herrmann_engel.rbv.activities
 
 import android.app.Dialog
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.Menu
@@ -23,24 +24,36 @@ class NewCard : AppCompatActivity() {
         binding = ActivityNewCardBinding.inflate(layoutInflater)
         setContentView(binding.root)
         packNo = intent.extras!!.getInt("pack")
+        val colors = resources.obtainTypedArray(R.array.pack_color_main)
         val colorsStatusBar = resources.obtainTypedArray(R.array.pack_color_statusbar)
         val colorsBackground = resources.obtainTypedArray(R.array.pack_color_background)
         val dbHelperGet = DB_Helper_Get(this)
         try {
             val packColors = dbHelperGet.getSinglePack(packNo).colors
-            if (packColors >= 0 && packColors < colorsStatusBar.length() && packColors < colorsBackground.length()) {
+            if (packColors >= 0 && packColors < colors.length() && packColors < colorsStatusBar.length() && packColors < colorsBackground.length()) {
+                val color = colors.getColor(packColors, 0)
                 val colorStatusBar = colorsStatusBar.getColor(packColors, 0)
                 val colorBackground = colorsBackground.getColor(packColors, 0)
                 supportActionBar?.setBackgroundDrawable(ColorDrawable(colorStatusBar))
                 window.statusBarColor = colorStatusBar
+                binding.newCardFrontLayout.boxStrokeColor = color
+                binding.newCardFrontLayout.hintTextColor =
+                    ColorStateList.valueOf(color)
+                binding.newCardBackLayout.boxStrokeColor = color
+                binding.newCardBackLayout.hintTextColor =
+                    ColorStateList.valueOf(color)
+                binding.newCardNotesLayout.boxStrokeColor = color
+                binding.newCardNotesLayout.hintTextColor =
+                    ColorStateList.valueOf(color)
                 binding.root.setBackgroundColor(colorBackground)
             }
+            colors.recycle()
             colorsStatusBar.recycle()
             colorsBackground.recycle()
         } catch (e: Exception) {
             Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show()
         }
-        binding.newCardNotes.hint =
+        binding.newCardNotesLayout.hint =
             String.format(getString(R.string.optional), getString(R.string.card_notes))
 
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {

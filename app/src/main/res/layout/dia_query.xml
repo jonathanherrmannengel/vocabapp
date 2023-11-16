@@ -58,9 +58,9 @@
 
                 <ImageButton
                     android:id="@+id/query_back"
-                    android:layout_width="35dp"
-                    android:layout_height="35dp"
-                    android:layout_margin="6dp"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:layout_margin="9dp"
                     android:background="@android:color/transparent"
                     android:contentDescription="@string/back"
                     android:src="@drawable/ic_outline_skip_previous_24"
@@ -68,9 +68,9 @@
 
                 <ImageButton
                     android:id="@+id/query_plus"
-                    android:layout_width="35dp"
-                    android:layout_height="35dp"
-                    android:layout_margin="6dp"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:layout_margin="9dp"
                     android:background="@android:color/transparent"
                     android:contentDescription="@string/card_plus"
                     android:src="@drawable/outline_done_24"
@@ -78,9 +78,9 @@
 
                 <ImageButton
                     android:id="@+id/query_minus"
-                    android:layout_width="35dp"
-                    android:layout_height="35dp"
-                    android:layout_margin="6dp"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:layout_margin="9dp"
                     android:background="@android:color/transparent"
                     android:contentDescription="@string/card_minus"
                     android:src="@drawable/outline_close_24"
@@ -88,9 +88,9 @@
 
                 <ImageButton
                     android:id="@+id/query_skip"
-                    android:layout_width="35dp"
-                    android:layout_height="35dp"
-                    android:layout_margin="6dp"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:layout_margin="9dp"
                     android:background="@android:color/transparent"
                     android:contentDescription="@string/skip"
                     android:src="@drawable/ic_outline_skip_next_24"
@@ -101,25 +101,37 @@
                 android:id="@+id/query_button_media_image"
                 style="@style/material_button"
                 android:text="@string/query_media_image"
-                android:textSize="14sp" />
+                android:textSize="14sp"
+                app:icon="@drawable/outline_image_24"
+                app:iconGravity="textStart"
+                app:iconTint="@color/ijblue" />
 
             <Button
                 android:id="@+id/query_button_media_other"
                 style="@style/material_button"
                 android:text="@string/query_media_all"
-                android:textSize="14sp" />
+                android:textSize="14sp"
+                app:icon="@drawable/outline_insert_drive_file_24"
+                app:iconGravity="textStart"
+                app:iconTint="@color/ijblue" />
 
             <Button
                 android:id="@+id/query_button_notes"
                 style="@style/material_button"
                 android:text="@string/query_notes"
-                android:textSize="14sp" />
+                android:textSize="14sp"
+                app:icon="@drawable/baseline_notes_24"
+                app:iconGravity="textStart"
+                app:iconTint="@color/ijblue" />
 
             <Button
                 android:id="@+id/query_button_edit"
                 style="@style/material_button"
                 android:text="@string/query_edit"
-                android:textSize="14sp" />
+                android:textSize="14sp"
+                app:icon="@drawable/baseline_edit_24"
+                app:iconGravity="textStart"
+                app:iconTint="@color/ijblue" />
         </LinearLayout>
     </ScrollView>
 

@@ -37,13 +37,22 @@ class Settings : FileTools() {
             }
         }
         binding.settingsSort.setOnCheckedChangeListener { _, id: Int ->
-            var sortNew = Globals.SORT_DEFAULT
-            if (id == R.id.settings_sort_alphabetical) {
-                sortNew = Globals.SORT_ALPHABETICAL
-            } else if (id == R.id.settings_sort_random) {
-                sortNew = Globals.SORT_RANDOM
-            } else if (id == R.id.settings_sort_repetition) {
-                sortNew = Globals.SORT_REPETITION
+            val sortNew = when (id) {
+                R.id.settings_sort_alphabetical -> {
+                    Globals.SORT_ALPHABETICAL
+                }
+
+                R.id.settings_sort_random -> {
+                    Globals.SORT_RANDOM
+                }
+
+                R.id.settings_sort_repetition -> {
+                    Globals.SORT_REPETITION
+                }
+
+                else -> {
+                    Globals.SORT_DEFAULT
+                }
             }
             settingsEdit.putInt("default_sort", sortNew)
             settingsEdit.apply()

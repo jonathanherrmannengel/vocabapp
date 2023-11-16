@@ -84,7 +84,7 @@ class AsyncExportWorker(
         return true
     }
 
-    fun exportFile(): File? {
+    private fun exportFile(): File? {
         try {
             val dbHelperExport = DB_Helper_Export(context)
             val index: String

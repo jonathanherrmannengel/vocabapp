@@ -39,7 +39,6 @@
                 style="@style/material_edit_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
                 android:hint="@string/collection_or_pack_desc"
                 android:textColorHint="@color/light_black"
                 android:theme="@style/material_edit_text">

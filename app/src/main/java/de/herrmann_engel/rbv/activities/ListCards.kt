@@ -15,6 +15,7 @@ import android.os.Handler
 import android.os.Looper
 import android.text.SpannableString
 import android.text.util.Linkify
+import android.util.TypedValue
 import android.view.*
 import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
@@ -44,8 +45,8 @@ class ListCards : CardActionsActivity() {
     private lateinit var binding: ActivityDefaultRecBinding
     private lateinit var dbHelperGet: DB_Helper_Get
     private lateinit var dbHelperUpdate: DB_Helper_Update
+    private lateinit var settings: SharedPreferences
     private var adapter: AdapterCards? = null
-    private var settings: SharedPreferences? = null
     private var cardsList: MutableList<DB_Card_With_Meta>? = null
     private var cardsListFiltered: MutableList<DB_Card_With_Meta>? = null
     private var collectionNo = 0
@@ -74,7 +75,7 @@ class ListCards : CardActionsActivity() {
         dbHelperGet = DB_Helper_Get(this)
         dbHelperUpdate = DB_Helper_Update(this)
         settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE)
-        listSort = settings!!.getInt("default_sort", Globals.SORT_DEFAULT)
+        listSort = settings.getInt("default_sort", Globals.SORT_DEFAULT)
         collectionNo = intent.extras!!.getInt("collection")
         packNo = intent.extras!!.getInt("pack")
         packNos = intent.extras!!.getIntegerArrayList("packs")
@@ -82,7 +83,7 @@ class ListCards : CardActionsActivity() {
         progressNumber = intent.extras!!.getInt("progressNumber")
         repetitionOlder = intent.extras!!.getBoolean("repetitionOlder")
         repetitionNumber = intent.extras!!.getInt("repetitionNumber")
-        if (settings!!.getBoolean("ui_bg_images", true)) {
+        if (settings.getBoolean("ui_bg_images", true)) {
             binding.backgroundImage.visibility = View.VISIBLE
             binding.backgroundImage.setImageDrawable(
                 AppCompatResources.getDrawable(
@@ -248,7 +249,7 @@ class ListCards : CardActionsActivity() {
         //Warning: Big lists
         if (cardsList!!.size > Globals.LIST_ACCURATE_SIZE) {
             val config = getSharedPreferences(Globals.CONFIG_NAME, MODE_PRIVATE)
-            val formatCards = settings!!.getBoolean("format_cards", false)
+            val formatCards = settings.getBoolean("format_cards", false)
             val warnInaccurateFormat =
                 formatCards && config.getBoolean("inaccurate_warning_format", true)
             val warnInaccurateNoFormat =
@@ -576,7 +577,7 @@ class ListCards : CardActionsActivity() {
             val front: SpannableString
             val back: SpannableString
             val formatString = StringTools()
-            if (settings!!.getBoolean("format_cards", false)) {
+            if (settings.getBoolean("format_cards", false)) {
                 front =
                     if (frontBackReverse) formatString.format(card.back) else formatString.format(
                         card.front
@@ -593,9 +594,19 @@ class ListCards : CardActionsActivity() {
             }
             bindingQueryModeDialog.queryShow.text = front
             bindingQueryModeDialog.queryHide.text = back
+            if (settings.getBoolean("ui_font_size", false)) {
+                bindingQueryModeDialog.queryShow.setTextSize(
+                    TypedValue.COMPLEX_UNIT_PX,
+                    resources.getDimension(R.dimen.card_front_size_big)
+                )
+                bindingQueryModeDialog.queryHide.setTextSize(
+                    TypedValue.COMPLEX_UNIT_PX,
+                    resources.getDimension(R.dimen.card_front_size_big)
+                )
+            }
 
             if (card.notes == null || card.notes.isEmpty()) {
-                bindingQueryModeDialog.queryButtonNotes.visibility = View.INVISIBLE
+                bindingQueryModeDialog.queryButtonNotes.visibility = View.GONE
             } else {
                 bindingQueryModeDialog.queryButtonNotes.visibility = View.VISIBLE
                 bindingQueryModeDialog.queryButtonNotes.setOnClickListener {
@@ -610,7 +621,7 @@ class ListCards : CardActionsActivity() {
                         WindowManager.LayoutParams.MATCH_PARENT
                     )
                     bindingInfoDialog.diaInfoText.setTextIsSelectable(true)
-                    if (settings!!.getBoolean("format_card_notes", false)) {
+                    if (settings.getBoolean("format_card_notes", false)) {
                         val markwon = Markwon.builder(this)
                             .usePlugin(
                                 LinkifyPlugin.create(
@@ -849,7 +860,7 @@ class ListCards : CardActionsActivity() {
                 val imageList =
                     dbHelperGet.getImageMediaLinksByCard(card.uid) as ArrayList<DB_Media_Link_Card>
                 if (imageList.isEmpty()) {
-                    bindingQueryModeDialog.queryButtonMediaImage.visibility = View.INVISIBLE
+                    bindingQueryModeDialog.queryButtonMediaImage.visibility = View.GONE
                 } else {
                     bindingQueryModeDialog.queryButtonMediaImage.visibility = View.VISIBLE
                     bindingQueryModeDialog.queryButtonMediaImage.setOnClickListener {
@@ -861,7 +872,7 @@ class ListCards : CardActionsActivity() {
                 val mediaList =
                     dbHelperGet.getAllMediaLinksByCard(card.uid) as ArrayList<DB_Media_Link_Card>
                 if (mediaList.isEmpty()) {
-                    bindingQueryModeDialog.queryButtonMediaOther.visibility = View.INVISIBLE
+                    bindingQueryModeDialog.queryButtonMediaOther.visibility = View.GONE
                 } else {
                     bindingQueryModeDialog.queryButtonMediaOther.visibility = View.VISIBLE
                     bindingQueryModeDialog.queryButtonMediaOther.setOnClickListener {
@@ -888,7 +899,7 @@ class ListCards : CardActionsActivity() {
                     }
                 }
                 bindingQueryModeDialog.queryHide.visibility = View.GONE
-                bindingQueryModeDialog.queryButtonEdit.visibility = View.INVISIBLE
+                bindingQueryModeDialog.queryButtonEdit.visibility = View.GONE
                 bindingQueryModeDialog.queryButtonHide.visibility = View.VISIBLE
                 bindingQueryModeDialog.queryButtonHide.setOnClickListener {
                     bindingQueryModeDialog.queryButtonHide.visibility = View.GONE
@@ -931,7 +942,7 @@ class ListCards : CardActionsActivity() {
             cardsListFiltered = tempCardList
             adapter = AdapterCards(
                 cardsListFiltered!!,
-                settings!!.getBoolean("ui_font_size", false),
+                settings.getBoolean("ui_font_size", false),
                 frontBackReverse,
                 packNo,
                 collectionNo

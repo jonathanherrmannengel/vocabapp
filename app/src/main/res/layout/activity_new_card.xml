@@ -6,71 +6,69 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:gravity="center"
-                android:importantForAccessibility="no"
-                android:text="@string/card_front"
-                android:textColor="@color/light_black" />
-
-            <EditText
-                android:id="@+id/new_card_front"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/new_card_front_layout"
+                style="@style/material_edit_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="20dp"
-                android:ems="10"
                 android:hint="@string/card_front"
-                android:inputType="text"
-                android:textColor="@color/light_black"
-                android:textColorHint="@color/light_black" />
+                android:textColorHint="@color/light_black"
+                android:theme="@style/material_edit_text">
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:gravity="center"
-                android:importantForAccessibility="no"
-                android:text="@string/card_back"
-                android:textColor="@color/light_black" />
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/new_card_front"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:inputType="text"
+                    android:textColor="@color/default_text" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <EditText
-                android:id="@+id/new_card_back"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/new_card_back_layout"
+                style="@style/material_edit_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="20dp"
-                android:ems="10"
                 android:hint="@string/card_back"
-                android:inputType="text"
-                android:textColor="@color/light_black"
-                android:textColorHint="@color/light_black" />
+                android:textColorHint="@color/light_black"
+                android:theme="@style/material_edit_text">
 
-            <TextView
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/new_card_back"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:inputType="text"
+                    android:textColor="@color/default_text" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/new_card_notes_layout"
+                style="@style/material_edit_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:gravity="center"
-                android:importantForAccessibility="no"
-                android:text="@string/card_notes"
-                android:textColor="@color/light_black" />
-
-            <EditText
-                android:id="@+id/new_card_notes"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
                 android:hint="@string/card_notes"
-                android:inputType="textMultiLine"
-                android:textColor="@color/light_black"
-                android:textColorHint="@color/light_black" />
+                android:textColorHint="@color/light_black"
+                android:theme="@style/material_edit_text">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/new_card_notes"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:inputType="textMultiLine"
+                    android:textColor="@color/default_text" />
+            </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
     </ScrollView>
 </RelativeLayout>

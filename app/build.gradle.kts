@@ -38,13 +38,13 @@ android {
             isDefault = true
             buildConfigField("String", "DB_NAME", "\"rbv_db\"")
             buildConfigField("String", "EXPORT_FILE_NAME", "\"rbv_backup\"")
-        }/*
+        }
         create("av") {
             dimension = "branding"
             applicationId = "de.herrmann_engel.anjasvocab"
             buildConfigField("String", "DB_NAME", "\"anja\"")
             buildConfigField("String", "EXPORT_FILE_NAME", "\"anjasvocab\"")
-        }*/
+        }
     }
     buildFeatures {
         viewBinding = true
