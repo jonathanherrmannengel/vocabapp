@@ -55,7 +55,9 @@
     <string name="edit_card">Edit flashcard</string>
     <string name="edit_card_media">manage attached media</string>
     <string name="edit_card_media_add">Add media</string>
+    <string name="edit_card_tag_add">Add tag</string>
     <string name="no_media">no media</string>
+    <string name="no_tags">no tags</string>
     <string name="no_files_without_media">All files are in database</string>
     <string name="media_missing">media missing (file not found)</string>
     <string name="media_missing_db">media missing (no database entry)</string>
@@ -120,6 +122,9 @@
     <string name="card_minus">got it wrong</string>
     <string name="skip">skip</string>
     <string name="back">back</string>
+    <string name="tag">tag</string>
+    <string name="tag_emoji">Emoji for tag</string>
+    <string name="tags">tags</string>
     <string name="card_known">progress</string>
     <string name="query_mode">query mode</string>
     <string name="query_mode_title">%1$s (%2$d of %3$d)</string>
@@ -162,6 +167,8 @@
     <string name="advanced_search_packs">Decks</string>
     <string name="advanced_search_packs_all">All decks</string>
     <string name="advanced_search_packs_select">Select decks</string>
+    <string name="advanced_search_tags_all">All tags</string>
+    <string name="advanced_search_tags_select">Select tags</string>
     <string name="advanced_search_progress">Select progress</string>
     <string name="advanced_search_progress_greater">greater or equal</string>
     <string name="advanced_search_progress_less">less or equal</string>

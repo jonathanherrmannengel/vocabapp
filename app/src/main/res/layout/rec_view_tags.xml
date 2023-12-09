@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<HorizontalScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:padding="2dp">
+
+        <TextView
+            android:id="@+id/rec_tags_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical|start"
+            android:padding="10dp"
+            android:textColor="@color/default_text"
+            android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/rec_tags_delete"
+            style="@style/material_button"
+            android:gravity="center_vertical|end"
+            android:text="@string/delete"
+            android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/rec_tags_edit"
+            style="@style/material_button"
+            android:gravity="center_vertical|end"
+            android:text="@string/edit"
+            android:textSize="14sp" />
+    </LinearLayout>
+</HorizontalScrollView>

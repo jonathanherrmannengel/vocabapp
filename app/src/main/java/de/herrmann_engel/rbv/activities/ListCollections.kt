@@ -259,6 +259,7 @@ class ListCollections : FileTools(), AsyncImportFinish, AsyncImportProgress, Asy
         handleNoMediaFile()
         val dbHelperDelete = DB_Helper_Delete(this)
         dbHelperDelete.deleteDeadMediaLinks()
+        dbHelperDelete.deleteDeadTags()
     }
 
     private fun loadContent(): MutableList<DB_Collection_With_Meta> {

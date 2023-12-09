@@ -49,6 +49,12 @@
         <projectCode>https://github.com/saket/Better-Link-Movement-Method</projectCode>
     </item>
     <item>
+        <identifier>WTFPL</identifier>
+        <projectDev>Leon Fu</projectDev>
+        <projectName>ColorSeekBar (com.github.rtugeek:colorseekbar)</projectName>
+        <projectCode>https://github.com/rtugeek/ColorSeekBar</projectCode>
+    </item>
+    <item>
         <identifier>Apache-2.0</identifier>
         <projectDev>Google</projectDev>
         <projectName>AndroidX (AppCompat [androidx.appcompat], Core [androidx.core], Room [androidx.room])</projectName>

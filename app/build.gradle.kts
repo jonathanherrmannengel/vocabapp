@@ -55,10 +55,9 @@ android {
     }
     namespace = "de.herrmann_engel.rbv"
 }
-
 dependencies {
     val kotlinVersion = rootProject.extra.get("kotlinVersion") as String
-    val roomVersion = "2.6.0"
+    val roomVersion = "2.6.1"
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.room:room-runtime:$roomVersion")
     annotationProcessor("androidx.room:room-compiler:$roomVersion")
@@ -72,6 +71,7 @@ dependencies {
     implementation("me.saket:better-link-movement-method:2.2.0")
     implementation("com.vanniktech:emoji-twitter:0.17.0")
     implementation("com.squareup.picasso:picasso:2.8")
+    implementation("com.github.rtugeek:colorseekbar:2.0.3")
     implementation("com.atlassian.commonmark:commonmark:0.13.0")
     //match Markwon version of commonmark
 }

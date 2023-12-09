@@ -61,4 +61,21 @@ public class DB_Helper_Export {
         return dbHelper.media_link_card_dao.getAllExportByCollection(collection);
     }
 
+
+    public Cursor getAllTags() {
+        return dbHelper.tag_dao.getAllExport();
+    }
+
+    public Cursor getAllTagsByCollection(int collection) {
+        return dbHelper.tag_dao.getAllExportByCollection(collection);
+    }
+
+    public Cursor getAllTagLinks() {
+        return dbHelper.tag_link_card_dao.getAllExport();
+    }
+
+    public Cursor getAllTagLinksByCollection(int collection) {
+        return dbHelper.tag_link_card_dao.getAllExportByCollection(collection);
+    }
+
 }

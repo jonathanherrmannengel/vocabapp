@@ -52,6 +52,8 @@ class ListCards : CardActionsActivity() {
     private var collectionNo = 0
     private var packNo = 0
     private var packNos: ArrayList<Int>? = null
+    private var tagNo = 0
+    private var tagNos: ArrayList<Int>? = null
     private var progressGreater = false
     private var progressNumber = 0
     private var repetitionOlder = false
@@ -79,6 +81,8 @@ class ListCards : CardActionsActivity() {
         collectionNo = intent.extras!!.getInt("collection")
         packNo = intent.extras!!.getInt("pack")
         packNos = intent.extras!!.getIntegerArrayList("packs")
+        tagNo = intent.extras!!.getInt("tag")
+        tagNos = intent.extras!!.getIntegerArrayList("tags")
         progressGreater = intent.extras!!.getBoolean("progressGreater")
         progressNumber = intent.extras!!.getInt("progressNumber")
         repetitionOlder = intent.extras!!.getBoolean("repetitionOlder")
@@ -113,6 +117,8 @@ class ListCards : CardActionsActivity() {
                 try {
                     val cardWithMetaNew = dbHelperGet.getSingleCardWithMeta(cardAdded)
                     formatCards.formatCard(cardWithMetaNew, false)
+                    cardWithMetaNew.tags =
+                        cardWithMetaNew.card?.uid?.let { it1 -> dbHelperGet.getCardTags(it1) }
                     cardsList!!.add(cardWithMetaNew)
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -131,6 +137,8 @@ class ListCards : CardActionsActivity() {
                             cardWithMetaNew,
                             cardWithMetaOld.formattingIsInaccurate
                         )
+                        cardWithMetaNew.tags =
+                            cardWithMetaNew.card?.uid?.let { it1 -> dbHelperGet.getCardTags(it1) }
                         var index = cardsList!!.indexOf(cardWithMetaOld)
                         if (index != -1) {
                             cardsList!![index] = cardWithMetaNew
@@ -226,6 +234,11 @@ class ListCards : CardActionsActivity() {
             } else if (packNo == -2) {
                 dbHelperGet.getAllCardsWithMetaFiltered(
                     packNos,
+                    if (tagNo == -3) {
+                        null
+                    } else {
+                        tagNos
+                    },
                     progressGreater,
                     progressNumber,
                     repetitionOlder,
@@ -234,6 +247,11 @@ class ListCards : CardActionsActivity() {
             } else if (packNo == -3) {
                 dbHelperGet.getAllCardsWithMetaFiltered(
                     null,
+                    if (tagNo == -3) {
+                        null
+                    } else {
+                        tagNos
+                    },
                     progressGreater,
                     progressNumber,
                     repetitionOlder,
@@ -241,6 +259,10 @@ class ListCards : CardActionsActivity() {
                 )
             } else {
                 dbHelperGet.getAllCardsByPackWithMeta(packNo)
+            }
+            cardsList?.forEach {
+                it.tags =
+                    it.card?.uid?.let { it1 -> dbHelperGet.getCardTags(it1) }
             }
             formatCards.formatCards(cardsList!!)
             sortList()

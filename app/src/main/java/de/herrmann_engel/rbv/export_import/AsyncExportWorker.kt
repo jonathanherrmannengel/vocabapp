@@ -149,6 +149,25 @@ class AsyncExportWorker(
                     return null
                 }
             }
+            if (!exportCSV(
+                    "tags",
+                    file.name,
+                    if (singleCollection) {
+                        dbHelperExport.getAllTagsByCollection(collectionNo)
+                    } else dbHelperExport.allTags,
+                    true
+                )
+                || !exportCSV(
+                    "tags_link_card",
+                    file.name,
+                    if (singleCollection) {
+                        dbHelperExport.getAllTagLinksByCollection(collectionNo)
+                    } else dbHelperExport.allTagLinks,
+                    true
+                )
+            ) {
+                return null
+            }
             if (includeSettings) {
                 val settings =
                     context.getSharedPreferences(Globals.SETTINGS_NAME, Context.MODE_PRIVATE)

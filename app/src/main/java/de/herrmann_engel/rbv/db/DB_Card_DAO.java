@@ -82,6 +82,60 @@ public interface DB_Card_DAO {
     @Query("SELECT *, (SELECT colors FROM db_pack WHERE uid=db_card.pack) AS packColor FROM db_card WHERE pack=:pid AND known<=:progress AND last_repetition<:date")
     List<DB_Card_With_Meta> getAllLessEqualOlderRepetitionWithMeta(int pid, int progress, long date);
 
+    @Query("SELECT *, (SELECT colors FROM db_pack WHERE uid=db_card.pack) AS packColor FROM db_card WHERE db_card.uid IN (SELECT cardId FROM db_tag_link_card WHERE tagId=:tagId)")
+    List<DB_Card_With_Meta> getAllByTagWithMeta(int tagId);
+
+    @Query("SELECT *, (SELECT colors FROM db_pack WHERE uid=db_card.pack) AS packColor FROM db_card WHERE db_card.uid IN (SELECT cardId FROM db_tag_link_card WHERE tagId=:tagId) AND pack=:pid")
+    List<DB_Card_With_Meta> getAllByPackAndTagWithMeta(int pid, int tagId);
+
+    @Query("SELECT *, (SELECT colors FROM db_pack WHERE uid=db_card.pack) AS packColor FROM db_card WHERE db_card.uid IN (SELECT cardId FROM db_tag_link_card WHERE tagId=:tagId) AND known>=:progress")
+    List<DB_Card_With_Meta> getAllByTagGreaterEqualWithMeta(int tagId, int progress);
+
+    @Query("SELECT *, (SELECT colors FROM db_pack WHERE uid=db_card.pack) AS packColor FROM db_card WHERE db_card.uid IN (SELECT cardId FROM db_tag_link_card WHERE tagId=:tagId) AND known<=:progress")
+    List<DB_Card_With_Meta> getAllByTagLessEqualWithMeta(int tagId, int progress);
+
+    @Query("SELECT *, (SELECT colors FROM db_pack WHERE uid=db_card.pack) AS packColor FROM db_card WHERE db_card.uid IN (SELECT cardId FROM db_tag_link_card WHERE tagId=:tagId) AND last_repetition>=:date")
+    List<DB_Card_With_Meta> getAllByTagNewerEqualRepetitionWithMeta(int tagId, long date);
+
+    @Query("SELECT *, (SELECT colors FROM db_pack WHERE uid=db_card.pack) AS packColor FROM db_card WHERE db_card.uid IN (SELECT cardId FROM db_tag_link_card WHERE tagId=:tagId) AND last_repetition<:date")
+    List<DB_Card_With_Meta> getAllByTagOlderRepetitionWithMeta(int tagId, long date);
+
+    @Query("SELECT *, (SELECT colors FROM db_pack WHERE uid=db_card.pack) AS packColor FROM db_card WHERE db_card.uid IN (SELECT cardId FROM db_tag_link_card WHERE tagId=:tagId) AND known>=:progress AND last_repetition>=:date")
+    List<DB_Card_With_Meta> getAllByTagGreaterEqualNewerEqualRepetitionWithMeta(int tagId, int progress, long date);
+
+    @Query("SELECT *, (SELECT colors FROM db_pack WHERE uid=db_card.pack) AS packColor FROM db_card WHERE db_card.uid IN (SELECT cardId FROM db_tag_link_card WHERE tagId=:tagId) AND known<=:progress AND last_repetition>=:date")
+    List<DB_Card_With_Meta> getAllByTagLessEqualNewerEqualRepetitionWithMeta(int tagId, int progress, long date);
+
+    @Query("SELECT *, (SELECT colors FROM db_pack WHERE uid=db_card.pack) AS packColor FROM db_card WHERE db_card.uid IN (SELECT cardId FROM db_tag_link_card WHERE tagId=:tagId) AND known>=:progress AND last_repetition<:date")
+    List<DB_Card_With_Meta> getAllByTagGreaterEqualOlderRepetitionWithMeta(int tagId, int progress, long date);
+
+    @Query("SELECT *, (SELECT colors FROM db_pack WHERE uid=db_card.pack) AS packColor FROM db_card WHERE db_card.uid IN (SELECT cardId FROM db_tag_link_card WHERE tagId=:tagId) AND known<=:progress AND last_repetition<:date")
+    List<DB_Card_With_Meta> getAllByTagLessEqualOlderRepetitionWithMeta(int tagId, int progress, long date);
+
+    @Query("SELECT *, (SELECT colors FROM db_pack WHERE uid=db_card.pack) AS packColor FROM db_card WHERE pack=:pid AND db_card.uid IN (SELECT cardId FROM db_tag_link_card WHERE tagId=:tagId) AND known>=:progress")
+    List<DB_Card_With_Meta> getAllByTagGreaterEqualWithMeta(int pid, int tagId, int progress);
+
+    @Query("SELECT *, (SELECT colors FROM db_pack WHERE uid=db_card.pack) AS packColor FROM db_card WHERE pack=:pid AND db_card.uid IN (SELECT cardId FROM db_tag_link_card WHERE tagId=:tagId) AND known<=:progress")
+    List<DB_Card_With_Meta> getAllByTagLessEqualWithMeta(int pid, int tagId, int progress);
+
+    @Query("SELECT *, (SELECT colors FROM db_pack WHERE uid=db_card.pack) AS packColor FROM db_card WHERE pack=:pid AND db_card.uid IN (SELECT cardId FROM db_tag_link_card WHERE tagId=:tagId) AND last_repetition>=:date")
+    List<DB_Card_With_Meta> getAllByTagNewerEqualRepetitionWithMeta(int pid, int tagId, long date);
+
+    @Query("SELECT *, (SELECT colors FROM db_pack WHERE uid=db_card.pack) AS packColor FROM db_card WHERE pack=:pid AND db_card.uid IN (SELECT cardId FROM db_tag_link_card WHERE tagId=:tagId) AND last_repetition<:date")
+    List<DB_Card_With_Meta> getAllByTagOlderRepetitionWithMeta(int pid, int tagId, long date);
+
+    @Query("SELECT *, (SELECT colors FROM db_pack WHERE uid=db_card.pack) AS packColor FROM db_card WHERE pack=:pid AND db_card.uid IN (SELECT cardId FROM db_tag_link_card WHERE tagId=:tagId) AND known>=:progress AND last_repetition>=:date")
+    List<DB_Card_With_Meta> getAllByTagGreaterEqualNewerEqualRepetitionWithMeta(int pid, int tagId, int progress, long date);
+
+    @Query("SELECT *, (SELECT colors FROM db_pack WHERE uid=db_card.pack) AS packColor FROM db_card WHERE pack=:pid AND db_card.uid IN (SELECT cardId FROM db_tag_link_card WHERE tagId=:tagId) AND known<=:progress AND last_repetition>=:date")
+    List<DB_Card_With_Meta> getAllByTagLessEqualNewerEqualRepetitionWithMeta(int pid, int tagId, int progress, long date);
+
+    @Query("SELECT *, (SELECT colors FROM db_pack WHERE uid=db_card.pack) AS packColor FROM db_card WHERE pack=:pid AND db_card.uid IN (SELECT cardId FROM db_tag_link_card WHERE tagId=:tagId) AND known>=:progress AND last_repetition<:date")
+    List<DB_Card_With_Meta> getAllByTagGreaterEqualOlderRepetitionWithMeta(int pid, int tagId, int progress, long date);
+
+    @Query("SELECT *, (SELECT colors FROM db_pack WHERE uid=db_card.pack) AS packColor FROM db_card WHERE pack=:pid AND db_card.uid IN (SELECT cardId FROM db_tag_link_card WHERE tagId=:tagId) AND known<=:progress AND last_repetition<:date")
+    List<DB_Card_With_Meta> getAllByTagLessEqualOlderRepetitionWithMeta(int pid, int tagId, int progress, long date);
+
     @Query("SELECT db_card.*, (SELECT colors FROM db_pack WHERE uid=db_card.pack) AS packColor FROM db_card INNER JOIN db_media_link_card ON db_card.uid = db_media_link_card.cardId WHERE db_media_link_card.fileId=:fileId")
     List<DB_Card_With_Meta> getAllByMedia(int fileId);
 

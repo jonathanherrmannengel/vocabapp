@@ -27,6 +27,11 @@ class OSSLicenses(licenseIdentifier: String?, val project: OSSProject) {
                 licenseFilePath = "oss/BSD-2-clause-commonmark.txt"
             }
 
+            "WTFPL" -> {
+                licenseLink = "http://www.wtfpl.net/about/"
+                licenseFilePath = "oss/WTFPL.txt"
+            }
+
             "public-domain" -> {
                 licenseLink = null
                 licenseFilePath = "oss/public-domain.txt"

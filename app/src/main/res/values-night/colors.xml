@@ -65,4 +65,5 @@
     <color name="progress3">#334400</color>
     <color name="progress4">#224400</color>
     <color name="progress5">#004400</color>
+    <color name="tag_background">#301024</color>
 </resources>

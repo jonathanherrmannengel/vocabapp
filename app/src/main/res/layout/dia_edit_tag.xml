@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:theme="@style/Theme.RBV">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/edit_tag_name_layout"
+                style="@style/material_edit_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                android:hint="@string/tag"
+                android:textColorHint="@color/light_black"
+                android:theme="@style/material_edit_text">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/edit_tag_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:inputType="text"
+                    android:textColor="@color/default_text" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/edit_tag_emoji_layout"
+                style="@style/material_edit_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                android:hint="@string/tag_emoji"
+                android:textColorHint="@color/light_black"
+                android:theme="@style/material_edit_text">
+
+                <com.vanniktech.emoji.EmojiEditText
+                    android:id="@+id/edit_tag_emoji"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:longClickable="false"
+                    android:textAlignment="center"
+                    android:textColor="@color/default_text" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:gravity="center"
+                android:text="@string/color"
+                android:textColor="@color/light_black" />
+
+            <com.rtugeek.android.colorseekbar.ColorSeekBar
+                android:id="@+id/edit_tag_color"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <Button
+                android:id="@+id/edit_tag_save"
+                style="@style/material_button"
+                android:layout_marginTop="20dp"
+                android:text="@string/save_changes"
+                android:textSize="14sp"
+                app:icon="@drawable/round_save_24"
+                app:iconGravity="textStart"
+                app:iconTint="@color/ijblue" />
+
+            <Button
+                android:id="@+id/edit_tag_cancel"
+                style="@style/material_button"
+                android:text="@string/discard_changes"
+                android:textSize="14sp"
+                app:icon="@drawable/round_cancel_24"
+                app:iconGravity="textStart"
+                app:iconTint="@color/ijblue" />
+        </LinearLayout>
+    </ScrollView>
+</RelativeLayout>

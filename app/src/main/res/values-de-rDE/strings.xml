@@ -50,7 +50,9 @@
     <string name="edit_card">Karteikarte bearbeiten</string>
     <string name="edit_card_media">Verknüpfte Medien verwalten</string>
     <string name="edit_card_media_add">Medien hinzufügen</string>
+    <string name="edit_card_tag_add">Schlagwort hinzufügen</string>
     <string name="no_media">Keine Medien</string>
+    <string name="no_tags">Keine Schlagworte</string>
     <string name="no_files_without_media">Keine Dateien ohne Datenbankeintrag</string>
     <string name="media_missing">Medium verschollen (Datei nicht gefunden)</string>
     <string name="media_missing_db">Medium verschollen (Kein Datenbankeintrag)</string>
@@ -115,6 +117,9 @@
     <string name="card_minus">Nicht gewusst</string>
     <string name="skip">Überspringen</string>
     <string name="back">zurück</string>
+    <string name="tag">Schlagwort</string>
+    <string name="tag_emoji">Emoji für Schlagwort</string>
+    <string name="tags">Schlagworte</string>
     <string name="card_known">Fortschritt</string>
     <string name="query_mode">Abfrage-Modus</string>
     <string name="query_mode_title">%1$s (%2$d von %3$d)</string>
@@ -152,6 +157,8 @@
     <string name="advanced_search_packs">Kartenstapel</string>
     <string name="advanced_search_packs_all">Alle Kartenstapel</string>
     <string name="advanced_search_packs_select">Kartenstapel auswählen</string>
+    <string name="advanced_search_tags_all">Alle Schlagworte</string>
+    <string name="advanced_search_tags_select">Schlagworte auswählen</string>
     <string name="advanced_search_progress">Lernfortschritt auswählen</string>
     <string name="advanced_search_progress_greater">Größer gleich</string>
     <string name="advanced_search_progress_less">Kleiner gleich</string>

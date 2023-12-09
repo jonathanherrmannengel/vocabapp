@@ -33,6 +33,13 @@
         android:title="@string/edit_card_media"
         app:showAsAction="never" />
     <item
+        android:id="@+id/menu_view_card_edit_tags"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orderInCategory="400"
+        android:title="@string/tags"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/menu_view_card_print"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

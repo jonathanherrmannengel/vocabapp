@@ -6,6 +6,9 @@ import android.graphics.PorterDuff
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
+import android.text.SpannableString
+import android.text.SpannableStringBuilder
+import android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
 import android.text.util.Linkify
 import android.util.TypedValue
 import android.view.Menu
@@ -22,6 +25,7 @@ import de.herrmann_engel.rbv.db.DB_Media_Link_Card
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Update
 import de.herrmann_engel.rbv.utils.StringTools
+import de.herrmann_engel.rbv.utils.TagSpan
 import io.noties.markwon.Markwon
 import io.noties.markwon.linkify.LinkifyPlugin
 import me.saket.bettermovementmethod.BetterLinkMovementMethod
@@ -87,6 +91,43 @@ class ViewCard : CardActionsActivity() {
                 cardFront = card!!.front
                 binding.cardFront.text = cardFront
                 binding.cardBack.text = card!!.back
+            }
+            val cardTags = dbHelperGet.getCardTags(card!!.uid)
+            if (cardTags.isNotEmpty()) {
+                binding.cardTags.visibility = View.VISIBLE
+                val builder = SpannableStringBuilder()
+                builder.append(getString(R.string.tags))
+                builder.append(":")
+                cardTags.forEach {
+                    var color = ContextCompat.getColor(
+                        this,
+                        R.color.tag_background
+                    )
+                    if (!it.color.isNullOrBlank()) {
+                        try {
+                            color = Color.parseColor(it.color)
+                        } catch (_: Exception) {
+                        }
+                    }
+                    var tagText = it.name
+                    if (!it.emoji.isNullOrBlank()) {
+                        tagText = it.emoji + " " + tagText
+                    }
+                    val spannableString = SpannableString(tagText)
+                    builder.append(spannableString)
+                    builder.setSpan(
+                        TagSpan(
+                            this,
+                            color
+                        ),
+                        builder.length - spannableString.length,
+                        builder.length,
+                        SPAN_EXCLUSIVE_EXCLUSIVE
+                    )
+                }
+                binding.cardTags.text = builder
+            } else {
+                binding.cardTags.visibility = View.GONE
             }
             formatCardNotes = settings.getBoolean("format_card_notes", false)
             if (card!!.notes != null && card!!.notes.isNotEmpty()) {
@@ -188,6 +229,12 @@ class ViewCard : CardActionsActivity() {
             }
             menu.findItem(R.id.menu_view_card_edit_media).setOnMenuItemClickListener {
                 val intent = Intent(this, EditCardMedia::class.java)
+                intent.putExtra("card", cardNo)
+                startActivity(intent)
+                return@setOnMenuItemClickListener true
+            }
+            menu.findItem(R.id.menu_view_card_edit_tags).setOnMenuItemClickListener {
+                val intent = Intent(this, EditCardTags::class.java)
                 intent.putExtra("card", cardNo)
                 startActivity(intent)
                 return@setOnMenuItemClickListener true

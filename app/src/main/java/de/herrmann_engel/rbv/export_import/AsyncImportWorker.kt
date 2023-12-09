@@ -40,6 +40,7 @@ class AsyncImportWorker(
             val packUidConverter = AsyncImportUidConvert()
             val cardUidConverter = AsyncImportUidConvert()
             val mediaUidConverter = AsyncImportUidConvert()
+            val tagsUidConverter = AsyncImportUidConvert()
             var line: Array<String?>?
             while (csvReader.readNext().also { line = it } != null) {
                 try {
@@ -233,6 +234,51 @@ class AsyncImportWorker(
                                     )
                                 ) {
                                     helperCreate.createMediaLink(currentMedia, currentCard)
+                                }
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                                errorLevel = Globals.IMPORT_ERROR_LEVEL_WARN
+                            }
+                        }
+
+                        line?.get(0) == "tags" -> {
+                            try {
+                                val tagUidOld = Integer.parseInt((line?.get(1) ?: "0"))
+                                val name = line?.get(2) ?: ""
+                                val emoji = line?.get(3) ?: ""
+                                val color = line?.get(4) ?: ""
+                                if (name.isNotBlank()) {
+                                    if (helperGet.existsTag(name)) {
+                                        val mediaUidNew = helperGet.getSingleTag(name).uid
+                                        tagsUidConverter.insertPair(tagUidOld, mediaUidNew)
+                                    } else {
+                                        val mediaUidNew =
+                                            helperCreate.createTag(name, emoji, color).toInt()
+                                        tagsUidConverter.insertPair(tagUidOld, mediaUidNew)
+                                    }
+                                }
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                                errorLevel = Globals.IMPORT_ERROR_LEVEL_WARN
+                            }
+                        }
+
+                        line?.get(0) == "tags_link_card" -> {
+                            try {
+                                val currentTag =
+                                    tagsUidConverter.getNewValue(
+                                        Integer.parseInt((line?.get(2) ?: "0"))
+                                    )
+                                val currentCard =
+                                    cardUidConverter.getNewValue(
+                                        Integer.parseInt((line?.get(3) ?: "0"))
+                                    )
+                                if (currentTag != 0 && currentCard != 0 && !helperGet.existsTagLinkCard(
+                                        currentTag,
+                                        currentCard
+                                    )
+                                ) {
+                                    helperCreate.createTagLink(currentTag, currentCard)
                                 }
                             } catch (e: Exception) {
                                 e.printStackTrace()

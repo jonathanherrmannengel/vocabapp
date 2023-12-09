@@ -13,10 +13,12 @@ Karteikästen -> Kartenstapel -> Karteikarten
 
 📎🖨️ Du kannst Karteikarten mit Medien verknüpfen und drucken.
 
+🏷️ Du kannst den Karteikarten Stichworte zuweisen.
+
 🌈 Du kannst vier Farbvarianten für Karteikästen und Kartenstapel nutzen.
 
 ▶️ Aus jeder Karteikartenliste kann ein Abfragemodus gestartet werden.
 
-🔍 Karteikartenlisten können die gesamte Sammlung sowie einzelne Karteikästen bzw. Kartenstapel umfassen. Über die erweiterte Suche können Listen aller oder mehrerer Kartenstapel nach Lernfortschritt und / oder letzter Wiederholung generiert werden.
+🔍 Karteikartenlisten können die gesamte Sammlung sowie einzelne Karteikästen bzw. Kartenstapel umfassen. Über die erweiterte Suche können Listen aller oder mehrerer Kartenstapel nach Stichworten, Lernfortschritt und / oder letzter Wiederholung generiert werden.
 
 ❗ Sichere Deine Daten bitte vor dem Einspielen eines Updates.

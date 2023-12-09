@@ -8,6 +8,8 @@ import de.herrmann_engel.rbv.db.DB_Collection_DAO;
 import de.herrmann_engel.rbv.db.DB_Media_DAO;
 import de.herrmann_engel.rbv.db.DB_Media_Link_Card_DAO;
 import de.herrmann_engel.rbv.db.DB_Pack_DAO;
+import de.herrmann_engel.rbv.db.DB_Tag_DAO;
+import de.herrmann_engel.rbv.db.DB_Tag_Link_Card_DAO;
 
 class DB_Helper {
 
@@ -16,6 +18,8 @@ class DB_Helper {
     final DB_Card_DAO card_dao;
     final DB_Media_DAO media_dao;
     final DB_Media_Link_Card_DAO media_link_card_dao;
+    final DB_Tag_DAO tag_dao;
+    final DB_Tag_Link_Card_DAO tag_link_card_dao;
     final Context context;
 
     DB_Helper(Context context) {
@@ -26,6 +30,8 @@ class DB_Helper {
         card_dao = db.cardDAO();
         media_dao = db.mediaDAO();
         media_link_card_dao = db.mediaLinkCardDAO();
+        tag_dao = db.tagDAO();
+        tag_link_card_dao = db.tagLinkCardDAO();
     }
 
 }

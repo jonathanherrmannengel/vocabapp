@@ -78,7 +78,17 @@ public class DB_Helper_Delete {
         dbHelper.media_link_card_dao.deleteMediaLinkCard(file, card);
     }
 
+    public void deleteTagLink(int tag, int card) {
+        dbHelper.tag_link_card_dao.deleteTagLinkCard(tag, card);
+        deleteDeadTags();
+    }
+
     public void deleteDeadMediaLinks() {
         dbHelper.media_link_card_dao.deleteDeadMediaLinks();
+    }
+
+    public void deleteDeadTags() {
+        dbHelper.tag_dao.deleteDeadTags();
+        dbHelper.tag_link_card_dao.deleteDeadTagLinks();
     }
 }

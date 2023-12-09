@@ -7,6 +7,8 @@ import de.herrmann_engel.rbv.db.DB_Collection;
 import de.herrmann_engel.rbv.db.DB_Media;
 import de.herrmann_engel.rbv.db.DB_Media_Link_Card;
 import de.herrmann_engel.rbv.db.DB_Pack;
+import de.herrmann_engel.rbv.db.DB_Tag;
+import de.herrmann_engel.rbv.db.DB_Tag_Link_Card;
 
 public class DB_Helper_Create {
 
@@ -95,5 +97,43 @@ public class DB_Helper_Create {
             return dbHelper.media_link_card_dao.insert(mediaLinkCard);
         }
         throw new Exception();
+    }
+
+    public long createTag(String tagName, String emoji, String color) throws Exception {
+        DB_Helper_Get dbHelperGet = new DB_Helper_Get(dbHelper.context);
+        if (!dbHelperGet.existsTag(tagName)) {
+            DB_Tag newTag = new DB_Tag();
+            newTag.name = tagName;
+            newTag.emoji = emoji;
+            newTag.color = color;
+            return dbHelper.tag_dao.insert(newTag);
+        }
+        throw new Exception();
+    }
+
+    public long createTag(String tagName) throws Exception {
+        return createTag(tagName, null, null);
+    }
+
+    public long createTagLink(int tag, int card) throws Exception {
+        DB_Helper_Get dbHelperGet = new DB_Helper_Get(dbHelper.context);
+        if (!dbHelperGet.existsTagLinkCard(tag, card)) {
+            DB_Tag_Link_Card tagLinkCard = new DB_Tag_Link_Card();
+            tagLinkCard.tag = tag;
+            tagLinkCard.card = card;
+            return dbHelper.tag_link_card_dao.insert(tagLinkCard);
+        }
+        throw new Exception();
+    }
+
+    public long createTagLink(String tagName, int card) throws Exception {
+        DB_Helper_Get dbHelperGet = new DB_Helper_Get(dbHelper.context);
+        int tag;
+        if (dbHelperGet.existsTag(tagName)) {
+            tag = dbHelperGet.getSingleTag(tagName).uid;
+        } else {
+            tag = (int) createTag(tagName);
+        }
+        return createTagLink(tag, card);
     }
 }
