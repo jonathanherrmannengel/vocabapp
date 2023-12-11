@@ -38,7 +38,7 @@ class SearchCards {
                 ) && (l.tags == null || hasNoMatchInaccurate(
                     l.tags.joinToString(separator = " ") { it.name },
                     queryLower
-                )) && (l.tags == null || hasNoMatch(
+                )) && (l.tags == null || hasNoMatchInaccurate(
                     l.tags.mapNotNull { it.emoji }.joinToString(separator = " "),
                     query
                 ))

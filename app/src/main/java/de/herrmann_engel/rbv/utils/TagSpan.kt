@@ -24,11 +24,11 @@ class TagSpan(private val context: Context, private val backgroundColor: Int) : 
         paint: Paint
     ) {
         val rect = RectF(
-            x + MARGIN / 2, top.toFloat(), x + paint.measureText(
+            x + MARGIN / 2, top.toFloat(), x + MARGIN / 2 + paint.measureText(
                 text,
                 start,
                 end
-            ) + PADDING + MARGIN / 2, bottom.toFloat()
+            ) + PADDING, bottom.toFloat()
         )
         paint.color = backgroundColor
         canvas.drawRoundRect(rect, rect.height() / 2, rect.height() / 2, paint)
@@ -41,9 +41,7 @@ class TagSpan(private val context: Context, private val backgroundColor: Int) : 
                 R.color.tag_foreground_dark
             }
         )
-        val xPos = (x + PADDING / 2 + MARGIN / 2).roundToInt()
-        val yPos = (y)
-        canvas.drawText(text, start, end, xPos.toFloat(), yPos.toFloat(), paint)
+        canvas.drawText(text, start, end, (x + MARGIN / 2 + PADDING / 2), y.toFloat(), paint)
     }
 
     override fun getSize(
@@ -53,7 +51,7 @@ class TagSpan(private val context: Context, private val backgroundColor: Int) : 
         end: Int,
         fm: FontMetricsInt?
     ): Int {
-        return (paint.measureText(text, start, end) + PADDING + MARGIN).roundToInt()
+        return (MARGIN + paint.measureText(text, start, end) + PADDING).roundToInt()
     }
 
     companion object {

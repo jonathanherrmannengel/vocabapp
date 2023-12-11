@@ -41,15 +41,14 @@ class AdapterTagLinkCard(
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         val context = viewHolder.binding.root.context
-        viewHolder.binding.recTagsDelete.visibility = View.GONE
-        viewHolder.binding.recTagsEdit.visibility = View.GONE
         if (tagList.isEmpty()) {
             viewHolder.binding.recTagsName.text = context.getString(R.string.no_tags)
+            viewHolder.binding.recTagsDelete.visibility = View.GONE
+            viewHolder.binding.recTagsEdit.visibility = View.GONE
         } else {
-            viewHolder.binding.recTagsDelete.visibility = View.VISIBLE
-            viewHolder.binding.recTagsEdit.visibility = View.VISIBLE
             val currentTag = tagList[position]
             viewHolder.binding.recTagsName.text = currentTag.name
+            viewHolder.binding.recTagsDelete.visibility = View.VISIBLE
             viewHolder.binding.recTagsDelete.setOnClickListener {
                 val dbHelperDelete = DB_Helper_Delete(context)
                 dbHelperDelete.deleteTagLink(currentTag.uid, cardNo)
@@ -57,6 +56,7 @@ class AdapterTagLinkCard(
                 notifyItemRemoved(position)
                 notifyItemRangeChanged(position, tagList.size)
             }
+            viewHolder.binding.recTagsEdit.visibility = View.VISIBLE
             viewHolder.binding.recTagsEdit.setOnClickListener {
                 val activity = ContextTools().getActivity(context)
                 if (activity != null) {

@@ -249,12 +249,12 @@ class AsyncImportWorker(
                                 val color = line?.get(4) ?: ""
                                 if (name.isNotBlank()) {
                                     if (helperGet.existsTag(name)) {
-                                        val mediaUidNew = helperGet.getSingleTag(name).uid
-                                        tagsUidConverter.insertPair(tagUidOld, mediaUidNew)
+                                        val tagUidNew = helperGet.getSingleTag(name).uid
+                                        tagsUidConverter.insertPair(tagUidOld, tagUidNew)
                                     } else {
-                                        val mediaUidNew =
+                                        val tagUidNew =
                                             helperCreate.createTag(name, emoji, color).toInt()
-                                        tagsUidConverter.insertPair(tagUidOld, mediaUidNew)
+                                        tagsUidConverter.insertPair(tagUidOld, tagUidNew)
                                     }
                                 }
                             } catch (e: Exception) {
