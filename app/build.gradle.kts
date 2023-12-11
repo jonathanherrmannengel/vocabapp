@@ -69,7 +69,7 @@ dependencies {
     implementation("io.noties.markwon:core:4.6.2")
     implementation("io.noties.markwon:linkify:4.6.2")
     implementation("me.saket:better-link-movement-method:2.2.0")
-    implementation("com.vanniktech:emoji-twitter:0.17.0")
+    implementation("com.vanniktech:emoji-twitter:0.18.0")
     implementation("com.squareup.picasso:picasso:2.8")
     implementation("com.github.rtugeek:colorseekbar:2.0.3")
     implementation("com.atlassian.commonmark:commonmark:0.13.0")
