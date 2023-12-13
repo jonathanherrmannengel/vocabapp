@@ -1,4 +1,4 @@
-package de.herrmann_engel.rbv.utils
+package de.herrmann_engel.rbv.ui
 
 import android.content.Context
 import android.graphics.Canvas

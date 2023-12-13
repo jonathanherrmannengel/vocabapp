@@ -1,12 +1,11 @@
-package de.herrmann_engel.rbv.utils
+package de.herrmann_engel.rbv.ui
 
 import android.annotation.SuppressLint
 import android.view.MotionEvent
 import android.view.View
-import android.view.View.OnTouchListener
 import kotlin.math.abs
 
-open class SwipeEvents : OnTouchListener {
+open class SwipeEvents : View.OnTouchListener {
     private var initialY = 0f
     private var initialX = 0f
     private var moveDirection = 0
