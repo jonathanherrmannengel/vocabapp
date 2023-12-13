@@ -157,8 +157,8 @@
     <string name="advanced_search_packs">Kartenstapel</string>
     <string name="advanced_search_packs_all">Alle Kartenstapel</string>
     <string name="advanced_search_packs_select">Kartenstapel auswählen</string>
-    <string name="advanced_search_tags_all">Alle Schlagworte</string>
-    <string name="advanced_search_tags_select">Schlagworte auswählen</string>
+    <string name="advanced_search_tags_all">Alle Karteikarten einschließen (mit oder ohne Schlagworte)</string>
+    <string name="advanced_search_tags_select">Karteikarten mit mindestens einem der ausgewählten Schlagworte einschließen</string>
     <string name="advanced_search_progress">Lernfortschritt auswählen</string>
     <string name="advanced_search_progress_greater">Größer gleich</string>
     <string name="advanced_search_progress_less">Kleiner gleich</string>

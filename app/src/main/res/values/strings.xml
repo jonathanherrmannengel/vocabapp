@@ -167,8 +167,8 @@
     <string name="advanced_search_packs">Decks</string>
     <string name="advanced_search_packs_all">All decks</string>
     <string name="advanced_search_packs_select">Select decks</string>
-    <string name="advanced_search_tags_all">All tags</string>
-    <string name="advanced_search_tags_select">Select tags</string>
+    <string name="advanced_search_tags_all">Include all flashcards (with or without tags)</string>
+    <string name="advanced_search_tags_select">Include flashcards with at least one of the selected tags</string>
     <string name="advanced_search_progress">Select progress</string>
     <string name="advanced_search_progress_greater">greater or equal</string>
     <string name="advanced_search_progress_less">less or equal</string>
