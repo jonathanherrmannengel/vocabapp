@@ -148,6 +148,7 @@
     <string name="print_include_notes">Notizen einschließen</string>
     <string name="print_include_images">Bilder einschließen</string>
     <string name="print_include_media_list">Medienliste einschließen</string>
+    <string name="print_include_tag_list">Schlagwortliste einschließen</string>
     <string name="color">Farbe</string>
     <string name="info">Infos</string>
     <string name="search">Suchen</string>

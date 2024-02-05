@@ -158,6 +158,7 @@
     <string name="print_include_notes">Include notes</string>
     <string name="print_include_images">Include images</string>
     <string name="print_include_media_list">Include media list</string>
+    <string name="print_include_tag_list">Include tag list</string>
     <string name="color">color</string>
     <string name="info">info</string>
     <string name="search">search</string>

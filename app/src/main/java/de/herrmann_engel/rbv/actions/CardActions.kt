@@ -24,6 +24,7 @@ import de.herrmann_engel.rbv.databinding.DiaRecBinding
 import de.herrmann_engel.rbv.db.DB_Card
 import de.herrmann_engel.rbv.db.DB_Media_Link_Card
 import de.herrmann_engel.rbv.db.DB_Pack
+import de.herrmann_engel.rbv.db.DB_Tag
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Delete
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.utils.StringTools
@@ -142,6 +143,12 @@ class CardActions(val activity: Activity) {
                 bindingPrintDialog.diaPrintIncludeMediaLayout.visibility = View.GONE
                 bindingPrintDialog.diaPrintIncludeMedia.isChecked = false
             }
+            val tagList =
+                dbHelperGet.getCardTags(cards[0].uid) as ArrayList<DB_Tag>
+            if (tagList.isEmpty()) {
+                bindingPrintDialog.diaPrintIncludeTagsLayout.visibility = View.GONE
+                bindingPrintDialog.diaPrintIncludeTags.isChecked = false
+            }
         } else {
             jobName = "rbv_flashcards"
         }
@@ -170,7 +177,7 @@ class CardActions(val activity: Activity) {
             var htmlDocument =
                 "<!doctype html><html><head><meta charset=\"utf-8\"><title>" + activity.getString(
                     R.string.print
-                ) + "</title><style>@page{margin:20mm 25mm;}@media(max-width:250mm),@media(max-height:200mm){@page{margin:7% 10%;}}div{inline-size:100%;overflow-wrap:break-word;}.main-title{margin-bottom:30px;}.title{text-align:center;color:#000007;}.border-top::before{margin-bottom:20px;margin-top:30px;display:block;content:' ';width:100%;height:1px;outline:2px solid #555;outline-offset:-1px;}.main-title.border-top::before{margin-top:100px;}.image-div,.media-div{text-align:center}.image{padding:10px;max-width:30%;max-height:10%;object-fit:contain;}</style></head>"
+                ) + "</title><style>@page{margin:20mm 25mm;}@media(max-width:250mm),@media(max-height:200mm){@page{margin:7% 10%;}}div{inline-size:100%;overflow-wrap:break-word;}.main-title{margin-bottom:30px;}.title{text-align:center;color:#000007;}.border-top::before{margin-bottom:20px;margin-top:30px;display:block;content:' ';width:100%;height:1px;outline:2px solid #555;outline-offset:-1px;}.main-title.border-top::before{margin-top:100px;}.image-div,.media-div{text-align:center}.image{padding:10px;max-width:30%;max-height:10%;object-fit:contain;}.tag-div{display:inline-block;width:auto;margin:10px;padding:10px;border:2px solid black;border-radius:1em;}.tag-emoji{padding-right:0.5em;}</style></head>"
             var firstCard = true
             for (card in cards) {
                 val cardFront = if (formatCards) {
@@ -283,6 +290,31 @@ class CardActions(val activity: Activity) {
                         if (currentMedia != null) {
                             htmlDocument += "<div class=\"media-div\">" + currentMedia.file + "</div>"
                         }
+                    }
+                    htmlDocument += "</div></article>"
+                }
+                val tagList =
+                    dbHelperGet.getCardTags(card.uid) as ArrayList<DB_Tag>
+                if (tagList.isNotEmpty() && bindingPrintDialog.diaPrintIncludeTags.isChecked) {
+                    htmlDocument += "<article>"
+                    if (bindingPrintDialog.diaPrintIncludeHeadings.isChecked) {
+                        htmlDocument += "<h2 class=\"title border-top\" dir=\"auto\">" + activity.getString(
+                            R.string.tags
+                        ) + "</h2>"
+                        htmlDocument += "<div>"
+                    } else {
+                        htmlDocument += "<div class=\"border-top\">"
+                    }
+                    for (tag in tagList) {
+                        htmlDocument += "<div class=\"tag-div\""
+                        if (!tag.color.isNullOrBlank()) {
+                            htmlDocument += " style=\"border-color:" + tag.color + ";\""
+                        }
+                        htmlDocument += ">"
+                        if (!tag.emoji.isNullOrBlank()) {
+                            htmlDocument += "<span class=\"tag-emoji\">" + tag.emoji + "</span>"
+                        }
+                        htmlDocument += "<span>" + tag.name + "</span></div>"
                     }
                     htmlDocument += "</div></article>"
                 }
