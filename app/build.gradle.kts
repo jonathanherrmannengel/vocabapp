@@ -8,8 +8,8 @@ android {
         applicationId = "de.herrmann_engel.rbv"
         minSdk = 25
         targetSdk = 34
-        versionCode = 73
-        versionName = "3.4.0"
+        versionCode = 74
+        versionName = "3.4.1"
         javaCompileOptions {
             annotationProcessorOptions {
                 arguments += mapOf(
@@ -48,6 +48,7 @@ android {
     }
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
