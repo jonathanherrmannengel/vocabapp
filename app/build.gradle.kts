@@ -65,7 +65,7 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.12.0")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     implementation("com.opencsv:opencsv:5.9")
     implementation("io.noties.markwon:core:4.6.2")
     implementation("io.noties.markwon:linkify:4.6.2")

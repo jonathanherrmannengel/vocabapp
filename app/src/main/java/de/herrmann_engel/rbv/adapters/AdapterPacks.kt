@@ -339,7 +339,7 @@ class AdapterPacks(
             val emojiText = currentPack.emoji
             viewHolder.binding.recCollectionsPreviewText.text =
                 if (contextualMenuMode != null && contextualMenuModePackIdList.contains(currentPack.uid)) {
-                    "✔"
+                    "✓"
                 } else if (emojiText.isNullOrEmpty()) {
                     val pattern = Regex("^(\\P{M}\\p{M}*+).*")
                     currentPack.name.replace(pattern, "$1")
