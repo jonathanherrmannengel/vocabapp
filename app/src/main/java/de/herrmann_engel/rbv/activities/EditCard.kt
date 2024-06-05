@@ -32,12 +32,12 @@ class EditCard : AppCompatActivity() {
         try {
             card = dbHelperGet.getSingleCard(cardNo)
             binding.editCardFront.setText(card!!.front)
-            if (System.getProperty("line.separator")?.let { card!!.front.contains(it) } == true) {
+            if (card!!.front.contains(System.lineSeparator())) {
                 binding.editCardFront.inputType = InputType.TYPE_TEXT_FLAG_MULTI_LINE
                 binding.editCardFront.isSingleLine = false
             }
             binding.editCardBack.setText(card!!.back)
-            if (System.getProperty("line.separator")?.let { card!!.back.contains(it) } == true) {
+            if (card!!.back.contains(System.lineSeparator())) {
                 binding.editCardBack.inputType = InputType.TYPE_TEXT_FLAG_MULTI_LINE
                 binding.editCardBack.isSingleLine = false
             }

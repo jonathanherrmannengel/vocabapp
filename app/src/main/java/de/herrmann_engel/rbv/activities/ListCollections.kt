@@ -29,6 +29,7 @@ import de.herrmann_engel.rbv.export_import.AsyncExportProgress
 import de.herrmann_engel.rbv.export_import.AsyncImport
 import de.herrmann_engel.rbv.export_import.AsyncImportFinish
 import de.herrmann_engel.rbv.export_import.AsyncImportProgress
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import java.io.File
@@ -83,7 +84,9 @@ class ListCollections : FileTools(), AsyncImportFinish, AsyncImportProgress, Asy
         setContentView(binding.root)
         dbHelperGet = DB_Helper_Get(this)
         setTitle(R.string.app_name)
-        MainScope().launch { cleanUp() }
+        MainScope().launch(Dispatchers.Default) {
+            cleanUp()
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -257,7 +260,7 @@ class ListCollections : FileTools(), AsyncImportFinish, AsyncImportProgress, Asy
 
     private fun cleanUp() {
         handleNoMediaFile()
-        val dbHelperDelete = DB_Helper_Delete(this)
+        val dbHelperDelete = DB_Helper_Delete(this@ListCollections)
         dbHelperDelete.deleteDeadMediaLinks()
         dbHelperDelete.deleteDeadTags()
     }

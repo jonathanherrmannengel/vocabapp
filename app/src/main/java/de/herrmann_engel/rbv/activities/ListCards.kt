@@ -16,7 +16,11 @@ import android.os.Looper
 import android.text.SpannableString
 import android.text.util.Linkify
 import android.util.TypedValue
-import android.view.*
+import android.view.KeyEvent
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.view.WindowManager
 import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.SearchView
@@ -34,11 +38,13 @@ import de.herrmann_engel.rbv.db.DB_Media_Link_Card
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Update
 import de.herrmann_engel.rbv.ui.SwipeEvents
-import de.herrmann_engel.rbv.utils.*
+import de.herrmann_engel.rbv.utils.FormatCards
+import de.herrmann_engel.rbv.utils.SearchCards
+import de.herrmann_engel.rbv.utils.SortCards
+import de.herrmann_engel.rbv.utils.StringTools
 import io.noties.markwon.Markwon
 import io.noties.markwon.linkify.LinkifyPlugin
 import me.saket.bettermovementmethod.BetterLinkMovementMethod
-import java.util.*
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
@@ -71,6 +77,7 @@ class ListCards : CardActionsActivity() {
     private var showListStatsMenuItem: MenuItem? = null
     private lateinit var queryModeDialog: Dialog
     private lateinit var bindingQueryModeDialog: DiaQueryBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityDefaultRecBinding.inflate(layoutInflater)
@@ -227,7 +234,6 @@ class ListCards : CardActionsActivity() {
 
         //Get cards
         if (cardsList == null) {
-            val formatCards = FormatCards(this)
             cardsList = if (collectionNo == -1 && packNo == -1) {
                 dbHelperGet.allCardsWithMeta
             } else if (packNo == -1) {
@@ -261,22 +267,23 @@ class ListCards : CardActionsActivity() {
             } else {
                 dbHelperGet.getAllCardsByPackWithMeta(packNo)
             }
+            val formatCards = FormatCards(this)
+            formatCards.formatCards(cardsList!!)
             cardsList?.forEach {
                 it.tags =
                     it.card?.uid?.let { it1 -> dbHelperGet.getCardTags(it1) }
             }
-            formatCards.formatCards(cardsList!!)
             sortList()
         }
 
         //Warning: Big lists
         if (cardsList!!.size > Globals.LIST_ACCURATE_SIZE) {
             val config = getSharedPreferences(Globals.CONFIG_NAME, MODE_PRIVATE)
-            val formatCards = settings.getBoolean("format_cards", false)
+            val formatCardsActivated = settings.getBoolean("format_cards", false)
             val warnInaccurateFormat =
-                formatCards && config.getBoolean("inaccurate_warning_format", true)
+                formatCardsActivated && config.getBoolean("inaccurate_warning_format", true)
             val warnInaccurateNoFormat =
-                !formatCards && config.getBoolean("inaccurate_warning_no_format", true)
+                !formatCardsActivated && config.getBoolean("inaccurate_warning_no_format", true)
             if (warnInaccurateFormat || warnInaccurateNoFormat) {
                 val configEditor = config.edit()
                 val infoDialog = Dialog(this, R.style.dia_view)
@@ -306,8 +313,7 @@ class ListCards : CardActionsActivity() {
                 warnings.add(resources.getString(R.string.warn_inaccurate_search))
                 warnings.add(resources.getString(R.string.warn_inaccurate_note))
                 bindingInfoDialog.diaInfoText.text = java.lang.String.join(
-                    System.getProperty("line.separator")?.plus(System.getProperty("line.separator"))
-                        ?: "",
+                    System.lineSeparator().plus(System.lineSeparator()),
                     warnings
                 )
                 infoDialog.show()

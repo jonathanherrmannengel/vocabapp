@@ -211,7 +211,7 @@ class AdapterCards(
             var cardText = if (reverse) {
                 cards[position].formattedBack ?: cards[position].card.back
             } else cards[position].formattedFront ?: cards[position].card.front
-            cardText = System.getProperty("line.separator")?.let { cardText.replace(it, " ") }
+            cardText = cardText.replace(System.lineSeparator(), " ")
             cardText = stringTools.shorten(cardText)
             viewHolder.binding.recName.text =
                 String.format("%s (%d)", cardText, cards[position].card.known)

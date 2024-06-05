@@ -19,6 +19,6 @@ filing boxes -> decks -> flashcards
 
 ▶️ From each flashcard list you may enter a query mode.
 
-🔍 Flashcard lists for the entire collection as well as single filing boxes or decks are available. Using the advanced search you may generate lists of all or some decks by tags, progress and / or last repetition.
+🔍 Flashcard lists for the entire collection as well as single filing boxes or decks are available. Using the “advanced query” option you may generate lists of all or some decks by tags, progress and / or last repetition.
 
-❗ Please backup your content before installing updates.
+❗ Please backup your content on a regular basis.

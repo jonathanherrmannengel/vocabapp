@@ -164,7 +164,7 @@
     <string name="search">search</string>
     <string name="search_no_results">no search results</string>
     <string name="search_off">Reset search</string>
-    <string name="advanced_search">Advanced search</string>
+    <string name="advanced_search">Advanced query</string>
     <string name="advanced_search_packs">Decks</string>
     <string name="advanced_search_packs_all">All decks</string>
     <string name="advanced_search_packs_select">Select decks</string>

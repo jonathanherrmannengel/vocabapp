@@ -27,7 +27,7 @@ class AdapterMediaManageLinkedCards(
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         val context = viewHolder.binding.root.context
         var cardText = cards[position].formattedFront ?: cards[position].card.front
-        cardText = System.getProperty("line.separator")?.let { cardText.replace(it, " ") }
+        cardText = cardText.replace(System.lineSeparator(), " ")
         cardText = StringTools().shorten(cardText)
         viewHolder.binding.recName.text = cardText
         val extra = cards[position].card.uid

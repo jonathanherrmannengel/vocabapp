@@ -154,7 +154,7 @@
     <string name="search">Suchen</string>
     <string name="search_no_results">Keine Suchergebnisse</string>
     <string name="search_off">Suche zurücksetzen</string>
-    <string name="advanced_search">Erweiterte Suche</string>
+    <string name="advanced_search">Erweiterte Abfrage</string>
     <string name="advanced_search_packs">Kartenstapel</string>
     <string name="advanced_search_packs_all">Alle Kartenstapel</string>
     <string name="advanced_search_packs_select">Kartenstapel auswählen</string>
