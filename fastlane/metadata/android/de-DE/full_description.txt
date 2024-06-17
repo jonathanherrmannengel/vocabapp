@@ -7,18 +7,18 @@ Karteikästen -> Kartenstapel -> Karteikarten
 
 🗂️ Die Kartenstapel eines Karteikastens enthalten die Karteikarten.
 
+🌈 Du kannst vier Farbvarianten für Karteikästen und Kartenstapel nutzen.
+
 📇 Die Karteikarten eines Kartenstapels bieten eine Vorderseite und eine Rückseite sowie optional Notizen. Der Lernfortschritt wird als Zahlenwert gespeichert.
 
 🖌️ Du kannst Formatierungsoptionen für die Karteikarten in den App-Einstellungen aktivieren.
 
-📎🖨️ Du kannst Karteikarten mit Medien verknüpfen und drucken.
+📎🏷️ Du kannst die Karteikarten mit Medien verknüpfen und den Karteikarten Schlagworte zuweisen.
 
-🏷️ Du kannst den Karteikarten Schlagworte zuweisen.
-
-🌈 Du kannst vier Farbvarianten für Karteikästen und Kartenstapel nutzen.
+🖨️ Du kannst die Karteikarten drucken.
 
 ▶️ Aus jeder Karteikartenliste kann ein Abfragemodus gestartet werden.
 
 🔍 Karteikartenlisten können die gesamte Sammlung sowie einzelne Karteikästen bzw. Kartenstapel umfassen. Über die „Erweiterte Abfrage“-Option können Listen aller oder mehrerer Kartenstapel nach Schlagworten, Lernfortschritt und / oder letzter Wiederholung generiert werden.
 
-❗ Sichere Deine Daten bitte regelmäßig in einem Backup.
+❗ Sichere Deine Inhalte bitte regelmäßig in einem Backup.
