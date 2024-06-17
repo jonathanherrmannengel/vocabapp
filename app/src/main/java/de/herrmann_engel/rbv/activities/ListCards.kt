@@ -113,7 +113,6 @@ class ListCards : CardActionsActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         if (cardsList != null) {
-            val formatCards = FormatCards(this)
             val cardDeleted = intent.extras!!.getInt("cardDeleted")
             if (cardDeleted != 0) {
                 deleteCardFromList(cardDeleted)
@@ -124,9 +123,9 @@ class ListCards : CardActionsActivity() {
             ) {
                 try {
                     val cardWithMetaNew = dbHelperGet.getSingleCardWithMeta(cardAdded)
-                    formatCards.formatCard(cardWithMetaNew, false)
-                    cardWithMetaNew.tags =
-                        cardWithMetaNew.card?.uid?.let { it1 -> dbHelperGet.getCardTags(it1) }
+                    if (settings.getBoolean("format_cards", false)) {
+                        FormatCards().formatCard(cardWithMetaNew, false)
+                    }
                     cardsList!!.add(cardWithMetaNew)
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -141,12 +140,12 @@ class ListCards : CardActionsActivity() {
                         .filter { i: DB_Card_With_Meta? -> i!!.card.uid == cardWithMetaNew!!.card.uid }
                         .findFirst().orElse(null)
                     if (cardWithMetaNew != null && cardWithMetaOld != null) {
-                        formatCards.formatCard(
-                            cardWithMetaNew,
-                            cardWithMetaOld.formattingIsInaccurate
-                        )
-                        cardWithMetaNew.tags =
-                            cardWithMetaNew.card?.uid?.let { it1 -> dbHelperGet.getCardTags(it1) }
+                        if (settings.getBoolean("format_cards", false)) {
+                            FormatCards().formatCard(
+                                cardWithMetaNew,
+                                cardWithMetaOld.formattingIsInaccurate
+                            )
+                        }
                         var index = cardsList!!.indexOf(cardWithMetaOld)
                         if (index != -1) {
                             cardsList!![index] = cardWithMetaNew
@@ -267,11 +266,8 @@ class ListCards : CardActionsActivity() {
             } else {
                 dbHelperGet.getAllCardsByPackWithMeta(packNo)
             }
-            val formatCards = FormatCards(this)
-            formatCards.formatCards(cardsList!!)
-            cardsList?.forEach {
-                it.tags =
-                    it.card?.uid?.let { it1 -> dbHelperGet.getCardTags(it1) }
+            if (settings.getBoolean("format_cards", false)) {
+                FormatCards().formatCards(cardsList!!)
             }
             sortList()
         }

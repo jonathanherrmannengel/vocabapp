@@ -33,14 +33,11 @@ class SearchCards {
                     l.formattedBack ?: l.card.back,
                     queryLower
                 ) && hasNoMatchInaccurate(
-                    l.formattedNotes ?: l.card.notes,
+                    l.card.notes,
                     queryLower
-                ) && (l.tags == null || hasNoMatchInaccurate(
-                    l.tags.joinToString(separator = " ") { it.name },
+                ) && (l.tagNames.isNullOrBlank() || hasNoMatchInaccurate(
+                    l.tagNames,
                     queryLower
-                )) && (l.tags == null || hasNoMatchInaccurate(
-                    l.tags.mapNotNull { it.emoji }.joinToString(separator = " "),
-                    query
                 ))
             }
         } else {
@@ -52,13 +49,10 @@ class SearchCards {
                     l.formattedBack ?: l.card.back,
                     query
                 ) && hasNoMatch(
-                    l.formattedNotes ?: l.card.notes,
+                    l.card.notes,
                     query
-                ) && (l.tags == null || hasNoMatch(
-                    l.tags.joinToString(separator = " ") { it.name },
-                    query
-                )) && (l.tags == null || hasNoMatch(
-                    l.tags.mapNotNull { it.emoji }.joinToString(separator = " "),
+                ) && (l.tagNames.isNullOrBlank() || hasNoMatch(
+                    l.tagNames,
                     query
                 ))
             }

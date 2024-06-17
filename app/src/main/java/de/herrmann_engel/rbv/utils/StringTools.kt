@@ -42,7 +42,7 @@ class StringTools {
             "%s%d%s%d%s",
             "(^|\\s|[(]|_)([*]{",
             i,
-            "}[^\\s*][^\\n]*?(?<![\\s*])[*]{",
+            "})([^\\s*][^\\n]*?(?<![\\s*]))([*]{",
             i,
             "})"
         )
@@ -78,6 +78,15 @@ class StringTools {
         }
     }
 
+    private fun getUnderlinePattern(): Pattern {
+        if (formatCardUnderlinePattern == null) {
+            val regex = "(^|\\s|[(]|[*])(_)([^\\s_][^\\n]*?(?<![\\s_]))(_)"
+            formatCardUnderlinePattern = Pattern.compile(regex)
+        }
+        return formatCardUnderlinePattern!!
+    }
+
+
     fun format(input: String): SpannableString {
         val output = SpannableStringBuilder(input)
         val modifiedInput = StringBuffer(input)
@@ -89,43 +98,56 @@ class StringTools {
                 while (matcher.find()) {
                     output.setSpan(
                         StyleSpan(getTypeface(i)),
-                        matcher.start(2) - offset,
-                        matcher.end(2) - offset,
+                        matcher.start(3) - offset,
+                        matcher.end(3) - offset,
                         0
                     )
                     output.delete(matcher.start(2) - offset, matcher.start(2) - offset + i)
                     modifiedInput.delete(matcher.start(2) - offset, matcher.start(2) - offset + i)
                     offset += i
-                    output.delete(matcher.end(2) - offset - i, matcher.end(2) - offset)
-                    modifiedInput.delete(matcher.end(2) - offset - i, matcher.end(2) - offset)
+                    output.delete(matcher.end(4) - offset - i, matcher.end(4) - offset)
+                    modifiedInput.delete(matcher.end(4) - offset - i, matcher.end(4) - offset)
                     offset += i
                 }
             }
         }
         var offset = 0
-        if (formatCardUnderlinePattern == null) {
-            val regex = "(^|\\s|[(]|[*])(_[^\\s_][^\\n]*?(?<![\\s_])_)"
-            formatCardUnderlinePattern = Pattern.compile(regex)
-        }
-        val matcher = formatCardUnderlinePattern!!.matcher(modifiedInput)
+        val matcher = getUnderlinePattern().matcher(modifiedInput)
         while (matcher.find()) {
-            output.setSpan(UnderlineSpan(), matcher.start(2) - offset, matcher.end(2) - offset, 0)
+            output.setSpan(
+                UnderlineSpan(),
+                matcher.start(3) - offset,
+                matcher.end(3) - offset,
+                0
+            )
             output.delete(matcher.start(2) - offset, matcher.start(2) - offset + 1)
             modifiedInput.delete(matcher.start(2) - offset, matcher.start(2) - offset + 1)
             offset++
-            output.delete(matcher.end(2) - offset - 1, matcher.end(2) - offset)
-            modifiedInput.delete(matcher.end(2) - offset - 1, matcher.end(2) - offset)
+            output.delete(matcher.end(4) - offset - 1, matcher.end(4) - offset)
+            modifiedInput.delete(matcher.end(4) - offset - 1, matcher.end(4) - offset)
             offset++
         }
         return SpannableString.valueOf(output)
     }
 
-    fun unformat(input: String): String {
-        if (unformatCardPattern == null) {
-            val regex = "[*_#{}]+"
-            unformatCardPattern = Pattern.compile(regex)
+    fun unformat(input: String, inaccurate: Boolean): String {
+        if (inaccurate) {
+            if (unformatCardPattern == null) {
+                val regex = "[*_]+"
+                unformatCardPattern = Pattern.compile(regex)
+            }
+            return unformatCardPattern!!.matcher(input).replaceAll("")
+        } else {
+            var output = input
+            for (i in 3 downTo 1) {
+                val pattern = getTypefacePattern(i)
+                if (pattern != null) {
+                    output = pattern.matcher(output).replaceAll("$1$3")
+                }
+            }
+            output = getUnderlinePattern().matcher(output).replaceAll("$1$3")
+            return output
         }
-        return unformatCardPattern!!.matcher(input).replaceAll("")
     }
 
     private fun generateShortenPattern(maxLength: Int): Pattern {
@@ -162,13 +184,12 @@ class StringTools {
 
     fun shorten(input: String): String {
         val maxLength = 50
-        if (shortenTest(input, maxLength)) {
+        return if (shortenTest(input, maxLength)) {
             if (shortenDefaultPattern == null) {
                 shortenDefaultPattern = generateShortenPattern(maxLength)
             }
-            return shortenDefaultPattern!!.matcher(input).replaceAll("$1…")
-        }
-        return input
+            shortenDefaultPattern!!.matcher(input).replaceAll("$1…")
+        } else input
     }
 
     fun firstEmoji(input: String): String? {

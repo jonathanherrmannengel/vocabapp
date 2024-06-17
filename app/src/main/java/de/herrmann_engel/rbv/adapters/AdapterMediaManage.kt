@@ -1,6 +1,7 @@
 package de.herrmann_engel.rbv.adapters
 
 import android.app.Dialog
+import android.content.Context.MODE_PRIVATE
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -45,7 +46,13 @@ class AdapterMediaManage(
                 val dbHelperGet = DB_Helper_Get(context)
                 val cards: MutableList<DB_Card_With_Meta> =
                     dbHelperGet.getAllCardsByMediaWithMeta(currentMedia.uid)
-                FormatCards(context).formatCards(cards)
+                val settings = context.getSharedPreferences(
+                    Globals.SETTINGS_NAME,
+                    MODE_PRIVATE
+                )
+                if (settings.getBoolean("format_cards", false)) {
+                    FormatCards().formatCards(cards)
+                }
                 SortCards().sortCards(
                     cards,
                     Globals.SORT_ALPHABETICAL
