@@ -47,7 +47,7 @@ class AdapterPacksAdvancedSearch(
             val size = dbHelperGet.countCardsInPack(pack[position].uid)
             var checkBoxContentDescription = pack[position].name
             viewHolder.binding.recSmallName.text =
-                String.format("%s (%d)", pack[position].name, size)
+                String.format("%s (%d)", stringTools.shorten(pack[position].name), size)
             try {
                 val collectionName =
                     stringTools

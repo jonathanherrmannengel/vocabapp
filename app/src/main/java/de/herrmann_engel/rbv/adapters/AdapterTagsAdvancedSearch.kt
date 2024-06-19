@@ -8,12 +8,15 @@ import de.herrmann_engel.rbv.activities.AdvancedSearch
 import de.herrmann_engel.rbv.databinding.RecViewSmallBinding
 import de.herrmann_engel.rbv.db.DB_Tag
 import de.herrmann_engel.rbv.utils.ContextTools
+import de.herrmann_engel.rbv.utils.StringTools
 
 class AdapterTagsAdvancedSearch(
     private val tag: List<DB_Tag>,
     private val tagList: ArrayList<Int>
 ) : RecyclerView.Adapter<AdapterTagsAdvancedSearch.ViewHolder>() {
     class ViewHolder(val binding: RecViewSmallBinding) : RecyclerView.ViewHolder(binding.root)
+
+    private val stringTools = StringTools()
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         val binding =
@@ -24,7 +27,7 @@ class AdapterTagsAdvancedSearch(
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         val context = viewHolder.binding.root.context
         viewHolder.setIsRecyclable(false)
-        viewHolder.binding.recSmallName.text = tag[position].name
+        viewHolder.binding.recSmallName.text = stringTools.shorten(tag[position].name)
         if (tag[position].emoji.isNullOrBlank()) {
             viewHolder.binding.recSmallDesc.visibility = View.GONE
         } else {
