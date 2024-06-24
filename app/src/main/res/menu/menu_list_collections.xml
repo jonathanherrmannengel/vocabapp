@@ -52,4 +52,11 @@
         android:orderInCategory="200"
         android:title="@string/licenses"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/menu_list_collections_import_simple_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orderInCategory="200"
+        android:title="@string/import_simple_list"
+        app:showAsAction="never" />
 </menu>

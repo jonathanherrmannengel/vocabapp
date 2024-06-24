@@ -12,6 +12,7 @@ object Globals {
     const val IMPORT_MODE_SKIP = 0
     const val IMPORT_MODE_DUPLICATES = 1
     const val IMPORT_MODE_INTEGRATE = 2
+    const val IMPORT_MODE_SIMPLE_LIST = 3
     const val SORT_DEFAULT = 0
     const val SORT_RANDOM = 1
     const val SORT_ALPHABETICAL = 2

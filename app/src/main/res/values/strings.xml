@@ -46,6 +46,12 @@
     <string name="import_mode_skip">Do not import</string>
     <string name="import_mode_duplicates">Add new same-named entry</string>
     <string name="import_mode_integrate">Merge with first same-named filing box</string>
+    <string name="import_simple_list">Import simple CSV</string>
+    <string name="import_simple_list_info">Do you wish to import a simple self-created CSV file containing only flashcards in the following format: front, back and optional: notes?</string>
+    <string name="import_simple_list_coll_name">000 Auto-Import</string>
+    <string name="import_simple_list_coll_desc">Now you can edit this filing box.</string>
+    <string name="import_simple_list_pack_name">Auto-Import-%1$s</string>
+    <string name="import_simple_list_pack_desc">Now you can edit this deck or move the flashcards elsewhere by opening this deck from “%1$s”.</string>
     <string name="import_export_include_settings">Include app settings</string>
     <string name="import_export_include_media">Include media links</string>
     <string name="import_export_include_media_warn_no_files">Backup only contains media references, no files. You need to backup and restore them on your own.</string>

@@ -14,10 +14,12 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import de.herrmann_engel.rbv.Globals
+import de.herrmann_engel.rbv.Globals.IMPORT_MODE_SIMPLE_LIST
 import de.herrmann_engel.rbv.Globals.MAX_SIZE_COUNTER
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.adapters.AdapterCollections
 import de.herrmann_engel.rbv.databinding.ActivityDefaultRecBinding
+import de.herrmann_engel.rbv.databinding.DiaConfirmBinding
 import de.herrmann_engel.rbv.databinding.DiaExportBinding
 import de.herrmann_engel.rbv.databinding.DiaImportBinding
 import de.herrmann_engel.rbv.db.DB_Collection_With_Meta
@@ -142,14 +144,34 @@ class ListCollections : FileTools(), AsyncImportFinish, AsyncImportProgress, Asy
                     }
                 importIncludeSettings = bindingStartImportDialog.diaImportIncludeSettings.isChecked
                 importIncludeMedia = bindingStartImportDialog.diaImportIncludeMedia.isChecked
-                val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
-                intent.addCategory(Intent.CATEGORY_OPENABLE)
-                intent.flags =
-                    Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION
-                intent.type = "text/*"
-                launcherImportFile.launch(intent)
+                startImport()
                 startImportDialog.dismiss()
             }
+            startImportDialog.show()
+            return@setOnMenuItemClickListener true
+        }
+        menu.findItem(R.id.menu_list_collections_import_simple_list).setOnMenuItemClickListener {
+            val startImportDialog = Dialog(this, R.style.dia_view)
+            val bindingStartImportDialog = DiaConfirmBinding.inflate(
+                layoutInflater
+            )
+            startImportDialog.setContentView(bindingStartImportDialog.root)
+            startImportDialog.setTitle(resources.getString(R.string.import_simple_list))
+            startImportDialog.window!!.setLayout(
+                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.MATCH_PARENT
+            )
+            bindingStartImportDialog.diaConfirmDesc.text =
+                resources.getString(R.string.import_simple_list_info)
+            bindingStartImportDialog.diaConfirmDesc.visibility = View.VISIBLE
+            bindingStartImportDialog.diaConfirmYes.setOnClickListener {
+                importMode = IMPORT_MODE_SIMPLE_LIST
+                importIncludeSettings = false
+                importIncludeMedia = false
+                startImport()
+                startImportDialog.dismiss()
+            }
+            bindingStartImportDialog.diaConfirmNo.setOnClickListener { startImportDialog.dismiss() }
             startImportDialog.show()
             return@setOnMenuItemClickListener true
         }
@@ -354,4 +376,13 @@ class ListCollections : FileTools(), AsyncImportFinish, AsyncImportProgress, Asy
 
     override fun notifyFolderSet() {}
     override fun notifyMissingAction(id: Int) {}
+
+    private fun startImport() {
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
+        intent.addCategory(Intent.CATEGORY_OPENABLE)
+        intent.flags =
+            Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION
+        intent.type = "text/*"
+        launcherImportFile.launch(intent)
+    }
 }

@@ -42,6 +42,12 @@
     <string name="import_mode_skip">Nicht importieren</string>
     <string name="import_mode_duplicates">Als neuen gleichnamigen Eintrag hinzufügen</string>
     <string name="import_mode_integrate">Mit erstem gleichnamigen Karteikasten zusammenführen</string>
+    <string name="import_simple_list">Einfache CSV importieren</string>
+    <string name="import_simple_list_info">Willst Du eine einfache, selbst erstellte CSV-Datei nur mit Karteikarten in folgendem Format importieren: Vorderseite, Rückseite und optional: Notizen?</string>
+    <string name="import_simple_list_coll_name">000 Automatischer Import</string>
+    <string name="import_simple_list_coll_desc">Nun kannst Du diesen Karteikasten bearbeiten.</string>
+    <string name="import_simple_list_pack_name">Automatischer Import (%1$s)</string>
+    <string name="import_simple_list_pack_desc">Nun kannst Du diesen Kartenstapel bearbeiten oder die Karteikarten verschieben, indem Du diesen Kartenstapel über „%1$s“ öffnest.</string>
     <string name="import_export_include_settings">App-Einstellungen einschließen</string>
     <string name="import_export_include_media">Medien-Referenzen einschließen</string>
     <string name="import_export_include_media_warn_no_files">Die Sicherung enthält nur die Medien-Referenzen, nicht die Dateien selbst. Diese musst Du selbstständig sichern und wiederherstellen.</string>
