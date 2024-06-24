@@ -1,24 +1,30 @@
 📣 Simple app to manage your flashcards.
 
-🏛️ App structure
-filing boxes -> decks -> flashcards
 
-🗃️ Filing boxes can be exported as and imported from a backup.
+🏛️ App structure: filing boxes -> decks -> flashcards
+
+
+🗃️ Filing boxes can be exported as and imported from a backup (individually or all).
 
 🗂️ The decks of a filing box contain the flashcards.
 
 🌈 You may use four color variants for filing boxes and decks.
 
+
 📇 Flashcard values: front, back, notes (optional) and progress (integer).
 
 🖌️ You may activate flashcard formatting in the app settings.
 
-📎🏷️ You may link media and add tags to flashcards.
+📎 You may link files to flashcards.
+
+🏷️ You may add tags to flashcards.
 
 🖨️ You may print flashcards.
+
 
 ▶️ From each flashcard list you may enter a query mode.
 
 🔍 Flashcard lists for the entire collection as well as single filing boxes or decks are available. Using the “advanced query” option you may generate lists of all or some decks by tags, progress and / or last repetition.
+
 
 ❗ Please backup your content on a regular basis.

@@ -1,10 +1,14 @@
 # Really Basic Vocab (RBV)
 
-*Simple app to manage your flashcards.*
+*Simple Android app to manage your flashcards.*
 
 ![Tag](https://img.shields.io/github/tag/jonathanherrmannengel/vocabapp.svg)
 ![F-Droid](https://img.shields.io/f-droid/v/de.herrmann_engel.rbv.svg)
 ![License](https://img.shields.io/github/license/jonathanherrmannengel/vocabapp.svg)
+
+## Web
+
+<https://herrmann-engel.de/projekte/rbv/>
 
 ## Download
 
