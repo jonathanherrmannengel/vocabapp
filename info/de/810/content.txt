@@ -1,0 +1,1 @@
+Wenn eine Liste aus Kartenstapeln mehr als 40 Kartenstapel enthält wird der Karteikartenzähler nicht generiert oder angezeigt, um die Ladezeit der Liste zu beschleunigen.

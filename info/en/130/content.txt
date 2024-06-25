@@ -1,0 +1,6 @@
+Swipe to center…
+
+…from the left: previous flashcard.
+…from the right: next flashcard.
+…from the top: mark as not known (available after displaying solution).
+…from the bottom: mark as known (available after displaying solution).

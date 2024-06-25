@@ -1,0 +1,1 @@
+Karteikarten unterstützen fett-kursiven (***text***), fetten (**text**), kursiven (*text*) und unterstrichenen (_text_) Text, wenn aktiviert in den App-Einstellungen. Notizen können in Markdown geschrieben werden, wenn aktiviert in den App-Einstellungen.

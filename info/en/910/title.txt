@@ -1,0 +1,1 @@
+Technical info: Simple CSV file import format

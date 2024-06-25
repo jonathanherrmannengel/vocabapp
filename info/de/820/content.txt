@@ -1,0 +1,7 @@
+Wenn eine Liste aus Karteikarten mehr als 15000 Karteikarten enthält werden die folgenden Beschränkungen angewendet, um die Leistung zu steigern:
+
+- Wenn die Einstellung, die Karteikarten Vorder- und Rückseite zu formatieren aktiviert ist: Listendarstellung und Suchergebnisse sind in einigen Fällen nicht akkurat. Alle möglichen Zeichen für Formatierung (* und _) werden von der Karteikarten Vorder- und Rückseite entfernt, auch wenn diese nicht Teil der Formatierung sind.
+
+Beispiel: "*1* * 1" würde normalerweise als "1 * 1" in der Liste dargestellt, wird nun aber als "1  1" angezeigt.
+
+- Nicht-lateinische Schriftzeichen: Suche kann ungenau sein, da der Text in Kleinbuchstaben umgewandelt wird anstatt ohne Berücksichtigung von Groß- und Kleinschreibung verglichen zu werden.

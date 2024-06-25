@@ -1,0 +1,1 @@
+Flashcards support bold-italic (***text***), bold (**text**), italic (*text*) and underlined (_text_) text if enabled in the app settings. Notes can be written in Markdown if enabled in the app settings.

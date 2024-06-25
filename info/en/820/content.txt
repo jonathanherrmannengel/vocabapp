@@ -1,0 +1,7 @@
+If a list of flashcards contains more the 15000 flashcards the following limitations are applied to increase performance:
+
+- If the setting to format flashcard front and back is activated: List display and search results are in some cases inaccurate. All possible characters for formatting (* and _) are removed from the flashcard front and back even if they are not part of the formatting.
+
+Example: "*1* * 1" would normally display as "1 * 1" in the list, but now is shown as "1  1".
+
+- Non-Latin scripts: Search may be inaccurate as the text is converted to lower case instead of being compared case-insensitive.

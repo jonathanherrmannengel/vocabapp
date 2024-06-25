@@ -1,0 +1,1 @@
+Swipe gestures in query mode

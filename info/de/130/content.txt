@@ -1,0 +1,6 @@
+Zur Mitte wischen…
+
+…von links: Vorherige Karteikarte.
+…von rechts: Nächste Karteikarte.
+…von oben: Als nicht gewusst markieren (nach Aufdecken der Lösung verfügbar).
+…von unten: Als gewusst markieren (nach Aufdecken der Lösung verfügbar).

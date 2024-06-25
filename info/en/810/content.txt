@@ -1,0 +1,1 @@
+If a list of decks contains more the 40 decks the flashcard counter is not generated or shown to speed up the list loading time.

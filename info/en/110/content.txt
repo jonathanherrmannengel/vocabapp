@@ -1,0 +1,1 @@
+Many flashcard apps have two levels, decks and flashcards, but Really Basic Vocab also offers a third level, the filing boxes. The idea behind this a better separation of different learning fields.
