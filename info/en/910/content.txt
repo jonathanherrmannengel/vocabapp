@@ -1,10 +1,5 @@
 You may create flashcards with a simple CSV file and import the core flashcards values to ReallyBasicVocab using the option in the app's menu.
 
-The simple format has two variants you may use and combine as you please:
-
-"front","back","notes"
-"front","back"
-
-If you add more columns the import fails.
-
 The flashcards are stored in a auto created filing box and deck and may be integrated into the existing collection from there.
+
+The simple format has two variants you may use and combine as you please (if you add more columns the import fails):

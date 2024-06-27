@@ -1,0 +1,1 @@
+Das Backup stellt eine CSV-Datei in folgendem Format dar:
