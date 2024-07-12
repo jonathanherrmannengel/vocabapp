@@ -1,0 +1,1 @@
+Technische Info: Format beim Importieren einer einfachen CSV Datei

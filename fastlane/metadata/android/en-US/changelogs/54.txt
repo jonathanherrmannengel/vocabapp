@@ -2,6 +2,3 @@ Redesign filing boxes and decks lists
 Colors also for filing boxes
 Preview emojis for filing boxes and decks
 Optimized logo
-
-!Database changes: Please backup your content before installing this update!
-(open app -> menu in the upper right corner -> Export filing boxes as backup)

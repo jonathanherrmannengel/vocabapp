@@ -1,0 +1,5 @@
+Du kannst Karteikarten in einer einfachen CSV-Datei erstellen und die wesentlichen Karteikartenwerte in ReallyBasicVocab mittels der Option im App-Menü importieren.
+
+Die Karteikarten werden in einem automatisch erstellen Karteikasten und Kartenstapel gespeichert und können von dort aus in die bestehende Sammlung integriert werden.
+
+Das einfache Format hat zwei Varianten, die Du nutzen und kombinieren kannst wie Du willst (aber das Hinzufügen weiterer Spalten lässt den Import fehlschlagen):
