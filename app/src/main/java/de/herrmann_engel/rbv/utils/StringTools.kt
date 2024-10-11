@@ -39,6 +39,7 @@ class StringTools {
 
     private fun generateTypefacePattern(i: Int): Pattern {
         val regex = String.format(
+            Locale.ROOT,
             "%s%d%s%d%s",
             "(^|\\s|[(]|_)([*]{",
             i,
@@ -153,6 +154,7 @@ class StringTools {
     private fun generateShortenPattern(maxLength: Int): Pattern {
         return Pattern.compile(
             String.format(
+                Locale.ROOT,
                 "%s%d%s",
                 "^((\\P{M}\\p{M}*+){",
                 maxLength - 1,

@@ -173,7 +173,7 @@
     <string name="advanced_search_repetition">Letzte Wiederholung auswählen</string>
     <string name="advanced_search_repetition_newer">Nicht vor mehr als x Tagen</string>
     <string name="advanced_search_repetition_older">Vor mehr als x Tagen</string>
-    <string name="advanced_search_repetition_value">Letze Wiederholung: Wert</string>
+    <string name="advanced_search_repetition_value">Letzte Wiederholung: Wert</string>
     <string name="advanced_search_packs_checkbox_description">Kartenstapel „%1$s“ (in Karteikasten: „%2$s“)</string>
     <string name="settings_list_default_sort">Karteikartenliste: Standard-Sortierung</string>
     <string name="settings_format">Formatierung</string>

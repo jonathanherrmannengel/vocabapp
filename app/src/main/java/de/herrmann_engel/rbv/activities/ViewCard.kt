@@ -106,7 +106,8 @@ class ViewCard : CardActionsActivity() {
                     if (!it.color.isNullOrBlank()) {
                         try {
                             color = Color.parseColor(it.color)
-                        } catch (_: Exception) {
+                        } catch (e: Exception) {
+                            e.printStackTrace()
                         }
                     }
                     var tagText = it.name
@@ -275,6 +276,7 @@ class ViewCard : CardActionsActivity() {
             colorsBackground.recycle()
             colorsBackgroundLight.recycle()
         } catch (e: Exception) {
+            e.printStackTrace()
             Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show()
         }
     }
@@ -282,7 +284,7 @@ class ViewCard : CardActionsActivity() {
     private fun updateCardKnown() {
         binding.cardKnown.text = known.toString()
         binding.cardKnown.contentDescription =
-            String.format("%s: %d", resources.getString(R.string.card_known), known)
+            String.format(Locale.ROOT, "%s: %d", resources.getString(R.string.card_known), known)
         binding.cardMinus.setColorFilter(Color.argb(255, 255, 255, 255))
         binding.cardMinus.setColorFilter(
             ContextCompat.getColor(this, if (known > 0) R.color.dark_red else R.color.dark_grey),
@@ -302,6 +304,7 @@ class ViewCard : CardActionsActivity() {
             intent.putExtra("pack", packNo)
             startActivity(intent)
         } catch (e: Exception) {
+            e.printStackTrace()
             Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show()
         }
     }

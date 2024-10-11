@@ -31,6 +31,7 @@ import de.herrmann_engel.rbv.db.DB_Card
 import de.herrmann_engel.rbv.db.DB_Card_With_Meta
 import de.herrmann_engel.rbv.utils.ContextTools
 import de.herrmann_engel.rbv.utils.StringTools
+import java.util.Locale
 
 class AdapterCards(
     private val cards: MutableList<DB_Card_With_Meta>,
@@ -214,9 +215,10 @@ class AdapterCards(
             cardText = cardText.replace(System.lineSeparator(), " ")
             cardText = stringTools.shorten(cardText)
             viewHolder.binding.recName.text =
-                String.format("%s (%d)", cardText, cards[position].card.known)
+                String.format(Locale.ROOT, "%s (%d)", cardText, cards[position].card.known)
             viewHolder.binding.recName.contentDescription =
                 String.format(
+                    Locale.ROOT,
                     "%s (%s: %d)",
                     cardText,
                     context.resources.getString(R.string.card_known),

@@ -87,6 +87,7 @@ class ViewPack : PackActionsActivity() {
             colorsStatusBar.recycle()
             colorsBackground.recycle()
         } catch (e: Exception) {
+            e.printStackTrace()
             Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show()
         }
     }
@@ -135,6 +136,7 @@ class ViewPack : PackActionsActivity() {
             intent.putExtra("collection", collectionNo)
             startActivity(intent)
         } catch (e: Exception) {
+            e.printStackTrace()
             Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show()
         }
     }

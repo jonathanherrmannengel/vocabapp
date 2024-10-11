@@ -70,6 +70,7 @@ class EditCard : AppCompatActivity() {
             colorsStatusBar.recycle()
             colorsBackground.recycle()
         } catch (e: Exception) {
+            e.printStackTrace()
             Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show()
         }
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {

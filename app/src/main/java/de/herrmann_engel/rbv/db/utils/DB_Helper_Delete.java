@@ -24,7 +24,7 @@ public class DB_Helper_Delete {
             return false;
         }
         List<DB_Pack> packs = dbHelperGet.getAllPacksByCollection(collection.uid);
-        boolean containsPacks = packs.size() > 0;
+        boolean containsPacks = !packs.isEmpty();
         if (containsPacks && force) {
             packs.forEach(pack -> deletePack(pack, true));
         } else if (containsPacks) {

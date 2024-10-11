@@ -65,6 +65,7 @@ class NewCollection : AppCompatActivity() {
                 dbHelperCreate.createCollection(name, desc)
                 finish()
             } catch (e: Exception) {
+                e.printStackTrace()
                 Toast.makeText(this, R.string.error_values, Toast.LENGTH_SHORT).show()
             }
             return@setOnMenuItemClickListener true

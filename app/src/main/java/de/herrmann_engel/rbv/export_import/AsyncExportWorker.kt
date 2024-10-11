@@ -59,7 +59,7 @@ class AsyncExportWorker(
                     val row = arrayOfNulls<String>(columns.size + 1)
                     row[0] = name
                     for (i in columns.indices) {
-                        row[i + 1] = cursor.getString(cursor.getColumnIndex(columns[i]))
+                        row[i + 1] = cursor.getString(cursor.getColumnIndexOrThrow(columns[i]))
                     }
                     csvWrite.writeNext(row)
                     cursor.moveToNext()

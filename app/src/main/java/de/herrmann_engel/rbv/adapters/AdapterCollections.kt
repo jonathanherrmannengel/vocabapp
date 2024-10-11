@@ -20,6 +20,7 @@ import de.herrmann_engel.rbv.adapters.compare.ListCollectionCompare
 import de.herrmann_engel.rbv.databinding.RecViewCollectionOrPackBinding
 import de.herrmann_engel.rbv.db.DB_Collection_With_Meta
 import de.herrmann_engel.rbv.utils.StringTools
+import java.util.Locale
 
 class AdapterCollections(
     private val collections: MutableList<DB_Collection_With_Meta>,
@@ -181,7 +182,7 @@ class AdapterCollections(
                 viewHolder.binding.recCollectionsNumberText.text =
                     collections[position].counter.toString()
                 viewHolder.binding.recCollectionsNumberText.contentDescription = String.format(
-                    "%d %s",
+                    Locale.ROOT, "%d %s",
                     collections[position].counter,
                     context.resources.getString(R.string.items)
                 )
@@ -259,7 +260,7 @@ class AdapterCollections(
                 viewHolder.binding.recCollectionsNumberText.text =
                     collections[position].counter.toString()
                 viewHolder.binding.recCollectionsNumberText.contentDescription = String.format(
-                    "%d %s",
+                    Locale.ROOT, "%d %s",
                     collections[position].counter,
                     context.resources.getString(R.string.items)
                 )

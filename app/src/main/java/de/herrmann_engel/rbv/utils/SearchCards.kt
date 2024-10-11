@@ -19,12 +19,12 @@ class SearchCards {
     private fun hasNoMatchInaccurate(source: String?, query: String): Boolean {
         return if (source == null) {
             true
-        } else !source.lowercase(Locale.getDefault()).contains(query)
+        } else !source.lowercase(Locale.ROOT).contains(query)
     }
 
     fun searchCards(input: MutableList<DB_Card_With_Meta>, query: String) {
         if (input.size > Globals.LIST_ACCURATE_SIZE) {
-            val queryLower = query.lowercase(Locale.getDefault())
+            val queryLower = query.lowercase(Locale.ROOT)
             input.removeIf { l: DB_Card_With_Meta ->
                 hasNoMatchInaccurate(
                     l.formattedFront ?: l.card.front,

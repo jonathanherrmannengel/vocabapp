@@ -12,6 +12,7 @@ import de.herrmann_engel.rbv.db.DB_Pack
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.utils.ContextTools
 import de.herrmann_engel.rbv.utils.StringTools
+import java.util.Locale
 
 class AdapterPacksAdvancedSearch(
     private val pack: List<DB_Pack>,
@@ -47,7 +48,12 @@ class AdapterPacksAdvancedSearch(
             val size = dbHelperGet.countCardsInPack(pack[position].uid)
             var checkBoxContentDescription = pack[position].name
             viewHolder.binding.recSmallName.text =
-                String.format("%s (%d)", stringTools.shorten(pack[position].name), size)
+                String.format(
+                    Locale.ROOT,
+                    "%s (%d)",
+                    stringTools.shorten(pack[position].name),
+                    size
+                )
             try {
                 val collectionName =
                     stringTools

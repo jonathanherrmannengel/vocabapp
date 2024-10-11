@@ -33,6 +33,7 @@ import de.herrmann_engel.rbv.db.DB_Pack
 import de.herrmann_engel.rbv.db.DB_Pack_With_Meta
 import de.herrmann_engel.rbv.utils.ContextTools
 import de.herrmann_engel.rbv.utils.StringTools
+import java.util.Locale
 
 class AdapterPacks(
     private val packs: MutableList<DB_Pack_With_Meta>,
@@ -238,7 +239,7 @@ class AdapterPacks(
                 viewHolder.binding.recCollectionsNumberText.text =
                     packs[position].counter.toString()
                 viewHolder.binding.recCollectionsNumberText.contentDescription = String.format(
-                    "%d %s",
+                    Locale.ROOT, "%d %s",
                     packs[position].counter,
                     context.resources.getString(R.string.items)
                 )
@@ -351,7 +352,7 @@ class AdapterPacks(
                 viewHolder.binding.recCollectionsNumberText.text =
                     packs[position].counter.toString()
                 viewHolder.binding.recCollectionsNumberText.contentDescription = String.format(
-                    "%d %s",
+                    Locale.ROOT, "%d %s",
                     packs[position].counter,
                     context.resources.getString(R.string.items)
                 )

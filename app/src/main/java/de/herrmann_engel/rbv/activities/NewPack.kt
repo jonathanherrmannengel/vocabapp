@@ -55,6 +55,7 @@ class NewPack : AppCompatActivity() {
             colorsStatusBar.recycle()
             colorsBackground.recycle()
         } catch (e: Exception) {
+            e.printStackTrace()
             Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show()
         }
 
@@ -93,6 +94,7 @@ class NewPack : AppCompatActivity() {
                 dbHelperCreate.createPack(name, desc, collectionNo)
                 finish()
             } catch (e: Exception) {
+                e.printStackTrace()
                 Toast.makeText(this, R.string.error_values, Toast.LENGTH_SHORT).show()
             }
             return@setOnMenuItemClickListener true

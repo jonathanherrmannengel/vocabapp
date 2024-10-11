@@ -72,6 +72,7 @@ class AppLicenses : AppCompatActivity() {
             binding.recDefault.adapter = adapter
             binding.recDefault.layoutManager = LinearLayoutManager(this)
         } catch (e: Exception) {
+            e.printStackTrace()
             Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show()
         }
         val settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE)

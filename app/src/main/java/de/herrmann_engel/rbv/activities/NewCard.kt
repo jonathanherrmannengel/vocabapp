@@ -51,6 +51,7 @@ class NewCard : AppCompatActivity() {
             colorsStatusBar.recycle()
             colorsBackground.recycle()
         } catch (e: Exception) {
+            e.printStackTrace()
             Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show()
         }
         binding.newCardNotesLayout.hint =
@@ -96,6 +97,7 @@ class NewCard : AppCompatActivity() {
                 intent.putExtra("cardAdded", cardNo.toInt())
                 this.startActivity(intent)
             } catch (e: Exception) {
+                e.printStackTrace()
                 Toast.makeText(this, R.string.error_values, Toast.LENGTH_SHORT).show()
             }
             return@setOnMenuItemClickListener true
