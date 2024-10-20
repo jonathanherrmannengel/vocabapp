@@ -154,13 +154,13 @@ class ListPacks : PackActionsActivity(), AsyncExportFinish, AsyncExportProgress 
 
     private fun loadContent(): MutableList<DB_Pack_With_Meta> {
         val currentList: MutableList<DB_Pack_With_Meta> = if (collectionNo == -1) {
-            if (dbHelperGet.countPacks() > Globals.MAX_SIZE_COUNTER) {
+            if (dbHelperGet.countPacks() > Globals.MAX_SIZE_COLLECTIONS_OR_PACKS_LIST_COUNTER) {
                 dbHelperGet.allPacksWithMetaNoCounter
             } else {
                 dbHelperGet.allPacksWithMeta
             }
         } else {
-            if (dbHelperGet.countPacksInCollection(collectionNo) > Globals.MAX_SIZE_COUNTER) {
+            if (dbHelperGet.countPacksInCollection(collectionNo) > Globals.MAX_SIZE_COLLECTIONS_OR_PACKS_LIST_COUNTER) {
                 dbHelperGet.getAllPacksWithMetaNoCounterByCollection(collectionNo)
             } else {
                 dbHelperGet.getAllPacksWithMetaByCollection(collectionNo)

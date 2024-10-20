@@ -20,8 +20,8 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import de.herrmann_engel.rbv.Globals
-import de.herrmann_engel.rbv.Globals.MAX_SIZE_PRINT_CONTEXTUAL_MENU
-import de.herrmann_engel.rbv.Globals.MAX_SIZE_SELECT_CONTEXTUAL_MENU
+import de.herrmann_engel.rbv.Globals.MAX_SIZE_CARDS_CONTEXTUAL_MENU_PRINT
+import de.herrmann_engel.rbv.Globals.MAX_SIZE_CARDS_CONTEXTUAL_MENU_SELECT
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.actions.CardActions
 import de.herrmann_engel.rbv.activities.ViewCard
@@ -60,9 +60,9 @@ class AdapterCards(
             menu.findItem(R.id.menu_list_cards_context_move).isVisible =
                 contextualMenuModeCardIdList.isNotEmpty() && packNo > -1
             menu.findItem(R.id.menu_list_cards_context_print).isVisible =
-                contextualMenuModeCardIdList.isNotEmpty() && contextualMenuModeCardIdList.size <= MAX_SIZE_PRINT_CONTEXTUAL_MENU
+                contextualMenuModeCardIdList.isNotEmpty() && contextualMenuModeCardIdList.size <= MAX_SIZE_CARDS_CONTEXTUAL_MENU_PRINT
             menu.findItem(R.id.menu_list_cards_context_select_all).isVisible =
-                contextualMenuModeCardIdList.size < cards.size && cards.size <= MAX_SIZE_SELECT_CONTEXTUAL_MENU
+                contextualMenuModeCardIdList.size < cards.size && cards.size <= MAX_SIZE_CARDS_CONTEXTUAL_MENU_SELECT
             return true
         }
 
@@ -242,7 +242,7 @@ class AdapterCards(
                 if (contextualMenuMode != null) {
                     if (contextualMenuModeCardIdList.contains(extra)) {
                         contextualMenuModeCardIdList.remove(extra)
-                        if (contextualMenuModeCardIdList.size == cards.size - 1 || contextualMenuModeCardIdList.size == MAX_SIZE_PRINT_CONTEXTUAL_MENU) {
+                        if (contextualMenuModeCardIdList.size == cards.size - 1 || contextualMenuModeCardIdList.size == MAX_SIZE_CARDS_CONTEXTUAL_MENU_PRINT) {
                             contextualMenuMode?.invalidate()
                         }
                         contextualMenuModeFormatCard(extra)
@@ -298,7 +298,7 @@ class AdapterCards(
 
     private fun contextualMenuModeSelectItem(id: Int) {
         contextualMenuModeCardIdList.add(id)
-        if (contextualMenuModeCardIdList.size == 1 || contextualMenuModeCardIdList.size == cards.size || contextualMenuModeCardIdList.size > MAX_SIZE_PRINT_CONTEXTUAL_MENU) {
+        if (contextualMenuModeCardIdList.size == 1 || contextualMenuModeCardIdList.size == cards.size || contextualMenuModeCardIdList.size > MAX_SIZE_CARDS_CONTEXTUAL_MENU_PRINT) {
             contextualMenuMode?.invalidate()
         }
         contextualMenuModeFormatCard(id)

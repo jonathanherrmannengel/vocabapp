@@ -55,7 +55,7 @@ class AdapterMediaManage(
                 }
                 SortCards().sortCards(
                     cards,
-                    Globals.SORT_ALPHABETICAL
+                    Globals.SORT_CARDS_ALPHABETICAL
                 )
                 val dialog = Dialog(context, R.style.dia_view)
                 if (cards.isEmpty()) {

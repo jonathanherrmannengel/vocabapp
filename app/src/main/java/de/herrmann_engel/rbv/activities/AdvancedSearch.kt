@@ -5,18 +5,23 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import de.herrmann_engel.rbv.Globals.LIST_CARDS_GET_DB_COLLECTIONS_ALL
+import de.herrmann_engel.rbv.Globals.LIST_CARDS_GET_DB_PACKS_ADVANCED_SEARCH_ALL
+import de.herrmann_engel.rbv.Globals.LIST_CARDS_GET_DB_PACKS_ADVANCED_SEARCH_LIST
+import de.herrmann_engel.rbv.Globals.LIST_CARDS_GET_DB_TAGS_ADVANCED_SEARCH_ALL
+import de.herrmann_engel.rbv.Globals.LIST_CARDS_GET_DB_TAGS_ADVANCED_SEARCH_LIST
 import de.herrmann_engel.rbv.adapters.AdapterPacksAdvancedSearch
 import de.herrmann_engel.rbv.adapters.AdapterTagsAdvancedSearch
 import de.herrmann_engel.rbv.databinding.ActivityAdvancedSearchBinding
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 
 class AdvancedSearch : AppCompatActivity() {
-    private lateinit var dbHelperGet: DB_Helper_Get
     private val packList = ArrayList<Int>()
     private val tagList = ArrayList<Int>()
+    private lateinit var dbHelperGet: DB_Helper_Get
     private lateinit var binding: ActivityAdvancedSearchBinding
-    private var pack = -3
-    private var tag = -3
+    private var pack = LIST_CARDS_GET_DB_PACKS_ADVANCED_SEARCH_ALL
+    private var tag = LIST_CARDS_GET_DB_TAGS_ADVANCED_SEARCH_ALL
     private var progressGreater = false
     private var progressNumber = -1
     private var repetitionOlder = false
@@ -32,17 +37,19 @@ class AdvancedSearch : AppCompatActivity() {
         val adapter = AdapterPacksAdvancedSearch(packs, packList)
         binding.recAdvancedSearch.adapter = adapter
         binding.recAdvancedSearch.layoutManager = LinearLayoutManager(this)
-        if (pack == -3) {
+        if (pack == LIST_CARDS_GET_DB_PACKS_ADVANCED_SEARCH_ALL) {
             binding.recAdvancedSearch.visibility = View.GONE
         }
-        binding.advancedSearchPacksAll.isChecked = pack == -3
+        binding.advancedSearchPacksAll.isChecked =
+            pack == LIST_CARDS_GET_DB_PACKS_ADVANCED_SEARCH_ALL
         binding.advancedSearchPacksAll.setOnClickListener {
-            pack = -3
+            pack = LIST_CARDS_GET_DB_PACKS_ADVANCED_SEARCH_ALL
             binding.recAdvancedSearch.visibility = View.GONE
         }
-        binding.advancedSearchPacksSelect.isChecked = pack == -2
+        binding.advancedSearchPacksSelect.isChecked =
+            pack == LIST_CARDS_GET_DB_PACKS_ADVANCED_SEARCH_LIST
         binding.advancedSearchPacksSelect.setOnClickListener {
-            pack = -2
+            pack = LIST_CARDS_GET_DB_PACKS_ADVANCED_SEARCH_LIST
             binding.recAdvancedSearch.visibility = View.VISIBLE
         }
         binding.advancedSearchProgressGreater.isChecked = progressGreater
@@ -55,7 +62,7 @@ class AdvancedSearch : AppCompatActivity() {
         }
         if (progressNumber >= 0) {
             binding.advancedSearchProgressValue.setText(
-                Integer.valueOf(progressNumber).toString()
+                progressNumber.toString()
             )
         }
         binding.advancedSearchRepetitionOlder.isChecked = repetitionOlder
@@ -68,7 +75,7 @@ class AdvancedSearch : AppCompatActivity() {
         }
         if (repetitionNumber >= 0) {
             binding.advancedSearchRepetitionValue.setText(
-                Integer.valueOf(repetitionNumber).toString()
+                repetitionNumber.toString()
             )
         }
         binding.advancedSearchGo.setOnClickListener {
@@ -91,13 +98,13 @@ class AdvancedSearch : AppCompatActivity() {
                 }
             }
             val intent = Intent(this, ListCards::class.java)
-            intent.putExtra("collection", -1)
+            intent.putExtra("collection", LIST_CARDS_GET_DB_COLLECTIONS_ALL)
             intent.putExtra("pack", pack)
-            if (pack == -2) {
+            if (pack == LIST_CARDS_GET_DB_PACKS_ADVANCED_SEARCH_LIST) {
                 intent.putIntegerArrayListExtra("packs", packList)
             }
             intent.putExtra("tag", tag)
-            if (tag == -2) {
+            if (tag == LIST_CARDS_GET_DB_TAGS_ADVANCED_SEARCH_LIST) {
                 intent.putIntegerArrayListExtra("tags", tagList)
             }
             intent.putExtra("progressGreater", progressGreater)
@@ -116,24 +123,26 @@ class AdvancedSearch : AppCompatActivity() {
             val adapterTags = AdapterTagsAdvancedSearch(tags, tagList)
             binding.recAdvancedSearchTags.adapter = adapterTags
             binding.recAdvancedSearchTags.layoutManager = LinearLayoutManager(this)
-            if (tag == -3) {
+            if (tag == LIST_CARDS_GET_DB_TAGS_ADVANCED_SEARCH_ALL) {
                 binding.recAdvancedSearchTags.visibility = View.GONE
             } else {
                 binding.recAdvancedSearchTags.visibility = View.VISIBLE
             }
-            binding.advancedSearchTagsAll.isChecked = tag == -3
+            binding.advancedSearchTagsAll.isChecked =
+                tag == LIST_CARDS_GET_DB_TAGS_ADVANCED_SEARCH_ALL
             binding.advancedSearchTagsAll.setOnClickListener {
-                tag = -3
+                tag = LIST_CARDS_GET_DB_TAGS_ADVANCED_SEARCH_ALL
                 binding.recAdvancedSearchTags.visibility = View.GONE
             }
-            binding.advancedSearchTagsSelect.isChecked = tag == -2
+            binding.advancedSearchTagsSelect.isChecked =
+                tag == LIST_CARDS_GET_DB_TAGS_ADVANCED_SEARCH_LIST
             binding.advancedSearchTagsSelect.setOnClickListener {
-                tag = -2
+                tag = LIST_CARDS_GET_DB_TAGS_ADVANCED_SEARCH_LIST
                 binding.recAdvancedSearchTags.visibility = View.VISIBLE
             }
         } else {
             binding.advancedSearchContainerTags.visibility = View.GONE
-            tag = -3
+            tag = LIST_CARDS_GET_DB_TAGS_ADVANCED_SEARCH_ALL
         }
     }
 

@@ -26,6 +26,11 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
 import de.herrmann_engel.rbv.Globals
+import de.herrmann_engel.rbv.Globals.LIST_CARDS_GET_DB_COLLECTIONS_ALL
+import de.herrmann_engel.rbv.Globals.LIST_CARDS_GET_DB_PACKS_ADVANCED_SEARCH_ALL
+import de.herrmann_engel.rbv.Globals.LIST_CARDS_GET_DB_PACKS_ADVANCED_SEARCH_LIST
+import de.herrmann_engel.rbv.Globals.LIST_CARDS_GET_DB_PACKS_ALL
+import de.herrmann_engel.rbv.Globals.LIST_CARDS_GET_DB_TAGS_ADVANCED_SEARCH_ALL
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.adapters.AdapterCards
 import de.herrmann_engel.rbv.databinding.ActivityDefaultRecBinding
@@ -85,7 +90,7 @@ class ListCards : CardActionsActivity() {
         dbHelperGet = DB_Helper_Get(this)
         dbHelperUpdate = DB_Helper_Update(this)
         settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE)
-        listSort = settings.getInt("default_sort", Globals.SORT_DEFAULT)
+        listSort = settings.getInt("default_sort", Globals.SORT_CARDS_DEFAULT)
         collectionNo = intent.extras!!.getInt("collection")
         packNo = intent.extras!!.getInt("pack")
         packNos = intent.extras!!.getIntegerArrayList("packs")
@@ -181,9 +186,9 @@ class ListCards : CardActionsActivity() {
 
         //Set title
         try {
-            if (collectionNo > -1 && packNo == -1) {
+            if (collectionNo >= 0 && packNo == LIST_CARDS_GET_DB_PACKS_ALL) {
                 title = dbHelperGet.getSingleCollection(collectionNo).name
-            } else if (packNo > -1) {
+            } else if (packNo >= 0) {
                 title = dbHelperGet.getSinglePack(packNo).name
             }
         } catch (e: Exception) {
@@ -191,7 +196,7 @@ class ListCards : CardActionsActivity() {
         }
 
         //Colors
-        if (packNo > -1) {
+        if (packNo >= 0) {
             try {
                 val packColors = dbHelperGet.getSinglePack(packNo).colors
                 val colorsStatusBar = resources.obtainTypedArray(R.array.pack_color_statusbar)
@@ -233,14 +238,15 @@ class ListCards : CardActionsActivity() {
 
         //Get cards
         if (cardsList == null) {
-            cardsList = if (collectionNo == -1 && packNo == -1) {
+            cardsList =
+                if (collectionNo == LIST_CARDS_GET_DB_COLLECTIONS_ALL && packNo == LIST_CARDS_GET_DB_PACKS_ALL) {
                 dbHelperGet.allCardsWithMeta
-            } else if (packNo == -1) {
+                } else if (packNo == LIST_CARDS_GET_DB_PACKS_ALL) {
                 dbHelperGet.getAllCardsByCollectionWithMeta(collectionNo)
-            } else if (packNo == -2) {
+                } else if (packNo == LIST_CARDS_GET_DB_PACKS_ADVANCED_SEARCH_LIST) {
                 dbHelperGet.getAllCardsWithMetaFiltered(
                     packNos,
-                    if (tagNo == -3) {
+                    if (tagNo == LIST_CARDS_GET_DB_TAGS_ADVANCED_SEARCH_ALL) {
                         null
                     } else {
                         tagNos
@@ -250,10 +256,10 @@ class ListCards : CardActionsActivity() {
                     repetitionOlder,
                     repetitionNumber
                 )
-            } else if (packNo == -3) {
+                } else if (packNo == LIST_CARDS_GET_DB_PACKS_ADVANCED_SEARCH_ALL) {
                 dbHelperGet.getAllCardsWithMetaFiltered(
                     null,
-                    if (tagNo == -3) {
+                    if (tagNo == LIST_CARDS_GET_DB_TAGS_ADVANCED_SEARCH_ALL) {
                         null
                     } else {
                         tagNos
@@ -273,7 +279,7 @@ class ListCards : CardActionsActivity() {
         }
 
         //Warning: Big lists
-        if (cardsList!!.size > Globals.LIST_ACCURATE_SIZE) {
+        if (cardsList!!.size > Globals.MAX_SIZE_CARDS_LIST_ACCURATE) {
             val config = getSharedPreferences(Globals.CONFIG_NAME, MODE_PRIVATE)
             val formatCardsActivated = settings.getBoolean("format_cards", false)
             val warnInaccurateFormat =
@@ -296,7 +302,7 @@ class ListCards : CardActionsActivity() {
                 warnings.add(
                     String.format(
                         resources.getString(R.string.warn_inaccurate),
-                        Globals.LIST_ACCURATE_SIZE
+                        Globals.MAX_SIZE_CARDS_LIST_ACCURATE
                     )
                 )
                 if (warnInaccurateFormat) {
@@ -357,25 +363,25 @@ class ListCards : CardActionsActivity() {
         changeListSortMenuItem = menu.findItem(R.id.sort_menu)
         val sortMenu = changeListSortMenuItem!!.subMenu
         sortMenu?.findItem(R.id.sort_menu_default)?.setOnMenuItemClickListener {
-            listSort = Globals.SORT_DEFAULT
+            listSort = Globals.SORT_CARDS_DEFAULT
             sortList()
             updateContent(true)
             false
         }
         sortMenu?.findItem(R.id.sort_menu_random)?.setOnMenuItemClickListener {
-            listSort = Globals.SORT_RANDOM
+            listSort = Globals.SORT_CARDS_RANDOM
             sortList()
             updateContent(true)
             false
         }
         sortMenu?.findItem(R.id.sort_menu_alphabetical)?.setOnMenuItemClickListener {
-            listSort = Globals.SORT_ALPHABETICAL
+            listSort = Globals.SORT_CARDS_ALPHABETICAL
             sortList()
             updateContent(true)
             false
         }
         sortMenu?.findItem(R.id.sort_menu_repetition)?.setOnMenuItemClickListener {
-            listSort = Globals.SORT_REPETITION
+            listSort = Globals.SORT_CARDS_REPETITION
             sortList()
             updateContent(true)
             false

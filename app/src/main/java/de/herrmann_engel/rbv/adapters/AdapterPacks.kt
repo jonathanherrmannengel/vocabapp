@@ -23,7 +23,7 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import de.herrmann_engel.rbv.Globals.MAX_SIZE_SELECT_CONTEXTUAL_MENU_PACKS
+import de.herrmann_engel.rbv.Globals.MAX_SIZE_PACKS_CONTEXTUAL_MENU_SELECT
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.actions.PackActions
 import de.herrmann_engel.rbv.activities.ListCards
@@ -62,7 +62,7 @@ class AdapterPacks(
                 contextualMenuModePackIdList.isNotEmpty() && collection > -1
             menu.findItem(R.id.menu_list_cards_context_print).isVisible = false
             menu.findItem(R.id.menu_list_cards_context_select_all).isVisible =
-                contextualMenuModePackIdList.size < packs.size - 1 && packs.size - 1 <= MAX_SIZE_SELECT_CONTEXTUAL_MENU_PACKS
+                contextualMenuModePackIdList.size < packs.size - 1 && packs.size - 1 <= MAX_SIZE_PACKS_CONTEXTUAL_MENU_SELECT
             return true
         }
 

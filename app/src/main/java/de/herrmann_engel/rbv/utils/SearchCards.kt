@@ -23,7 +23,7 @@ class SearchCards {
     }
 
     fun searchCards(input: MutableList<DB_Card_With_Meta>, query: String) {
-        if (input.size > Globals.LIST_ACCURATE_SIZE) {
+        if (input.size > Globals.MAX_SIZE_CARDS_LIST_ACCURATE) {
             val queryLower = query.lowercase(Locale.ROOT)
             input.removeIf { l: DB_Card_With_Meta ->
                 hasNoMatchInaccurate(

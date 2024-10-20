@@ -19,16 +19,16 @@ class Settings : FileTools() {
         val settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE)
         val settingsEdit = settings.edit()
         binding.settingsSort.clearCheck()
-        when (settings.getInt("default_sort", Globals.SORT_DEFAULT)) {
-            Globals.SORT_ALPHABETICAL -> {
+        when (settings.getInt("default_sort", Globals.SORT_CARDS_DEFAULT)) {
+            Globals.SORT_CARDS_ALPHABETICAL -> {
                 binding.settingsSortAlphabetical.isChecked = true
             }
 
-            Globals.SORT_RANDOM -> {
+            Globals.SORT_CARDS_RANDOM -> {
                 binding.settingsSortRandom.isChecked = true
             }
 
-            Globals.SORT_REPETITION -> {
+            Globals.SORT_CARDS_REPETITION -> {
                 binding.settingsSortRepetition.isChecked = true
             }
 
@@ -39,19 +39,19 @@ class Settings : FileTools() {
         binding.settingsSort.setOnCheckedChangeListener { _, id: Int ->
             val sortNew = when (id) {
                 R.id.settings_sort_alphabetical -> {
-                    Globals.SORT_ALPHABETICAL
+                    Globals.SORT_CARDS_ALPHABETICAL
                 }
 
                 R.id.settings_sort_random -> {
-                    Globals.SORT_RANDOM
+                    Globals.SORT_CARDS_RANDOM
                 }
 
                 R.id.settings_sort_repetition -> {
-                    Globals.SORT_REPETITION
+                    Globals.SORT_CARDS_REPETITION
                 }
 
                 else -> {
-                    Globals.SORT_DEFAULT
+                    Globals.SORT_CARDS_DEFAULT
                 }
             }
             settingsEdit.putInt("default_sort", sortNew)

@@ -137,7 +137,7 @@ abstract class FileTools : AppCompatActivity() {
     protected fun showImageListDialog(imageList: ArrayList<DB_Media_Link_Card>) {
         if (imageList.size == 1) {
             showImageDialog(imageList[0].file)
-        } else if (imageList.size > Globals.IMAGE_PREVIEW_MAX) {
+        } else if (imageList.size > Globals.MAX_SIZE_CARD_IMAGE_PREVIEW) {
             showMediaListDialog(
                 imageList,
                 true,

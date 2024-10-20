@@ -10,7 +10,7 @@ class SortCards {
 
     fun sortCards(list: MutableList<DB_Card_With_Meta>, sort: Int) {
         when (sort) {
-            Globals.SORT_ALPHABETICAL -> {
+            Globals.SORT_CARDS_ALPHABETICAL -> {
                 list.sortWith(Comparator { a, b ->
                     return@Comparator if (a.card == null || b.card == null) {
                         0
@@ -30,11 +30,11 @@ class SortCards {
                 })
             }
 
-            Globals.SORT_RANDOM -> {
+            Globals.SORT_CARDS_RANDOM -> {
                 list.shuffle()
             }
 
-            Globals.SORT_REPETITION -> {
+            Globals.SORT_CARDS_REPETITION -> {
                 list.sortWith(compareByDescending<DB_Card_With_Meta?> { it?.card?.lastRepetition }.thenByDescending { it?.card?.date })
             }
 

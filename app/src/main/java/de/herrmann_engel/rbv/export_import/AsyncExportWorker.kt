@@ -176,7 +176,7 @@ class AsyncExportWorker(
                         "default_sort",
                         file.name,
                         "int",
-                        settings.getInt("default_sort", Globals.SORT_DEFAULT).toString()
+                        settings.getInt("default_sort", Globals.SORT_CARDS_DEFAULT).toString()
                     )
                 }
                 if (settings.contains("format_cards")) {
