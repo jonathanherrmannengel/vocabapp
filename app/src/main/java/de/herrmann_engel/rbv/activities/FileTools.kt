@@ -50,14 +50,14 @@ abstract class FileTools : AppCompatActivity() {
         try {
             val folder = cardMediaFolder
             val dbHelperGet = DB_Helper_Get(this)
-            //Check: No media folder set
+            // Check: No media folder set
             if (folder.isNullOrEmpty()) {
                 if (dbHelperGet.allMedia.isNotEmpty()) {
                     showSelectDialog(resources.getString(R.string.select_folder_help_db_entries))
                 }
             } else {
                 val outputDirectory = DocumentFile.fromTreeUri(this, Uri.parse(folder))
-                //Check: Media folder is set, but directory not accessible
+                // Check: Media folder is set, but directory not accessible
                 if (outputDirectory == null || !outputDirectory.isDirectory) {
                     showSelectDialog(resources.getString(R.string.select_folder_help_reselect))
                 }

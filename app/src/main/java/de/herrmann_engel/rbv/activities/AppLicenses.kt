@@ -28,7 +28,7 @@ class AppLicenses : AppCompatActivity() {
             var projectRunning = false
             var currentTag: String? = ""
             var project: OSSProject
-            var licenseIdentifierTmp: String? = ""
+            var licenseIdentifierTmp = ""
             var projectNameTmp = ""
             var projectDevTmp = ""
             var projectUrlTmp = ""

@@ -1,6 +1,6 @@
 package de.herrmann_engel.rbv.oss
 
-class OSSLicenses(licenseIdentifier: String?, val project: OSSProject) {
+class OSSLicenses(licenseIdentifier: String, val project: OSSProject) {
     var licenseLink: String? = null
     var licenseFilePath: String? = null
 
