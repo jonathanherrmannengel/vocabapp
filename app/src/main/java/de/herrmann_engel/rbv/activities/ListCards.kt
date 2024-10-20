@@ -215,11 +215,11 @@ class ListCards : CardActionsActivity() {
             val colorsStatusBar = resources.obtainTypedArray(R.array.pack_color_statusbar)
             val colorsBackground =
                 resources.obtainTypedArray(R.array.pack_color_background_list)
-            val packColors = dbHelperGet.getSingleCollection(collectionNo).colors
+            val collectionColors = dbHelperGet.getSingleCollection(collectionNo).colors
             val minimalLength = colorsStatusBar.length().coerceAtMost(colorsBackground.length())
-            if (packColors in 0..<minimalLength) {
-                val colorStatusBar = colorsStatusBar.getColor(packColors, 0)
-                val colorBackground = colorsBackground.getColor(packColors, 0)
+            if (collectionColors in 0..<minimalLength) {
+                val colorStatusBar = colorsStatusBar.getColor(collectionColors, 0)
+                val colorBackground = colorsBackground.getColor(collectionColors, 0)
                 supportActionBar?.setBackgroundDrawable(ColorDrawable(colorStatusBar))
                 window.statusBarColor = colorStatusBar
                 binding.root.setBackgroundColor(colorBackground)

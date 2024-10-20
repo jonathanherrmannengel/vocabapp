@@ -20,44 +20,39 @@ class NewPack : AppCompatActivity() {
     private var collectionNo = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityNewCollectionOrPackBinding.inflate(
-            layoutInflater
-        )
+        binding = ActivityNewCollectionOrPackBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        val dbHelperGet = DB_Helper_Get(this)
         collectionNo = intent.extras!!.getInt("collection")
+        val colors = resources.obtainTypedArray(R.array.pack_color_main)
+        val colorsStatusBar = resources.obtainTypedArray(R.array.pack_color_statusbar)
+        val colorsBackground = resources.obtainTypedArray(R.array.pack_color_background)
+        val collectionColors = dbHelperGet.getSingleCollection(collectionNo).colors
+        val minimalLength = colors.length().coerceAtMost(colorsStatusBar.length())
+            .coerceAtMost(colorsBackground.length())
+        if (collectionColors in 0..<minimalLength) {
+            val color = colors.getColor(collectionColors, 0)
+            val colorStatusBar = colorsStatusBar.getColor(collectionColors, 0)
+            val colorBackground = colorsBackground.getColor(collectionColors, 0)
+            supportActionBar?.setBackgroundDrawable(ColorDrawable(colorStatusBar))
+            window.statusBarColor = colorStatusBar
+            binding.newCollectionOrPackNameLayout.boxStrokeColor = color
+            binding.newCollectionOrPackNameLayout.hintTextColor =
+                ColorStateList.valueOf(color)
+            binding.newCollectionOrPackDescLayout.boxStrokeColor = color
+            binding.newCollectionOrPackDescLayout.hintTextColor =
+                ColorStateList.valueOf(color)
+            binding.root.setBackgroundColor(colorBackground)
+        }
+        colors.recycle()
+        colorsStatusBar.recycle()
+        colorsBackground.recycle()
         binding.newCollectionOrPackNameLayout.hint = String.format(
             getString(R.string.collection_or_pack_name_format),
             getString(R.string.pack_name), getString(R.string.collection_or_pack_name)
         )
         binding.newCollectionOrPackDescLayout.hint =
             String.format(getString(R.string.optional), getString(R.string.collection_or_pack_desc))
-        val colors = resources.obtainTypedArray(R.array.pack_color_main)
-        val colorsStatusBar = resources.obtainTypedArray(R.array.pack_color_statusbar)
-        val colorsBackground = resources.obtainTypedArray(R.array.pack_color_background)
-        val dbHelperGet = DB_Helper_Get(this)
-        try {
-            val packColors = dbHelperGet.getSingleCollection(collectionNo).colors
-            if (packColors >= 0 && packColors < colors.length() && packColors < colorsStatusBar.length() && packColors < colorsBackground.length()) {
-                val color = colors.getColor(packColors, 0)
-                val colorStatusBar = colorsStatusBar.getColor(packColors, 0)
-                val colorBackground = colorsBackground.getColor(packColors, 0)
-                supportActionBar?.setBackgroundDrawable(ColorDrawable(colorStatusBar))
-                window.statusBarColor = colorStatusBar
-                binding.newCollectionOrPackNameLayout.boxStrokeColor = color
-                binding.newCollectionOrPackNameLayout.hintTextColor =
-                    ColorStateList.valueOf(color)
-                binding.newCollectionOrPackDescLayout.boxStrokeColor = color
-                binding.newCollectionOrPackDescLayout.hintTextColor =
-                    ColorStateList.valueOf(color)
-                binding.root.setBackgroundColor(colorBackground)
-            }
-            colors.recycle()
-            colorsStatusBar.recycle()
-            colorsBackground.recycle()
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show()
-        }
 
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {

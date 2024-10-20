@@ -90,7 +90,7 @@ class CardActions(val activity: Activity) {
             WindowManager.LayoutParams.MATCH_PARENT
         )
         val dbHelperGet = DB_Helper_Get(activity)
-        val packs: List<DB_Pack> = if (collectionNo == -1) {
+        val packs: List<DB_Pack> = if (collectionNo == Globals.LIST_CARDS_GET_DB_COLLECTIONS_ALL) {
             dbHelperGet.allPacks
         } else {
             dbHelperGet.getAllPacksByCollection(collectionNo)

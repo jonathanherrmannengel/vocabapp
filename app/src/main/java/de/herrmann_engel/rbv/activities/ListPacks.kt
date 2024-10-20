@@ -41,7 +41,7 @@ class ListPacks : PackActionsActivity(), AsyncExportFinish, AsyncExportProgress 
         val startNewPack = menu.findItem(R.id.start_new_pack)
         val packDetails = menu.findItem(R.id.pack_details)
         val export = menu.findItem(R.id.export_single)
-        if (collectionNo == -1) {
+        if (collectionNo == Globals.LIST_CARDS_GET_DB_COLLECTIONS_ALL) {
             startNewPack.isVisible = false
             packDetails.isVisible = false
             export.isVisible = false
@@ -98,12 +98,8 @@ class ListPacks : PackActionsActivity(), AsyncExportFinish, AsyncExportProgress 
                 return@setOnMenuItemClickListener true
             }
         }
-        try {
-            if (collectionNo > -1) {
-                title = dbHelperGet.getSingleCollection(collectionNo).name
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
+        if (collectionNo >= 0) {
+            title = dbHelperGet.getSingleCollection(collectionNo).name
         }
         return true
     }
@@ -123,37 +119,31 @@ class ListPacks : PackActionsActivity(), AsyncExportFinish, AsyncExportProgress 
             binding.backgroundImage.visibility = View.GONE
         }
         val uiFontSizeBig = settings.getBoolean("ui_font_size", false)
-        if (adapter == null) {
+        adapter?.updateContent(loadContent()) ?: {
             adapter = AdapterPacks(loadContent(), uiFontSizeBig, collectionNo)
             binding.recDefault.adapter = adapter
             binding.recDefault.layoutManager = LinearLayoutManager(this)
-        } else {
-            adapter!!.updateContent(loadContent())
-        }
+        }()
         if (collectionNo >= 0) {
-            try {
-                val packColors = dbHelperGet.getSingleCollection(collectionNo).colors
-                val colorsStatusBar = resources.obtainTypedArray(R.array.pack_color_statusbar)
-                val colorsBackground =
-                    resources.obtainTypedArray(R.array.pack_color_background_list)
-                if (packColors >= 0 && packColors < colorsStatusBar.length() && packColors < colorsBackground.length()) {
-                    val colorStatusBar = colorsStatusBar.getColor(packColors, 0)
-                    val colorBackground = colorsBackground.getColor(packColors, 0)
-                    supportActionBar?.setBackgroundDrawable(ColorDrawable(colorStatusBar))
-                    window.statusBarColor = colorStatusBar
-                    binding.root.setBackgroundColor(colorBackground)
-                }
-                colorsStatusBar.recycle()
-                colorsBackground.recycle()
-            } catch (e: Exception) {
-                e.printStackTrace()
-                Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show()
+            val colorsStatusBar = resources.obtainTypedArray(R.array.pack_color_statusbar)
+            val colorsBackground =
+                resources.obtainTypedArray(R.array.pack_color_background_list)
+            val collectionColors = dbHelperGet.getSingleCollection(collectionNo).colors
+            val minimalLength = colorsStatusBar.length().coerceAtMost(colorsBackground.length())
+            if (collectionColors in 0..<minimalLength) {
+                val colorStatusBar = colorsStatusBar.getColor(collectionColors, 0)
+                val colorBackground = colorsBackground.getColor(collectionColors, 0)
+                supportActionBar?.setBackgroundDrawable(ColorDrawable(colorStatusBar))
+                window.statusBarColor = colorStatusBar
+                binding.root.setBackgroundColor(colorBackground)
             }
+            colorsStatusBar.recycle()
+            colorsBackground.recycle()
         }
     }
 
     private fun loadContent(): MutableList<DB_Pack_With_Meta> {
-        val currentList: MutableList<DB_Pack_With_Meta> = if (collectionNo == -1) {
+        val currentList: MutableList<DB_Pack_With_Meta> = if (collectionNo == Globals.LIST_CARDS_GET_DB_COLLECTIONS_ALL) {
             if (dbHelperGet.countPacks() > Globals.MAX_SIZE_COLLECTIONS_OR_PACKS_LIST_COUNTER) {
                 dbHelperGet.allPacksWithMetaNoCounter
             } else {
@@ -167,7 +157,7 @@ class ListPacks : PackActionsActivity(), AsyncExportFinish, AsyncExportProgress 
             }
         }
         val fixedFirstItemPlaceholder = DB_Pack_With_Meta()
-        if (collectionNo == -1) {
+        if (collectionNo == Globals.LIST_CARDS_GET_DB_COLLECTIONS_ALL) {
             fixedFirstItemPlaceholder.counter = dbHelperGet.countCards()
         } else {
             fixedFirstItemPlaceholder.counter = dbHelperGet.countCardsInCollection(collectionNo)
@@ -183,7 +173,7 @@ class ListPacks : PackActionsActivity(), AsyncExportFinish, AsyncExportProgress 
             } else {
                 val share = Intent(Intent.ACTION_SEND)
                 share.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                share.type = "text/csv"
+                share.type = Globals.EXPORT_FILE_TYPE
                 share.putExtra(
                     Intent.EXTRA_STREAM, FileProvider.getUriForFile(
                         this,

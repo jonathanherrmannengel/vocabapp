@@ -23,37 +23,34 @@ class NewCard : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityNewCardBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        val dbHelperGet = DB_Helper_Get(this)
         packNo = intent.extras!!.getInt("pack")
         val colors = resources.obtainTypedArray(R.array.pack_color_main)
         val colorsStatusBar = resources.obtainTypedArray(R.array.pack_color_statusbar)
         val colorsBackground = resources.obtainTypedArray(R.array.pack_color_background)
-        val dbHelperGet = DB_Helper_Get(this)
-        try {
-            val packColors = dbHelperGet.getSinglePack(packNo).colors
-            if (packColors >= 0 && packColors < colors.length() && packColors < colorsStatusBar.length() && packColors < colorsBackground.length()) {
-                val color = colors.getColor(packColors, 0)
-                val colorStatusBar = colorsStatusBar.getColor(packColors, 0)
-                val colorBackground = colorsBackground.getColor(packColors, 0)
-                supportActionBar?.setBackgroundDrawable(ColorDrawable(colorStatusBar))
-                window.statusBarColor = colorStatusBar
-                binding.newCardFrontLayout.boxStrokeColor = color
-                binding.newCardFrontLayout.hintTextColor =
-                    ColorStateList.valueOf(color)
-                binding.newCardBackLayout.boxStrokeColor = color
-                binding.newCardBackLayout.hintTextColor =
-                    ColorStateList.valueOf(color)
-                binding.newCardNotesLayout.boxStrokeColor = color
-                binding.newCardNotesLayout.hintTextColor =
-                    ColorStateList.valueOf(color)
-                binding.root.setBackgroundColor(colorBackground)
-            }
-            colors.recycle()
-            colorsStatusBar.recycle()
-            colorsBackground.recycle()
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show()
+        val packColors = dbHelperGet.getSinglePack(packNo).colors
+        val minimalLength = colors.length().coerceAtMost(colorsStatusBar.length())
+            .coerceAtMost(colorsBackground.length())
+        if (packColors in 0..<minimalLength) {
+            val color = colors.getColor(packColors, 0)
+            val colorStatusBar = colorsStatusBar.getColor(packColors, 0)
+            val colorBackground = colorsBackground.getColor(packColors, 0)
+            supportActionBar?.setBackgroundDrawable(ColorDrawable(colorStatusBar))
+            window.statusBarColor = colorStatusBar
+            binding.newCardFrontLayout.boxStrokeColor = color
+            binding.newCardFrontLayout.hintTextColor =
+                ColorStateList.valueOf(color)
+            binding.newCardBackLayout.boxStrokeColor = color
+            binding.newCardBackLayout.hintTextColor =
+                ColorStateList.valueOf(color)
+            binding.newCardNotesLayout.boxStrokeColor = color
+            binding.newCardNotesLayout.hintTextColor =
+                ColorStateList.valueOf(color)
+            binding.root.setBackgroundColor(colorBackground)
         }
+        colors.recycle()
+        colorsStatusBar.recycle()
+        colorsBackground.recycle()
         binding.newCardNotesLayout.hint =
             String.format(getString(R.string.optional), getString(R.string.card_notes))
 
@@ -66,9 +63,7 @@ class NewCard : AppCompatActivity() {
                     finish()
                 } else {
                     val confirmCancelDialog = Dialog(this@NewCard, R.style.dia_view)
-                    val bindingConfirmCancelDialog = DiaConfirmBinding.inflate(
-                        layoutInflater
-                    )
+                    val bindingConfirmCancelDialog = DiaConfirmBinding.inflate(layoutInflater)
                     confirmCancelDialog.setContentView(bindingConfirmCancelDialog.root)
                     confirmCancelDialog.setTitle(resources.getString(R.string.discard_changes))
                     confirmCancelDialog.window!!.setLayout(

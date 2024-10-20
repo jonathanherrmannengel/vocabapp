@@ -12,9 +12,7 @@ class ManageMedia : FileTools() {
     private lateinit var binding: ActivityManageMediaBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityManageMediaBinding.inflate(
-            layoutInflater
-        )
+        binding = ActivityManageMediaBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.manageFilesButton.setOnClickListener {
             val intent = Intent(this, ManageFiles::class.java)
@@ -32,6 +30,7 @@ class ManageMedia : FileTools() {
     }
 
     override fun notifyMissingAction(id: Int) {}
+
     private fun setRecView() {
         val dbHelperGet = DB_Helper_Get(this)
         val mediaList = dbHelperGet.allMedia as ArrayList<DB_Media>

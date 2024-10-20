@@ -205,7 +205,7 @@ class ListCollections : FileTools(), AsyncImportFinish, AsyncImportProgress, Asy
                 intent.addCategory(Intent.CATEGORY_OPENABLE)
                 intent.flags =
                     Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION
-                intent.type = "text/csv"
+                intent.type = Globals.EXPORT_FILE_TYPE
                 intent.putExtra(
                     Intent.EXTRA_TITLE,
                     Globals.EXPORT_FILE_NAME + "." + Globals.EXPORT_FILE_EXTENSION
@@ -263,37 +263,29 @@ class ListCollections : FileTools(), AsyncImportFinish, AsyncImportProgress, Asy
         updateSettingsAndContent()
     }
 
-    public override fun onDestroy() {
-        super.onDestroy()
-        try {
-            val cacheDir = cacheDir
-            val files = cacheDir.listFiles()
-            if (files != null) {
-                for (file in files) {
-                    if (file.isFile && System.currentTimeMillis() - file.lastModified() > 86400000) {
-                        file.delete()
-                    }
-                }
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
-
     private fun cleanUp() {
         handleNoMediaFile()
         val dbHelperDelete = DB_Helper_Delete(this@ListCollections)
         dbHelperDelete.deleteDeadMediaLinks()
         dbHelperDelete.deleteDeadTags()
+        val cacheDir = cacheDir
+        val files = cacheDir.listFiles()
+        if (files != null) {
+            for (file in files) {
+                if (file.isFile && System.currentTimeMillis() - file.lastModified() > 86400000) {
+                    file.delete()
+                }
+            }
+        }
     }
 
     private fun loadContent(): MutableList<DB_Collection_With_Meta> {
         val currentList =
             if (dbHelperGet.countCollections() > MAX_SIZE_COLLECTIONS_OR_PACKS_LIST_COUNTER) {
-            dbHelperGet.allCollectionsWithMetaNoCounter
-        } else {
-            dbHelperGet.allCollectionsWithMeta
-        }
+                dbHelperGet.allCollectionsWithMetaNoCounter
+            } else {
+                dbHelperGet.allCollectionsWithMeta
+            }
         val fixedFirstItemPlaceholder = DB_Collection_With_Meta()
         fixedFirstItemPlaceholder.counter = dbHelperGet.countPacks()
         currentList.add(0, fixedFirstItemPlaceholder)
@@ -303,13 +295,11 @@ class ListCollections : FileTools(), AsyncImportFinish, AsyncImportProgress, Asy
     private fun updateSettingsAndContent() {
         val settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE)
         val uiFontSizeBig = settings.getBoolean("ui_font_size", false)
-        if (adapter == null) {
+        adapter?.updateSettingsAndContent(loadContent(), uiFontSizeBig) ?: {
             adapter = AdapterCollections(loadContent(), uiFontSizeBig)
             binding.recDefault.adapter = adapter
             binding.recDefault.layoutManager = LinearLayoutManager(this)
-        } else {
-            adapter!!.updateSettingsAndContent(loadContent(), uiFontSizeBig)
-        }
+        }()
     }
 
     override fun importCardsResult(result: Int) {
@@ -354,7 +344,7 @@ class ListCollections : FileTools(), AsyncImportFinish, AsyncImportProgress, Asy
             } else {
                 val share = Intent(Intent.ACTION_SEND)
                 share.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                share.type = "text/csv"
+                share.type = Globals.EXPORT_FILE_TYPE
                 share.putExtra(
                     Intent.EXTRA_STREAM, FileProvider.getUriForFile(
                         this,

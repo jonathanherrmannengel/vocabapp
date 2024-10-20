@@ -16,9 +16,7 @@ class NewCollection : AppCompatActivity() {
     private lateinit var binding: ActivityNewCollectionOrPackBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityNewCollectionOrPackBinding.inflate(
-            layoutInflater
-        )
+        binding = ActivityNewCollectionOrPackBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.newCollectionOrPackNameLayout.hint = String.format(
             getString(R.string.collection_or_pack_name_format),
@@ -37,9 +35,7 @@ class NewCollection : AppCompatActivity() {
                     finish()
                 } else {
                     val confirmCancelDialog = Dialog(this@NewCollection, R.style.dia_view)
-                    val bindingConfirmCancelDialog = DiaConfirmBinding.inflate(
-                        layoutInflater
-                    )
+                    val bindingConfirmCancelDialog = DiaConfirmBinding.inflate(layoutInflater)
                     confirmCancelDialog.setContentView(bindingConfirmCancelDialog.root)
                     confirmCancelDialog.setTitle(resources.getString(R.string.discard_changes))
                     confirmCancelDialog.window!!.setLayout(

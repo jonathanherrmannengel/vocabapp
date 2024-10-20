@@ -11,9 +11,7 @@ class ManageFiles : FileTools() {
     private lateinit var binding: ActivityManageFilesBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityManageFilesBinding.inflate(
-            layoutInflater
-        )
+        binding = ActivityManageFilesBinding.inflate(layoutInflater)
         setContentView(binding.root)
     }
 
@@ -27,6 +25,7 @@ class ManageFiles : FileTools() {
     }
 
     override fun notifyMissingAction(id: Int) {}
+
     private fun setRecView() {
         val files = listFiles()
         if (files != null) {
