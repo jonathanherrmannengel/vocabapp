@@ -40,14 +40,11 @@ class ViewCard : CardActionsActivity() {
     private lateinit var binding: ActivityViewCardBinding
     private lateinit var dbHelperGet: DB_Helper_Get
     private lateinit var dbHelperUpdate: DB_Helper_Update
-    private var card: DB_Card? = null
+    private lateinit var card: DB_Card
     private var known = 0
     private var collectionNo = 0
     private var packNo = 0
     private var cardNo = 0
-    private var formatCardNotes = false
-    private var imageList: ArrayList<DB_Media_Link_Card>? = null
-    private var mediaList: ArrayList<DB_Media_Link_Card>? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityViewCardBinding.inflate(layoutInflater)
@@ -55,13 +52,9 @@ class ViewCard : CardActionsActivity() {
         dbHelperGet = DB_Helper_Get(this)
         dbHelperUpdate = DB_Helper_Update(this)
 
-        intent.extras?.let {
-            collectionNo = it.getInt("collection")
-            packNo = it.getInt("pack")
-            cardNo = it.getInt("card")
-        } ?: run {
-            Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show()
-        }
+        collectionNo = intent.extras!!.getInt("collection")
+        packNo = intent.extras!!.getInt("pack")
+        cardNo = intent.extras!!.getInt("card")
 
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -78,124 +71,119 @@ class ViewCard : CardActionsActivity() {
         val settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE)
         val formatCards = settings.getBoolean("format_cards", false)
         val increaseFontSize = settings.getBoolean("ui_font_size", false)
-        try {
-            card = dbHelperGet.getSingleCard(cardNo)
-            val cardFront: String
-            if (formatCards) {
-                val formatString = StringTools()
-                val cardFrontSpannable = formatString.format(card!!.front)
-                cardFront = cardFrontSpannable.toString()
-                binding.cardFront.text = cardFrontSpannable
-                binding.cardBack.text = formatString.format(card!!.back)
-            } else {
-                cardFront = card!!.front
-                binding.cardFront.text = cardFront
-                binding.cardBack.text = card!!.back
-            }
-            val cardTags = dbHelperGet.getCardTags(card!!.uid)
-            if (cardTags.isNotEmpty()) {
-                binding.cardTags.visibility = View.VISIBLE
-                val builder = SpannableStringBuilder()
-                builder.append(getString(R.string.tags))
-                builder.append(":")
-                cardTags.forEach {
-                    var color = ContextCompat.getColor(
-                        this,
-                        R.color.tag_background
-                    )
-                    if (!it.color.isNullOrBlank()) {
-                        try {
-                            color = Color.parseColor(it.color)
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                        }
-                    }
-                    var tagText = it.name
-                    if (!it.emoji.isNullOrBlank()) {
-                        tagText = it.emoji + " " + tagText
-                    }
-                    val spannableString = SpannableString(tagText)
-                    builder.append(spannableString)
-                    builder.setSpan(
-                        TagSpan(
-                            this,
-                            color
-                        ),
-                        builder.length - spannableString.length,
-                        builder.length,
-                        SPAN_EXCLUSIVE_EXCLUSIVE
-                    )
-                }
-                binding.cardTags.text = builder
-            } else {
-                binding.cardTags.visibility = View.GONE
-            }
-            formatCardNotes = settings.getBoolean("format_card_notes", false)
-            if (card!!.notes != null && card!!.notes.isNotEmpty()) {
-                binding.cardNotes.visibility = View.VISIBLE
-                if (formatCardNotes) {
-                    val markwon = Markwon.builder(this)
-                        .usePlugin(
-                            LinkifyPlugin.create(
-                                Linkify.WEB_URLS
-                            )
-                        )
-                        .build()
-                    binding.cardNotes.movementMethod = BetterLinkMovementMethod.getInstance()
-                    binding.cardNotes.textAlignment = View.TEXT_ALIGNMENT_TEXT_START
-                    markwon.setMarkdown(binding.cardNotes, card!!.notes)
-                } else {
-                    binding.cardNotes.autoLinkMask = Linkify.WEB_URLS
-                    binding.cardNotes.text = card!!.notes
-                }
-            } else {
-                binding.cardNotes.visibility = View.GONE
-            }
-            if (increaseFontSize) {
-                binding.cardFront.setTextSize(
-                    TypedValue.COMPLEX_UNIT_PX,
-                    resources.getDimension(R.dimen.card_front_size_big)
-                )
-                binding.cardBack.setTextSize(
-                    TypedValue.COMPLEX_UNIT_PX,
-                    resources.getDimension(R.dimen.card_back_size_big)
-                )
-                binding.cardNotes.setTextSize(
-                    TypedValue.COMPLEX_UNIT_PX,
-                    resources.getDimension(R.dimen.card_notes_size_big)
-                )
-            }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                val instant = Instant.ofEpochSecond(card!!.date)
-                val dateTimeFormatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)
-                    .withLocale(Locale.ROOT)
-                    .withZone(ZoneId.systemDefault())
-                binding.cardDate.text = dateTimeFormatter.format(instant)
-            } else {
-                binding.cardDate.text = Date(card!!.date * 1000).toString()
-            }
-            known = card!!.known
-            updateCardKnown()
-            binding.cardMinus.setOnClickListener {
-                known = 0.coerceAtLeast(--known)
-                card!!.known = known
-                card!!.lastRepetition = System.currentTimeMillis() / 1000L
-                dbHelperUpdate.updateCard(card)
-                updateCardKnown()
-            }
-            binding.cardPlus.setOnClickListener {
-                known++
-                card!!.known = known
-                card!!.lastRepetition = System.currentTimeMillis() / 1000L
-                dbHelperUpdate.updateCard(card)
-                updateCardKnown()
-            }
-            updateColors()
-            title = cardFront
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show()
+        card = dbHelperGet.getSingleCard(cardNo)
+        val cardFront: String
+        if (formatCards) {
+            val formatString = StringTools()
+            val cardFrontSpannable = formatString.format(card.front)
+            cardFront = cardFrontSpannable.toString()
+            binding.cardFront.text = cardFrontSpannable
+            binding.cardBack.text = formatString.format(card.back)
+        } else {
+            cardFront = card.front
+            binding.cardFront.text = cardFront
+            binding.cardBack.text = card.back
         }
+        val cardTags = dbHelperGet.getCardTags(card.uid)
+        if (cardTags.isNotEmpty()) {
+            binding.cardTags.visibility = View.VISIBLE
+            val builder = SpannableStringBuilder()
+            builder.append(getString(R.string.tags))
+            builder.append(":")
+            cardTags.forEach {
+                var color = ContextCompat.getColor(
+                    this,
+                    R.color.tag_background
+                )
+                if (!it.color.isNullOrBlank()) {
+                    try {
+                        color = Color.parseColor(it.color)
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+                var tagText = it.name
+                if (!it.emoji.isNullOrBlank()) {
+                    tagText = it.emoji + " " + tagText
+                }
+                val spannableString = SpannableString(tagText)
+                builder.append(spannableString)
+                builder.setSpan(
+                    TagSpan(
+                        this,
+                        color
+                    ),
+                    builder.length - spannableString.length,
+                    builder.length,
+                    SPAN_EXCLUSIVE_EXCLUSIVE
+                )
+            }
+            binding.cardTags.text = builder
+        } else {
+            binding.cardTags.visibility = View.GONE
+        }
+        val formatCardNotes = settings.getBoolean("format_card_notes", false)
+        if (!card.notes.isNullOrEmpty()) {
+            binding.cardNotes.visibility = View.VISIBLE
+            if (formatCardNotes) {
+                val markwon = Markwon.builder(this)
+                    .usePlugin(
+                        LinkifyPlugin.create(
+                            Linkify.WEB_URLS
+                        )
+                    )
+                    .build()
+                binding.cardNotes.movementMethod = BetterLinkMovementMethod.getInstance()
+                binding.cardNotes.textAlignment = View.TEXT_ALIGNMENT_TEXT_START
+                markwon.setMarkdown(binding.cardNotes, card.notes)
+            } else {
+                binding.cardNotes.autoLinkMask = Linkify.WEB_URLS
+                binding.cardNotes.text = card.notes
+            }
+        } else {
+            binding.cardNotes.visibility = View.GONE
+        }
+        if (increaseFontSize) {
+            binding.cardFront.setTextSize(
+                TypedValue.COMPLEX_UNIT_PX,
+                resources.getDimension(R.dimen.card_front_size_big)
+            )
+            binding.cardBack.setTextSize(
+                TypedValue.COMPLEX_UNIT_PX,
+                resources.getDimension(R.dimen.card_back_size_big)
+            )
+            binding.cardNotes.setTextSize(
+                TypedValue.COMPLEX_UNIT_PX,
+                resources.getDimension(R.dimen.card_notes_size_big)
+            )
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val instant = Instant.ofEpochSecond(card.date)
+            val dateTimeFormatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)
+                .withLocale(Locale.ROOT)
+                .withZone(ZoneId.systemDefault())
+            binding.cardDate.text = dateTimeFormatter.format(instant)
+        } else {
+            binding.cardDate.text = Date(card.date * 1000).toString()
+        }
+        known = card.known
+        updateCardKnown()
+        binding.cardMinus.setOnClickListener {
+            known = 0.coerceAtLeast(--known)
+            card.known = known
+            card.lastRepetition = System.currentTimeMillis() / 1000L
+            dbHelperUpdate.updateCard(card)
+            updateCardKnown()
+        }
+        binding.cardPlus.setOnClickListener {
+            known++
+            card.known = known
+            card.lastRepetition = System.currentTimeMillis() / 1000L
+            dbHelperUpdate.updateCard(card)
+            updateCardKnown()
+        }
+        updateColors()
+        title = cardFront
         setMediaButtons()
     }
 
@@ -211,74 +199,63 @@ class ViewCard : CardActionsActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_view_card, menu)
-        if (collectionNo == 0 || packNo == 0 || cardNo == 0) {
-            menu.findItem(R.id.menu_view_card_edit).isVisible = false
-            menu.findItem(R.id.menu_view_card_delete).isVisible = false
-            menu.findItem(R.id.menu_view_card_edit_media).isVisible = false
-            menu.findItem(R.id.menu_view_card_print).isVisible = false
-            menu.findItem(R.id.menu_view_card_move).isVisible = false
+        menu.findItem(R.id.menu_view_card_edit).setOnMenuItemClickListener {
+            val intent = Intent(this, EditCard::class.java)
+            intent.putExtra("card", cardNo)
+            startActivity(intent)
+            return@setOnMenuItemClickListener true
+        }
+        menu.findItem(R.id.menu_view_card_delete).setOnMenuItemClickListener {
+            CardActions(this).delete(card)
+            return@setOnMenuItemClickListener true
+        }
+        menu.findItem(R.id.menu_view_card_edit_media).setOnMenuItemClickListener {
+            val intent = Intent(this, EditCardMedia::class.java)
+            intent.putExtra("card", cardNo)
+            startActivity(intent)
+            return@setOnMenuItemClickListener true
+        }
+        menu.findItem(R.id.menu_view_card_edit_tags).setOnMenuItemClickListener {
+            val intent = Intent(this, EditCardTags::class.java)
+            intent.putExtra("card", cardNo)
+            startActivity(intent)
+            return@setOnMenuItemClickListener true
+        }
+        menu.findItem(R.id.menu_view_card_print).setOnMenuItemClickListener {
+            CardActions(this).print(card)
+            return@setOnMenuItemClickListener true
+        }
+        if (packNo >= 0) {
+            menu.findItem(R.id.menu_view_card_move).setOnMenuItemClickListener {
+                CardActions(this).move(card, collectionNo)
+                return@setOnMenuItemClickListener true
+            }
         } else {
-            menu.findItem(R.id.menu_view_card_edit).setOnMenuItemClickListener {
-                val intent = Intent(this, EditCard::class.java)
-                intent.putExtra("card", cardNo)
-                startActivity(intent)
-                return@setOnMenuItemClickListener true
-            }
-            menu.findItem(R.id.menu_view_card_delete).setOnMenuItemClickListener {
-                CardActions(this).delete(card!!)
-                return@setOnMenuItemClickListener true
-            }
-            menu.findItem(R.id.menu_view_card_edit_media).setOnMenuItemClickListener {
-                val intent = Intent(this, EditCardMedia::class.java)
-                intent.putExtra("card", cardNo)
-                startActivity(intent)
-                return@setOnMenuItemClickListener true
-            }
-            menu.findItem(R.id.menu_view_card_edit_tags).setOnMenuItemClickListener {
-                val intent = Intent(this, EditCardTags::class.java)
-                intent.putExtra("card", cardNo)
-                startActivity(intent)
-                return@setOnMenuItemClickListener true
-            }
-            menu.findItem(R.id.menu_view_card_print).setOnMenuItemClickListener {
-                CardActions(this).print(card!!)
-                return@setOnMenuItemClickListener true
-            }
-            if (packNo < 0) {
-                menu.findItem(R.id.menu_view_card_move).isVisible = false
-            } else {
-                menu.findItem(R.id.menu_view_card_move).setOnMenuItemClickListener {
-                    CardActions(this).move(card!!, collectionNo)
-                    return@setOnMenuItemClickListener true
-                }
-            }
+            menu.findItem(R.id.menu_view_card_move).isVisible = false
         }
         return true
     }
 
     private fun updateColors() {
-        try {
-            val colorsStatusBar = resources.obtainTypedArray(R.array.pack_color_statusbar)
-            val colorsBackground = resources.obtainTypedArray(R.array.pack_color_background)
-            val colorsBackgroundLight =
-                resources.obtainTypedArray(R.array.pack_color_background_light)
-            val packColors = dbHelperGet.getSinglePack(card!!.pack).colors
-            if (packColors >= 0 && packColors < colorsStatusBar.length() && packColors < colorsBackground.length() && packColors < colorsBackgroundLight.length()) {
-                val colorStatusBar = colorsStatusBar.getColor(packColors, 0)
-                val colorBackground = colorsBackground.getColor(packColors, 0)
-                val colorBackgroundLight = colorsBackgroundLight.getColor(packColors, 0)
-                supportActionBar?.setBackgroundDrawable(ColorDrawable(colorStatusBar))
-                window.statusBarColor = colorStatusBar
-                binding.root.setBackgroundColor(colorBackground)
-                binding.cardKnownProgress.setBackgroundColor(colorBackgroundLight)
-            }
-            colorsStatusBar.recycle()
-            colorsBackground.recycle()
-            colorsBackgroundLight.recycle()
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show()
+        val colorsStatusBar = resources.obtainTypedArray(R.array.pack_color_statusbar)
+        val colorsBackground = resources.obtainTypedArray(R.array.pack_color_background)
+        val colorsBackgroundLight =
+            resources.obtainTypedArray(R.array.pack_color_background_light)
+        val minimalLength = colorsStatusBar.length().coerceAtMost(colorsBackground.length())
+            .coerceAtMost(colorsBackgroundLight.length())
+        val packColors = dbHelperGet.getSinglePack(card.pack).colors
+        if (packColors in 0..<minimalLength) {
+            val colorStatusBar = colorsStatusBar.getColor(packColors, 0)
+            val colorBackground = colorsBackground.getColor(packColors, 0)
+            val colorBackgroundLight = colorsBackgroundLight.getColor(packColors, 0)
+            supportActionBar?.setBackgroundDrawable(ColorDrawable(colorStatusBar))
+            window.statusBarColor = colorStatusBar
+            binding.root.setBackgroundColor(colorBackground)
+            binding.cardKnownProgress.setBackgroundColor(colorBackgroundLight)
         }
+        colorsStatusBar.recycle()
+        colorsBackground.recycle()
+        colorsBackgroundLight.recycle()
     }
 
     private fun updateCardKnown() {
@@ -296,7 +273,7 @@ class ViewCard : CardActionsActivity() {
     override fun movedCards(cardIds: ArrayList<Int>) {
         try {
             card = dbHelperGet.getSingleCard(cardNo)
-            packNo = card!!.pack
+            packNo = card.pack
             updateColors()
             val intent = Intent(this, ListCards::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -317,26 +294,27 @@ class ViewCard : CardActionsActivity() {
     }
 
     private fun setMediaButtons() {
-        imageList = dbHelperGet.getImageMediaLinksByCard(cardNo) as ArrayList<DB_Media_Link_Card>
-        if (imageList!!.isEmpty()) {
+        val imageList =
+            dbHelperGet.getImageMediaLinksByCard(cardNo) as ArrayList<DB_Media_Link_Card>
+        if (imageList.isEmpty()) {
             binding.viewCardImages.visibility = View.GONE
         } else {
             binding.viewCardImages.visibility = View.VISIBLE
         }
         binding.viewCardImages.setOnClickListener {
             showImageListDialog(
-                imageList!!
+                imageList
             )
         }
-        mediaList = dbHelperGet.getAllMediaLinksByCard(cardNo) as ArrayList<DB_Media_Link_Card>
-        if (mediaList!!.isEmpty()) {
+        val mediaList = dbHelperGet.getAllMediaLinksByCard(cardNo) as ArrayList<DB_Media_Link_Card>
+        if (mediaList.isEmpty()) {
             binding.viewCardMedia.visibility = View.GONE
         } else {
             binding.viewCardMedia.visibility = View.VISIBLE
         }
         binding.viewCardMedia.setOnClickListener {
             showMediaListDialog(
-                mediaList!!
+                mediaList
             )
         }
     }

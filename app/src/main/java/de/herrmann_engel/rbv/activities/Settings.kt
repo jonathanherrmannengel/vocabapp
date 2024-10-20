@@ -12,9 +12,7 @@ import de.herrmann_engel.rbv.databinding.DiaInfoBinding
 class Settings : FileTools() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val binding = ActivitySettingsBinding.inflate(
-            layoutInflater
-        )
+        val binding = ActivitySettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
         val settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE)
         val settingsEdit = settings.edit()
