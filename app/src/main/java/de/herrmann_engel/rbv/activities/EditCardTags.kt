@@ -19,43 +19,33 @@ class EditCardTags : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityEditCardTagsBinding.inflate(
-            layoutInflater
-        )
+        binding = ActivityEditCardTagsBinding.inflate(layoutInflater)
         setContentView(binding.root)
         dbHelperGet = DB_Helper_Get(this)
-        intent.extras?.getInt("card")?.also { cardNoExtra ->
-            try {
-                cardNo = cardNoExtra
-                val card = dbHelperGet.getSingleCard(cardNo)
-                val colorsStatusBar = resources.obtainTypedArray(R.array.pack_color_statusbar)
-                val colorsBackground = resources.obtainTypedArray(R.array.pack_color_background)
-                val packColors = dbHelperGet.getSinglePack(card.pack).colors
-                if (packColors >= 0 && packColors < colorsStatusBar.length() && packColors < colorsBackground.length()) {
-                    val colorStatusBar = colorsStatusBar.getColor(packColors, 0)
-                    val colorBackground = colorsBackground.getColor(packColors, 0)
-                    supportActionBar?.setBackgroundDrawable(ColorDrawable(colorStatusBar))
-                    window.statusBarColor = colorStatusBar
-                    binding.root.setBackgroundColor(colorBackground)
-                }
-                colorsStatusBar.recycle()
-                colorsBackground.recycle()
-                binding.editCardTagsAdd.setOnEditorActionListener { _, actionId, _ ->
-                    if (actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_NEXT || actionId == EditorInfo.IME_NULL) {
-                        createNewTag()
-                        return@setOnEditorActionListener true
-                    }
-                    return@setOnEditorActionListener false
-                }
-                binding.editCardTagsGo.setOnClickListener {
-                    createNewTag()
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show()
+        cardNo = intent.extras!!.getInt("card")
+        val card = dbHelperGet.getSingleCard(cardNo)
+        val colorsStatusBar = resources.obtainTypedArray(R.array.pack_color_statusbar)
+        val colorsBackground = resources.obtainTypedArray(R.array.pack_color_background)
+        val packColors = dbHelperGet.getSinglePack(card.pack).colors
+        val minimalLength = colorsStatusBar.length().coerceAtMost(colorsBackground.length())
+        if (packColors in 0..<minimalLength) {
+            val colorStatusBar = colorsStatusBar.getColor(packColors, 0)
+            val colorBackground = colorsBackground.getColor(packColors, 0)
+            supportActionBar?.setBackgroundDrawable(ColorDrawable(colorStatusBar))
+            window.statusBarColor = colorStatusBar
+            binding.root.setBackgroundColor(colorBackground)
+        }
+        colorsStatusBar.recycle()
+        colorsBackground.recycle()
+        binding.editCardTagsAdd.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_NEXT || actionId == EditorInfo.IME_NULL) {
+                createNewTag()
+                return@setOnEditorActionListener true
             }
-        } ?: run {
-            Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show()
+            return@setOnEditorActionListener false
+        }
+        binding.editCardTagsGo.setOnClickListener {
+            createNewTag()
         }
     }
 
@@ -65,17 +55,17 @@ class EditCardTags : AppCompatActivity() {
     }
 
     private fun createNewTag() {
-        val tagName =
-            binding.editCardTagsAdd.text.toString()
+        val tagName = binding.editCardTagsAdd.text.toString()
         if (tagName.isNotBlank()) {
-            val dbHelperCreate = DB_Helper_Create(this)
             try {
+                val dbHelperCreate = DB_Helper_Create(this)
                 dbHelperCreate.createTagLink(
                     tagName,
                     cardNo
                 )
             } catch (e: Exception) {
                 e.printStackTrace()
+                Toast.makeText(this, R.string.error_creating_duplicate, Toast.LENGTH_LONG).show()
             }
         }
         setRecView()

@@ -11,6 +11,7 @@
     <string name="no">no</string>
     <string name="error">error</string>
     <string name="error_values">error – did you fill all required fields?</string>
+    <string name="error_creating_duplicate">error – already in list?</string>
     <string name="success">success</string>
     <string name="wait">please wait</string>
     <string name="add">add</string>

@@ -57,7 +57,7 @@ abstract class FileTools : AppCompatActivity() {
                 }
             } else {
                 val outputDirectory = DocumentFile.fromTreeUri(this, Uri.parse(folder))
-                //Check: Media folder set but directory not accessible
+                //Check: Media folder is set, but directory not accessible
                 if (outputDirectory == null || !outputDirectory.isDirectory) {
                     showSelectDialog(resources.getString(R.string.select_folder_help_reselect))
                 }
@@ -347,7 +347,7 @@ abstract class FileTools : AppCompatActivity() {
                 cardMediaFolder
             )
         )
-        return name?.let { folderFile?.findFile(it)?.exists() } ?: false
+        return name?.let { folderFile?.findFile(it)?.exists() } == true
     }
 
     fun existsMediaFile(input: Int): Boolean {

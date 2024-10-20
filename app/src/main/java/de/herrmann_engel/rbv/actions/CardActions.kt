@@ -79,7 +79,6 @@ class CardActions(val activity: Activity) {
     }
 
     fun move(cards: ArrayList<DB_Card>, collectionNo: Int) {
-
         val moveDialog = Dialog(activity, R.style.dia_view)
         val bindingMoveDialog = DiaRecBinding.inflate(
             activity.layoutInflater
@@ -107,7 +106,6 @@ class CardActions(val activity: Activity) {
     }
 
     fun print(cards: ArrayList<DB_Card>) {
-
         val printDialog = Dialog(activity, R.style.dia_view)
         val bindingPrintDialog = DiaPrintBinding.inflate(
             activity.layoutInflater
@@ -185,7 +183,8 @@ class CardActions(val activity: Activity) {
                 } else {
                     card.front.toSpanned()
                 }
-                var title = stringTools.shorten(cardFront.toString(), 30)
+                val maxTitleLength = 30
+                var title = stringTools.shorten(cardFront.toString(), maxTitleLength)
                 if (bindingPrintDialog.diaPrintIncludeProgress.isChecked) {
                     title += " (" + card.known + ")"
                 }

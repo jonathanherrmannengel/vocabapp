@@ -6,6 +6,7 @@
     <string name="no">Nein</string>
     <string name="error">Fehler</string>
     <string name="error_values">Fehler – Hast Du alle erforderlichen Felder ausgefüllt?</string>
+    <string name="error_creating_duplicate">Fehler – Schon in Liste?</string>
     <string name="success">Erfolgreich abgeschlossen</string>
     <string name="wait">Bitte warten</string>
     <string name="add">Einfügen</string>

@@ -32,12 +32,10 @@ import kotlin.math.roundToInt
 
 class EditPack : AppCompatActivity() {
     private lateinit var binding: ActivityEditCollectionOrPackBinding
-    private var pack: DB_Pack? = null
+    private lateinit var pack: DB_Pack
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityEditCollectionOrPackBinding.inflate(
-            layoutInflater
-        )
+        binding = ActivityEditCollectionOrPackBinding.inflate(layoutInflater)
         setContentView(binding.root)
         val dbHelperGet = DB_Helper_Get(this)
         binding.editCollectionOrPackDescLayout.hint =
@@ -74,76 +72,72 @@ class EditPack : AppCompatActivity() {
             getString(R.string.collection_or_pack_emoji)
         )
         val packNo = intent.extras!!.getInt("pack")
-        try {
-            pack = dbHelperGet.getSinglePack(packNo)
-            pack?.let {
-                binding.editCollectionOrPackName.setText(it.name)
-                binding.editCollectionOrPackDesc.setText(it.desc)
-                binding.editCollectionOrPackEmoji.setText(it.emoji)
+        pack = dbHelperGet.getSinglePack(packNo)
+        binding.editCollectionOrPackName.setText(pack.name)
+        binding.editCollectionOrPackDesc.setText(pack.desc)
+        binding.editCollectionOrPackEmoji.setText(pack.emoji)
+        binding.editCollectionOrPackEmoji.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(
+                s: CharSequence,
+                start: Int,
+                count: Int,
+                after: Int
+            ) {
             }
-            binding.editCollectionOrPackEmoji.addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(
-                    s: CharSequence,
-                    start: Int,
-                    count: Int,
-                    after: Int
-                ) {
-                }
 
-                override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                    binding.editCollectionOrPackEmoji.removeTextChangedListener(this)
-                    binding.editCollectionOrPackEmoji.setText(s.subSequence(start, start + count))
-                    binding.editCollectionOrPackEmoji.addTextChangedListener(this)
-                }
-
-                override fun afterTextChanged(s: Editable) {}
-            })
-            val colorNames = resources.obtainTypedArray(R.array.pack_color_names)
-            val colors = resources.obtainTypedArray(R.array.pack_color_main)
-            val colorsStatusBar = resources.obtainTypedArray(R.array.pack_color_statusbar)
-            val colorsBackground = resources.obtainTypedArray(R.array.pack_color_background)
-            var i = 0
-            while (i < colorNames.length() && i < colors.length() && i < colorsStatusBar.length() && i < colorsBackground.length()) {
-                val colorName = colorNames.getString(i)
-                val color = colors.getColor(i, 0)
-                val colorStatusBar = colorsStatusBar.getColor(i, 0)
-                val colorBackground = colorsBackground.getColor(i, 0)
-                if (pack?.colors == i) {
-                    setColors(color, colorStatusBar, colorBackground)
-                }
-                val colorView = ImageButton(this)
-                colorView.setImageDrawable(ColorDrawable(color))
-                val margin =
-                    (10 * (resources.displayMetrics.densityDpi.toFloat() / DisplayMetrics.DENSITY_DEFAULT)).roundToInt()
-                val lp = LinearLayout.LayoutParams(margin * 3, margin * 3)
-                lp.setMargins(margin, margin, margin, margin)
-                colorView.layoutParams = lp
-                colorView.setPadding(0, 0, 0, 0)
-                val finalI = i
-                colorView.setOnClickListener {
-                    setColors(color, colorStatusBar, colorBackground)
-                    pack?.colors = finalI
-                }
-                colorView.contentDescription = colorName
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    colorView.tooltipText = colorName
-                }
-                binding.colorPicker.addView(colorView)
-                i++
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+                binding.editCollectionOrPackEmoji.removeTextChangedListener(this)
+                binding.editCollectionOrPackEmoji.setText(s.subSequence(start, start + count))
+                binding.editCollectionOrPackEmoji.addTextChangedListener(this)
             }
-            colorNames.recycle()
-            colors.recycle()
-            colorsStatusBar.recycle()
-            colorsBackground.recycle()
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show()
+
+            override fun afterTextChanged(s: Editable) {}
+        })
+        val colorNames = resources.obtainTypedArray(R.array.pack_color_names)
+        val colors = resources.obtainTypedArray(R.array.pack_color_main)
+        val colorsStatusBar = resources.obtainTypedArray(R.array.pack_color_statusbar)
+        val colorsBackground = resources.obtainTypedArray(R.array.pack_color_background)
+        val minimalLength =
+            colorNames.length().coerceAtMost(colors.length()).coerceAtMost(colorsStatusBar.length())
+                .coerceAtMost(colorsBackground.length())
+        var i = 0
+        while (i < minimalLength) {
+            val colorName = colorNames.getString(i)
+            val color = colors.getColor(i, 0)
+            val colorStatusBar = colorsStatusBar.getColor(i, 0)
+            val colorBackground = colorsBackground.getColor(i, 0)
+            if (pack.colors == i) {
+                setColors(color, colorStatusBar, colorBackground)
+            }
+            val colorView = ImageButton(this)
+            colorView.setImageDrawable(ColorDrawable(color))
+            val margin =
+                (10 * (resources.displayMetrics.densityDpi.toFloat() / DisplayMetrics.DENSITY_DEFAULT)).roundToInt()
+            val lp = LinearLayout.LayoutParams(margin * 3, margin * 3)
+            lp.setMargins(margin, margin, margin, margin)
+            colorView.layoutParams = lp
+            colorView.setPadding(0, 0, 0, 0)
+            val finalI = i
+            colorView.setOnClickListener {
+                setColors(color, colorStatusBar, colorBackground)
+                pack.colors = finalI
+            }
+            colorView.contentDescription = colorName
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                colorView.tooltipText = colorName
+            }
+            binding.colorPicker.addView(colorView)
+            i++
         }
+        colorNames.recycle()
+        colors.recycle()
+        colorsStatusBar.recycle()
+        colorsBackground.recycle()
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 val name = binding.editCollectionOrPackName.text.toString()
                 val desc = binding.editCollectionOrPackDesc.text.toString()
-                if (pack == null || pack!!.name == name && pack!!.desc == desc) {
+                if (pack.name == name && pack.desc == desc) {
                     finish()
                 } else {
                     val confirmCancelDialog = Dialog(this@EditPack, R.style.dia_view)
@@ -167,13 +161,13 @@ class EditPack : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_edit, menu)
         menu.findItem(R.id.menu_edit_save).setOnMenuItemClickListener {
-            pack!!.name = binding.editCollectionOrPackName.text.toString()
-            pack!!.desc = binding.editCollectionOrPackDesc.text.toString()
+            pack.name = binding.editCollectionOrPackName.text.toString()
+            pack.desc = binding.editCollectionOrPackDesc.text.toString()
             if (binding.editCollectionOrPackEmoji.text != null) {
-                pack!!.emoji =
+                pack.emoji =
                     StringTools().firstEmoji(binding.editCollectionOrPackEmoji.text.toString())
             } else {
-                pack!!.emoji = null
+                pack.emoji = null
             }
             val dbHelperUpdate = DB_Helper_Update(this)
             if (dbHelperUpdate.updatePack(pack)) {

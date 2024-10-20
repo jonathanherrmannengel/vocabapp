@@ -44,7 +44,7 @@ class EditCardMedia : FileTools() {
                             val inputFileName = input.name
                             val mime = input.type
                             if (inputFileName != null && outputDirectory.findFile(inputFileName) == null) {
-                                createMediaFile(outputDirectory, mime, inputFileName, fileUri)
+                                createMediaFile(outputDirectory, mime!!, inputFileName, fileUri)
                             } else {
                                 val fileExistsDialog = Dialog(this, R.style.dia_view)
                                 val bindingFileExistsDialog = DiaFileExistsBinding.inflate(
@@ -61,7 +61,12 @@ class EditCardMedia : FileTools() {
                                     fileExistsDialog.dismiss()
                                 }
                                 bindingFileExistsDialog.diaFileExistsNew.setOnClickListener {
-                                    createMediaFile(outputDirectory, mime, inputFileName, fileUri)
+                                    createMediaFile(
+                                        outputDirectory,
+                                        mime!!,
+                                        inputFileName!!,
+                                        fileUri
+                                    )
                                     fileExistsDialog.dismiss()
                                 }
                                 fileExistsDialog.show()
@@ -78,44 +83,34 @@ class EditCardMedia : FileTools() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityEditCardMediaBinding.inflate(
-            layoutInflater
-        )
+        binding = ActivityEditCardMediaBinding.inflate(layoutInflater)
         setContentView(binding.root)
         dbHelperGet = DB_Helper_Get(this)
-        intent.extras?.getInt("card")?.also {
-            try {
-                cardNo = it
-                val card = dbHelperGet.getSingleCard(cardNo)
-                val colorsStatusBar = resources.obtainTypedArray(R.array.pack_color_statusbar)
-                val colorsBackground = resources.obtainTypedArray(R.array.pack_color_background)
-                val packColors = dbHelperGet.getSinglePack(card.pack).colors
-                if (packColors >= 0 && packColors < colorsStatusBar.length() && packColors < colorsBackground.length()) {
-                    val colorStatusBar = colorsStatusBar.getColor(packColors, 0)
-                    val colorBackground = colorsBackground.getColor(packColors, 0)
-                    supportActionBar?.setBackgroundDrawable(ColorDrawable(colorStatusBar))
-                    window.statusBarColor = colorStatusBar
-                    binding.root.setBackgroundColor(colorBackground)
-                }
-                colorsStatusBar.recycle()
-                colorsBackground.recycle()
-                binding.addMediaButton.setOnClickListener {
-                    val folder = cardMediaFolder
-                    if (folder.isNullOrEmpty()) {
-                        showSelectDialog(resources.getString(R.string.select_folder_help))
-                    } else {
-                        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
-                        intent.addCategory(Intent.CATEGORY_OPENABLE)
-                        intent.type = "*/*"
-                        openFile.launch(intent)
-                    }
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show()
+        cardNo = intent.extras!!.getInt("card")
+        val card = dbHelperGet.getSingleCard(cardNo)
+        val colorsStatusBar = resources.obtainTypedArray(R.array.pack_color_statusbar)
+        val colorsBackground = resources.obtainTypedArray(R.array.pack_color_background)
+        val packColors = dbHelperGet.getSinglePack(card.pack).colors
+        val minimalLength = colorsStatusBar.length().coerceAtMost(colorsBackground.length())
+        if (packColors in 0..<minimalLength) {
+            val colorStatusBar = colorsStatusBar.getColor(packColors, 0)
+            val colorBackground = colorsBackground.getColor(packColors, 0)
+            supportActionBar?.setBackgroundDrawable(ColorDrawable(colorStatusBar))
+            window.statusBarColor = colorStatusBar
+            binding.root.setBackgroundColor(colorBackground)
+        }
+        colorsStatusBar.recycle()
+        colorsBackground.recycle()
+        binding.addMediaButton.setOnClickListener {
+            val folder = cardMediaFolder
+            if (folder.isNullOrEmpty()) {
+                showSelectDialog(resources.getString(R.string.select_folder_help))
+            } else {
+                val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
+                intent.addCategory(Intent.CATEGORY_OPENABLE)
+                intent.type = "*/*"
+                openFile.launch(intent)
             }
-        } ?: run {
-            Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -126,24 +121,22 @@ class EditCardMedia : FileTools() {
 
     private fun createMediaFile(
         outputDirectory: DocumentFile,
-        mime: String?,
-        inputFileName: String?,
-        fileUri: Uri?
+        mime: String,
+        inputFileName: String,
+        fileUri: Uri
     ) {
         try {
-            val output = outputDirectory.createFile(mime!!, inputFileName!!)
-            val outputFileName = output!!.name
-            val outputStream = contentResolver.openOutputStream(
-                output.uri
-            )
-            val inputStream = contentResolver.openInputStream(fileUri!!)
+            val output = outputDirectory.createFile(mime, inputFileName)!!
+            val outputFileName = output.name
+            val outputStream = contentResolver.openOutputStream(output.uri)!!
+            val inputStream = contentResolver.openInputStream(fileUri)!!
             val buffer = ByteArray(1024)
             var read: Int
-            while (inputStream!!.read(buffer).also { read = it } != -1) {
-                outputStream!!.write(buffer, 0, read)
+            while (inputStream.read(buffer).also { read = it } != -1) {
+                outputStream.write(buffer, 0, read)
             }
             inputStream.close()
-            outputStream!!.flush()
+            outputStream.flush()
             outputStream.close()
             addMediaLink(outputFileName, mime)
         } catch (e: Exception) {
@@ -155,15 +148,12 @@ class EditCardMedia : FileTools() {
     private fun addMediaLink(outputFileName: String?, mime: String?) {
         try {
             val dbHelperCreate = DB_Helper_Create(this)
-            dbHelperCreate.createMedia(outputFileName, mime)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        try {
+            if (!dbHelperGet.existsMedia(outputFileName)) {
+                dbHelperCreate.createMedia(outputFileName, mime)
+            }
             if (dbHelperGet.existsMedia(outputFileName)) {
                 val media = dbHelperGet.getSingleMedia(outputFileName)
                 val fileId = media.uid
-                val dbHelperCreate = DB_Helper_Create(this)
                 dbHelperCreate.createMediaLink(fileId, cardNo)
                 setRecView()
                 Toast.makeText(this, R.string.success, Toast.LENGTH_SHORT).show()
