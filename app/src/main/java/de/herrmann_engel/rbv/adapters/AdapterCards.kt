@@ -35,7 +35,7 @@ import java.util.Locale
 
 class AdapterCards(
     private val cards: MutableList<DB_Card_With_Meta>,
-    private var uiFontSizeBig: Boolean,
+    private val uiFontSizeBig: Boolean,
     private var reverse: Boolean,
     private val packNo: Int,
     private val collectionNo: Int
@@ -58,7 +58,7 @@ class AdapterCards(
             menu.findItem(R.id.menu_list_cards_context_delete).isVisible =
                 contextualMenuModeCardIdList.isNotEmpty()
             menu.findItem(R.id.menu_list_cards_context_move).isVisible =
-                contextualMenuModeCardIdList.isNotEmpty() && packNo > -1
+                contextualMenuModeCardIdList.isNotEmpty() && packNo >= 0
             menu.findItem(R.id.menu_list_cards_context_print).isVisible =
                 contextualMenuModeCardIdList.isNotEmpty() && contextualMenuModeCardIdList.size <= MAX_SIZE_CARDS_CONTEXTUAL_MENU_PRINT
             menu.findItem(R.id.menu_list_cards_context_select_all).isVisible =
@@ -181,10 +181,7 @@ class AdapterCards(
             )
         )
         if (cards.isEmpty()) {
-            if (packNo < 0) {
-                viewHolder.binding.recName.text =
-                    context.resources.getString(R.string.welcome_card)
-            } else {
+            if (packNo >= 0) {
                 val text =
                     String.format(
                         "%s %s",
@@ -207,6 +204,9 @@ class AdapterCards(
                 val index = addText.indexOf("+")
                 addText.setSpan(addTextImage, index, index + 1, Spannable.SPAN_INCLUSIVE_EXCLUSIVE)
                 viewHolder.binding.recName.text = addText
+            } else {
+                viewHolder.binding.recName.text =
+                    context.resources.getString(R.string.welcome_card)
             }
         } else {
             var cardText = if (reverse) {
@@ -225,17 +225,13 @@ class AdapterCards(
                     cards[position].card.known
                 )
             if (packNo < 0) {
-                try {
-                    val color = cards[position].packColor
-                    val colors =
-                        context.resources.obtainTypedArray(R.array.pack_color_list)
-                    if (color < colors.length() && color >= 0) {
-                        viewHolder.binding.recName.setTextColor(colors.getColor(color, 0))
-                    }
-                    colors.recycle()
-                } catch (e: Exception) {
-                    e.printStackTrace()
+                val color = cards[position].packColor
+                val colors =
+                    context.resources.obtainTypedArray(R.array.pack_color_list)
+                if (color < colors.length() && color >= 0) {
+                    viewHolder.binding.recName.setTextColor(colors.getColor(color, 0))
                 }
+                colors.recycle()
             }
             val extra = cards[position].card.uid
             viewHolder.binding.recName.setOnClickListener {
