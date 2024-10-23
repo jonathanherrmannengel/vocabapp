@@ -17,7 +17,6 @@ class AdapterMediaManageLinkedCards(
 ) : RecyclerView.Adapter<AdapterMediaManageLinkedCards.ViewHolder>() {
     class ViewHolder(val binding: RecViewBinding) : RecyclerView.ViewHolder(binding.root)
 
-
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         val binding =
             RecViewBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false)

@@ -23,6 +23,8 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import de.herrmann_engel.rbv.Globals.LIST_CARDS_GET_DB_COLLECTIONS_ALL
+import de.herrmann_engel.rbv.Globals.LIST_CARDS_GET_DB_PACKS_ALL
 import de.herrmann_engel.rbv.Globals.MAX_SIZE_PACKS_CONTEXTUAL_MENU_SELECT
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.actions.PackActions
@@ -59,7 +61,7 @@ class AdapterPacks(
             menu.findItem(R.id.menu_list_cards_context_delete).isVisible =
                 contextualMenuModePackIdList.isNotEmpty()
             menu.findItem(R.id.menu_list_cards_context_move).isVisible =
-                contextualMenuModePackIdList.isNotEmpty() && collection > -1
+                contextualMenuModePackIdList.isNotEmpty() && collection >= 0
             menu.findItem(R.id.menu_list_cards_context_print).isVisible = false
             menu.findItem(R.id.menu_list_cards_context_select_all).isVisible =
                 contextualMenuModePackIdList.size < packs.size - 1 && packs.size - 1 <= MAX_SIZE_PACKS_CONTEXTUAL_MENU_SELECT
@@ -111,7 +113,6 @@ class AdapterPacks(
                     true
                 }
 
-
                 else -> false
             }
         }
@@ -150,10 +151,6 @@ class AdapterPacks(
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         val context = viewHolder.binding.root.context
-        viewHolder.binding.recCollectionsPreviewText.contentDescription = null
-        viewHolder.binding.recCollectionsPreviewText.importantForAccessibility =
-            IMPORTANT_FOR_ACCESSIBILITY_NO
-        viewHolder.binding.recCollectionsName.setTypeface(null, Typeface.NORMAL)
         if (uiFontSizeBig) {
             viewHolder.binding.recCollectionsName.setTextSize(
                 TypedValue.COMPLEX_UNIT_PX,
@@ -168,6 +165,10 @@ class AdapterPacks(
                 context.resources.getDimension(R.dimen.rec_view_font_size_above_big)
             )
         }
+        viewHolder.binding.recCollectionsPreviewText.contentDescription = null
+        viewHolder.binding.recCollectionsPreviewText.importantForAccessibility =
+            IMPORTANT_FOR_ACCESSIBILITY_NO
+        viewHolder.binding.recCollectionsName.setTypeface(null, Typeface.NORMAL)
         val backgroundLayerList = viewHolder.binding.root.background as LayerDrawable
         val background =
             backgroundLayerList.findDrawableByLayerId(R.id.rec_view_collection_or_pack_background_main) as GradientDrawable
@@ -178,10 +179,7 @@ class AdapterPacks(
         viewHolder.binding.recCollectionsPreviewText.visibility = View.VISIBLE
         viewHolder.binding.recCollectionsNumberText.visibility = View.VISIBLE
         if (position == 0 && packs.size == 1) {
-            if (collection == -1) {
-                viewHolder.binding.recCollectionsName.text =
-                    context.resources.getString(R.string.welcome_pack)
-            } else {
+            if (collection >= 0) {
                 val text =
                     String.format(
                         "%s %s",
@@ -201,6 +199,9 @@ class AdapterPacks(
                 val index = addText.indexOf("+")
                 addText.setSpan(addTextImage, index, index + 1, Spannable.SPAN_INCLUSIVE_EXCLUSIVE)
                 viewHolder.binding.recCollectionsName.text = addText
+            } else {
+                viewHolder.binding.recCollectionsName.text =
+                    context.resources.getString(R.string.welcome_pack)
             }
             viewHolder.binding.recCollectionsName.textAlignment = View.TEXT_ALIGNMENT_CENTER
             viewHolder.binding.recCollectionsDesc.visibility = View.GONE
@@ -221,14 +222,14 @@ class AdapterPacks(
             viewHolder.binding.root.setOnClickListener {
                 val intent = Intent(context, ListCards::class.java)
                 intent.putExtra("collection", collection)
-                intent.putExtra("pack", -1)
+                intent.putExtra("pack", LIST_CARDS_GET_DB_PACKS_ALL)
                 context.startActivity(intent)
             }
             viewHolder.binding.recCollectionsName.text =
                 context.resources.getString(R.string.all_cards)
             viewHolder.binding.recCollectionsDesc.visibility = View.VISIBLE
             viewHolder.binding.recCollectionsDesc.text =
-                if (collection == -1) {
+                if (collection == LIST_CARDS_GET_DB_COLLECTIONS_ALL) {
                     context.resources.getString(R.string.all_cards_desc)
                 } else {
                     context.resources.getString(R.string.all_cards_desc_by_pack)
@@ -316,8 +317,7 @@ class AdapterPacks(
                 }
                 contextualMenuModePackIdList.clear()
                 contextualMenuModeActivity = ContextTools().getActivity(context)
-                contextualMenuMode =
-                    ContextTools().getActivity(context)?.startActionMode(contextualMenuModeCallback)
+                contextualMenuMode = contextualMenuModeActivity?.startActionMode(contextualMenuModeCallback)
                 contextualMenuModeSelectItem(extra)
                 return@setOnLongClickListener true
             }
@@ -359,25 +359,19 @@ class AdapterPacks(
             } else {
                 viewHolder.binding.recCollectionsNumberText.visibility = View.GONE
             }
-            if (collection == -1) {
-                try {
-                    viewHolder.binding.recCollectionsParent.visibility = View.VISIBLE
-                    viewHolder.binding.recCollectionsParent.text = packs[position].collectionName
-                } catch (e: Exception) {
-                    Toast.makeText(context, R.string.error, Toast.LENGTH_SHORT).show()
-                }
+            if (collection == LIST_CARDS_GET_DB_COLLECTIONS_ALL) {
+                viewHolder.binding.recCollectionsParent.visibility = View.VISIBLE
+                viewHolder.binding.recCollectionsParent.text = packs[position].collectionName
             }
-            val color = currentPack.colors
             val colors = context.resources.obtainTypedArray(R.array.pack_color_list)
             val colorsBackground =
                 context.resources.obtainTypedArray(R.array.pack_color_background_light)
             val colorsBackgroundAlpha =
                 context.resources.obtainTypedArray(R.array.pack_color_background_light_alpha)
-            if (color < colors.length() &&
-                color < colorsBackground.length() &&
-                color < colorsBackgroundAlpha.length() &&
-                color >= 0
-            ) {
+            val minimalLength = colors.length().coerceAtMost(colorsBackground.length())
+                .coerceAtMost(colorsBackgroundAlpha.length())
+            val color = currentPack.colors
+            if (color in 0..<minimalLength) {
                 viewHolder.binding.recCollectionsName.setTextColor(colors.getColor(color, 0))
                 viewHolder.binding.recCollectionsPreviewText.setTextColor(
                     if (contextualMenuMode != null && contextualMenuModePackIdList.contains(

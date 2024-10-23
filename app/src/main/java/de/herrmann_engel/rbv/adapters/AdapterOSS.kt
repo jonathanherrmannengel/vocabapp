@@ -20,7 +20,6 @@ class AdapterOSS(private val licenses: List<OSSLicenses>) :
     RecyclerView.Adapter<AdapterOSS.ViewHolder>() {
     class ViewHolder(val binding: RecViewBinding) : RecyclerView.ViewHolder(binding.root)
 
-
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         val binding = RecViewBinding.inflate(
             LayoutInflater.from(viewGroup.context),
@@ -44,8 +43,8 @@ class AdapterOSS(private val licenses: List<OSSLicenses>) :
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         val context = viewHolder.binding.root.context
-        viewHolder.binding.recName.text = licenses[position].project.name
         val license = licenses[position]
+        viewHolder.binding.recName.text = license.project.name
         viewHolder.binding.recName.setOnClickListener {
             val activity = ContextTools().getActivity(context)
             if (activity != null) {
@@ -86,9 +85,12 @@ class AdapterOSS(private val licenses: List<OSSLicenses>) :
                             }
                         }
                 } catch (e: Exception) {
+                    e.printStackTrace()
                     Toast.makeText(context, R.string.error, Toast.LENGTH_LONG).show()
                 }
                 ossDialog.show()
+            } else {
+                Toast.makeText(context, R.string.error, Toast.LENGTH_LONG).show()
             }
         }
     }

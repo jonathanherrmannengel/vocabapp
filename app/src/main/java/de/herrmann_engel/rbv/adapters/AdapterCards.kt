@@ -263,8 +263,7 @@ class AdapterCards(
                 }
                 contextualMenuModeCardIdList.clear()
                 contextualMenuModeActivity = ContextTools().getActivity(context)
-                contextualMenuMode =
-                    ContextTools().getActivity(context)?.startActionMode(contextualMenuModeCallback)
+                contextualMenuMode = contextualMenuModeActivity?.startActionMode(contextualMenuModeCallback)
                 contextualMenuModeSelectItem(extra)
                 return@setOnLongClickListener true
             }

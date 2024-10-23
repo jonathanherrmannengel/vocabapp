@@ -25,7 +25,7 @@ import de.herrmann_engel.rbv.utils.ContextTools
 import de.herrmann_engel.rbv.utils.StringTools
 
 class AdapterTagLinkCard(
-    private val tagList: MutableList<DB_Tag>,
+    private val tags: MutableList<DB_Tag>,
     private val cardNo: Int,
 ) : RecyclerView.Adapter<AdapterTagLinkCard.ViewHolder>() {
     class ViewHolder(val binding: RecViewTagsBinding) : RecyclerView.ViewHolder(binding.root)
@@ -41,20 +41,20 @@ class AdapterTagLinkCard(
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         val context = viewHolder.binding.root.context
-        if (tagList.isEmpty()) {
+        if (tags.isEmpty()) {
             viewHolder.binding.recTagsName.text = context.getString(R.string.no_tags)
             viewHolder.binding.recTagsDelete.visibility = View.GONE
             viewHolder.binding.recTagsEdit.visibility = View.GONE
         } else {
-            val currentTag = tagList[position]
+            val currentTag = tags[position]
             viewHolder.binding.recTagsName.text = currentTag.name
             viewHolder.binding.recTagsDelete.visibility = View.VISIBLE
             viewHolder.binding.recTagsDelete.setOnClickListener {
                 val dbHelperDelete = DB_Helper_Delete(context)
                 dbHelperDelete.deleteTagLink(currentTag.uid, cardNo)
-                tagList.remove(currentTag)
+                tags.remove(currentTag)
                 notifyItemRemoved(position)
-                notifyItemRangeChanged(position, tagList.size)
+                notifyItemRangeChanged(position, tags.size)
             }
             viewHolder.binding.recTagsEdit.visibility = View.VISIBLE
             viewHolder.binding.recTagsEdit.setOnClickListener {
@@ -149,7 +149,7 @@ class AdapterTagLinkCard(
                                 color?.let { it1 -> "#" + Integer.toHexString(it1).substring(2) }
                             val dbHelperUpdate = DB_Helper_Update(context)
                             if (dbHelperUpdate.updateTag(newTag)) {
-                                tagList[position] = newTag
+                                tags[position] = newTag
                                 notifyItemChanged(position)
                                 editDialog.dismiss()
                             } else {
@@ -165,12 +165,14 @@ class AdapterTagLinkCard(
                     editDialog.setCancelable(false)
                     editDialog.setCanceledOnTouchOutside(false)
                     editDialog.show()
+                } else {
+                    Toast.makeText(context, R.string.error, Toast.LENGTH_SHORT).show()
                 }
             }
         }
     }
 
     override fun getItemCount(): Int {
-        return 1.coerceAtLeast(tagList.size)
+        return 1.coerceAtLeast(tags.size)
     }
 }

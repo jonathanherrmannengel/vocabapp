@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import de.herrmann_engel.rbv.Globals
@@ -27,7 +28,6 @@ class AdapterMediaManage(
     private val media: ArrayList<DB_Media>
 ) : RecyclerView.Adapter<AdapterMediaManage.ViewHolder>() {
     class ViewHolder(val binding: RecViewBinding) : RecyclerView.ViewHolder(binding.root)
-
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         val binding =
@@ -101,6 +101,8 @@ class AdapterMediaManage(
                     bindingDialog.diaRec.layoutManager = LinearLayoutManager(context)
                 }
                 dialog.show()
+            } else {
+                Toast.makeText(context, R.string.error, Toast.LENGTH_SHORT).show()
             }
         }
     }

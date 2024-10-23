@@ -11,8 +11,8 @@ import de.herrmann_engel.rbv.utils.ContextTools
 import de.herrmann_engel.rbv.utils.StringTools
 
 class AdapterTagsAdvancedSearch(
-    private val tag: List<DB_Tag>,
-    private val tagList: ArrayList<Int>
+    private val tags: List<DB_Tag>,
+    private val tagIdsCheckedInitially: ArrayList<Int>
 ) : RecyclerView.Adapter<AdapterTagsAdvancedSearch.ViewHolder>() {
     class ViewHolder(val binding: RecViewSmallBinding) : RecyclerView.ViewHolder(binding.root)
 
@@ -27,16 +27,16 @@ class AdapterTagsAdvancedSearch(
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         val context = viewHolder.binding.root.context
         viewHolder.setIsRecyclable(false)
-        viewHolder.binding.recSmallName.text = stringTools.shorten(tag[position].name)
-        if (tag[position].emoji.isNullOrBlank()) {
+        viewHolder.binding.recSmallName.text = stringTools.shorten(tags[position].name)
+        if (tags[position].emoji.isNullOrBlank()) {
             viewHolder.binding.recSmallDesc.visibility = View.GONE
         } else {
             viewHolder.binding.recSmallDesc.visibility = View.VISIBLE
-            viewHolder.binding.recSmallDesc.text = tag[position].emoji
+            viewHolder.binding.recSmallDesc.text = tags[position].emoji
         }
-        viewHolder.binding.recSmallCheckbox.contentDescription = tag[position].name
-        val extra = tag[position].uid
-        viewHolder.binding.recSmallCheckbox.isChecked = tagList.contains(extra)
+        viewHolder.binding.recSmallCheckbox.contentDescription = tags[position].name
+        val extra = tags[position].uid
+        viewHolder.binding.recSmallCheckbox.isChecked = tagIdsCheckedInitially.contains(extra)
         viewHolder.binding.recSmallCheckbox.setOnCheckedChangeListener { _, checked ->
             if (checked) {
                 (ContextTools().getActivity(context) as AdvancedSearch).addToTagList(extra)
@@ -47,6 +47,6 @@ class AdapterTagsAdvancedSearch(
     }
 
     override fun getItemCount(): Int {
-        return tag.size
+        return tags.size
     }
 }

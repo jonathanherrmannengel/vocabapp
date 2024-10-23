@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import de.herrmann_engel.rbv.Globals
+import de.herrmann_engel.rbv.Globals.LIST_CARDS_GET_DB_COLLECTIONS_ALL
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.activities.CardActionsActivity
 import de.herrmann_engel.rbv.databinding.RecViewBinding
@@ -20,7 +21,7 @@ import de.herrmann_engel.rbv.utils.ContextTools
 import de.herrmann_engel.rbv.utils.StringTools
 
 class AdapterPacksMoveCard(
-    private val pack: List<DB_Pack>,
+    private val packs: List<DB_Pack>,
     private val collectionNo: Int,
     private val cards: ArrayList<DB_Card>,
     private val dialog: Dialog
@@ -53,27 +54,23 @@ class AdapterPacksMoveCard(
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         val context = viewHolder.binding.root.context
         val colors = context.resources.obtainTypedArray(R.array.pack_color_list)
-        val color = pack[position].colors
-        if (color < colors.length() && color >= 0) {
+        val color = packs[position].colors
+        if (color >= 0 && color < colors.length()) {
             viewHolder.binding.recName.setTextColor(colors.getColor(color, 0))
         }
         colors.recycle()
-        viewHolder.binding.recName.text = pack[position].name
-        if (collectionNo == -1) {
-            try {
-                val collectionName =
-                    stringTools.shorten(
-                        DB_Helper_Get(context)
-                            .getSingleCollection(pack[position].collection)
-                            .name
-                    )
-                viewHolder.binding.recDesc.visibility = View.VISIBLE
-                viewHolder.binding.recDesc.text = collectionName
-            } catch (e: Exception) {
-                Toast.makeText(context, R.string.error, Toast.LENGTH_SHORT).show()
-            }
+        viewHolder.binding.recName.text = packs[position].name
+        if (collectionNo == LIST_CARDS_GET_DB_COLLECTIONS_ALL) {
+            val collectionName =
+                stringTools.shorten(
+                    DB_Helper_Get(context)
+                        .getSingleCollection(packs[position].collection)
+                        .name
+                )
+            viewHolder.binding.recDesc.visibility = View.VISIBLE
+            viewHolder.binding.recDesc.text = collectionName
         }
-        val currentPackId = pack[position].uid
+        val currentPackId = packs[position].uid
         viewHolder.binding.recName.setOnClickListener {
             val updateHelper =
                 DB_Helper_Update(context)
@@ -91,6 +88,6 @@ class AdapterPacksMoveCard(
     }
 
     override fun getItemCount(): Int {
-        return pack.size
+        return packs.size
     }
 }
