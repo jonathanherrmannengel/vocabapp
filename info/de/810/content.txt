@@ -1,1 +1,1 @@
-Wenn eine Liste aus Kartenstapeln mehr als 40 Kartenstapel enthält wird der Karteikartenzähler nicht generiert oder angezeigt, um die Ladezeit der Liste zu beschleunigen.
+Wenn eine Liste von Karteikästen oder Kartenstapeln mehr als 40 Einträge enthält wird der Kartenstapel- bzw. Karteikartenzähler nicht generiert und angezeigt, um die Ladezeit der Liste zu beschleunigen.

@@ -1,1 +1,1 @@
-If a list of decks contains more the 40 decks the flashcard counter is not generated or shown to speed up the list loading time.
+If a list of filing boxes or decks contains more the 40 items the deck or flashcard counter is not generated and shown to speed up the list loading time.
