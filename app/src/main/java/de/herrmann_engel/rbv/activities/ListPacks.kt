@@ -128,8 +128,8 @@ class ListPacks : PackActionsActivity(), AsyncExportFinish, AsyncExportProgress 
             val colorsStatusBar = resources.obtainTypedArray(R.array.pack_color_statusbar)
             val colorsBackground =
                 resources.obtainTypedArray(R.array.pack_color_background_list)
-            val collectionColors = dbHelperGet.getSingleCollection(collectionNo).colors
             val minimalLength = colorsStatusBar.length().coerceAtMost(colorsBackground.length())
+            val collectionColors = dbHelperGet.getSingleCollection(collectionNo).colors
             if (collectionColors in 0..<minimalLength) {
                 val colorStatusBar = colorsStatusBar.getColor(collectionColors, 0)
                 val colorBackground = colorsBackground.getColor(collectionColors, 0)

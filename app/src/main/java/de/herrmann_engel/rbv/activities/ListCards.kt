@@ -200,8 +200,8 @@ class ListCards : CardActionsActivity() {
             val colorsStatusBar = resources.obtainTypedArray(R.array.pack_color_statusbar)
             val colorsBackground =
                 resources.obtainTypedArray(R.array.pack_color_background_list)
-            val packColors = dbHelperGet.getSinglePack(packNo).colors
             val minimalLength = colorsStatusBar.length().coerceAtMost(colorsBackground.length())
+            val packColors = dbHelperGet.getSinglePack(packNo).colors
             if (packColors in 0..<minimalLength) {
                 val colorStatusBar = colorsStatusBar.getColor(packColors, 0)
                 val colorBackground = colorsBackground.getColor(packColors, 0)
@@ -215,8 +215,8 @@ class ListCards : CardActionsActivity() {
             val colorsStatusBar = resources.obtainTypedArray(R.array.pack_color_statusbar)
             val colorsBackground =
                 resources.obtainTypedArray(R.array.pack_color_background_list)
-            val collectionColors = dbHelperGet.getSingleCollection(collectionNo).colors
             val minimalLength = colorsStatusBar.length().coerceAtMost(colorsBackground.length())
+            val collectionColors = dbHelperGet.getSingleCollection(collectionNo).colors
             if (collectionColors in 0..<minimalLength) {
                 val colorStatusBar = colorsStatusBar.getColor(collectionColors, 0)
                 val colorBackground = colorsBackground.getColor(collectionColors, 0)
@@ -848,8 +848,8 @@ class ListCards : CardActionsActivity() {
                 resources.obtainTypedArray(R.array.pack_color_background_query)
             val colorsBackgroundHighlight = resources
                 .obtainTypedArray(R.array.pack_color_background_highlight)
-            val packColors = cardWithMeta.packColor
             val minimalLength = colorsBackgroundQuery.length().coerceAtMost(colorsBackgroundHighlight.length())
+            val packColors = cardWithMeta.packColor
             if (packColors in 0..<minimalLength) {
                 val colorBackgroundQuery = colorsBackgroundQuery.getColor(packColors, 0)
                 val colorBackgroundHighlight =

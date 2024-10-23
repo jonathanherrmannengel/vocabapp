@@ -28,9 +28,9 @@ class NewCard : AppCompatActivity() {
         val colors = resources.obtainTypedArray(R.array.pack_color_main)
         val colorsStatusBar = resources.obtainTypedArray(R.array.pack_color_statusbar)
         val colorsBackground = resources.obtainTypedArray(R.array.pack_color_background)
-        val packColors = dbHelperGet.getSinglePack(packNo).colors
         val minimalLength = colors.length().coerceAtMost(colorsStatusBar.length())
             .coerceAtMost(colorsBackground.length())
+        val packColors = dbHelperGet.getSinglePack(packNo).colors
         if (packColors in 0..<minimalLength) {
             val color = colors.getColor(packColors, 0)
             val colorStatusBar = colorsStatusBar.getColor(packColors, 0)

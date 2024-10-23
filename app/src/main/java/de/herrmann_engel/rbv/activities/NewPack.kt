@@ -27,9 +27,9 @@ class NewPack : AppCompatActivity() {
         val colors = resources.obtainTypedArray(R.array.pack_color_main)
         val colorsStatusBar = resources.obtainTypedArray(R.array.pack_color_statusbar)
         val colorsBackground = resources.obtainTypedArray(R.array.pack_color_background)
-        val collectionColors = dbHelperGet.getSingleCollection(collectionNo).colors
         val minimalLength = colors.length().coerceAtMost(colorsStatusBar.length())
             .coerceAtMost(colorsBackground.length())
+        val collectionColors = dbHelperGet.getSingleCollection(collectionNo).colors
         if (collectionColors in 0..<minimalLength) {
             val color = colors.getColor(collectionColors, 0)
             val colorStatusBar = colorsStatusBar.getColor(collectionColors, 0)

@@ -14,6 +14,7 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import de.herrmann_engel.rbv.Globals.LIST_CARDS_GET_DB_COLLECTIONS_ALL
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.activities.ListPacks
 import de.herrmann_engel.rbv.adapters.compare.ListCollectionCompare
@@ -168,7 +169,7 @@ class AdapterCollections(
                     context,
                     ListPacks::class.java
                 )
-                intent.putExtra("collection", -1)
+                intent.putExtra("collection", LIST_CARDS_GET_DB_COLLECTIONS_ALL)
                 context.startActivity(intent)
             }
             viewHolder.binding.recCollectionsName.text =
@@ -267,18 +268,16 @@ class AdapterCollections(
             } else {
                 viewHolder.binding.recCollectionsNumberText.visibility = View.GONE
             }
-            val color = currentCollection.colors
             val colors =
                 context.resources.obtainTypedArray(R.array.pack_color_list)
             val colorsBackground =
                 context.resources.obtainTypedArray(R.array.pack_color_background_light)
             val colorsBackgroundAlpha =
                 context.resources.obtainTypedArray(R.array.pack_color_background_light_alpha)
-            if (color < colors.length() &&
-                color < colorsBackground.length() &&
-                color < colorsBackgroundAlpha.length() &&
-                color >= 0
-            ) {
+            val minimalLength = colors.length().coerceAtMost(colorsBackground.length())
+                .coerceAtMost(colorsBackgroundAlpha.length())
+            val color = currentCollection.colors
+            if (color in 0..<minimalLength) {
                 viewHolder.binding.recCollectionsName.setTextColor(colors.getColor(color, 0))
                 viewHolder.binding.recCollectionsPreviewText.setTextColor(colors.getColor(color, 0))
                 viewHolder.binding.recCollectionsPreviewText.setBackgroundColor(

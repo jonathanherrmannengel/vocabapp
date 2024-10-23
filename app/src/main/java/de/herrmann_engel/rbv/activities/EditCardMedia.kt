@@ -90,8 +90,8 @@ class EditCardMedia : FileTools() {
         val card = dbHelperGet.getSingleCard(cardNo)
         val colorsStatusBar = resources.obtainTypedArray(R.array.pack_color_statusbar)
         val colorsBackground = resources.obtainTypedArray(R.array.pack_color_background)
-        val packColors = dbHelperGet.getSinglePack(card.pack).colors
         val minimalLength = colorsStatusBar.length().coerceAtMost(colorsBackground.length())
+        val packColors = dbHelperGet.getSinglePack(card.pack).colors
         if (packColors in 0..<minimalLength) {
             val colorStatusBar = colorsStatusBar.getColor(packColors, 0)
             val colorBackground = colorsBackground.getColor(packColors, 0)

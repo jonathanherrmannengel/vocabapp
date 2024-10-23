@@ -225,10 +225,10 @@ class AdapterCards(
                     cards[position].card.known
                 )
             if (packNo < 0) {
-                val color = cards[position].packColor
                 val colors =
                     context.resources.obtainTypedArray(R.array.pack_color_list)
-                if (color < colors.length() && color >= 0) {
+                val color = cards[position].packColor
+                if (color >= 0 && color < colors.length()) {
                     viewHolder.binding.recName.setTextColor(colors.getColor(color, 0))
                 }
                 colors.recycle()

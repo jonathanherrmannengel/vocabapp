@@ -22,7 +22,6 @@ class AdapterCollectionsMovePack(
 ) : RecyclerView.Adapter<AdapterCollectionsMovePack.ViewHolder>() {
     class ViewHolder(val binding: RecViewBinding) : RecyclerView.ViewHolder(binding.root)
 
-
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         val binding = RecViewBinding.inflate(
             LayoutInflater.from(viewGroup.context),
@@ -48,7 +47,7 @@ class AdapterCollectionsMovePack(
         val context = viewHolder.binding.root.context
         val colors = context.resources.obtainTypedArray(R.array.pack_color_list)
         val color = collection[position].colors
-        if (color < colors.length() && color >= 0) {
+        if (color >= 0 && color < colors.length()) {
             viewHolder.binding.recName.setTextColor(colors.getColor(color, 0))
         }
         colors.recycle()
