@@ -43,8 +43,8 @@ public interface DB_Pack_DAO {
     @Query("SELECT uid FROM db_pack WHERE collection=:cid ORDER BY name COLLATE NOCASE ASC, uid DESC")
     List<Integer> getAllIDs(int cid);
 
-    @Query("SELECT * FROM db_pack WHERE uid=:pid")
-    List<DB_Pack> getOne(int pid);
+    @Query("SELECT * FROM db_pack WHERE uid=:pid LIMIT 1")
+    DB_Pack getOne(int pid);
 
     @Query("SELECT * FROM db_pack WHERE collection=:cid")
     Cursor getAllExportByCollection(int cid);

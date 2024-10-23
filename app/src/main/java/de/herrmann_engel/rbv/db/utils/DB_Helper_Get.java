@@ -2,9 +2,7 @@ package de.herrmann_engel.rbv.db.utils;
 
 import android.content.Context;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import de.herrmann_engel.rbv.db.DB_Card;
 import de.herrmann_engel.rbv.db.DB_Card_With_Meta;
@@ -24,7 +22,7 @@ public class DB_Helper_Get {
         dbHelper = new DB_Helper(context);
     }
 
-    //Check if has content
+    // Check if has content
     public boolean hasCollections() {
         return dbHelper.collection_dao.hasCollections();
     }
@@ -45,7 +43,7 @@ public class DB_Helper_Get {
         return dbHelper.tag_dao.hasTags();
     }
 
-    //Count
+    // Count
     public int countCollections() {
         return dbHelper.collection_dao.countCollections();
     }
@@ -70,7 +68,7 @@ public class DB_Helper_Get {
         return dbHelper.card_dao.countCardsInPack(pack);
     }
 
-    //Exists Entry?
+    // Exists Entry?
     public boolean existsMedia(String file) {
         return dbHelper.media_dao.existsMedia(file);
     }
@@ -87,37 +85,21 @@ public class DB_Helper_Get {
         return dbHelper.tag_link_card_dao.existsTagLinkCard(tag, card);
     }
 
-    //Get One
-    public DB_Collection getSingleCollection(int collection) throws Exception {
-        List<DB_Collection> list = dbHelper.collection_dao.getOne(collection);
-        if (list.size() == 1) {
-            return list.get(0);
-        }
-        throw new Exception();
+    // Get One
+    public DB_Collection getSingleCollection(int collection) {
+        return dbHelper.collection_dao.getOne(collection);
     }
 
-    public DB_Pack getSinglePack(int pack) throws Exception {
-        List<DB_Pack> list = dbHelper.pack_dao.getOne(pack);
-        if (list.size() == 1) {
-            return list.get(0);
-        }
-        throw new Exception();
+    public DB_Pack getSinglePack(int pack) {
+        return dbHelper.pack_dao.getOne(pack);
     }
 
-    public DB_Card getSingleCard(int card) throws Exception {
-        List<DB_Card> list = dbHelper.card_dao.getOne(card);
-        if (list.size() == 1) {
-            return list.get(0);
-        }
-        throw new Exception();
+    public DB_Card getSingleCard(int card) {
+        return dbHelper.card_dao.getOne(card);
     }
 
-    public DB_Card_With_Meta getSingleCardWithMeta(int cardId) throws Exception {
-        DB_Card_With_Meta card = dbHelper.card_dao.getOneWithMeta(cardId);
-        if (card == null) {
-            throw new Exception();
-        }
-        return card;
+    public DB_Card_With_Meta getSingleCardWithMeta(int cardId) {
+        return dbHelper.card_dao.getOneWithMeta(cardId);
     }
 
     public int getSingleCardIdByPackAndFrontAndBackAndNotes(int pack, String front, String back, String notes) {
@@ -140,7 +122,7 @@ public class DB_Helper_Get {
         return dbHelper.tag_dao.getSingleTag(id);
     }
 
-    //Get All: Collections
+    // Get All: Collections
     public List<DB_Collection> getAllCollections() {
         return dbHelper.collection_dao.getAll();
     }
@@ -157,7 +139,7 @@ public class DB_Helper_Get {
         return dbHelper.collection_dao.getAllWithMetaNoCounter();
     }
 
-    //Get All: Packs
+    // Get All: Packs
     public List<DB_Pack> getAllPacks() {
         return dbHelper.pack_dao.getAll();
     }
@@ -186,7 +168,7 @@ public class DB_Helper_Get {
         return dbHelper.pack_dao.getAllByCollectionWithMetaNoCounter(collection);
     }
 
-    //Get All: Cards
+    // Get All: Cards
     public List<DB_Card_With_Meta> getAllCardsWithMeta() {
         return dbHelper.card_dao.getAllWithMeta();
     }
@@ -200,136 +182,124 @@ public class DB_Helper_Get {
     }
 
     public List<DB_Card_With_Meta> getAllCardsWithMetaFiltered(List<Integer> packs, List<Integer> tags, boolean progressGreater, int progressNumber, boolean repetitionOlder, int repetitionNumber) {
-        List<DB_Card_With_Meta> cards = new ArrayList<>();
         long date = System.currentTimeMillis() / 1000L - repetitionNumber * 86400L;
-        if (tags == null) {
-            if (packs == null) {
-                if (repetitionNumber >= 0 && progressNumber >= 0) {
-                    if (progressGreater && repetitionOlder) {
-                        cards.addAll(dbHelper.card_dao.getAllGreaterEqualOlderRepetitionWithMeta(progressNumber, date));
-                    } else if (progressGreater) {
-                        cards.addAll(dbHelper.card_dao.getAllGreaterEqualNewerEqualRepetitionWithMeta(progressNumber, date));
-                    } else if (repetitionOlder) {
-                        cards.addAll(dbHelper.card_dao.getAllLessEqualOlderRepetitionWithMeta(progressNumber, date));
-                    } else {
-                        cards.addAll(dbHelper.card_dao.getAllLessEqualNewerEqualRepetitionWithMeta(progressNumber, date));
-                    }
-                } else if (progressNumber >= 0) {
-                    if (progressGreater) {
-                        cards.addAll(dbHelper.card_dao.getAllGreaterEqualWithMeta(progressNumber));
-                    } else {
-                        cards.addAll(dbHelper.card_dao.getAllLessEqualWithMeta(progressNumber));
-                    }
-                } else if (repetitionNumber >= 0) {
-                    if (repetitionOlder) {
-                        cards.addAll(dbHelper.card_dao.getAllOlderRepetitionWithMeta(date));
-                    } else {
-                        cards.addAll(dbHelper.card_dao.getAllNewerEqualRepetitionWithMeta(date));
-                    }
+        if (tags == null && packs == null) {
+            if (repetitionNumber >= 0 && progressNumber >= 0) {
+                if (progressGreater && repetitionOlder) {
+                    return (dbHelper.card_dao.getAllGreaterEqualOlderRepetitionWithMeta(progressNumber, date));
+                } else if (progressGreater) {
+                    return (dbHelper.card_dao.getAllGreaterEqualNewerEqualRepetitionWithMeta(progressNumber, date));
+                } else if (repetitionOlder) {
+                    return (dbHelper.card_dao.getAllLessEqualOlderRepetitionWithMeta(progressNumber, date));
                 } else {
-                    cards.addAll(dbHelper.card_dao.getAllWithMeta());
+                    return (dbHelper.card_dao.getAllLessEqualNewerEqualRepetitionWithMeta(progressNumber, date));
+                }
+            } else if (progressNumber >= 0) {
+                if (progressGreater) {
+                    return (dbHelper.card_dao.getAllGreaterEqualWithMeta(progressNumber));
+                } else {
+                    return (dbHelper.card_dao.getAllLessEqualWithMeta(progressNumber));
+                }
+            } else if (repetitionNumber >= 0) {
+                if (repetitionOlder) {
+                    return (dbHelper.card_dao.getAllOlderRepetitionWithMeta(date));
+                } else {
+                    return (dbHelper.card_dao.getAllNewerEqualRepetitionWithMeta(date));
                 }
             } else {
-                packs.forEach(pack -> {
-                    if (repetitionNumber >= 0 && progressNumber >= 0) {
-                        if (progressGreater && repetitionOlder) {
-                            cards.addAll(dbHelper.card_dao.getAllGreaterEqualOlderRepetitionWithMeta(pack, progressNumber, date));
-                        } else if (progressGreater) {
-                            cards.addAll(dbHelper.card_dao.getAllGreaterEqualNewerEqualRepetitionWithMeta(pack, progressNumber, date));
-                        } else if (repetitionOlder) {
-                            cards.addAll(dbHelper.card_dao.getAllLessEqualOlderRepetitionWithMeta(pack, progressNumber, date));
-                        } else {
-                            cards.addAll(dbHelper.card_dao.getAllLessEqualNewerEqualRepetitionWithMeta(pack, progressNumber, date));
-                        }
-                    } else if (progressNumber >= 0) {
-                        if (progressGreater) {
-                            cards.addAll(dbHelper.card_dao.getAllGreaterEqualWithMeta(pack, progressNumber));
-                        } else {
-                            cards.addAll(dbHelper.card_dao.getAllLessEqualWithMeta(pack, progressNumber));
-                        }
-                    } else if (repetitionNumber >= 0) {
-                        if (repetitionOlder) {
-                            cards.addAll(dbHelper.card_dao.getAllOlderRepetitionWithMeta(pack, date));
-                        } else {
-                            cards.addAll(dbHelper.card_dao.getAllNewerEqualRepetitionWithMeta(pack, date));
-                        }
-                    } else {
-                        cards.addAll(dbHelper.card_dao.getAllByPackWithMeta(pack));
-                    }
-                });
+                return (dbHelper.card_dao.getAllWithMeta());
+            }
+        } else if (tags == null) {
+            if (repetitionNumber >= 0 && progressNumber >= 0) {
+                if (progressGreater && repetitionOlder) {
+                    return (dbHelper.card_dao.getAllByPacksGreaterEqualOlderRepetitionWithMeta(packs, progressNumber, date));
+                } else if (progressGreater) {
+                    return (dbHelper.card_dao.getAllByPacksGreaterEqualNewerEqualRepetitionWithMeta(packs, progressNumber, date));
+                } else if (repetitionOlder) {
+                    return (dbHelper.card_dao.getAllByPacksLessEqualOlderRepetitionWithMeta(packs, progressNumber, date));
+                } else {
+                    return (dbHelper.card_dao.getAllByPacksLessEqualNewerEqualRepetitionWithMeta(packs, progressNumber, date));
+                }
+            } else if (progressNumber >= 0) {
+                if (progressGreater) {
+                    return (dbHelper.card_dao.getAllByPacksGreaterEqualWithMeta(packs, progressNumber));
+                } else {
+                    return (dbHelper.card_dao.getAllByPacksLessEqualWithMeta(packs, progressNumber));
+                }
+            } else if (repetitionNumber >= 0) {
+                if (repetitionOlder) {
+                    return (dbHelper.card_dao.getAllByPacksOlderRepetitionWithMeta(packs, date));
+                } else {
+                    return (dbHelper.card_dao.getAllByPacksNewerEqualRepetitionWithMeta(packs, date));
+                }
+            } else {
+                return (dbHelper.card_dao.getAllByPacksWithMeta(packs));
+            }
+        } else if (packs == null) {
+            if (repetitionNumber >= 0 && progressNumber >= 0) {
+                if (progressGreater && repetitionOlder) {
+                    return (dbHelper.card_dao.getAllByTagsGreaterEqualOlderRepetitionWithMeta(tags, progressNumber, date));
+                } else if (progressGreater) {
+                    return (dbHelper.card_dao.getAllByTagsGreaterEqualNewerEqualRepetitionWithMeta(tags, progressNumber, date));
+                } else if (repetitionOlder) {
+                    return (dbHelper.card_dao.getAllByTagsLessEqualOlderRepetitionWithMeta(tags, progressNumber, date));
+                } else {
+                    return (dbHelper.card_dao.getAllByTagsLessEqualNewerEqualRepetitionWithMeta(tags, progressNumber, date));
+                }
+            } else if (progressNumber >= 0) {
+                if (progressGreater) {
+                    return (dbHelper.card_dao.getAllByTagsGreaterEqualWithMeta(tags, progressNumber));
+                } else {
+                    return (dbHelper.card_dao.getAllByTagsLessEqualWithMeta(tags, progressNumber));
+                }
+            } else if (repetitionNumber >= 0) {
+                if (repetitionOlder) {
+                    return (dbHelper.card_dao.getAllByTagsOlderRepetitionWithMeta(tags, date));
+                } else {
+                    return (dbHelper.card_dao.getAllByTagsNewerEqualRepetitionWithMeta(tags, date));
+                }
+            } else {
+                return (dbHelper.card_dao.getAllByTagsWithMeta(tags));
             }
         } else {
-            tags.forEach(tag -> {
-                if (packs == null) {
-                    if (repetitionNumber >= 0 && progressNumber >= 0) {
-                        if (progressGreater && repetitionOlder) {
-                            cards.addAll(dbHelper.card_dao.getAllByTagGreaterEqualOlderRepetitionWithMeta(tag, progressNumber, date));
-                        } else if (progressGreater) {
-                            cards.addAll(dbHelper.card_dao.getAllByTagGreaterEqualNewerEqualRepetitionWithMeta(tag, progressNumber, date));
-                        } else if (repetitionOlder) {
-                            cards.addAll(dbHelper.card_dao.getAllByTagLessEqualOlderRepetitionWithMeta(tag, progressNumber, date));
-                        } else {
-                            cards.addAll(dbHelper.card_dao.getAllByTagLessEqualNewerEqualRepetitionWithMeta(tag, progressNumber, date));
-                        }
-                    } else if (progressNumber >= 0) {
-                        if (progressGreater) {
-                            cards.addAll(dbHelper.card_dao.getAllByTagGreaterEqualWithMeta(tag, progressNumber));
-                        } else {
-                            cards.addAll(dbHelper.card_dao.getAllByTagLessEqualWithMeta(tag, progressNumber));
-                        }
-                    } else if (repetitionNumber >= 0) {
-                        if (repetitionOlder) {
-                            cards.addAll(dbHelper.card_dao.getAllByTagOlderRepetitionWithMeta(tag, date));
-                        } else {
-                            cards.addAll(dbHelper.card_dao.getAllByTagNewerEqualRepetitionWithMeta(tag, date));
-                        }
-                    } else {
-                        cards.addAll(dbHelper.card_dao.getAllByTagWithMeta(tag));
-                    }
+            if (repetitionNumber >= 0 && progressNumber >= 0) {
+                if (progressGreater && repetitionOlder) {
+                    return (dbHelper.card_dao.getAllByPackAndTagsGreaterEqualOlderRepetitionWithMeta(packs, tags, progressNumber, date));
+                } else if (progressGreater) {
+                    return (dbHelper.card_dao.getAllByPackAndTagsGreaterEqualNewerEqualRepetitionWithMeta(packs, tags, progressNumber, date));
+                } else if (repetitionOlder) {
+                    return (dbHelper.card_dao.getAllByPackAndTagsLessEqualOlderRepetitionWithMeta(packs, tags, progressNumber, date));
                 } else {
-                    packs.forEach(pack -> {
-                        if (repetitionNumber >= 0 && progressNumber >= 0) {
-                            if (progressGreater && repetitionOlder) {
-                                cards.addAll(dbHelper.card_dao.getAllByTagGreaterEqualOlderRepetitionWithMeta(pack, tag, progressNumber, date));
-                            } else if (progressGreater) {
-                                cards.addAll(dbHelper.card_dao.getAllByTagGreaterEqualNewerEqualRepetitionWithMeta(pack, tag, progressNumber, date));
-                            } else if (repetitionOlder) {
-                                cards.addAll(dbHelper.card_dao.getAllByTagLessEqualOlderRepetitionWithMeta(pack, tag, progressNumber, date));
-                            } else {
-                                cards.addAll(dbHelper.card_dao.getAllByTagLessEqualNewerEqualRepetitionWithMeta(pack, tag, progressNumber, date));
-                            }
-                        } else if (progressNumber >= 0) {
-                            if (progressGreater) {
-                                cards.addAll(dbHelper.card_dao.getAllByTagGreaterEqualWithMeta(pack, tag, progressNumber));
-                            } else {
-                                cards.addAll(dbHelper.card_dao.getAllByTagLessEqualWithMeta(pack, tag, progressNumber));
-                            }
-                        } else if (repetitionNumber >= 0) {
-                            if (repetitionOlder) {
-                                cards.addAll(dbHelper.card_dao.getAllByTagOlderRepetitionWithMeta(pack, tag, date));
-                            } else {
-                                cards.addAll(dbHelper.card_dao.getAllByTagNewerEqualRepetitionWithMeta(pack, tag, date));
-                            }
-                        } else {
-                            cards.addAll(dbHelper.card_dao.getAllByPackAndTagWithMeta(pack, tag));
-                        }
-                    });
+                    return (dbHelper.card_dao.getAllByPackAndTagsLessEqualNewerEqualRepetitionWithMeta(packs, tags, progressNumber, date));
                 }
-            });
+            } else if (progressNumber >= 0) {
+                if (progressGreater) {
+                    return (dbHelper.card_dao.getAllByPackAndTagsGreaterEqualWithMeta(packs, tags, progressNumber));
+                } else {
+                    return (dbHelper.card_dao.getAllByPackAndTagsLessEqualWithMeta(packs, tags, progressNumber));
+                }
+            } else if (repetitionNumber >= 0) {
+                if (repetitionOlder) {
+                    return (dbHelper.card_dao.getAllByPackAndTagsOlderRepetitionWithMeta(packs, tags, date));
+                } else {
+                    return (dbHelper.card_dao.getAllByPackAndTagsNewerEqualRepetitionWithMeta(packs, tags, date));
+                }
+            } else {
+                return (dbHelper.card_dao.getAllByPacksAndTagsWithMeta(packs, tags));
+            }
         }
-        return cards.stream().distinct().collect(Collectors.toList());
     }
 
     public List<DB_Card_With_Meta> getAllCardsByMediaWithMeta(int mediaId) {
         return dbHelper.card_dao.getAllByMedia(mediaId);
     }
 
-    //Get All: Media
+    // Get All: Media
     public List<DB_Media> getAllMedia() {
         return dbHelper.media_dao.getAll();
     }
 
-    //Get All: Media Links
+    // Get All: Media Links
     private boolean isPhoto(String mime) {
         return mime.equals("image/png") || mime.equals("image/jpeg") || mime.equals("image/webp");
     }
@@ -351,7 +321,7 @@ public class DB_Helper_Get {
         return list;
     }
 
-    //Get All: Tags
+    // Get All: Tags
     public List<DB_Tag> getAllTags() {
         return dbHelper.tag_dao.getAll();
     }

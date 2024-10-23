@@ -33,8 +33,8 @@ public interface DB_Collection_DAO {
     @Query("SELECT uid FROM db_collection ORDER BY name COLLATE NOCASE ASC, uid DESC")
     List<Integer> getAllIDs();
 
-    @Query("SELECT * FROM db_collection WHERE uid=:cid")
-    List<DB_Collection> getOne(int cid);
+    @Query("SELECT * FROM db_collection WHERE uid=:cid LIMIT 1")
+    DB_Collection getOne(int cid);
 
     @Query("SELECT * FROM db_collection WHERE uid=:cid")
     Cursor getOneExport(int cid);
