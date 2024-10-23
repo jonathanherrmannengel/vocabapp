@@ -16,12 +16,6 @@ public class DB_Helper_Update {
     }
 
     public boolean updateCollection(DB_Collection collection) {
-        DB_Helper_Get dbHelperGet = new DB_Helper_Get(dbHelper.context);
-        try {
-            dbHelperGet.getSingleCollection(collection.uid);
-        } catch (Exception e) {
-            return false;
-        }
         if (collection.name.isEmpty()) {
             return false;
         }
@@ -30,12 +24,6 @@ public class DB_Helper_Update {
     }
 
     public boolean updatePack(DB_Pack pack) {
-        DB_Helper_Get dbHelperGet = new DB_Helper_Get(dbHelper.context);
-        try {
-            dbHelperGet.getSinglePack(pack.uid);
-        } catch (Exception e) {
-            return false;
-        }
         if (pack.name.isEmpty()) {
             return false;
         }
@@ -44,12 +32,6 @@ public class DB_Helper_Update {
     }
 
     public boolean updateCard(DB_Card card) {
-        DB_Helper_Get dbHelperGet = new DB_Helper_Get(dbHelper.context);
-        try {
-            dbHelperGet.getSingleCard(card.uid);
-        } catch (Exception e) {
-            return false;
-        }
         if (card.front.isEmpty() || card.back.isEmpty()) {
             return false;
         }
@@ -59,17 +41,10 @@ public class DB_Helper_Update {
 
     public boolean updateTag(DB_Tag tag) {
         DB_Helper_Get dbHelperGet = new DB_Helper_Get(dbHelper.context);
-        try {
-            dbHelperGet.getSingleTag(tag.uid);
-        } catch (Exception e) {
+        // Do not allow tag name already in use
+        DB_Tag existingTag = dbHelperGet.getSingleTag(tag.name);
+        if (existingTag != null && existingTag.uid != tag.uid) {
             return false;
-        }
-        try {
-            DB_Tag existingTag = dbHelperGet.getSingleTag(tag.name);
-            if (existingTag.uid != tag.uid) {
-                return false;
-            }
-        } catch (Exception ignored) {
         }
         if (tag.name.isBlank()) {
             return false;

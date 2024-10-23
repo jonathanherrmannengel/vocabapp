@@ -38,8 +38,7 @@ public class DB_Helper_Create {
     public long createPack(String name, String desc, int collection, int colors, String emoji, long date)
             throws Exception {
         DB_Helper_Get dbHelperGet = new DB_Helper_Get(dbHelper.context);
-        dbHelperGet.getSingleCollection(collection);
-        if (!name.isEmpty()) {
+        if (dbHelperGet.getSingleCollection(collection) != null && !name.isEmpty()) {
             DB_Pack pack = new DB_Pack();
             pack.name = name;
             pack.desc = desc;
@@ -58,8 +57,7 @@ public class DB_Helper_Create {
 
     public long createCard(String front, String back, String notes, int pack, int known, long date, long lastRepetition) throws Exception {
         DB_Helper_Get dbHelperGet = new DB_Helper_Get(dbHelper.context);
-        dbHelperGet.getSinglePack(pack);
-        if (!front.isEmpty() && !back.isEmpty()) {
+        if (dbHelperGet.getSinglePack(pack) != null && !front.isEmpty() && !back.isEmpty()) {
             DB_Card card = new DB_Card();
             card.front = front;
             card.back = back;

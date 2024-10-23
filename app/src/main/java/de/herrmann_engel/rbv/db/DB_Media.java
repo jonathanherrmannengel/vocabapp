@@ -6,7 +6,6 @@ import androidx.room.PrimaryKey;
 
 @Entity
 public class DB_Media {
-
     @PrimaryKey(autoGenerate = true)
     public int uid;
 
@@ -15,5 +14,4 @@ public class DB_Media {
 
     @ColumnInfo(name = "mime")
     public String mime;
-
 }

@@ -6,7 +6,6 @@ import androidx.room.Ignore;
 import java.util.Objects;
 
 public class DB_Card_With_Meta {
-
     @Embedded
     public DB_Card card;
     public int packColor;

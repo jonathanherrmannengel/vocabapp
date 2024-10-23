@@ -6,7 +6,6 @@ import androidx.room.PrimaryKey;
 
 @Entity
 public class DB_Media_Link_Card {
-
     @PrimaryKey(autoGenerate = true)
     public int uid;
 
@@ -15,5 +14,4 @@ public class DB_Media_Link_Card {
 
     @ColumnInfo(name = "cardId")
     public int card;
-
 }

@@ -15,7 +15,7 @@ public class DB_Helper_Export {
     }
 
     public List<Integer> getAllCollectionIDs() {
-        return dbHelper.collection_dao.getAllIDs();
+        return dbHelper.collection_dao.getAllIds();
     }
 
     public Cursor getSingleCollection(int collection) {
@@ -27,7 +27,7 @@ public class DB_Helper_Export {
     }
 
     public Cursor getAllCardsByCollection(int collection) {
-        List<Integer> packIDs = dbHelper.pack_dao.getAllIDs(collection);
+        List<Integer> packIDs = dbHelper.pack_dao.getAllIdsByCollection(collection);
         Cursor cardsCursor = dbHelper.card_dao.getAllExport();
         String[] names = cardsCursor.getColumnNames();
         MatrixCursor cursor = new MatrixCursor(names);

@@ -5,7 +5,6 @@ import androidx.room.Embedded;
 import java.util.Objects;
 
 public class DB_Collection_With_Meta {
-
     @Embedded
     public DB_Collection collection;
     public int counter;

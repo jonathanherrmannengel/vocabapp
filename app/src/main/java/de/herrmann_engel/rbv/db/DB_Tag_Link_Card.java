@@ -7,7 +7,6 @@ import androidx.room.PrimaryKey;
 @Entity
 
 public class DB_Tag_Link_Card {
-
     @PrimaryKey(autoGenerate = true)
     public int uid;
 

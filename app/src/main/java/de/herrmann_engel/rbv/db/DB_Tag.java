@@ -8,10 +8,13 @@ import androidx.room.PrimaryKey;
 public class DB_Tag {
     @PrimaryKey(autoGenerate = true)
     public int uid;
+
     @ColumnInfo(name = "tag_name")
     public String name;
+
     @ColumnInfo(name = "emoji")
     public String emoji;
+
     @ColumnInfo(name = "color")
     public String color;
 }

@@ -19,11 +19,11 @@ public interface DB_Card_DAO {
     @Query("SELECT COUNT(*) FROM db_card")
     int countCards();
 
-    @Query("SELECT COUNT(*) FROM db_card WHERE pack=:pid")
-    int countCardsInPack(int pid);
-
     @Query("SELECT COUNT(*) FROM db_card WHERE pack IN (SELECT uid FROM db_pack WHERE collection=:cid)")
     int countCardsInCollection(int cid);
+
+    @Query("SELECT COUNT(*) FROM db_card WHERE pack=:pid")
+    int countCardsInPack(int pid);
 
     @Query("SELECT *, (SELECT colors FROM db_pack WHERE uid=db_card.pack) AS packColor, (SELECT (group_concat(emoji,' ') || ' ' || group_concat(tag_name,' ')) FROM db_tag WHERE db_tag.uid IN (SELECT tagId FROM db_tag_link_card WHERE cardId=db_card.uid)) AS tagNames FROM db_card")
     List<DB_Card_With_Meta> getAllWithMeta();
@@ -33,9 +33,6 @@ public interface DB_Card_DAO {
 
     @Query("SELECT *, (SELECT colors FROM db_pack WHERE uid=db_card.pack) AS packColor, (SELECT (group_concat(emoji,' ') || ' ' || group_concat(tag_name,' ')) FROM db_tag WHERE db_tag.uid IN (SELECT tagId FROM db_tag_link_card WHERE cardId=db_card.uid)) AS tagNames FROM db_card WHERE pack=:pid")
     List<DB_Card_With_Meta> getAllByPackWithMeta(int pid);
-
-    @Query("SELECT *, (SELECT colors FROM db_pack WHERE uid=db_card.pack) AS packColor, (SELECT (group_concat(emoji,' ') || ' ' || group_concat(tag_name,' ')) FROM db_tag WHERE db_tag.uid IN (SELECT tagId FROM db_tag_link_card WHERE cardId=db_card.uid)) AS tagNames FROM db_card WHERE pack IN (:packIds)")
-    List<DB_Card_With_Meta> getAllByPacksWithMeta(List<Integer> packIds);
 
     @Query("SELECT *, (SELECT colors FROM db_pack WHERE uid=db_card.pack) AS packColor, (SELECT (group_concat(emoji,' ') || ' ' || group_concat(tag_name,' ')) FROM db_tag WHERE db_tag.uid IN (SELECT tagId FROM db_tag_link_card WHERE cardId=db_card.uid)) AS tagNames FROM db_card WHERE known>=:progress")
     List<DB_Card_With_Meta> getAllGreaterEqualWithMeta(int progress);
@@ -60,6 +57,9 @@ public interface DB_Card_DAO {
 
     @Query("SELECT *, (SELECT colors FROM db_pack WHERE uid=db_card.pack) AS packColor, (SELECT (group_concat(emoji,' ') || ' ' || group_concat(tag_name,' ')) FROM db_tag WHERE db_tag.uid IN (SELECT tagId FROM db_tag_link_card WHERE cardId=db_card.uid)) AS tagNames FROM db_card WHERE known<=:progress AND last_repetition<:date")
     List<DB_Card_With_Meta> getAllLessEqualOlderRepetitionWithMeta(int progress, long date);
+
+    @Query("SELECT *, (SELECT colors FROM db_pack WHERE uid=db_card.pack) AS packColor, (SELECT (group_concat(emoji,' ') || ' ' || group_concat(tag_name,' ')) FROM db_tag WHERE db_tag.uid IN (SELECT tagId FROM db_tag_link_card WHERE cardId=db_card.uid)) AS tagNames FROM db_card WHERE pack IN (:packIds)")
+    List<DB_Card_With_Meta> getAllByPacksWithMeta(List<Integer> packIds);
 
     @Query("SELECT *, (SELECT colors FROM db_pack WHERE uid=db_card.pack) AS packColor, (SELECT (group_concat(emoji,' ') || ' ' || group_concat(tag_name,' ')) FROM db_tag WHERE db_tag.uid IN (SELECT tagId FROM db_tag_link_card WHERE cardId=db_card.uid)) AS tagNames FROM db_card WHERE pack IN (:packIds) AND known>=:progress")
     List<DB_Card_With_Meta> getAllByPacksGreaterEqualWithMeta(List<Integer> packIds, int progress);
@@ -112,6 +112,9 @@ public interface DB_Card_DAO {
     @Query("SELECT *, (SELECT colors FROM db_pack WHERE uid=db_card.pack) AS packColor, (SELECT (group_concat(emoji,' ') || ' ' || group_concat(tag_name,' ')) FROM db_tag WHERE db_tag.uid IN (SELECT tagId FROM db_tag_link_card WHERE cardId=db_card.uid)) AS tagNames FROM db_card WHERE db_card.uid IN (SELECT cardId FROM db_tag_link_card WHERE tagId IN (:tagIds)) AND known<=:progress AND last_repetition<:date")
     List<DB_Card_With_Meta> getAllByTagsLessEqualOlderRepetitionWithMeta(List<Integer> tagIds, int progress, long date);
 
+    @Query("SELECT *, (SELECT colors FROM db_pack WHERE uid=db_card.pack) AS packColor, (SELECT (group_concat(emoji,' ') || ' ' || group_concat(tag_name,' ')) FROM db_tag WHERE db_tag.uid IN (SELECT tagId FROM db_tag_link_card WHERE cardId=db_card.uid)) AS tagNames FROM db_card WHERE pack IN (:packIds) AND db_card.uid IN (SELECT cardId FROM db_tag_link_card WHERE tagId IN (:tagIds))")
+    List<DB_Card_With_Meta> getAllByPacksAndTagsWithMeta(List<Integer> packIds, List<Integer> tagIds);
+
     @Query("SELECT *, (SELECT colors FROM db_pack WHERE uid=db_card.pack) AS packColor, (SELECT (group_concat(emoji,' ') || ' ' || group_concat(tag_name,' ')) FROM db_tag WHERE db_tag.uid IN (SELECT tagId FROM db_tag_link_card WHERE cardId=db_card.uid)) AS tagNames FROM db_card WHERE pack IN (:packIds) AND db_card.uid IN (SELECT cardId FROM db_tag_link_card WHERE tagId IN (:tagIds)) AND known>=:progress")
     List<DB_Card_With_Meta> getAllByPackAndTagsGreaterEqualWithMeta(List<Integer> packIds, List<Integer> tagIds, int progress);
 
@@ -136,23 +139,20 @@ public interface DB_Card_DAO {
     @Query("SELECT *, (SELECT colors FROM db_pack WHERE uid=db_card.pack) AS packColor, (SELECT (group_concat(emoji,' ') || ' ' || group_concat(tag_name,' ')) FROM db_tag WHERE db_tag.uid IN (SELECT tagId FROM db_tag_link_card WHERE cardId=db_card.uid)) AS tagNames FROM db_card WHERE pack IN (:packIds) AND db_card.uid IN (SELECT cardId FROM db_tag_link_card WHERE tagId IN (:tagIds)) AND known<=:progress AND last_repetition<:date")
     List<DB_Card_With_Meta> getAllByPackAndTagsLessEqualOlderRepetitionWithMeta(List<Integer> packIds, List<Integer> tagIds, int progress, long date);
 
-    @Query("SELECT *, (SELECT colors FROM db_pack WHERE uid=db_card.pack) AS packColor, (SELECT (group_concat(emoji,' ') || ' ' || group_concat(tag_name,' ')) FROM db_tag WHERE db_tag.uid IN (SELECT tagId FROM db_tag_link_card WHERE cardId=db_card.uid)) AS tagNames FROM db_card WHERE pack IN (:packIds) AND db_card.uid IN (SELECT cardId FROM db_tag_link_card WHERE tagId IN (:tagIds))")
-    List<DB_Card_With_Meta> getAllByPacksAndTagsWithMeta(List<Integer> packIds, List<Integer> tagIds);
-
     @Query("SELECT db_card.*, (SELECT colors FROM db_pack WHERE uid=db_card.pack) AS packColor, (SELECT (group_concat(emoji,' ') || ' ' || group_concat(tag_name,' ')) FROM db_tag WHERE db_tag.uid IN (SELECT tagId FROM db_tag_link_card WHERE cardId=db_card.uid)) AS tagNames FROM db_card INNER JOIN db_media_link_card ON db_card.uid = db_media_link_card.cardId WHERE db_media_link_card.fileId=:fileId")
     List<DB_Card_With_Meta> getAllByMedia(int fileId);
 
-    @Query("SELECT * FROM db_card WHERE uid=:cid LIMIT 1")
-    DB_Card getOne(int cid);
+    @Query("SELECT * FROM db_card")
+    Cursor getAllExport();
 
-    @Query("SELECT *, (SELECT colors FROM db_pack WHERE uid=db_card.pack) AS packColor, (SELECT (group_concat(emoji,' ') || ' ' || group_concat(tag_name,' ')) FROM db_tag WHERE db_tag.uid IN (SELECT tagId FROM db_tag_link_card WHERE cardId=db_card.uid)) AS tagNames FROM db_card WHERE uid=:cid LIMIT 1")
-    DB_Card_With_Meta getOneWithMeta(int cid);
+    @Query("SELECT * FROM db_card WHERE uid=:cardId LIMIT 1")
+    DB_Card getOne(int cardId);
+
+    @Query("SELECT *, (SELECT colors FROM db_pack WHERE uid=db_card.pack) AS packColor, (SELECT (group_concat(emoji,' ') || ' ' || group_concat(tag_name,' ')) FROM db_tag WHERE db_tag.uid IN (SELECT tagId FROM db_tag_link_card WHERE cardId=db_card.uid)) AS tagNames FROM db_card WHERE uid=:cardId LIMIT 1")
+    DB_Card_With_Meta getOneWithMeta(int cardId);
 
     @Query("SELECT uid FROM db_card WHERE pack=:pid AND front=:front AND back=:back AND notes=:notes LIMIT 1")
     int getOneIdByPackAndFrontAndBackAndNotes(int pid, String front, String back, String notes);
-
-    @Query("SELECT * FROM db_card")
-    Cursor getAllExport();
 
     @Query("DELETE FROM db_card WHERE pack=:pid")
     void deleteAllByPack(int pid);

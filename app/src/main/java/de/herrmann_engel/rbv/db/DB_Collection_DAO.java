@@ -31,7 +31,7 @@ public interface DB_Collection_DAO {
     List<DB_Collection_With_Meta> getAllWithMetaNoCounter();
 
     @Query("SELECT uid FROM db_collection ORDER BY name COLLATE NOCASE ASC, uid DESC")
-    List<Integer> getAllIDs();
+    List<Integer> getAllIds();
 
     @Query("SELECT * FROM db_collection WHERE uid=:cid LIMIT 1")
     DB_Collection getOne(int cid);

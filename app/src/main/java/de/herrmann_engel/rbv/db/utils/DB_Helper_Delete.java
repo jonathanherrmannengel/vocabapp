@@ -18,11 +18,6 @@ public class DB_Helper_Delete {
 
     public boolean deleteCollection(DB_Collection collection, boolean force) {
         DB_Helper_Get dbHelperGet = new DB_Helper_Get(dbHelper.context);
-        try {
-            dbHelperGet.getSingleCollection(collection.uid);
-        } catch (Exception e) {
-            return false;
-        }
         List<DB_Pack> packs = dbHelperGet.getAllPacksByCollection(collection.uid);
         boolean containsPacks = !packs.isEmpty();
         if (containsPacks && force) {
@@ -36,11 +31,6 @@ public class DB_Helper_Delete {
 
     public boolean deletePack(DB_Pack pack, boolean force) {
         DB_Helper_Get dbHelperGet = new DB_Helper_Get(dbHelper.context);
-        try {
-            dbHelperGet.getSinglePack(pack.uid);
-        } catch (Exception e) {
-            return false;
-        }
         boolean containsCards = dbHelperGet.countCardsInPack(pack.uid) > 0;
         if (containsCards && force) {
             dbHelper.card_dao.deleteAllByPack(pack.uid);
@@ -53,11 +43,6 @@ public class DB_Helper_Delete {
 
     public boolean deleteCard(DB_Card card) {
         DB_Helper_Get dbHelperGet = new DB_Helper_Get(dbHelper.context);
-        try {
-            dbHelperGet.getSingleCard(card.uid);
-        } catch (Exception e) {
-            return false;
-        }
         List<Integer> fileIds = dbHelperGet.getAllMediaLinkFileIdsByCard(card.uid);
         dbHelper.media_link_card_dao.deleteMediaLinksByCard(card.uid);
         fileIds.forEach(fileId -> {

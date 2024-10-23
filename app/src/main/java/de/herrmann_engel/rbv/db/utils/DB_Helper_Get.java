@@ -118,10 +118,6 @@ public class DB_Helper_Get {
         return dbHelper.tag_dao.getSingleTag(tagName);
     }
 
-    public DB_Tag getSingleTag(int id) {
-        return dbHelper.tag_dao.getSingleTag(id);
-    }
-
     // Get All: Collections
     public List<DB_Collection> getAllCollections() {
         return dbHelper.collection_dao.getAll();
@@ -145,7 +141,7 @@ public class DB_Helper_Get {
     }
 
     public List<DB_Pack> getAllPacksByCollection(int collection) {
-        return dbHelper.pack_dao.getAll(collection);
+        return dbHelper.pack_dao.getAllByCollection(collection);
     }
 
     public List<DB_Pack> getAllPacksByCollectionAndNameAndDesc(int collection, String name, String desc) {

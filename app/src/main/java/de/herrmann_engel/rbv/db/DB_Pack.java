@@ -8,7 +8,6 @@ import java.util.Objects;
 
 @Entity
 public class DB_Pack {
-
     @PrimaryKey(autoGenerate = true)
     public int uid;
     @ColumnInfo(name = "name")
@@ -28,8 +27,8 @@ public class DB_Pack {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        DB_Pack db_pack = (DB_Pack) o;
-        return uid == db_pack.uid && colors == db_pack.colors && collection == db_pack.collection && Objects.equals(name, db_pack.name) && Objects.equals(desc, db_pack.desc) && Objects.equals(emoji, db_pack.emoji);
+        DB_Pack that = (DB_Pack) o;
+        return uid == that.uid && colors == that.colors && collection == that.collection && Objects.equals(name, that.name) && Objects.equals(desc, that.desc) && Objects.equals(emoji, that.emoji);
     }
 
     @Override

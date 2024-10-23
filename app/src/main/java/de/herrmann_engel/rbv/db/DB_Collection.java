@@ -8,7 +8,6 @@ import java.util.Objects;
 
 @Entity
 public class DB_Collection {
-
     @PrimaryKey(autoGenerate = true)
     public int uid;
     @ColumnInfo(name = "name")
