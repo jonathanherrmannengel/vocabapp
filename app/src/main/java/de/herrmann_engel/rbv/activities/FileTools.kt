@@ -96,7 +96,7 @@ abstract class FileTools : AppCompatActivity() {
         selectFolderInfoDialog.show()
     }
 
-    fun showMissingDialog(card: Int) {
+    private fun showMissingDialog(card: Int, parentDialog: Dialog?) {
         val selectFolderInfoDialog = Dialog(this, R.style.dia_view)
         val bindingSelectFolderInfoDialog = DiaConfirmBinding.inflate(
             layoutInflater
@@ -111,6 +111,7 @@ abstract class FileTools : AppCompatActivity() {
             resources.getString(R.string.media_missing_dialog_text)
         bindingSelectFolderInfoDialog.diaConfirmDesc.visibility = View.VISIBLE
         bindingSelectFolderInfoDialog.diaConfirmYes.setOnClickListener {
+            parentDialog?.dismiss()
             selectFolderInfoDialog.dismiss()
             notifyMissingAction(card)
         }
@@ -118,25 +119,30 @@ abstract class FileTools : AppCompatActivity() {
         selectFolderInfoDialog.show()
     }
 
-    fun showImageDialog(id: Int) {
-        val imageDialog = Dialog(this, R.style.dia_view)
-        val bindingImageDialog = DiaImageBinding.inflate(
-            layoutInflater
-        )
-        imageDialog.setContentView(bindingImageDialog.root)
-        imageDialog.setTitle(resources.getString(R.string.image_media))
-        imageDialog.window!!.setLayout(
-            WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.MATCH_PARENT
-        )
-        Picasso.get().load(getImageUri(id)).fit().centerInside()
-            .into(bindingImageDialog.diaImageView)
-        imageDialog.show()
+    fun showImageDialog(fileId: Int, cardId: Int, dialog: Dialog? = null) {
+        val uri = getImageUri(fileId)
+        if (uri != null) {
+            val imageDialog = Dialog(this, R.style.dia_view)
+            val bindingImageDialog = DiaImageBinding.inflate(
+                layoutInflater
+            )
+            imageDialog.setContentView(bindingImageDialog.root)
+            imageDialog.setTitle(resources.getString(R.string.image_media))
+            imageDialog.window!!.setLayout(
+                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.MATCH_PARENT
+            )
+            Picasso.get().load(uri).fit().centerInside()
+                .into(bindingImageDialog.diaImageView)
+            imageDialog.show()
+        } else if (!existsMediaFile(fileId)) {
+            showMissingDialog(cardId, dialog)
+        }
     }
 
     protected fun showImageListDialog(imageList: ArrayList<DB_Media_Link_Card>) {
         if (imageList.size == 1) {
-            showImageDialog(imageList[0].file)
+            showImageDialog(imageList[0].file, imageList[0].card)
         } else if (imageList.size > Globals.MAX_SIZE_CARD_IMAGE_PREVIEW) {
             showMediaListDialog(
                 imageList,
@@ -155,7 +161,7 @@ abstract class FileTools : AppCompatActivity() {
                 WindowManager.LayoutParams.MATCH_PARENT
             )
             imageListDialog.show()
-            val adapter = AdapterMediaLinkCardImages(imageList)
+            val adapter = AdapterMediaLinkCardImages(imageList, imageListDialog)
             bindingImageListDialog.diaRec.adapter = adapter
             bindingImageListDialog.diaRec.layoutManager = GridLayoutManager(this, 3)
         }
@@ -181,7 +187,7 @@ abstract class FileTools : AppCompatActivity() {
             WindowManager.LayoutParams.MATCH_PARENT
         )
         mediaListDialog.show()
-        val adapter = AdapterMediaLinkCardAll(mediaList, onlyImages)
+        val adapter = AdapterMediaLinkCardAll(mediaList, onlyImages, mediaListDialog)
         bindingMediaListDialog.diaRec.adapter = adapter
         bindingMediaListDialog.diaRec.layoutManager = LinearLayoutManager(this)
     }

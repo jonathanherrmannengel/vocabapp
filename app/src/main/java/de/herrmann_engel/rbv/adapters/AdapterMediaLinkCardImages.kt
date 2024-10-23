@@ -1,5 +1,6 @@
 package de.herrmann_engel.rbv.adapters
 
+import android.app.Dialog
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -14,7 +15,8 @@ import de.herrmann_engel.rbv.utils.ContextTools
 
 
 class AdapterMediaLinkCardImages(
-    private val mediaLinks: ArrayList<DB_Media_Link_Card>
+    private val mediaLinks: ArrayList<DB_Media_Link_Card>,
+    private val dialog: Dialog
 ) : RecyclerView.Adapter<AdapterMediaLinkCardImages.ViewHolder>() {
     class ViewHolder(val binding: RecViewImageBinding) : RecyclerView.ViewHolder(binding.root)
 
@@ -35,19 +37,14 @@ class AdapterMediaLinkCardImages(
         )
         val currentMediaLink = mediaLinks[position]
         val fileId = currentMediaLink.file
+        val cardId = currentMediaLink.card
         val uri = (ContextTools().getActivity(context) as FileTools).getImageUri(fileId)
         if (uri != null) {
             Picasso.get().load(uri).fit().centerCrop().into(viewHolder.binding.recImg)
             viewHolder.binding.recImg.setBackgroundColor(Color.TRANSPARENT)
         }
         viewHolder.binding.recImg.setOnClickListener {
-            if (uri != null) {
-                (ContextTools().getActivity(context) as FileTools).showImageDialog(fileId)
-            } else if (!(ContextTools().getActivity(context) as FileTools).existsMediaFile(fileId)) {
-                (ContextTools().getActivity(context) as FileTools).showMissingDialog(
-                    currentMediaLink.card
-                )
-            }
+            (ContextTools().getActivity(context) as FileTools).showImageDialog(fileId, cardId, dialog)
         }
     }
 

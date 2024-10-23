@@ -37,11 +37,9 @@ class AdapterFilesManage(
         } else {
             val currentFile = files[position]
             viewHolder.binding.recFilesName.text = currentFile.name
-            viewHolder.binding.recFilesShare.visibility = View.VISIBLE
             viewHolder.binding.recFilesShare.setOnClickListener {
                 (ContextTools().getActivity(context) as FileTools).shareFile(currentFile.name!!)
             }
-            viewHolder.binding.recFilesOpen.visibility = View.VISIBLE
             viewHolder.binding.recFilesOpen.setOnClickListener {
                 (ContextTools().getActivity(context) as FileTools).openFile(currentFile.name!!)
             }

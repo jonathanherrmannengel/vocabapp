@@ -1,5 +1,6 @@
 package de.herrmann_engel.rbv.adapters
 
+import android.app.Dialog
 import android.text.SpannableString
 import android.text.style.UnderlineSpan
 import android.view.LayoutInflater
@@ -16,7 +17,8 @@ import de.herrmann_engel.rbv.utils.ContextTools
 
 class AdapterMediaLinkCardAll(
     private val mediaLinks: ArrayList<DB_Media_Link_Card>,
-    private val onlyImages: Boolean
+    private val onlyImages: Boolean,
+    private val dialog: Dialog
 ) : RecyclerView.Adapter<AdapterMediaLinkCardAll.ViewHolder>() {
     class ViewHolder(val binding: RecViewBinding) : RecyclerView.ViewHolder(binding.root)
 
@@ -30,6 +32,7 @@ class AdapterMediaLinkCardAll(
         val context = viewHolder.binding.root.context
         val currentMediaLink = mediaLinks[position]
         val fileId = currentMediaLink.file
+        val cardId = currentMediaLink.card
         val dbHelperGet = DB_Helper_Get(context)
         val currentMedia = dbHelperGet.getSingleMedia(fileId)
         if (currentMedia != null) {
@@ -39,7 +42,7 @@ class AdapterMediaLinkCardAll(
             viewHolder.binding.recName.text = fileNameSpannable
             viewHolder.binding.recName.setOnClickListener {
                 if (onlyImages) {
-                    (ContextTools().getActivity(context) as FileTools).showImageDialog(fileId)
+                    (ContextTools().getActivity(context) as FileTools).showImageDialog(fileId, cardId, dialog)
                 } else {
                     (ContextTools().getActivity(context) as FileTools).openFile(fileId)
                 }
