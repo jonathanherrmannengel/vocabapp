@@ -61,7 +61,7 @@ class AsyncImportWorker(
                     context.resources.getString(R.string.all_packs)
                 )
                 val sameNamed = helperGet.getAllCollectionsByName(collectionName)
-                if (sameNamed.size == 0) {
+                if (sameNamed.isEmpty()) {
                     val collectionUidNew =
                         helperCreate
                             .createCollection(collectionName, collectionDesc)
@@ -88,14 +88,15 @@ class AsyncImportWorker(
             }
             while (csvReader.readNext().also { line = it } != null) {
                 try {
+                    line!!
                     if (mode == Globals.IMPORT_MODE_SIMPLE_LIST) {
                         try {
-                            if (line!!.size == 2 || line!!.size == 3) {
-                                val front = line?.get(0) ?: ""
-                                val back = line?.get(1) ?: ""
+                            if (line.size == 2 || line.size == 3) {
+                                val front = line[0] ?: ""
+                                val back = line[1] ?: ""
                                 val notes =
-                                    if (line!!.size == 3) {
-                                        line?.get(2) ?: ""
+                                    if (line.size == 3) {
+                                        line[2] ?: ""
                                     } else ""
                                 helperCreate.createCard(
                                     front,
@@ -115,25 +116,25 @@ class AsyncImportWorker(
                         }
                     } else {
                         when {
-                            line?.get(0) == "collection" -> {
+                            line[0] == "collection" -> {
                                 if (errorLevel == Globals.IMPORT_ERROR_LEVEL_ERROR) {
                                     errorLevel = Globals.IMPORT_ERROR_LEVEL_OKAY
                                 }
-                                val collectionUidOld = Integer.parseInt((line?.get(1) ?: "0"))
-                                val name = line?.get(2) ?: ""
-                                val desc = line?.get(3) ?: ""
-                                val date = Integer.parseInt((line?.get(4) ?: "0")).toLong()
+                                val collectionUidOld = Integer.parseInt((line[1] ?: "0"))
+                                val name = line[2] ?: ""
+                                val desc = line[3] ?: ""
+                                val date = Integer.parseInt((line[4] ?: "0")).toLong()
                                 var colors = 0
-                                if (line!!.size >= 6) {
-                                    colors = Integer.parseInt((line?.get(5) ?: "0"))
+                                if (line.size >= 6) {
+                                    colors = Integer.parseInt((line[5] ?: "0"))
                                 }
                                 var emoji: String? = null
-                                if (line!!.size >= 7) {
-                                    emoji = line?.get(6) ?: ""
+                                if (line.size >= 7) {
+                                    emoji = line[6] ?: ""
                                     emoji = StringTools().firstEmoji(emoji)
                                 }
                                 val sameNamed = helperGet.getAllCollectionsByName(name)
-                                if (sameNamed.size == 0 || mode == Globals.IMPORT_MODE_DUPLICATES) {
+                                if (sameNamed.isEmpty() || mode == Globals.IMPORT_MODE_DUPLICATES) {
                                     val collectionUidNew =
                                         helperCreate
                                             .createCollection(name, desc, colors, emoji, date)
@@ -150,7 +151,7 @@ class AsyncImportWorker(
                                 }
                             }
 
-                            line?.get(0) == "packs" -> {
+                            line[0] == "packs" -> {
                                 if (collectionUidConverter.getSize() == 0 &&
                                     mode != Globals.IMPORT_MODE_SKIP
                                 ) {
@@ -163,7 +164,7 @@ class AsyncImportWorker(
                                     val colors = 0
                                     val emoji = null
                                     val sameNamed = helperGet.getAllCollectionsByName(name)
-                                    if (sameNamed.size == 0 || mode == Globals.IMPORT_MODE_DUPLICATES) {
+                                    if (sameNamed.isEmpty() || mode == Globals.IMPORT_MODE_DUPLICATES) {
                                         val collectionUidNew =
                                             helperCreate
                                                 .createCollection(
@@ -180,21 +181,21 @@ class AsyncImportWorker(
                                     }
                                 }
                                 var currentCollection = collectionUidConverter.getNewValue(0)
-                                if (line!!.size >= 7) {
+                                if (line.size >= 7) {
                                     currentCollection =
                                         collectionUidConverter.getNewValue(
-                                            Integer.parseInt((line?.get(6) ?: "0"))
+                                            Integer.parseInt((line[6] ?: "0"))
                                         )
                                 }
                                 if (currentCollection > 0) {
-                                    val packUidOld = Integer.parseInt((line?.get(1) ?: "0"))
-                                    val name = line?.get(2) ?: ""
-                                    val desc = line?.get(3) ?: ""
-                                    val date = Integer.parseInt((line?.get(4) ?: "0")).toLong()
-                                    val colors = Integer.parseInt((line?.get(5) ?: "0"))
+                                    val packUidOld = Integer.parseInt((line[1] ?: "0"))
+                                    val name = line[2] ?: ""
+                                    val desc = line[3] ?: ""
+                                    val date = Integer.parseInt((line[4] ?: "0")).toLong()
+                                    val colors = Integer.parseInt((line[5] ?: "0"))
                                     var emoji: String? = null
-                                    if (line!!.size >= 8) {
-                                        emoji = line?.get(7) ?: ""
+                                    if (line.size >= 8) {
+                                        emoji = line[7] ?: ""
                                         emoji = StringTools().firstEmoji(emoji)
                                     }
                                     val sameNamed =
@@ -203,7 +204,7 @@ class AsyncImportWorker(
                                             name,
                                             desc
                                         )
-                                    if (sameNamed.size == 0 || mode == Globals.IMPORT_MODE_DUPLICATES) {
+                                    if (sameNamed.isEmpty() || mode == Globals.IMPORT_MODE_DUPLICATES) {
                                         val packUidNew =
                                             helperCreate
                                                 .createPack(
@@ -222,22 +223,22 @@ class AsyncImportWorker(
                                 }
                             }
 
-                            line?.get(0) == "cards" -> {
+                            line[0] == "cards" -> {
                                 val currentPack =
                                     packUidConverter.getNewValue(
-                                        Integer.parseInt((line?.get(4) ?: "0"))
+                                        Integer.parseInt((line[4] ?: "0"))
                                     )
                                 if (currentPack > 0) {
                                     try {
                                         helperGet.getSinglePack(currentPack)
-                                        val cardUidOld = Integer.parseInt((line?.get(1) ?: "0"))
-                                        val front = line?.get(2) ?: ""
-                                        val back = line?.get(3) ?: ""
-                                        val known = Integer.parseInt((line?.get(5) ?: "0"))
-                                        val date = Integer.parseInt((line?.get(6) ?: "0")).toLong()
-                                        val notes = line?.get(7) ?: ""
-                                        val lastRepetition = if (line!!.size >= 9) {
-                                            Integer.parseInt((line?.get(8) ?: "0")).toLong()
+                                        val cardUidOld = Integer.parseInt((line[1] ?: "0"))
+                                        val front = line[2] ?: ""
+                                        val back = line[3] ?: ""
+                                        val known = Integer.parseInt((line[5] ?: "0"))
+                                        val date = Integer.parseInt((line[6] ?: "0")).toLong()
+                                        val notes = line[7] ?: ""
+                                        val lastRepetition = if (line.size >= 9) {
+                                            Integer.parseInt((line[8] ?: "0")).toLong()
                                         } else {
                                             0L
                                         }
@@ -269,11 +270,11 @@ class AsyncImportWorker(
                                 }
                             }
 
-                            line?.get(0) == "media" && includeMedia -> {
+                            line[0] == "media" && includeMedia -> {
                                 try {
-                                    val mediaUidOld = Integer.parseInt((line?.get(1) ?: "0"))
-                                    val file = line?.get(2) ?: ""
-                                    val mime = line?.get(3) ?: ""
+                                    val mediaUidOld = Integer.parseInt((line[1] ?: "0"))
+                                    val file = line[2] ?: ""
+                                    val mime = line[3] ?: ""
                                     if (file.isNotEmpty() && mime.isNotEmpty()) {
                                         if (helperGet.existsMedia(file)) {
                                             val mediaUidNew = helperGet.getSingleMedia(file).uid
@@ -291,15 +292,15 @@ class AsyncImportWorker(
                                 }
                             }
 
-                            line?.get(0) == "media_link_card" && includeMedia -> {
+                            line[0] == "media_link_card" && includeMedia -> {
                                 try {
                                     val currentMedia =
                                         mediaUidConverter.getNewValue(
-                                            Integer.parseInt((line?.get(2) ?: "0"))
+                                            Integer.parseInt((line[2] ?: "0"))
                                         )
                                     val currentCard =
                                         cardUidConverter.getNewValue(
-                                            Integer.parseInt((line?.get(3) ?: "0"))
+                                            Integer.parseInt((line[3] ?: "0"))
                                         )
                                     if (currentMedia != 0 && currentCard != 0 && !helperGet.existsMediaLinkCard(
                                             currentMedia,
@@ -314,12 +315,12 @@ class AsyncImportWorker(
                                 }
                             }
 
-                            line?.get(0) == "tags" -> {
+                            line[0] == "tags" -> {
                                 try {
-                                    val tagUidOld = Integer.parseInt((line?.get(1) ?: "0"))
-                                    val name = line?.get(2) ?: ""
-                                    val emoji = line?.get(3) ?: ""
-                                    val color = line?.get(4) ?: ""
+                                    val tagUidOld = Integer.parseInt((line[1] ?: "0"))
+                                    val name = line[2] ?: ""
+                                    val emoji = line[3] ?: ""
+                                    val color = line[4] ?: ""
                                     if (name.isNotBlank()) {
                                         if (helperGet.existsTag(name)) {
                                             val tagUidNew = helperGet.getSingleTag(name).uid
@@ -336,15 +337,15 @@ class AsyncImportWorker(
                                 }
                             }
 
-                            line?.get(0) == "tags_link_card" -> {
+                            line[0] == "tags_link_card" -> {
                                 try {
                                     val currentTag =
                                         tagsUidConverter.getNewValue(
-                                            Integer.parseInt((line?.get(2) ?: "0"))
+                                            Integer.parseInt((line[2] ?: "0"))
                                         )
                                     val currentCard =
                                         cardUidConverter.getNewValue(
-                                            Integer.parseInt((line?.get(3) ?: "0"))
+                                            Integer.parseInt((line[3] ?: "0"))
                                         )
                                     if (currentTag != 0 && currentCard != 0 && !helperGet.existsTagLinkCard(
                                             currentTag,
@@ -359,23 +360,25 @@ class AsyncImportWorker(
                                 }
                             }
 
-                            line?.get(0) == "app_setting" && includeSettings -> {
+                            line[0] == "app_setting" && includeSettings -> {
                                 val settings =
                                     context.getSharedPreferences(
                                         Globals.SETTINGS_NAME,
                                         Context.MODE_PRIVATE
                                     )
                                 val editor = settings.edit()
-                                val name = line?.get(1)
+                                val name = line[1]
                                 when {
-                                    line?.get(2) == "int" -> {
-                                        val value = line?.get(3)!!.toInt()
-                                        editor.putInt(name, value)
+                                    line[2] == "int" -> {
+                                        line[3]?.toInt()?.let {
+                                            editor.putInt(name, it)
+                                        }
                                     }
 
-                                    line?.get(2) == "bool" -> {
-                                        val value = line?.get(3)!!.toBoolean()
-                                        editor.putBoolean(name, value)
+                                    line[2] == "bool" -> {
+                                        line[3]?.toBoolean()?.let {
+                                            editor.putBoolean(name, it)
+                                        }
                                     }
                                 }
                                 editor.apply()
