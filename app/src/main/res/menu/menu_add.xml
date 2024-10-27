@@ -7,6 +7,6 @@
         android:layout_height="wrap_content"
         android:icon="@drawable/round_save_24"
         android:orderInCategory="100"
-        android:title="@string/add"
+        android:title="@string/save"
         app:showAsAction="ifRoom" />
 </menu>

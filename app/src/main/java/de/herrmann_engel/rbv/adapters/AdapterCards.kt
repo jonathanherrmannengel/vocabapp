@@ -184,6 +184,7 @@ class AdapterCards(
             if (packNo >= 0) {
                 val text =
                     String.format(
+                        Locale.ROOT,
                         "%s %s",
                         context.resources.getString(R.string.welcome_card),
                         context.resources.getString(R.string.welcome_card_create)
@@ -263,13 +264,15 @@ class AdapterCards(
                 }
                 contextualMenuModeCardIdList.clear()
                 contextualMenuModeActivity = ContextTools().getActivity(context)
-                contextualMenuMode = contextualMenuModeActivity?.startActionMode(contextualMenuModeCallback)
+                contextualMenuMode =
+                    contextualMenuModeActivity?.startActionMode(contextualMenuModeCallback)
                 contextualMenuModeSelectItem(extra)
                 return@setOnLongClickListener true
             }
         }
         if (contextualMenuMode != null && contextualMenuModeCardIdList.contains(cards[position].card.uid)) {
             viewHolder.binding.recName.contentDescription = String.format(
+                Locale.ROOT,
                 "%s: %s",
                 context.resources.getString(R.string.selected),
                 viewHolder.binding.recName.contentDescription

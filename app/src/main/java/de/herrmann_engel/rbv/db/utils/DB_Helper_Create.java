@@ -52,7 +52,9 @@ public class DB_Helper_Create {
     }
 
     public long createPack(String name, String desc, int collection) throws Exception {
-        return createPack(name, desc, collection, 0, null, System.currentTimeMillis() / 1000L);
+        DB_Helper_Get dbHelperGet = new DB_Helper_Get(dbHelper.context);
+        int collectionColor = dbHelperGet.getSingleCollection(collection).colors;
+        return createPack(name, desc, collection, collectionColor, null, System.currentTimeMillis() / 1000L);
     }
 
     public long createCard(String front, String back, String notes, int pack, int known, long date, long lastRepetition) throws Exception {

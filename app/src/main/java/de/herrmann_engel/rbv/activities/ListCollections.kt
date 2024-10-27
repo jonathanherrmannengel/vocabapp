@@ -35,6 +35,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import java.io.File
+import java.util.Locale
 
 class ListCollections : FileTools(), AsyncImportFinish, AsyncImportProgress, AsyncExportFinish,
     AsyncExportProgress {
@@ -103,7 +104,13 @@ class ListCollections : FileTools(), AsyncImportFinish, AsyncImportProgress, Asy
                 layoutInflater
             )
             startImportDialog.setContentView(bindingStartImportDialog.root)
-            startImportDialog.setTitle(resources.getString(R.string.options))
+            startImportDialog.setTitle(
+                String.format(
+                    Locale.ROOT,
+                    resources.getString(R.string.import_export_options),
+                    resources.getString(R.string.import_title)
+                )
+            )
             startImportDialog.window!!.setLayout(
                 WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.MATCH_PARENT
@@ -181,7 +188,13 @@ class ListCollections : FileTools(), AsyncImportFinish, AsyncImportProgress, Asy
                 layoutInflater
             )
             startExportDialog.setContentView(bindingStartExportDialog.root)
-            startExportDialog.setTitle(resources.getString(R.string.options))
+            startExportDialog.setTitle(
+                String.format(
+                    Locale.ROOT,
+                    resources.getString(R.string.import_export_options),
+                    resources.getString(R.string.export_title)
+                )
+            )
             startExportDialog.window!!.setLayout(
                 WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.MATCH_PARENT

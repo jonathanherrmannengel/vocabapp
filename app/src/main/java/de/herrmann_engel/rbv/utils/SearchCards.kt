@@ -9,11 +9,12 @@ class SearchCards {
     private fun hasNoMatch(source: String?, query: String): Boolean {
         return if (source == null) {
             true
-        } else !Pattern.compile(
-            Pattern.quote(query),
-            Pattern.CASE_INSENSITIVE or Pattern.UNICODE_CASE
-        ).matcher(source)
-            .find()
+        } else {
+            !Pattern.compile(
+                Pattern.quote(query),
+                Pattern.CASE_INSENSITIVE or Pattern.UNICODE_CASE
+            ).matcher(source).find()
+        }
     }
 
     private fun hasNoMatchInaccurate(source: String?, query: String): Boolean {

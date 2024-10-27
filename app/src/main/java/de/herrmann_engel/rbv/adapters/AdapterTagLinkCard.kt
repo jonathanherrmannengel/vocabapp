@@ -153,7 +153,7 @@ class AdapterTagLinkCard(
                                 notifyItemChanged(position)
                                 editDialog.dismiss()
                             } else {
-                                Toast.makeText(context, R.string.error, Toast.LENGTH_LONG).show()
+                                Toast.makeText(context, R.string.error_creating_duplicate_tag_db, Toast.LENGTH_LONG).show()
                             }
                         } else {
                             Toast.makeText(context, R.string.error_values, Toast.LENGTH_LONG).show()

@@ -19,7 +19,6 @@ import android.view.View
 import android.view.View.IMPORTANT_FOR_ACCESSIBILITY_NO
 import android.view.View.IMPORTANT_FOR_ACCESSIBILITY_YES
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -182,6 +181,7 @@ class AdapterPacks(
             if (collection >= 0) {
                 val text =
                     String.format(
+                        Locale.ROOT,
                         "%s %s",
                         context.resources.getString(R.string.welcome_pack),
                         context.resources.getString(R.string.welcome_pack_create)
@@ -317,7 +317,8 @@ class AdapterPacks(
                 }
                 contextualMenuModePackIdList.clear()
                 contextualMenuModeActivity = ContextTools().getActivity(context)
-                contextualMenuMode = contextualMenuModeActivity?.startActionMode(contextualMenuModeCallback)
+                contextualMenuMode =
+                    contextualMenuModeActivity?.startActionMode(contextualMenuModeCallback)
                 contextualMenuModeSelectItem(extra)
                 return@setOnLongClickListener true
             }

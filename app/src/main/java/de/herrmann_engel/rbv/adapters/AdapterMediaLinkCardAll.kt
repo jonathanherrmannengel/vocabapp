@@ -42,7 +42,11 @@ class AdapterMediaLinkCardAll(
             viewHolder.binding.recName.text = fileNameSpannable
             viewHolder.binding.recName.setOnClickListener {
                 if (onlyImages) {
-                    (ContextTools().getActivity(context) as FileTools).showImageDialog(fileId, cardId, dialog)
+                    (ContextTools().getActivity(context) as FileTools).showImageDialog(
+                        fileId,
+                        cardId,
+                        dialog
+                    )
                 } else {
                     (ContextTools().getActivity(context) as FileTools).openFile(fileId)
                 }

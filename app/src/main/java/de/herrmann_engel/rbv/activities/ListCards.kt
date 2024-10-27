@@ -587,13 +587,17 @@ class ListCards : CardActionsActivity() {
         val formatString = StringTools()
         if (settings.getBoolean("format_cards", false)) {
             front =
-                if (frontBackReverse) formatString.format(card.back) else formatString.format(
-                    card.front
-                )
+                if (frontBackReverse) {
+                    formatString.format(card.back)
+                } else {
+                    formatString.format(card.front)
+                }
             back =
-                if (frontBackReverse) formatString.format(card.front) else formatString.format(
-                    card.back
-                )
+                if (frontBackReverse) {
+                    formatString.format(card.front)
+                } else {
+                    formatString.format(card.back)
+                }
         } else {
             val frontString = if (frontBackReverse) card.back else card.front
             val backString = if (frontBackReverse) card.front else card.back
@@ -848,7 +852,8 @@ class ListCards : CardActionsActivity() {
                 resources.obtainTypedArray(R.array.pack_color_background_query)
             val colorsBackgroundHighlight = resources
                 .obtainTypedArray(R.array.pack_color_background_highlight)
-            val minimalLength = colorsBackgroundQuery.length().coerceAtMost(colorsBackgroundHighlight.length())
+            val minimalLength =
+                colorsBackgroundQuery.length().coerceAtMost(colorsBackgroundHighlight.length())
             val packColors = cardWithMeta.packColor
             if (packColors in 0..<minimalLength) {
                 val colorBackgroundQuery = colorsBackgroundQuery.getColor(packColors, 0)

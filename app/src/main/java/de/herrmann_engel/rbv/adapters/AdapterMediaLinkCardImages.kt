@@ -44,7 +44,11 @@ class AdapterMediaLinkCardImages(
             viewHolder.binding.recImg.setBackgroundColor(Color.TRANSPARENT)
         }
         viewHolder.binding.recImg.setOnClickListener {
-            (ContextTools().getActivity(context) as FileTools).showImageDialog(fileId, cardId, dialog)
+            (ContextTools().getActivity(context) as FileTools).showImageDialog(
+                fileId,
+                cardId,
+                dialog
+            )
         }
     }
 

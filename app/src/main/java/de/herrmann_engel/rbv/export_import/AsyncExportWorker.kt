@@ -12,6 +12,7 @@ import java.io.FileInputStream
 import java.io.FileWriter
 import java.io.InputStream
 import java.io.OutputStream
+import java.util.Locale
 
 class AsyncExportWorker(
     val context: Context,
@@ -99,6 +100,7 @@ class AsyncExportWorker(
             val file = File(
                 context.cacheDir,
                 String.format(
+                    Locale.ROOT,
                     "%s_%s.%s",
                     Globals.EXPORT_FILE_NAME,
                     index,

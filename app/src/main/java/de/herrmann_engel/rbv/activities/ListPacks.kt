@@ -22,6 +22,7 @@ import de.herrmann_engel.rbv.export_import.AsyncExport
 import de.herrmann_engel.rbv.export_import.AsyncExportFinish
 import de.herrmann_engel.rbv.export_import.AsyncExportProgress
 import java.io.File
+import java.util.Locale
 
 class ListPacks : PackActionsActivity(), AsyncExportFinish, AsyncExportProgress {
     private lateinit var binding: ActivityDefaultRecBinding
@@ -64,7 +65,13 @@ class ListPacks : PackActionsActivity(), AsyncExportFinish, AsyncExportProgress 
                     layoutInflater
                 )
                 startExportDialog.setContentView(bindingStartExportDialog.root)
-                startExportDialog.setTitle(resources.getString(R.string.options))
+                startExportDialog.setTitle(
+                    String.format(
+                        Locale.ROOT,
+                        resources.getString(R.string.import_export_options),
+                        resources.getString(R.string.export_title)
+                    )
+                )
                 startExportDialog.window!!.setLayout(
                     WindowManager.LayoutParams.MATCH_PARENT,
                     WindowManager.LayoutParams.MATCH_PARENT
@@ -143,19 +150,20 @@ class ListPacks : PackActionsActivity(), AsyncExportFinish, AsyncExportProgress 
     }
 
     private fun loadContent(): MutableList<DB_Pack_With_Meta> {
-        val currentList: MutableList<DB_Pack_With_Meta> = if (collectionNo == Globals.LIST_CARDS_GET_DB_COLLECTIONS_ALL) {
-            if (dbHelperGet.countPacks() > Globals.MAX_SIZE_COLLECTIONS_OR_PACKS_LIST_COUNTER) {
-                dbHelperGet.allPacksWithMetaNoCounter
+        val currentList: MutableList<DB_Pack_With_Meta> =
+            if (collectionNo == Globals.LIST_CARDS_GET_DB_COLLECTIONS_ALL) {
+                if (dbHelperGet.countPacks() > Globals.MAX_SIZE_COLLECTIONS_OR_PACKS_LIST_COUNTER) {
+                    dbHelperGet.allPacksWithMetaNoCounter
+                } else {
+                    dbHelperGet.allPacksWithMeta
+                }
             } else {
-                dbHelperGet.allPacksWithMeta
+                if (dbHelperGet.countPacksInCollection(collectionNo) > Globals.MAX_SIZE_COLLECTIONS_OR_PACKS_LIST_COUNTER) {
+                    dbHelperGet.getAllPacksWithMetaNoCounterByCollection(collectionNo)
+                } else {
+                    dbHelperGet.getAllPacksWithMetaByCollection(collectionNo)
+                }
             }
-        } else {
-            if (dbHelperGet.countPacksInCollection(collectionNo) > Globals.MAX_SIZE_COLLECTIONS_OR_PACKS_LIST_COUNTER) {
-                dbHelperGet.getAllPacksWithMetaNoCounterByCollection(collectionNo)
-            } else {
-                dbHelperGet.getAllPacksWithMetaByCollection(collectionNo)
-            }
-        }
         val fixedFirstItemPlaceholder = DB_Pack_With_Meta()
         if (collectionNo == Globals.LIST_CARDS_GET_DB_COLLECTIONS_ALL) {
             fixedFirstItemPlaceholder.counter = dbHelperGet.countCards()
