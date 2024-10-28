@@ -132,7 +132,7 @@ class CardActions(val activity: Activity) {
             }
             val imageList =
                 dbHelperGet.getCardImageMedia(cards[0].uid) as ArrayList<DB_Media>
-            if (imageList.isEmpty() || imageList.size > Globals.MAX_SIZE_CARD_IMAGE_PREVIEW) {
+            if (imageList.isEmpty() || imageList.size > Globals.MAX_SIZE_CARD_IMAGE_PRINT) {
                 bindingPrintDialog.diaPrintIncludeImagesLayout.visibility = View.GONE
                 bindingPrintDialog.diaPrintIncludeImages.isChecked = false
             }
@@ -176,7 +176,7 @@ class CardActions(val activity: Activity) {
             var htmlDocument =
                 "<!doctype html><html><head><meta charset=\"utf-8\"><title>" + activity.getString(
                     R.string.print
-                ) + "</title><style>@page{margin:20mm 25mm;}@media(max-width:250mm),@media(max-height:200mm){@page{margin:7% 10%;}}div{inline-size:100%;overflow-wrap:break-word;}.main-title{margin-bottom:30px;}.title{text-align:center;color:#000007;}.border-top::before{margin-bottom:20px;margin-top:30px;display:block;content:' ';width:100%;height:1px;outline:2px solid #555;outline-offset:-1px;}.main-title.border-top::before{margin-top:100px;}.image-div,.media-div{text-align:center}.image{padding:10px;max-width:30%;max-height:10%;object-fit:contain;}.tag-div{display:inline-block;width:auto;margin:10px;padding:10px;border:2px solid black;border-radius:1em;}.tag-emoji{padding-right:0.5em;}</style></head>"
+                ) + "</title><style>@page{margin:20mm 25mm;}@media(max-width:250mm),@media(max-height:200mm){@page{margin:7% 10%;}}div{inline-size:100%;overflow-wrap:break-word;}.main-title{margin-bottom:30px;}.title{text-align:center;color:#000007;}.border-top::before{margin-bottom:20px;margin-top:30px;display:block;content:' ';width:100%;height:1px;outline:2px solid #555;outline-offset:-1px;}.main-title.border-top::before{margin-top:100px;}.image-div,.media-div{text-align:center}.image-div{display:grid;gap:10px;grid-template-columns: 1fr 1fr 1fr;justify-content:center;}.image{width:100%;height:100%;object-fit:contain;}.tag-div{display:inline-block;width:auto;margin:10px;padding:10px;border:2px solid black;border-radius:1em;}.tag-emoji{padding-right:0.5em;}</style></head>"
             var firstCard = true
             for (card in cards) {
                 val cardFront = if (formatCards) {
@@ -261,21 +261,29 @@ class CardActions(val activity: Activity) {
                     } else {
                         htmlDocument += "<div class=\"border-top\">"
                     }
-                    if (imageList.size > Globals.MAX_SIZE_CARD_IMAGE_PREVIEW) {
+                    if (imageList.size > Globals.MAX_SIZE_CARD_IMAGE_PRINT) {
                         htmlDocument += String.format(
                             Locale.ROOT,
                             activity.getString(R.string.image_media_print_number_and_limit),
                             imageList.size,
-                            Globals.MAX_SIZE_CARD_IMAGE_PREVIEW
+                            Globals.MAX_SIZE_CARD_IMAGE_PRINT
                         )
                     } else {
+                        htmlDocument += if (imageList.size == 1) {
+                            "<div class=\"image-div\" style=\"grid-template-columns:0.33fr;\">"
+                        } else if (imageList.size == 2) {
+                            "<div class=\"image-div\" style=\"grid-template-columns:0.33fr 0.33fr;\">"
+                        } else {
+                            "<div class=\"image-div\">"
+                        }
                         for (item in imageList) {
                             val uri =
                                 (activity as CardActionsActivity).getImageUri(item.uid)
                             if (uri != null) {
-                                htmlDocument += "<div class=\"image-div\"><img class=\"image\" alt=\"" + item.file + "\" src=\"" + uri + "\"></div>"
+                                htmlDocument += "<div><img class=\"image\" alt=\"" + item.file + "\" src=\"" + uri + "\"></div>"
                             }
                         }
+                        htmlDocument += "</div>"
                     }
                     htmlDocument += "</div></article>"
                 }

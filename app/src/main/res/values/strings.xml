@@ -75,7 +75,7 @@
     <string name="media_missing_dialog">media missing</string>
     <string name="media_missing_dialog_text">Abort and review missing files?</string>
     <string name="image_media">image media</string>
-    <string name="image_media_print_number_and_limit">%1$d images attached. Display limit is: %2$d.</string>
+    <string name="image_media_print_number_and_limit">%1$d images attached. Print limit is: %2$d.</string>
     <string name="show_image_media">show images</string>
     <string name="show_all_media">show all media</string>
     <string name="all_media">all media</string>
