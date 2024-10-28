@@ -39,7 +39,7 @@ import de.herrmann_engel.rbv.databinding.DiaListStatsBinding
 import de.herrmann_engel.rbv.databinding.DiaQueryBinding
 import de.herrmann_engel.rbv.db.DB_Card
 import de.herrmann_engel.rbv.db.DB_Card_With_Meta
-import de.herrmann_engel.rbv.db.DB_Media_Link_Card
+import de.herrmann_engel.rbv.db.DB_Media
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Update
 import de.herrmann_engel.rbv.ui.SwipeEvents
@@ -868,26 +868,28 @@ class ListCards : CardActionsActivity() {
             colorsBackgroundHighlight.recycle()
 
             val imageList =
-                dbHelperGet.getImageMediaLinksByCard(card.uid) as ArrayList<DB_Media_Link_Card>
+                dbHelperGet.getCardImageMedia(card.uid) as ArrayList<DB_Media>
             if (imageList.isEmpty()) {
                 bindingQueryModeDialog.queryButtonMediaImage.visibility = View.GONE
             } else {
                 bindingQueryModeDialog.queryButtonMediaImage.visibility = View.VISIBLE
                 bindingQueryModeDialog.queryButtonMediaImage.setOnClickListener {
                     showImageListDialog(
-                        imageList
+                        imageList,
+                        card.uid
                     )
                 }
             }
             val mediaList =
-                dbHelperGet.getAllMediaLinksByCard(card.uid) as ArrayList<DB_Media_Link_Card>
+                dbHelperGet.getCardMedia(card.uid) as ArrayList<DB_Media>
             if (mediaList.isEmpty()) {
                 bindingQueryModeDialog.queryButtonMediaOther.visibility = View.GONE
             } else {
                 bindingQueryModeDialog.queryButtonMediaOther.visibility = View.VISIBLE
                 bindingQueryModeDialog.queryButtonMediaOther.setOnClickListener {
                     showMediaListDialog(
-                        mediaList
+                        mediaList,
+                        card.uid
                     )
                 }
             }

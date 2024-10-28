@@ -22,6 +22,7 @@ import de.herrmann_engel.rbv.adapters.AdapterMediaLinkCardImages
 import de.herrmann_engel.rbv.databinding.DiaConfirmBinding
 import de.herrmann_engel.rbv.databinding.DiaImageBinding
 import de.herrmann_engel.rbv.databinding.DiaRecBinding
+import de.herrmann_engel.rbv.db.DB_Media
 import de.herrmann_engel.rbv.db.DB_Media_Link_Card
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 
@@ -140,12 +141,13 @@ abstract class FileTools : AppCompatActivity() {
         }
     }
 
-    protected fun showImageListDialog(imageList: ArrayList<DB_Media_Link_Card>) {
+    protected fun showImageListDialog(imageList: ArrayList<DB_Media>, cardNo: Int) {
         if (imageList.size == 1) {
-            showImageDialog(imageList[0].file, imageList[0].card)
+            showImageDialog(imageList[0].uid, cardNo)
         } else if (imageList.size > Globals.MAX_SIZE_CARD_IMAGE_PREVIEW) {
             showMediaListDialog(
                 imageList,
+                cardNo,
                 true,
                 resources.getString(R.string.query_media_image_title)
             )
@@ -161,18 +163,19 @@ abstract class FileTools : AppCompatActivity() {
                 WindowManager.LayoutParams.MATCH_PARENT
             )
             imageListDialog.show()
-            val adapter = AdapterMediaLinkCardImages(imageList, imageListDialog)
+            val adapter = AdapterMediaLinkCardImages(imageList, cardNo, imageListDialog)
             bindingImageListDialog.diaRec.adapter = adapter
             bindingImageListDialog.diaRec.layoutManager = GridLayoutManager(this, 3)
         }
     }
 
-    protected fun showMediaListDialog(mediaList: ArrayList<DB_Media_Link_Card>) {
-        showMediaListDialog(mediaList, false, resources.getString(R.string.query_media_all_title))
+    protected fun showMediaListDialog(mediaList: ArrayList<DB_Media>, cardNo: Int) {
+        showMediaListDialog(mediaList, cardNo, false, resources.getString(R.string.query_media_all_title))
     }
 
     private fun showMediaListDialog(
-        mediaList: ArrayList<DB_Media_Link_Card>,
+        mediaList: ArrayList<DB_Media>,
+        cardNo: Int,
         onlyImages: Boolean,
         title: String
     ) {
@@ -187,7 +190,7 @@ abstract class FileTools : AppCompatActivity() {
             WindowManager.LayoutParams.MATCH_PARENT
         )
         mediaListDialog.show()
-        val adapter = AdapterMediaLinkCardAll(mediaList, onlyImages, mediaListDialog)
+        val adapter = AdapterMediaLinkCardAll(mediaList, cardNo, onlyImages, mediaListDialog)
         bindingMediaListDialog.diaRec.adapter = adapter
         bindingMediaListDialog.diaRec.layoutManager = LinearLayoutManager(this)
     }

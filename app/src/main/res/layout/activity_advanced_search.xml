@@ -214,7 +214,7 @@
                 android:id="@+id/advanced_search_go"
                 style="@style/material_button"
                 android:layout_gravity="center"
-                android:text="@string/search"
+                android:text="@string/start"
                 android:textColor="@color/button"
                 android:textSize="@dimen/card_back_size_default" />
         </LinearLayout>

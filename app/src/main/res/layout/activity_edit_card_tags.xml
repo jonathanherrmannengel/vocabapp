@@ -15,7 +15,6 @@
             android:gravity="center"
             android:orientation="vertical">
 
-
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/edit_card_tags_add_layout"
                 style="@style/material_edit_text"

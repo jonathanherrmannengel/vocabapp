@@ -10,12 +10,13 @@ import com.squareup.picasso.Picasso
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.activities.FileTools
 import de.herrmann_engel.rbv.databinding.RecViewImageBinding
-import de.herrmann_engel.rbv.db.DB_Media_Link_Card
+import de.herrmann_engel.rbv.db.DB_Media
 import de.herrmann_engel.rbv.utils.ContextTools
 
 
 class AdapterMediaLinkCardImages(
-    private val mediaLinks: ArrayList<DB_Media_Link_Card>,
+    private val media: ArrayList<DB_Media>,
+    private val cardNo: Int,
     private val dialog: Dialog
 ) : RecyclerView.Adapter<AdapterMediaLinkCardImages.ViewHolder>() {
     class ViewHolder(val binding: RecViewImageBinding) : RecyclerView.ViewHolder(binding.root)
@@ -35,9 +36,8 @@ class AdapterMediaLinkCardImages(
                 R.color.warn_red
             )
         )
-        val currentMediaLink = mediaLinks[position]
-        val fileId = currentMediaLink.file
-        val cardId = currentMediaLink.card
+        val currentMediaLink = media[position]
+        val fileId = currentMediaLink.uid
         val uri = (ContextTools().getActivity(context) as FileTools).getImageUri(fileId)
         if (uri != null) {
             Picasso.get().load(uri).fit().centerCrop().into(viewHolder.binding.recImg)
@@ -46,14 +46,14 @@ class AdapterMediaLinkCardImages(
         viewHolder.binding.recImg.setOnClickListener {
             (ContextTools().getActivity(context) as FileTools).showImageDialog(
                 fileId,
-                cardId,
+                cardNo,
                 dialog
             )
         }
     }
 
     override fun getItemCount(): Int {
-        return mediaLinks.size
+        return media.size
     }
 
 }

@@ -22,7 +22,7 @@ import de.herrmann_engel.rbv.databinding.DiaConfirmBinding
 import de.herrmann_engel.rbv.databinding.DiaPrintBinding
 import de.herrmann_engel.rbv.databinding.DiaRecBinding
 import de.herrmann_engel.rbv.db.DB_Card
-import de.herrmann_engel.rbv.db.DB_Media_Link_Card
+import de.herrmann_engel.rbv.db.DB_Media
 import de.herrmann_engel.rbv.db.DB_Pack
 import de.herrmann_engel.rbv.db.DB_Tag
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Delete
@@ -30,6 +30,7 @@ import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.utils.StringTools
 import org.commonmark.parser.Parser
 import org.commonmark.renderer.html.HtmlRenderer
+import java.util.Locale
 
 class CardActions(val activity: Activity) {
 
@@ -130,13 +131,13 @@ class CardActions(val activity: Activity) {
                 bindingPrintDialog.diaPrintIncludeNotes.isChecked = false
             }
             val imageList =
-                dbHelperGet.getImageMediaLinksByCard(cards[0].uid) as ArrayList<DB_Media_Link_Card>
+                dbHelperGet.getCardImageMedia(cards[0].uid) as ArrayList<DB_Media>
             if (imageList.isEmpty() || imageList.size > Globals.MAX_SIZE_CARD_IMAGE_PREVIEW) {
                 bindingPrintDialog.diaPrintIncludeImagesLayout.visibility = View.GONE
                 bindingPrintDialog.diaPrintIncludeImages.isChecked = false
             }
             val mediaList =
-                dbHelperGet.getAllMediaLinksByCard(cards[0].uid) as ArrayList<DB_Media_Link_Card>
+                dbHelperGet.getCardMedia(cards[0].uid) as ArrayList<DB_Media>
             if (mediaList.isEmpty()) {
                 bindingPrintDialog.diaPrintIncludeMediaLayout.visibility = View.GONE
                 bindingPrintDialog.diaPrintIncludeMedia.isChecked = false
@@ -249,8 +250,8 @@ class CardActions(val activity: Activity) {
                 }
 
                 val imageList =
-                    dbHelperGet.getImageMediaLinksByCard(card.uid) as ArrayList<DB_Media_Link_Card>
-                if (imageList.isNotEmpty() && imageList.size <= Globals.MAX_SIZE_CARD_IMAGE_PREVIEW && bindingPrintDialog.diaPrintIncludeImages.isChecked) {
+                    dbHelperGet.getCardImageMedia(card.uid) as ArrayList<DB_Media>
+                if (imageList.isNotEmpty() && bindingPrintDialog.diaPrintIncludeImages.isChecked) {
                     htmlDocument += "<article>"
                     if (bindingPrintDialog.diaPrintIncludeHeadings.isChecked) {
                         htmlDocument += "<h2 class=\"title border-top\" dir=\"auto\">" + activity.getString(
@@ -260,20 +261,26 @@ class CardActions(val activity: Activity) {
                     } else {
                         htmlDocument += "<div class=\"border-top\">"
                     }
-                    for (i in imageList) {
-                        val currentMedia = dbHelperGet.getSingleMedia(i.file)
-                        if (currentMedia != null) {
+                    if (imageList.size > Globals.MAX_SIZE_CARD_IMAGE_PREVIEW) {
+                        htmlDocument += String.format(
+                            Locale.ROOT,
+                            activity.getString(R.string.image_media_print_number_and_limit),
+                            imageList.size,
+                            Globals.MAX_SIZE_CARD_IMAGE_PREVIEW
+                        )
+                    } else {
+                        for (item in imageList) {
                             val uri =
-                                (activity as CardActionsActivity).getImageUri(currentMedia.uid)
+                                (activity as CardActionsActivity).getImageUri(item.uid)
                             if (uri != null) {
-                                htmlDocument += "<div class=\"image-div\"><img class=\"image\" alt=\"" + currentMedia.file + "\" src=\"" + uri + "\"></div>"
+                                htmlDocument += "<div class=\"image-div\"><img class=\"image\" alt=\"" + item.file + "\" src=\"" + uri + "\"></div>"
                             }
                         }
                     }
                     htmlDocument += "</div></article>"
                 }
                 val mediaList =
-                    dbHelperGet.getAllMediaLinksByCard(card.uid) as ArrayList<DB_Media_Link_Card>
+                    dbHelperGet.getCardMedia(card.uid) as ArrayList<DB_Media>
                 if (mediaList.isNotEmpty() && bindingPrintDialog.diaPrintIncludeMedia.isChecked) {
                     htmlDocument += "<article>"
                     if (bindingPrintDialog.diaPrintIncludeHeadings.isChecked) {
@@ -284,11 +291,8 @@ class CardActions(val activity: Activity) {
                     } else {
                         htmlDocument += "<div class=\"border-top\">"
                     }
-                    for (i in mediaList) {
-                        val currentMedia = dbHelperGet.getSingleMedia(i.file)
-                        if (currentMedia != null) {
-                            htmlDocument += "<div class=\"media-div\">" + currentMedia.file + "</div>"
-                        }
+                    for (item in mediaList) {
+                        htmlDocument += "<div class=\"media-div\">" + item.file + "</div>"
                     }
                     htmlDocument += "</div></article>"
                 }

@@ -17,6 +17,9 @@ public interface DB_Media_DAO {
     @Query("SELECT * FROM db_media ORDER BY file COLLATE NOCASE ASC")
     List<DB_Media> getAll();
 
+    @Query("SELECT * FROM db_media WHERE db_media.uid IN (SELECT fileId FROM db_media_link_card WHERE cardId=:card) ORDER BY file COLLATE NOCASE ASC")
+    List<DB_Media> getAllByCard(int card);
+
     @Query("SELECT * FROM db_media WHERE file=:file LIMIT 1")
     DB_Media getSingleMedia(String file);
 

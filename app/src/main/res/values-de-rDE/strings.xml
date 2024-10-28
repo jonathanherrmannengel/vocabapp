@@ -67,10 +67,10 @@
     <string name="no_tags">Keine Schlagworte</string>
     <string name="no_files_without_media">Keine Dateien ohne Datenbankeintrag</string>
     <string name="media_missing">Medium verschollen (Datei nicht gefunden)</string>
-    <string name="media_missing_db">Medium verschollen (Kein Datenbankeintrag)</string>
     <string name="media_missing_dialog">Medien fehlen</string>
     <string name="media_missing_dialog_text">Abbrechen und fehlende Dateien begutachten?</string>
     <string name="image_media">Bildmedien</string>
+    <string name="image_media_print_number_and_limit">%1$d verknüpfte Bilder. Anzeigelimit ist: %2$d.</string>
     <string name="show_image_media">Bilder anzeigen</string>
     <string name="show_all_media">Alle Medien anzeigen</string>
     <string name="all_media">Alle Medien</string>

@@ -5,18 +5,16 @@ import android.text.SpannableString
 import android.text.style.UnderlineSpan
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.activities.FileTools
 import de.herrmann_engel.rbv.databinding.RecViewBinding
-import de.herrmann_engel.rbv.db.DB_Media_Link_Card
-import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
+import de.herrmann_engel.rbv.db.DB_Media
 import de.herrmann_engel.rbv.utils.ContextTools
 
 
 class AdapterMediaLinkCardAll(
-    private val mediaLinks: ArrayList<DB_Media_Link_Card>,
+    private val media: ArrayList<DB_Media>,
+    private val cardNo: Int,
     private val onlyImages: Boolean,
     private val dialog: Dialog
 ) : RecyclerView.Adapter<AdapterMediaLinkCardAll.ViewHolder>() {
@@ -30,39 +28,26 @@ class AdapterMediaLinkCardAll(
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         val context = viewHolder.binding.root.context
-        val currentMediaLink = mediaLinks[position]
-        val fileId = currentMediaLink.file
-        val cardId = currentMediaLink.card
-        val dbHelperGet = DB_Helper_Get(context)
-        val currentMedia = dbHelperGet.getSingleMedia(fileId)
-        if (currentMedia != null) {
-            val fileName = currentMedia.file
-            val fileNameSpannable = SpannableString(fileName)
-            fileNameSpannable.setSpan(UnderlineSpan(), 0, fileName.length, 0)
-            viewHolder.binding.recName.text = fileNameSpannable
-            viewHolder.binding.recName.setOnClickListener {
-                if (onlyImages) {
-                    (ContextTools().getActivity(context) as FileTools).showImageDialog(
-                        fileId,
-                        cardId,
-                        dialog
-                    )
-                } else {
-                    (ContextTools().getActivity(context) as FileTools).openFile(fileId)
-                }
-            }
-        } else {
-            viewHolder.binding.recName.text = context.resources.getString(R.string.media_missing_db)
-            viewHolder.binding.recName.setTextColor(
-                ContextCompat.getColor(
-                    context,
-                    R.color.warn_red
+        val currentMedia = media[position]
+        val fileId = currentMedia.uid
+        val fileName = currentMedia.file
+        val fileNameSpannable = SpannableString(fileName)
+        fileNameSpannable.setSpan(UnderlineSpan(), 0, fileName.length, 0)
+        viewHolder.binding.recName.text = fileNameSpannable
+        viewHolder.binding.recName.setOnClickListener {
+            if (onlyImages) {
+                (ContextTools().getActivity(context) as FileTools).showImageDialog(
+                    fileId,
+                    cardNo,
+                    dialog
                 )
-            )
+            } else {
+                (ContextTools().getActivity(context) as FileTools).openFile(fileId)
+            }
         }
     }
 
     override fun getItemCount(): Int {
-        return mediaLinks.size
+        return media.size
     }
 }

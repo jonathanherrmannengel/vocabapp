@@ -72,10 +72,10 @@
     <string name="no_tags">no tags</string>
     <string name="no_files_without_media">All files are in database</string>
     <string name="media_missing">media missing (file not found)</string>
-    <string name="media_missing_db">media missing (no database entry)</string>
     <string name="media_missing_dialog">media missing</string>
     <string name="media_missing_dialog_text">Abort and review missing files?</string>
     <string name="image_media">image media</string>
+    <string name="image_media_print_number_and_limit">%1$d images attached. Display limit is: %2$d.</string>
     <string name="show_image_media">show images</string>
     <string name="show_all_media">show all media</string>
     <string name="all_media">all media</string>
@@ -117,19 +117,19 @@
     <string name="card_front">front</string>
     <string name="card_back">back</string>
     <string name="card_notes">notes</string>
-    <string name="change_front_back">show back</string>
-    <string name="change_back_front">show front</string>
-    <string name="sort_random">sort randomly</string>
-    <string name="sort_normal">sort by progress</string>
-    <string name="sort_alphabetical">sort alphabetical by flashcard front</string>
-    <string name="sort_repetition">sort by last repetition</string>
+    <string name="change_front_back">Show back</string>
+    <string name="change_back_front">Show front</string>
+    <string name="sort_random">Sort randomly</string>
+    <string name="sort_normal">Sort by progress</string>
+    <string name="sort_alphabetical">Sort alphabetical by flashcard front</string>
+    <string name="sort_repetition">Sort by last repetition</string>
     <string name="sort_random_short">randomly</string>
     <string name="sort_normal_short">by progress</string>
     <string name="sort_alphabetical_short">alphabetical by front</string>
     <string name="sort_repetition_short">by last repetition</string>
-    <string name="sort_menu">sort</string>
-    <string name="collection_details">filing box details</string>
-    <string name="pack_details">deck details</string>
+    <string name="sort_menu">Sort</string>
+    <string name="collection_details">Filing box details</string>
+    <string name="pack_details">Deck details</string>
     <string name="card_plus">got it right</string>
     <string name="card_minus">got it wrong</string>
     <string name="skip">skip</string>
@@ -138,7 +138,7 @@
     <string name="tag_emoji">Emoji for tag</string>
     <string name="tags">tags</string>
     <string name="card_known">progress</string>
-    <string name="query_mode">query mode</string>
+    <string name="query_mode">Query mode</string>
     <string name="query_mode_title">%1$s (%2$d of %3$d)</string>
     <string name="query_show">show solution</string>
     <string name="query_notes">show notes</string>
@@ -148,7 +148,7 @@
     <string name="query_media_all_title">all media files</string>
     <string name="query_media_image" translatable="false">@string/show_image_media</string>
     <string name="query_media_image_title">image files</string>
-    <string name="list_stats">list stats</string>
+    <string name="list_stats">List stats</string>
     <string name="list_stat_cards">flashcards</string>
     <string name="list_stat_cards_total">total</string>
     <string name="list_stat_progress" translatable="false">@string/card_known</string>
@@ -173,7 +173,7 @@
     <string name="print_include_tag_list">Include tag list</string>
     <string name="color">color</string>
     <string name="info">info</string>
-    <string name="search">search</string>
+    <string name="search">Search</string>
     <string name="search_no_results">no search results</string>
     <string name="search_off">Reset search</string>
     <string name="advanced_search">Advanced query</string>

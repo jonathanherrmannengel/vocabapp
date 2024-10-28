@@ -9,7 +9,6 @@ import de.herrmann_engel.rbv.db.DB_Card_With_Meta;
 import de.herrmann_engel.rbv.db.DB_Collection;
 import de.herrmann_engel.rbv.db.DB_Collection_With_Meta;
 import de.herrmann_engel.rbv.db.DB_Media;
-import de.herrmann_engel.rbv.db.DB_Media_Link_Card;
 import de.herrmann_engel.rbv.db.DB_Pack;
 import de.herrmann_engel.rbv.db.DB_Pack_With_Meta;
 import de.herrmann_engel.rbv.db.DB_Tag;
@@ -295,26 +294,23 @@ public class DB_Helper_Get {
         return dbHelper.media_dao.getAll();
     }
 
+    public List<DB_Media> getCardMedia(int cardId) {
+        return dbHelper.media_dao.getAllByCard(cardId);
+    }
+
+    public List<DB_Media> getCardImageMedia(int cardId) {
+        List<DB_Media> list = dbHelper.media_dao.getAllByCard(cardId);
+        list.removeIf(l -> !isPhoto(l.mime));
+        return list;
+    }
+
     // Get All: Media Links
     private boolean isPhoto(String mime) {
         return mime.equals("image/png") || mime.equals("image/jpeg") || mime.equals("image/webp");
     }
 
-    public List<DB_Media_Link_Card> getAllMediaLinksByCard(int card) {
-        return dbHelper.media_link_card_dao.getAllByCard(card);
-    }
-
     public List<Integer> getAllMediaLinkFileIdsByCard(int card) {
         return dbHelper.media_link_card_dao.getAllMediaIdsByCard(card);
-    }
-
-    public List<DB_Media_Link_Card> getImageMediaLinksByCard(int card) {
-        List<DB_Media_Link_Card> list = dbHelper.media_link_card_dao.getAllByCard(card);
-        list.removeIf(l -> {
-            DB_Media file = getSingleMedia(l.file);
-            return file == null || !isPhoto(file.mime);
-        });
-        return list;
     }
 
     // Get All: Tags
