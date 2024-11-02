@@ -8,8 +8,8 @@ android {
         applicationId = "de.herrmann_engel.rbv"
         minSdk = 25
         targetSdk = 34
-        versionCode = 76
-        versionName = "3.4.3"
+        versionCode = 77
+        versionName = "3.4.4"
         javaCompileOptions {
             annotationProcessorOptions {
                 arguments += mapOf(

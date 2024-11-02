@@ -1,0 +1,3 @@
+Du kannst nicht unbegrenzt viele mit einer Karteikarte verknüpfte Bilder drucken.
+
+Einige Kontextmenü-Aktionen sind beschränkt nach der Anzahl der Einträge.
