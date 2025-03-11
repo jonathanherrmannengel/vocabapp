@@ -3,13 +3,13 @@ plugins {
     id("org.jetbrains.kotlin.android")
 }
 android {
-    compileSdk = 34
+    compileSdk = 35
     defaultConfig {
         applicationId = "de.herrmann_engel.rbv"
         minSdk = 25
-        targetSdk = 34
-        versionCode = 77
-        versionName = "3.4.4"
+        targetSdk = 35
+        versionCode = 78
+        versionName = "3.4.5"
         javaCompileOptions {
             annotationProcessorOptions {
                 arguments += mapOf(
@@ -59,14 +59,14 @@ android {
 dependencies {
     val kotlinVersion = rootProject.extra.get("kotlinVersion") as String
     val roomVersion = "2.6.1"
-    implementation("androidx.core:core-ktx:1.13.1")
+    implementation("androidx.core:core-ktx:1.15.0")
     implementation("androidx.room:room-runtime:$roomVersion")
     annotationProcessor("androidx.room:room-compiler:$roomVersion")
     implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("com.google.android.material:material:1.12.0")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
-    implementation("com.opencsv:opencsv:5.9")
+    implementation("com.opencsv:opencsv:5.10")
     implementation("io.noties.markwon:core:4.6.2")
     implementation("io.noties.markwon:linkify:4.6.2")
     implementation("me.saket:better-link-movement-method:2.2.0")

@@ -242,7 +242,7 @@ class AsyncExportWorker(
                     }
                     inputStream.close()
                     outputStream?.close()
-                } catch (e: java.lang.Exception) {
+                } catch (e: Exception) {
                     e.printStackTrace()
                 }
             }

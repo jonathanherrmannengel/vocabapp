@@ -23,7 +23,6 @@ import de.herrmann_engel.rbv.databinding.DiaConfirmBinding
 import de.herrmann_engel.rbv.databinding.DiaImageBinding
 import de.herrmann_engel.rbv.databinding.DiaRecBinding
 import de.herrmann_engel.rbv.db.DB_Media
-import de.herrmann_engel.rbv.db.DB_Media_Link_Card
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 
 abstract class FileTools : AppCompatActivity() {
@@ -273,11 +272,16 @@ abstract class FileTools : AppCompatActivity() {
     }
 
     private fun openFile(file: DocumentFile) {
-        val intent = Intent()
-        intent.action = Intent.ACTION_VIEW
-        intent.setDataAndType(file.uri, file.type)
-        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        this.startActivity(intent)
+        try {
+            val intent = Intent()
+            intent.action = Intent.ACTION_VIEW
+            intent.setDataAndType(file.uri, file.type)
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            this.startActivity(intent)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show()
+        }
     }
 
     fun openFile(name: String) {

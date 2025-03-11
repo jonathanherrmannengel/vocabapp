@@ -1,0 +1,3 @@
+Update to Android SDK 35.
+Update dependencies.
+Bugfixes.

@@ -1,0 +1,3 @@
+Aktualisierung auf Android SDK 35.
+Aktualisierte Abhängigkeiten.
+Fehlerkorrekturen.
