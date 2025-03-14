@@ -141,7 +141,6 @@ class ListPacks : PackActionsActivity(), AsyncExportFinish, AsyncExportProgress 
                 val colorStatusBar = colorsStatusBar.getColor(collectionColors, 0)
                 val colorBackground = colorsBackground.getColor(collectionColors, 0)
                 supportActionBar?.setBackgroundDrawable(ColorDrawable(colorStatusBar))
-                window.statusBarColor = colorStatusBar
                 binding.root.setBackgroundColor(colorBackground)
             }
             colorsStatusBar.recycle()

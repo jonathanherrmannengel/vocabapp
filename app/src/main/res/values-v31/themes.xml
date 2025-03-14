@@ -8,7 +8,7 @@
         <item name="colorSecondary">@color/highlight</item>
         <item name="android:textColorLink">@color/hyperlink</item>
         <!-- Status bar color. -->
-        <item name="android:statusBarColor">@color/statusbar_back</item>
+        <item name="android:statusBarColor">@color/statusbar_back_default</item>
         <item name="actionBarTheme">@style/Theme.RBV.ActionBar</item>
         <item name="actionOverflowMenuStyle">@style/Theme.RBV.ActionBarOverflow</item>
         <!-- Action mode color. -->

@@ -35,7 +35,6 @@ class NewPack : AppCompatActivity() {
             val colorStatusBar = colorsStatusBar.getColor(collectionColors, 0)
             val colorBackground = colorsBackground.getColor(collectionColors, 0)
             supportActionBar?.setBackgroundDrawable(ColorDrawable(colorStatusBar))
-            window.statusBarColor = colorStatusBar
             binding.newCollectionOrPackNameLayout.boxStrokeColor = color
             binding.newCollectionOrPackNameLayout.hintTextColor =
                 ColorStateList.valueOf(color)

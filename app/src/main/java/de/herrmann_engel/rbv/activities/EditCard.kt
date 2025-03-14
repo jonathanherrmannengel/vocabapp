@@ -54,7 +54,6 @@ class EditCard : AppCompatActivity() {
             val colorStatusBar = colorsStatusBar.getColor(packColors, 0)
             val colorBackground = colorsBackground.getColor(packColors, 0)
             supportActionBar?.setBackgroundDrawable(ColorDrawable(colorStatusBar))
-            window.statusBarColor = colorStatusBar
             binding.editCardFrontLayout.boxStrokeColor = color
             binding.editCardFrontLayout.hintTextColor =
                 ColorStateList.valueOf(color)

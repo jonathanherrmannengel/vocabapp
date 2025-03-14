@@ -250,7 +250,6 @@ class ViewCard : CardActionsActivity() {
             val colorBackground = colorsBackground.getColor(packColors, 0)
             val colorBackgroundLight = colorsBackgroundLight.getColor(packColors, 0)
             supportActionBar?.setBackgroundDrawable(ColorDrawable(colorStatusBar))
-            window.statusBarColor = colorStatusBar
             binding.root.setBackgroundColor(colorBackground)
             binding.cardKnownProgress.setBackgroundColor(colorBackgroundLight)
         }

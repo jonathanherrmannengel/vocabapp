@@ -32,7 +32,6 @@ class EditCardTags : AppCompatActivity() {
             val colorStatusBar = colorsStatusBar.getColor(packColors, 0)
             val colorBackground = colorsBackground.getColor(packColors, 0)
             supportActionBar?.setBackgroundDrawable(ColorDrawable(colorStatusBar))
-            window.statusBarColor = colorStatusBar
             binding.root.setBackgroundColor(colorBackground)
         }
         colorsStatusBar.recycle()

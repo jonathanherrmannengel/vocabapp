@@ -13,6 +13,7 @@
     <color name="ijred">#ffaeaa</color>
     <color name="ijgreen">#aeffaa</color>
     <color name="ijyellow">#fff0aa</color>
+    <color name="statusbar_back_default">#100010</color>
     <color name="statusbar_back">#020123</color>
     <color name="statusbar_back1">#230202</color>
     <color name="statusbar_back2">#021302</color>

@@ -36,7 +36,6 @@ class NewCard : AppCompatActivity() {
             val colorStatusBar = colorsStatusBar.getColor(packColors, 0)
             val colorBackground = colorsBackground.getColor(packColors, 0)
             supportActionBar?.setBackgroundDrawable(ColorDrawable(colorStatusBar))
-            window.statusBarColor = colorStatusBar
             binding.newCardFrontLayout.boxStrokeColor = color
             binding.newCardFrontLayout.hintTextColor =
                 ColorStateList.valueOf(color)

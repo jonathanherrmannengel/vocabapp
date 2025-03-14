@@ -206,7 +206,6 @@ class ListCards : CardActionsActivity() {
                 val colorStatusBar = colorsStatusBar.getColor(packColors, 0)
                 val colorBackground = colorsBackground.getColor(packColors, 0)
                 supportActionBar?.setBackgroundDrawable(ColorDrawable(colorStatusBar))
-                window.statusBarColor = colorStatusBar
                 binding.root.setBackgroundColor(colorBackground)
             }
             colorsStatusBar.recycle()
@@ -221,7 +220,6 @@ class ListCards : CardActionsActivity() {
                 val colorStatusBar = colorsStatusBar.getColor(collectionColors, 0)
                 val colorBackground = colorsBackground.getColor(collectionColors, 0)
                 supportActionBar?.setBackgroundDrawable(ColorDrawable(colorStatusBar))
-                window.statusBarColor = colorStatusBar
                 binding.root.setBackgroundColor(colorBackground)
             }
             colorsStatusBar.recycle()

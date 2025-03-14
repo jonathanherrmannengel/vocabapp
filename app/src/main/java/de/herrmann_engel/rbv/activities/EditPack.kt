@@ -182,7 +182,6 @@ class EditPack : AppCompatActivity() {
 
     private fun setColors(main: Int, statusBar: Int, background: Int) {
         supportActionBar?.setBackgroundDrawable(ColorDrawable(statusBar))
-        window.statusBarColor = statusBar
         binding.editCollectionOrPackNameLayout.boxStrokeColor = main
         binding.editCollectionOrPackNameLayout.hintTextColor = ColorStateList.valueOf(main)
         binding.editCollectionOrPackDescLayout.boxStrokeColor = main
