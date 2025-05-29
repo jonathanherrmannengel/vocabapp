@@ -39,8 +39,7 @@
     <string name="export_cards">Karteikasten als Backup exportieren</string>
     <string name="import_title">Import</string>
     <string name="import_cards">Karteikasten/-kästen von Backup importieren</string>
-    <string name="import_warn">Nicht alle Daten konnten importiert werden</string>
-    <string name="import_okay">Erfolgreich beendet</string>
+    <string name="import_warn">Import unvollständig: Nicht alle Einträge konnten importiert werden</string>
     <string name="edit_collection">Karteikasten bearbeiten</string>
     <string name="import_mode">Handhabung von gleichnamigen Karteikästen:</string>
     <string name="import_mode_skip">Nicht importieren</string>
@@ -182,10 +181,10 @@
     <string name="advanced_search_repetition_value">Letzte Wiederholung: Wert</string>
     <string name="advanced_search_packs_checkbox_description">Kartenstapel „%1$s“ (in Karteikasten: „%2$s“)</string>
     <string name="settings_list_default_sort">Karteikartenliste: Standard-Sortierung</string>
-    <string name="settings_format">Formatierung</string>
-    <string name="settings_format_cards">Karteikarten-Vorder-/Rückseite: Einfache Formatierung</string>
+    <string name="settings_format">Karteikarten: Formatierung</string>
+    <string name="settings_format_cards">Vorder-/Rückseite: Einfach</string>
     <string name="settings_format_cards_info">***Text*** = Fett und kursiv\n**Text** = Fett\n*Text* = Kursiv\n_Text_ = Unterstrichen</string>
-    <string name="settings_format_card_notes">Karteikarten-Notizen: Markdown Unterstützung</string>
+    <string name="settings_format_card_notes">Notizen: Markdown</string>
     <string name="settings_ui">Nutzeroberfläche</string>
     <string name="settings_ui_background_images">Hintergrundbilder anzeigen</string>
     <string name="settings_ui_increase_font_size">Schriftgröße erhöhen</string>

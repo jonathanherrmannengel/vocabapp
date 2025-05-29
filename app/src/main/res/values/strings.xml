@@ -13,7 +13,7 @@
     <string name="error_values">error – did you fill all required fields?</string>
     <string name="error_creating_duplicate">error – already in list?</string>
     <string name="error_creating_duplicate_tag_db">error – does this tag already exist?</string>
-    <string name="success">success</string>
+    <string name="success">successfully completed</string>
     <string name="wait">please wait</string>
     <string name="add">add</string>
     <string name="start">start</string>
@@ -44,8 +44,7 @@
     <string name="export_cards">Export filing box as backup</string>
     <string name="import_title">Import</string>
     <string name="import_cards">Import filing box(es) from backup</string>
-    <string name="import_warn">Import not complete</string>
-    <string name="import_okay">Import success</string>
+    <string name="import_warn">import incomplete: not all entries could be imported</string>
     <string name="import_mode">Same-named filing boxes handling:</string>
     <string name="import_mode_skip">Do not import</string>
     <string name="import_mode_duplicates">Add new same-named entry</string>
@@ -89,7 +88,7 @@
     <string name="select_folder_help_db_entries">Database contains media entries, but no folder ist selected. Select the folder now?</string>
     <string name="file_exists">A file with this name exists in the app media folder. You have the following options:</string>
     <string name="file_exists_title">file exists</string>
-    <string name="file_exists_action_link">Use existing instead of selected file</string>
+    <string name="file_exists_action_link">use existing instead of selected file</string>
     <string name="file_exists_action_new">rename and copy selected file</string>
     <string name="delete_file_title">delete file</string>
     <string name="delete_file_info">Media deleted from database. Also delete file from disk?</string>
@@ -192,10 +191,10 @@
     <string name="advanced_search_repetition_value">last repetition value</string>
     <string name="advanced_search_packs_checkbox_description">deck “%1$s” (in filing box: “%2$s”)</string>
     <string name="settings_list_default_sort">Flashcard list: Default sort</string>
-    <string name="settings_format">Formatting</string>
-    <string name="settings_format_cards">Flashcard front/back: Simple formatting</string>
+    <string name="settings_format">Flashcards: Formatting</string>
+    <string name="settings_format_cards">front/back: simple</string>
     <string name="settings_format_cards_info">***Text*** = Bold and italic\n**Text** = Bold\n*Text* = Italic\n_Text_ = Underline</string>
-    <string name="settings_format_card_notes">Flashcard notes: Markdown support</string>
+    <string name="settings_format_card_notes">notes: Markdown</string>
     <string name="settings_ui">Customize UI</string>
     <string name="settings_ui_background_images">Show background images</string>
     <string name="settings_ui_increase_font_size">Increase font size</string>

@@ -319,7 +319,7 @@ class ListCollections : FileTools(), AsyncImportFinish, AsyncImportProgress, Asy
         runOnUiThread {
             if (result < Globals.IMPORT_ERROR_LEVEL_ERROR) {
                 if (result == Globals.IMPORT_ERROR_LEVEL_OKAY) {
-                    Toast.makeText(this, R.string.import_okay, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, R.string.success, Toast.LENGTH_SHORT).show()
                 } else {
                     Toast.makeText(this, R.string.import_warn, Toast.LENGTH_LONG).show()
                 }
