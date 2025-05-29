@@ -25,7 +25,7 @@ import de.herrmann_engel.rbv.utils.SortCards
 
 
 class AdapterMediaManage(
-    private val media: ArrayList<DB_Media>
+    private val media: MutableList<DB_Media>
 ) : RecyclerView.Adapter<AdapterMediaManage.ViewHolder>() {
     class ViewHolder(val binding: RecViewBinding) : RecyclerView.ViewHolder(binding.root)
 

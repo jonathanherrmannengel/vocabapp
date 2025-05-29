@@ -12,7 +12,7 @@ import de.herrmann_engel.rbv.utils.ContextTools
 
 
 class AdapterFilesManage(
-    private val files: ArrayList<DocumentFile>
+    private val files: MutableList<DocumentFile>
 ) : RecyclerView.Adapter<AdapterFilesManage.ViewHolder>() {
     class ViewHolder(val binding: RecViewFilesBinding) : RecyclerView.ViewHolder(binding.root)
 

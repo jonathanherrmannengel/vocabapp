@@ -1,10 +1,10 @@
 package de.herrmann_engel.rbv.activities
 
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.inputmethod.EditorInfo
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.graphics.drawable.toDrawable
 import androidx.recyclerview.widget.LinearLayoutManager
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.adapters.AdapterTagLinkCard
@@ -31,7 +31,7 @@ class EditCardTags : AppCompatActivity() {
         if (packColors in 0..<minimalLength) {
             val colorStatusBar = colorsStatusBar.getColor(packColors, 0)
             val colorBackground = colorsBackground.getColor(packColors, 0)
-            supportActionBar?.setBackgroundDrawable(ColorDrawable(colorStatusBar))
+            supportActionBar?.setBackgroundDrawable(colorStatusBar.toDrawable())
             binding.root.setBackgroundColor(colorBackground)
         }
         colorsStatusBar.recycle()

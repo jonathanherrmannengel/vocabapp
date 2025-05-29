@@ -22,7 +22,7 @@ import de.herrmann_engel.rbv.utils.StringTools
 class AdapterPacksMoveCard(
     private val packs: List<DB_Pack>,
     private val collectionNo: Int,
-    private val cards: ArrayList<DB_Card>,
+    private val cards: List<DB_Card>,
     private val dialog: Dialog
 ) : RecyclerView.Adapter<AdapterPacksMoveCard.ViewHolder>() {
     class ViewHolder(val binding: RecViewBinding) : RecyclerView.ViewHolder(binding.root)

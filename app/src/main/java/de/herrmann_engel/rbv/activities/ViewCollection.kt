@@ -2,7 +2,6 @@ package de.herrmann_engel.rbv.activities
 
 import android.app.Dialog
 import android.content.Intent
-import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.util.TypedValue
@@ -10,6 +9,7 @@ import android.view.Menu
 import android.view.View
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.graphics.drawable.toDrawable
 import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.databinding.ActivityViewCollectionOrPackBinding
@@ -91,7 +91,7 @@ class ViewCollection : AppCompatActivity() {
         if (collectionColors in 0..<minimalLength) {
             val colorStatusBar = colorsStatusBar.getColor(collectionColors, 0)
             val colorBackground = colorsBackground.getColor(collectionColors, 0)
-            supportActionBar?.setBackgroundDrawable(ColorDrawable(colorStatusBar))
+            supportActionBar?.setBackgroundDrawable(colorStatusBar.toDrawable())
             binding.root.setBackgroundColor(colorBackground)
         }
         colorsStatusBar.recycle()

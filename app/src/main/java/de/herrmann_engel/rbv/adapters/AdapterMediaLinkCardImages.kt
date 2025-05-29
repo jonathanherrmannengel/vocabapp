@@ -15,7 +15,7 @@ import de.herrmann_engel.rbv.utils.ContextTools
 
 
 class AdapterMediaLinkCardImages(
-    private val media: ArrayList<DB_Media>,
+    private val media: List<DB_Media>,
     private val cardNo: Int,
     private val dialog: Dialog
 ) : RecyclerView.Adapter<AdapterMediaLinkCardImages.ViewHolder>() {

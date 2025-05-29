@@ -12,7 +12,7 @@ import de.herrmann_engel.rbv.utils.StringTools
 
 class AdapterTagsAdvancedSearch(
     private val tags: List<DB_Tag>,
-    private val tagIdsCheckedInitially: ArrayList<Int>
+    private val tagIdsCheckedInitially: List<Int>
 ) : RecyclerView.Adapter<AdapterTagsAdvancedSearch.ViewHolder>() {
     class ViewHolder(val binding: RecViewSmallBinding) : RecyclerView.ViewHolder(binding.root)
 

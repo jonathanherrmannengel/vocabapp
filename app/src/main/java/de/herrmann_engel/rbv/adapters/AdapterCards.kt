@@ -46,7 +46,7 @@ class AdapterCards(
     private var contextualMenuMode: ActionMode? = null
     private val contextualMenuModePayload = "contextualMode"
     private var contextualMenuModeActivity: Activity? = null
-    private val contextualMenuModeCardIdList: MutableList<Int> = ArrayList()
+    private val contextualMenuModeCardIdList: ArrayList<Int> = ArrayList()
     private val contextualMenuModeCallback = object : ActionMode.Callback {
         override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
             val inflater: MenuInflater = mode.menuInflater

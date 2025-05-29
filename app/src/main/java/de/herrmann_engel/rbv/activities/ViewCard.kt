@@ -3,7 +3,6 @@ package de.herrmann_engel.rbv.activities
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.PorterDuff
-import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.text.SpannableString
@@ -16,13 +15,14 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.toDrawable
+import androidx.core.graphics.toColorInt
 import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.actions.CardActions
 import de.herrmann_engel.rbv.databinding.ActivityViewCardBinding
 import de.herrmann_engel.rbv.db.DB_Card
 import de.herrmann_engel.rbv.db.DB_Media
-import de.herrmann_engel.rbv.db.DB_Media_Link_Card
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Update
 import de.herrmann_engel.rbv.ui.TagSpan
@@ -98,7 +98,7 @@ class ViewCard : CardActionsActivity() {
                 )
                 if (!it.color.isNullOrBlank()) {
                     try {
-                        color = Color.parseColor(it.color)
+                        color = it.color.toColorInt()
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
@@ -249,7 +249,7 @@ class ViewCard : CardActionsActivity() {
             val colorStatusBar = colorsStatusBar.getColor(packColors, 0)
             val colorBackground = colorsBackground.getColor(packColors, 0)
             val colorBackgroundLight = colorsBackgroundLight.getColor(packColors, 0)
-            supportActionBar?.setBackgroundDrawable(ColorDrawable(colorStatusBar))
+            supportActionBar?.setBackgroundDrawable(colorStatusBar.toDrawable())
             binding.root.setBackgroundColor(colorBackground)
             binding.cardKnownProgress.setBackgroundColor(colorBackgroundLight)
         }

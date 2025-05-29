@@ -48,7 +48,7 @@ class AdapterPacks(
     private var contextualMenuMode: ActionMode? = null
     private val contextualMenuModePayload = "contextualMode"
     private var contextualMenuModeActivity: Activity? = null
-    private val contextualMenuModePackIdList: MutableList<Int> = ArrayList()
+    private val contextualMenuModePackIdList: ArrayList<Int> = ArrayList()
     private val contextualMenuModeCallback = object : ActionMode.Callback {
         override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
             val inflater: MenuInflater = mode.menuInflater

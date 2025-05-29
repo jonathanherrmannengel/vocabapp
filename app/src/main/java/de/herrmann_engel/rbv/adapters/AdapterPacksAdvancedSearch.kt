@@ -15,7 +15,7 @@ import java.util.Locale
 
 class AdapterPacksAdvancedSearch(
     private val packs: List<DB_Pack>,
-    private val packIdsCheckedInitially: ArrayList<Int>
+    private val packIdsCheckedInitially: List<Int>
 ) : RecyclerView.Adapter<AdapterPacksAdvancedSearch.ViewHolder>() {
     class ViewHolder(val binding: RecViewSmallBinding) : RecyclerView.ViewHolder(binding.root)
 

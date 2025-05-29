@@ -1,7 +1,6 @@
 package de.herrmann_engel.rbv.adapters
 
 import android.app.Dialog
-import android.graphics.Color
 import android.text.Editable
 import android.text.InputFilter
 import android.text.TextWatcher
@@ -11,6 +10,7 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.toColorInt
 import androidx.recyclerview.widget.RecyclerView
 import com.vanniktech.emoji.EmojiPopup
 import com.vanniktech.emoji.EmojiTheming
@@ -53,8 +53,8 @@ class AdapterTagLinkCard(
                 val dbHelperDelete = DB_Helper_Delete(context)
                 dbHelperDelete.deleteTagLink(currentTag.uid, cardNo)
                 tags.remove(currentTag)
-                notifyItemRemoved(position)
-                notifyItemRangeChanged(position, tags.size)
+                notifyItemRemoved(viewHolder.bindingAdapterPosition)
+                notifyItemRangeChanged(viewHolder.bindingAdapterPosition, tags.size)
             }
             viewHolder.binding.recTagsEdit.visibility = View.VISIBLE
             viewHolder.binding.recTagsEdit.setOnClickListener {
@@ -74,7 +74,7 @@ class AdapterTagLinkCard(
                     if (!currentTag.color.isNullOrBlank()) {
                         try {
                             bindingEditDialog.editTagColor.color =
-                                Color.parseColor(currentTag.color)
+                                currentTag.color.toColorInt()
                         } catch (_: Exception) {
                         }
                     }
@@ -149,8 +149,8 @@ class AdapterTagLinkCard(
                                 color?.let { it1 -> "#" + Integer.toHexString(it1).substring(2) }
                             val dbHelperUpdate = DB_Helper_Update(context)
                             if (dbHelperUpdate.updateTag(newTag)) {
-                                tags[position] = newTag
-                                notifyItemChanged(position)
+                                tags[tags.indexOf(currentTag)] = newTag
+                                notifyItemChanged(viewHolder.bindingAdapterPosition)
                                 editDialog.dismiss()
                             } else {
                                 Toast.makeText(context, R.string.error_creating_duplicate_tag_db, Toast.LENGTH_LONG).show()

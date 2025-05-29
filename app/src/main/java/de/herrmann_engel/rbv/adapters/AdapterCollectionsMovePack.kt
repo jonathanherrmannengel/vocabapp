@@ -17,7 +17,7 @@ import de.herrmann_engel.rbv.utils.ContextTools
 
 class AdapterCollectionsMovePack(
     private val collection: List<DB_Collection>,
-    private val packs: ArrayList<DB_Pack>,
+    private val packs: List<DB_Pack>,
     private val dialog: Dialog
 ) : RecyclerView.Adapter<AdapterCollectionsMovePack.ViewHolder>() {
     class ViewHolder(val binding: RecViewBinding) : RecyclerView.ViewHolder(binding.root)

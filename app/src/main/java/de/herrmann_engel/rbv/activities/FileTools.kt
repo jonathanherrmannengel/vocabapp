@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.edit
 import androidx.documentfile.provider.DocumentFile
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -349,9 +350,9 @@ abstract class FileTools : AppCompatActivity() {
 
     private fun setCardMediaFolder(uri: String) {
         val config = getSharedPreferences(Globals.CONFIG_NAME, MODE_PRIVATE)
-        val editor = config.edit()
-        editor.putString("card_media_folder", uri)
-        editor.apply()
+        config.edit {
+            putString("card_media_folder", uri)
+        }
     }
 
     fun existsMediaFile(name: String?): Boolean {

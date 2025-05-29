@@ -2,13 +2,13 @@ package de.herrmann_engel.rbv.activities
 
 import android.app.Dialog
 import android.content.res.ColorStateList
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.Menu
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.graphics.drawable.toDrawable
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.databinding.ActivityNewCollectionOrPackBinding
 import de.herrmann_engel.rbv.databinding.DiaConfirmBinding
@@ -34,7 +34,7 @@ class NewPack : AppCompatActivity() {
             val color = colors.getColor(collectionColors, 0)
             val colorStatusBar = colorsStatusBar.getColor(collectionColors, 0)
             val colorBackground = colorsBackground.getColor(collectionColors, 0)
-            supportActionBar?.setBackgroundDrawable(ColorDrawable(colorStatusBar))
+            supportActionBar?.setBackgroundDrawable(colorStatusBar.toDrawable())
             binding.newCollectionOrPackNameLayout.boxStrokeColor = color
             binding.newCollectionOrPackNameLayout.hintTextColor =
                 ColorStateList.valueOf(color)

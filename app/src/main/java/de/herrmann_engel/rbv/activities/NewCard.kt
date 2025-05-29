@@ -3,13 +3,13 @@ package de.herrmann_engel.rbv.activities
 import android.app.Dialog
 import android.content.Intent
 import android.content.res.ColorStateList
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.Menu
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.graphics.drawable.toDrawable
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.databinding.ActivityNewCardBinding
 import de.herrmann_engel.rbv.databinding.DiaConfirmBinding
@@ -35,7 +35,7 @@ class NewCard : AppCompatActivity() {
             val color = colors.getColor(packColors, 0)
             val colorStatusBar = colorsStatusBar.getColor(packColors, 0)
             val colorBackground = colorsBackground.getColor(packColors, 0)
-            supportActionBar?.setBackgroundDrawable(ColorDrawable(colorStatusBar))
+            supportActionBar?.setBackgroundDrawable(colorStatusBar.toDrawable())
             binding.newCardFrontLayout.boxStrokeColor = color
             binding.newCardFrontLayout.hintTextColor =
                 ColorStateList.valueOf(color)

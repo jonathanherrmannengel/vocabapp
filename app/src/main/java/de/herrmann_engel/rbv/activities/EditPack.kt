@@ -2,7 +2,6 @@ package de.herrmann_engel.rbv.activities
 
 import android.app.Dialog
 import android.content.res.ColorStateList
-import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
@@ -18,6 +17,7 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.toDrawable
 import com.vanniktech.emoji.EmojiPopup
 import com.vanniktech.emoji.EmojiTheming
 import com.vanniktech.emoji.inputfilters.OnlyEmojisInputFilter
@@ -110,7 +110,7 @@ class EditPack : AppCompatActivity() {
                 setColors(color, colorStatusBar, colorBackground)
             }
             val colorView = ImageButton(this)
-            colorView.setImageDrawable(ColorDrawable(color))
+            colorView.setImageDrawable(color.toDrawable())
             val margin =
                 (10 * (resources.displayMetrics.densityDpi.toFloat() / DisplayMetrics.DENSITY_DEFAULT)).roundToInt()
             val lp = LinearLayout.LayoutParams(margin * 3, margin * 3)
@@ -181,7 +181,7 @@ class EditPack : AppCompatActivity() {
     }
 
     private fun setColors(main: Int, statusBar: Int, background: Int) {
-        supportActionBar?.setBackgroundDrawable(ColorDrawable(statusBar))
+        supportActionBar?.setBackgroundDrawable(statusBar.toDrawable())
         binding.editCollectionOrPackNameLayout.boxStrokeColor = main
         binding.editCollectionOrPackNameLayout.hintTextColor = ColorStateList.valueOf(main)
         binding.editCollectionOrPackDescLayout.boxStrokeColor = main

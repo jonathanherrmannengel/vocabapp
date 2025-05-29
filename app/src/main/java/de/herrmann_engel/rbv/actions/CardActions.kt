@@ -11,7 +11,7 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.text.HtmlCompat
+import androidx.core.text.toHtml
 import androidx.core.text.toSpanned
 import androidx.recyclerview.widget.LinearLayoutManager
 import de.herrmann_engel.rbv.Globals
@@ -202,10 +202,7 @@ class CardActions(val activity: Activity) {
                     ) + "</h2>"
                 }
                 htmlDocument += "<div>"
-                htmlDocument += HtmlCompat.toHtml(
-                    cardFront,
-                    HtmlCompat.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE
-                )
+                htmlDocument += cardFront.toHtml()
                 htmlDocument += "</div></article>"
                 htmlDocument += "<article>"
                 if (bindingPrintDialog.diaPrintIncludeHeadings.isChecked) {
@@ -216,14 +213,11 @@ class CardActions(val activity: Activity) {
                 } else {
                     htmlDocument += "<div class=\"border-top\">"
                 }
-                htmlDocument += HtmlCompat.toHtml(
-                    if (formatCards) {
-                        stringTools.format(card.back)
-                    } else {
-                        card.back.toSpanned()
-                    },
-                    HtmlCompat.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE
-                )
+                htmlDocument += if (formatCards) {
+                    stringTools.format(card.back)
+                } else {
+                    card.back.toSpanned()
+                }.toHtml()
                 htmlDocument += "</div></article>"
                 if (card.notes != null && card.notes.isNotEmpty() && bindingPrintDialog.diaPrintIncludeNotes.isChecked) {
                     htmlDocument += "<article>"
@@ -241,10 +235,7 @@ class CardActions(val activity: Activity) {
                         val renderer = HtmlRenderer.builder().build()
                         renderer.render(document)
                     } else {
-                        HtmlCompat.toHtml(
-                            card.notes.toSpanned(),
-                            HtmlCompat.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE
-                        )
+                        card.notes.toSpanned().toHtml()
                     }
                     htmlDocument += "</div></article>"
                 }

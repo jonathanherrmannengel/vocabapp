@@ -7,7 +7,6 @@ import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Intent
 import android.content.SharedPreferences
-import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.LayerDrawable
 import android.os.Bundle
@@ -24,6 +23,9 @@ import android.view.WindowManager
 import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.SearchView
+import androidx.core.content.edit
+import androidx.core.graphics.drawable.toDrawable
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.Globals.LIST_CARDS_GET_DB_COLLECTIONS_ALL
@@ -205,7 +207,7 @@ class ListCards : CardActionsActivity() {
             if (packColors in 0..<minimalLength) {
                 val colorStatusBar = colorsStatusBar.getColor(packColors, 0)
                 val colorBackground = colorsBackground.getColor(packColors, 0)
-                supportActionBar?.setBackgroundDrawable(ColorDrawable(colorStatusBar))
+                supportActionBar?.setBackgroundDrawable(colorStatusBar.toDrawable())
                 binding.root.setBackgroundColor(colorBackground)
             }
             colorsStatusBar.recycle()
@@ -219,7 +221,7 @@ class ListCards : CardActionsActivity() {
             if (collectionColors in 0..<minimalLength) {
                 val colorStatusBar = colorsStatusBar.getColor(collectionColors, 0)
                 val colorBackground = colorsBackground.getColor(collectionColors, 0)
-                supportActionBar?.setBackgroundDrawable(ColorDrawable(colorStatusBar))
+                supportActionBar?.setBackgroundDrawable(colorStatusBar.toDrawable())
                 binding.root.setBackgroundColor(colorBackground)
             }
             colorsStatusBar.recycle()
@@ -277,39 +279,39 @@ class ListCards : CardActionsActivity() {
             val warnInaccurateNoFormat =
                 !formatCardsActivated && config.getBoolean("inaccurate_warning_no_format", true)
             if (warnInaccurateFormat || warnInaccurateNoFormat) {
-                val configEditor = config.edit()
-                val infoDialog = Dialog(this, R.style.dia_view)
-                val bindingInfoDialog = DiaInfoBinding.inflate(
-                    layoutInflater
-                )
-                infoDialog.setContentView(bindingInfoDialog.root)
-                infoDialog.setTitle(resources.getString(R.string.info))
-                infoDialog.window!!.setLayout(
-                    WindowManager.LayoutParams.MATCH_PARENT,
-                    WindowManager.LayoutParams.MATCH_PARENT
-                )
-                val warnings: MutableList<String> = ArrayList()
-                warnings.add(
-                    String.format(
-                        resources.getString(R.string.warn_inaccurate),
-                        Globals.MAX_SIZE_CARDS_LIST_ACCURATE
+                config.edit {
+                    val infoDialog = Dialog(this@ListCards, R.style.dia_view)
+                    val bindingInfoDialog = DiaInfoBinding.inflate(
+                        layoutInflater
                     )
-                )
-                if (warnInaccurateFormat) {
-                    configEditor.putBoolean("inaccurate_warning_format", false)
-                    warnings.add(resources.getString(R.string.warn_inaccurate_list))
+                    infoDialog.setContentView(bindingInfoDialog.root)
+                    infoDialog.setTitle(resources.getString(R.string.info))
+                    infoDialog.window!!.setLayout(
+                        WindowManager.LayoutParams.MATCH_PARENT,
+                        WindowManager.LayoutParams.MATCH_PARENT
+                    )
+                    val warnings: MutableList<String> = ArrayList()
+                    warnings.add(
+                        String.format(
+                            resources.getString(R.string.warn_inaccurate),
+                            Globals.MAX_SIZE_CARDS_LIST_ACCURATE
+                        )
+                    )
+                    if (warnInaccurateFormat) {
+                        putBoolean("inaccurate_warning_format", false)
+                        warnings.add(resources.getString(R.string.warn_inaccurate_list))
+                    }
+                    if (warnInaccurateNoFormat) {
+                        putBoolean("inaccurate_warning_no_format", false)
+                    }
+                    warnings.add(resources.getString(R.string.warn_inaccurate_search))
+                    warnings.add(resources.getString(R.string.warn_inaccurate_note))
+                    bindingInfoDialog.diaInfoText.text = java.lang.String.join(
+                        System.lineSeparator().plus(System.lineSeparator()),
+                        warnings
+                    )
+                    infoDialog.show()
                 }
-                if (warnInaccurateNoFormat) {
-                    configEditor.putBoolean("inaccurate_warning_no_format", false)
-                }
-                warnings.add(resources.getString(R.string.warn_inaccurate_search))
-                warnings.add(resources.getString(R.string.warn_inaccurate_note))
-                bindingInfoDialog.diaInfoText.text = java.lang.String.join(
-                    System.lineSeparator().plus(System.lineSeparator()),
-                    warnings
-                )
-                infoDialog.show()
-                configEditor.apply()
             }
         }
 
@@ -678,7 +680,7 @@ class ListCards : CardActionsActivity() {
             }
 
             override fun onMoveY(distance: Float) {
-                if (allowTouchEvent && bindingQueryModeDialog.queryHide.visibility == View.VISIBLE) {
+                if (allowTouchEvent && bindingQueryModeDialog.queryHide.isVisible) {
                     if (distance < 0) {
                         bindingQueryModeDialog.querySwipePlus.layoutParams.height =
                             (2 * abs(distance)).toInt()
@@ -768,7 +770,7 @@ class ListCards : CardActionsActivity() {
             }
 
             override fun onSwipeTop() {
-                if (allowTouchEvent && bindingQueryModeDialog.queryHide.visibility == View.VISIBLE) {
+                if (allowTouchEvent && bindingQueryModeDialog.queryHide.isVisible) {
                     allowTouchEvent = false
                     val growAnimator = ValueAnimator.ofInt(
                         bindingQueryModeDialog.querySwipePlus.height,
@@ -799,7 +801,7 @@ class ListCards : CardActionsActivity() {
             }
 
             override fun onSwipeBottom() {
-                if (allowTouchEvent && bindingQueryModeDialog.queryHide.visibility == View.VISIBLE) {
+                if (allowTouchEvent && bindingQueryModeDialog.queryHide.isVisible) {
                     allowTouchEvent = false
                     val growAnimator = ValueAnimator.ofInt(
                         bindingQueryModeDialog.querySwipeMinus.height,

@@ -2,7 +2,6 @@ package de.herrmann_engel.rbv.activities
 
 import android.app.Dialog
 import android.content.Intent
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.Menu
 import android.view.View
@@ -10,6 +9,7 @@ import android.view.WindowManager
 import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.FileProvider
+import androidx.core.graphics.drawable.toDrawable
 import androidx.recyclerview.widget.LinearLayoutManager
 import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.R
@@ -140,7 +140,7 @@ class ListPacks : PackActionsActivity(), AsyncExportFinish, AsyncExportProgress 
             if (collectionColors in 0..<minimalLength) {
                 val colorStatusBar = colorsStatusBar.getColor(collectionColors, 0)
                 val colorBackground = colorsBackground.getColor(collectionColors, 0)
-                supportActionBar?.setBackgroundDrawable(ColorDrawable(colorStatusBar))
+                supportActionBar?.setBackgroundDrawable(colorStatusBar.toDrawable())
                 binding.root.setBackgroundColor(colorBackground)
             }
             colorsStatusBar.recycle()

@@ -16,7 +16,7 @@ import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.utils.ContextTools
 
 class AdapterMediaLinkCard(
-    private val media: ArrayList<DB_Media>,
+    private val media: MutableList<DB_Media>,
     private val cardNo: Int,
     private val folder: String?
 ) : RecyclerView.Adapter<AdapterMediaLinkCard.ViewHolder>() {
@@ -56,7 +56,7 @@ class AdapterMediaLinkCard(
                     (ContextTools().getActivity(context) as FileTools).openFile(fileId)
                 }
                 viewHolder.binding.recFilesDelete.setOnClickListener {
-                    if (deleteItem(currentMedia, position, context)) {
+                    if (deleteItem(currentMedia, viewHolder, context)) {
                         (ContextTools().getActivity(context) as FileTools).showDeleteDialog(
                             fileName
                         )
@@ -67,7 +67,7 @@ class AdapterMediaLinkCard(
                     context.resources.getString(R.string.media_missing)
                 viewHolder.binding.recFilesMissing.visibility = View.VISIBLE
                 viewHolder.binding.recFilesDelete.setOnClickListener {
-                    deleteItem(currentMedia, position, context)
+                    deleteItem(currentMedia, viewHolder, context)
                 }
             }
         }
@@ -79,7 +79,7 @@ class AdapterMediaLinkCard(
 
     private fun deleteItem(
         currentMedia: DB_Media,
-        position: Int,
+        viewHolder: ViewHolder,
         context: Context
     ): Boolean {
         val fileId = currentMedia.uid
@@ -87,8 +87,8 @@ class AdapterMediaLinkCard(
         val dbHelperDelete = DB_Helper_Delete(context)
         dbHelperDelete.deleteMediaLink(fileId, cardNo)
         media.remove(currentMedia)
-        notifyItemRemoved(position)
-        notifyItemRangeChanged(position, media.size)
+        notifyItemRemoved(viewHolder.bindingAdapterPosition)
+        notifyItemRangeChanged(viewHolder.bindingAdapterPosition, media.size)
         if (!dbHelperGet.mediaHasLink(fileId)) {
             dbHelperDelete.deleteMedia(fileId)
             return true
