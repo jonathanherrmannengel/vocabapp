@@ -1,0 +1,24 @@
+the most 5000 Nederlands Words
+
+  splitet in
+    top   10
+    top   25
+    top   50
+    top  100
+    top  250
+    top  500
+    top 1000
+    top 2500
+    top 5000
+
+  Backside of Card is empty (".")
+  You may fill them your self, which is a good training
+
+  Notes holds translation links
+   1. https://www.uitmuntend.de/
+      (translates to German)
+   2. Google Translage (to German)
+      https://translate.google.com/?sl=nl&tl=de&op=translate&text=[WORD]
+      you may alter "&tl=de" to what your needs using gnu sed against the csv file, before you import it
+      e.g. to English
+        sed -i 's/tl=de/tl=en/' nederlands-top-5000.csv
