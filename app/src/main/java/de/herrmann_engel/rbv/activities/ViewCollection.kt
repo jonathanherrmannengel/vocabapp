@@ -8,7 +8,6 @@ import android.util.TypedValue
 import android.view.Menu
 import android.view.View
 import android.view.WindowManager
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.toDrawable
 import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.R
@@ -24,7 +23,7 @@ import java.time.format.FormatStyle
 import java.util.Date
 import java.util.Locale
 
-class ViewCollection : AppCompatActivity() {
+class ViewCollection : RBVActivity() {
     private lateinit var binding: ActivityViewCollectionOrPackBinding
     private lateinit var dbHelperGet: DB_Helper_Get
     private lateinit var collection: DB_Collection

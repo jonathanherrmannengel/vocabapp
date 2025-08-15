@@ -6,13 +6,12 @@ import android.view.Menu
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.appcompat.app.AppCompatActivity
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.databinding.ActivityNewCollectionOrPackBinding
 import de.herrmann_engel.rbv.databinding.DiaConfirmBinding
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Create
 
-class NewCollection : AppCompatActivity() {
+class NewCollection : RBVActivity() {
     private lateinit var binding: ActivityNewCollectionOrPackBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

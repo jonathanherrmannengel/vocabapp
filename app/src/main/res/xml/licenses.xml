@@ -33,9 +33,9 @@
     </item>
     <item>
         <identifier>Apache-2.0</identifier>
-        <projectName>Picasso (com.squareup.picasso)</projectName>
-        <projectCode>https://github.com/square/picasso</projectCode>
-        <projectUrl>https://square.github.io/picasso/</projectUrl>
+        <projectName>Coil (io.coil-kt.coil3)</projectName>
+        <projectCode>https://github.com/coil-kt/coil</projectCode>
+        <projectUrl>https://coil-kt.github.io/coil/</projectUrl>
     </item>
     <item>
         <identifier>Apache-2.0</identifier>

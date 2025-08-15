@@ -3,7 +3,6 @@ package de.herrmann_engel.rbv.activities
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import de.herrmann_engel.rbv.Globals.LIST_CARDS_GET_DB_COLLECTIONS_ALL
 import de.herrmann_engel.rbv.Globals.LIST_CARDS_GET_DB_PACKS_ADVANCED_SEARCH_ALL
@@ -15,7 +14,7 @@ import de.herrmann_engel.rbv.adapters.AdapterTagsAdvancedSearch
 import de.herrmann_engel.rbv.databinding.ActivityAdvancedSearchBinding
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 
-class AdvancedSearch : AppCompatActivity() {
+class AdvancedSearch : RBVActivity() {
     private val packList = ArrayList<Int>()
     private val tagList = ArrayList<Int>()
     private lateinit var dbHelperGet: DB_Helper_Get

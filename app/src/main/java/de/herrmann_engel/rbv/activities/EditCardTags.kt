@@ -3,7 +3,6 @@ package de.herrmann_engel.rbv.activities
 import android.os.Bundle
 import android.view.inputmethod.EditorInfo
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.toDrawable
 import androidx.recyclerview.widget.LinearLayoutManager
 import de.herrmann_engel.rbv.R
@@ -12,7 +11,7 @@ import de.herrmann_engel.rbv.databinding.ActivityEditCardTagsBinding
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Create
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 
-class EditCardTags : AppCompatActivity() {
+class EditCardTags : RBVActivity() {
     private lateinit var binding: ActivityEditCardTagsBinding
     private lateinit var dbHelperGet: DB_Helper_Get
     private var cardNo = 0

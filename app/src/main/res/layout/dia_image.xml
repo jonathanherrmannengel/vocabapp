@@ -12,5 +12,5 @@
         android:adjustViewBounds="true"
         android:contentDescription="@string/image_media"
         android:padding="4dp"
-        android:scaleType="centerInside" />
+        android:scaleType="fitCenter" />
 </RelativeLayout>

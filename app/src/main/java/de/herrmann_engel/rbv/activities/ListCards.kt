@@ -15,7 +15,6 @@ import android.os.Looper
 import android.text.SpannableString
 import android.text.util.Linkify
 import android.util.TypedValue
-import android.view.KeyEvent
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -390,16 +389,15 @@ class ListCards : CardActionsActivity() {
                     .coerceAtMost(cardsListFiltered!!.size - 1)
                     .coerceAtMost(binding.recDefault.adapter!!.itemCount - 1)
             nextQuery()
-            queryModeDialog.setOnKeyListener { _, keyCode: Int, event: KeyEvent ->
-                if (keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
-                    queryModeDialog.dismiss()
-                    updateContent()
+            queryModeDialog.setOnDismissListener { _ ->
+                updateContent()
+                if (cardPosition < 0 || cardPosition >= cardsListFiltered!!.size) {
+                    binding.recDefault.scrollToPosition(0)
+                } else {
                     binding.recDefault.smoothScrollToPosition(
                         cardPosition.coerceAtMost(binding.recDefault.adapter!!.itemCount - 1)
                     )
-                    return@setOnKeyListener true
                 }
-                false
             }
             queryModeDialog.show()
             false
@@ -536,8 +534,6 @@ class ListCards : CardActionsActivity() {
         cardPosition++
         if (cardPosition >= cardsListFiltered!!.size) {
             queryModeDialog.dismiss()
-            updateContent()
-            binding.recDefault.scrollToPosition(0)
         } else {
             nextQuery()
         }
@@ -547,8 +543,6 @@ class ListCards : CardActionsActivity() {
         cardPosition--
         if (cardPosition < 0) {
             queryModeDialog.dismiss()
-            updateContent()
-            binding.recDefault.scrollToPosition(0)
         } else {
             nextQuery()
         }

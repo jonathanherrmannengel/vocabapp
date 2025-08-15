@@ -8,7 +8,6 @@ import android.view.Menu
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.toDrawable
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.databinding.ActivityNewCardBinding
@@ -16,7 +15,7 @@ import de.herrmann_engel.rbv.databinding.DiaConfirmBinding
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Create
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 
-class NewCard : AppCompatActivity() {
+class NewCard : RBVActivity() {
     private lateinit var binding: ActivityNewCardBinding
     private var packNo = 0
     override fun onCreate(savedInstanceState: Bundle?) {

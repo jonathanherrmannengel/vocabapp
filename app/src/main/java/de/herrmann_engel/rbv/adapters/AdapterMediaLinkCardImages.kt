@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.squareup.picasso.Picasso
+import coil3.load
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.activities.FileTools
 import de.herrmann_engel.rbv.databinding.RecViewImageBinding
@@ -40,7 +40,7 @@ class AdapterMediaLinkCardImages(
         val fileId = currentMediaLink.uid
         val uri = (ContextTools().getActivity(context) as FileTools).getImageUri(fileId)
         if (uri != null) {
-            Picasso.get().load(uri).fit().centerCrop().into(viewHolder.binding.recImg)
+            viewHolder.binding.recImg.load(uri)
             viewHolder.binding.recImg.setBackgroundColor(Color.TRANSPARENT)
         }
         viewHolder.binding.recImg.setOnClickListener {

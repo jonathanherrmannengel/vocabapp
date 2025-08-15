@@ -84,7 +84,7 @@ open class SwipeEvents : View.OnTouchListener {
 
     companion object {
         private const val SWIPE_DISTANCE_MIN = 150
-        private const val SWIPE_START_DISTANCE_MAX = 50
+        private const val SWIPE_START_DISTANCE_MAX = 150
         private const val MOVE_DIRECTION_RIGHT = 1
         private const val MOVE_DIRECTION_LEFT = 2
         private const val MOVE_DIRECTION_BOTTOM = 3

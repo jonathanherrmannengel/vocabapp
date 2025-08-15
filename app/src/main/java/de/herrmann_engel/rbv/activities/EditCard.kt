@@ -9,7 +9,6 @@ import android.view.Menu
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.toDrawable
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.databinding.ActivityEditCardBinding
@@ -18,7 +17,7 @@ import de.herrmann_engel.rbv.db.DB_Card
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Update
 
-class EditCard : AppCompatActivity() {
+class EditCard : RBVActivity() {
     private lateinit var binding: ActivityEditCardBinding
     private lateinit var card: DB_Card
     private var backToList = false

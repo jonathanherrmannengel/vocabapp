@@ -1,0 +1,3 @@
+Aktualisierung auf Android SDK 36.
+Bibliothek für Bilder gewechselt von Picasso (eingestellt) nach Coil.
+Aktualisierte Abhängigkeiten.

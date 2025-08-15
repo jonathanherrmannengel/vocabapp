@@ -10,12 +10,11 @@ import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.edit
 import androidx.documentfile.provider.DocumentFile
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.squareup.picasso.Picasso
+import coil3.load
 import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.adapters.AdapterMediaLinkCardAll
@@ -26,7 +25,7 @@ import de.herrmann_engel.rbv.databinding.DiaRecBinding
 import de.herrmann_engel.rbv.db.DB_Media
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 
-abstract class FileTools : AppCompatActivity() {
+abstract class FileTools : RBVActivity() {
     private val selectMediaFolder = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result: ActivityResult ->
@@ -133,8 +132,7 @@ abstract class FileTools : AppCompatActivity() {
                 WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.MATCH_PARENT
             )
-            Picasso.get().load(uri).fit().centerInside()
-                .into(bindingImageDialog.diaImageView)
+            bindingImageDialog.diaImageView.load(uri)
             imageDialog.show()
         } else if (!existsMediaFile(fileId)) {
             showMissingDialog(cardId, dialog)

@@ -15,7 +15,6 @@ import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toDrawable
 import com.vanniktech.emoji.EmojiPopup
@@ -30,7 +29,7 @@ import de.herrmann_engel.rbv.db.utils.DB_Helper_Update
 import de.herrmann_engel.rbv.utils.StringTools
 import kotlin.math.roundToInt
 
-class EditCollection : AppCompatActivity() {
+class EditCollection : RBVActivity() {
     private lateinit var binding: ActivityEditCollectionOrPackBinding
     private lateinit var collection: DB_Collection
     override fun onCreate(savedInstanceState: Bundle?) {
