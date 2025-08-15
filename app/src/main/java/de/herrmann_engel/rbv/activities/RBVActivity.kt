@@ -10,7 +10,7 @@ abstract class RBVActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        if (Build.VERSION.SDK_INT >= 35) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
             val currentNightMode = (getResources().configuration.uiMode
                     and Configuration.UI_MODE_NIGHT_MASK)
 
