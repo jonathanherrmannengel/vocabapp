@@ -22,7 +22,7 @@
     </item>
     <item>
         <identifier>Apache-2.0</identifier>
-        <projectName>Markwon (io.noties.markwon:core / io.noties.markwon:linkify)</projectName>
+        <projectName>Markwon (io.noties.markwon:core, io.noties.markwon:linkify)</projectName>
         <projectCode>https://github.com/noties/Markwon/</projectCode>
         <projectUrl>https://noties.io/Markwon/</projectUrl>
     </item>
@@ -57,7 +57,7 @@
     <item>
         <identifier>Apache-2.0</identifier>
         <projectDev>Google</projectDev>
-        <projectName>AndroidX (AppCompat [androidx.appcompat], Core [androidx.core], Room [androidx.room])</projectName>
+        <projectName>AndroidX (androidx.appcompat, androidx.core, androidx.documentfile, androidx.room)</projectName>
     </item>
     <item>
         <identifier>Apache-2.0</identifier>

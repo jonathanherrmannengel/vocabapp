@@ -59,18 +59,19 @@ android {
 dependencies {
     val kotlinVersion = rootProject.extra.get("kotlinVersion") as String
     val roomVersion = "2.7.2"
+    implementation("androidx.appcompat:appcompat:1.7.1")
     implementation("androidx.core:core-ktx:1.17.0")
+    implementation("androidx.documentfile:documentfile:1.1.0")
     implementation("androidx.room:room-runtime:$roomVersion")
     annotationProcessor("androidx.room:room-compiler:$roomVersion")
-    implementation("androidx.appcompat:appcompat:1.7.1")
-    implementation("com.google.android.material:material:1.12.0")
+    implementation("com.google.android.material:material:1.13.0")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
     implementation("com.opencsv:opencsv:5.12.0")
     implementation("io.noties.markwon:core:4.6.2")
     implementation("io.noties.markwon:linkify:4.6.2")
     implementation("me.saket:better-link-movement-method:2.2.0")
-    implementation("com.vanniktech:emoji-twitter:0.21.0")
+    implementation("com.vanniktech:emoji-twitter:0.22.0")
     implementation("io.coil-kt.coil3:coil:3.3.0")
     implementation("com.github.rtugeek:colorseekbar:2.1.0")
     implementation("com.atlassian.commonmark:commonmark:0.13.0")
