@@ -21,6 +21,9 @@ object Globals {
     const val SORT_CARDS_RANDOM = 1
     const val SORT_CARDS_ALPHABETICAL = 2
     const val SORT_CARDS_REPETITION = 3
+    const val FLASHCARD_LIST_SIDE_FRONT = 0
+    const val FLASHCARD_LIST_SIDE_BACK = 1
+    const val FLASHCARD_LIST_SIDE_BOTH = 2
     const val MAX_SIZE_CARD_IMAGE_PREVIEW = 9
     const val MAX_SIZE_CARD_IMAGE_PRINT = 12
     const val MAX_SIZE_CARDS_LIST_ACCURATE = 15000

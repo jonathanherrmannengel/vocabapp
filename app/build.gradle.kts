@@ -8,8 +8,8 @@ android {
         applicationId = "de.herrmann_engel.rbv"
         minSdk = 25
         targetSdk = 36
-        versionCode = 80
-        versionName = "3.4.6"
+        versionCode = 81
+        versionName = "3.4.7"
         javaCompileOptions {
             annotationProcessorOptions {
                 arguments += mapOf(
@@ -58,7 +58,7 @@ android {
 }
 dependencies {
     val kotlinVersion = rootProject.extra.get("kotlinVersion") as String
-    val roomVersion = "2.7.2"
+    val roomVersion = "2.8.1"
     implementation("androidx.appcompat:appcompat:1.7.1")
     implementation("androidx.core:core-ktx:1.17.0")
     implementation("androidx.documentfile:documentfile:1.1.0")

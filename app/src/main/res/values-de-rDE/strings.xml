@@ -111,8 +111,8 @@
     <string name="card_front">Vorderseite</string>
     <string name="card_back">Rückseite</string>
     <string name="card_notes">Notizen</string>
-    <string name="change_front_back">Rückseite anzeigen</string>
-    <string name="change_back_front">Vorderseite anzeigen</string>
+    <string name="show_card_side">Zeige Kartenseite</string>
+    <string name="show_card_side_both">Beide Seiten</string>
     <string name="sort_random">Zufallssortierung</string>
     <string name="sort_normal">Sortierung nach Lernfortschritt</string>
     <string name="sort_alphabetical">Alphabetische Sortierung nach Karteikarten-Vorderseite</string>
@@ -181,10 +181,13 @@
     <string name="advanced_search_repetition_value">Letzte Wiederholung: Wert</string>
     <string name="advanced_search_packs_checkbox_description">Kartenstapel „%1$s“ (in Karteikasten: „%2$s“)</string>
     <string name="settings_list_default_sort">Karteikartenliste: Standard-Sortierung</string>
+    <string name="settings_flashcard_list_side">Karteikartenliste: Zeige Seite</string>
     <string name="settings_format">Karteikarten: Formatierung</string>
     <string name="settings_format_cards">Vorder-/Rückseite: Einfach</string>
     <string name="settings_format_cards_info">***Text*** = Fett und kursiv\n**Text** = Fett\n*Text* = Kursiv\n_Text_ = Unterstrichen</string>
     <string name="settings_format_card_notes">Notizen: Markdown</string>
+    <string name="settings_query_mode">Karteikarten: Abfrage-Modus</string>
+    <string name="settings_query_mode_reset_progress">Lernfortschritt der Karteikarte bei falscher Antwort auf Null zurücksetzen</string>
     <string name="settings_ui">Nutzeroberfläche</string>
     <string name="settings_ui_background_images">Hintergrundbilder anzeigen</string>
     <string name="settings_ui_increase_font_size">Schriftgröße erhöhen</string>

@@ -61,7 +61,7 @@ class ListCards : CardActionsActivity() {
     private lateinit var settings: SharedPreferences
     private lateinit var queryModeDialog: Dialog
     private lateinit var bindingQueryModeDialog: DiaQueryBinding
-    private lateinit var changeFrontBackMenuItem: MenuItem
+    private lateinit var showCardSideMenuItem: MenuItem
     private lateinit var changeListSortMenuItem: MenuItem
     private lateinit var showQueryModeMenuItem: MenuItem
     private lateinit var showListStatsMenuItem: MenuItem
@@ -80,7 +80,8 @@ class ListCards : CardActionsActivity() {
     private var repetitionOlder = false
     private var repetitionNumber = 0
     private var frontBackReverse = false
-    private var listSort = 0
+    private var showFrontAndBack = false
+    private var listSort = Globals.SORT_CARDS_DEFAULT
     private var searchQuery: String? = null
     private var cardPosition = 0
 
@@ -92,6 +93,22 @@ class ListCards : CardActionsActivity() {
         dbHelperUpdate = DB_Helper_Update(this)
         settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE)
         listSort = settings.getInt("default_sort", Globals.SORT_CARDS_DEFAULT)
+        when (settings.getInt("flashcard_list_side", Globals.FLASHCARD_LIST_SIDE_FRONT)) {
+            Globals.FLASHCARD_LIST_SIDE_BACK -> {
+                frontBackReverse = true
+                showFrontAndBack = false
+            }
+
+            Globals.FLASHCARD_LIST_SIDE_BOTH -> {
+                frontBackReverse = false
+                showFrontAndBack = true
+            }
+
+            else -> {
+                frontBackReverse = false
+                showFrontAndBack = false
+            }
+        }
         collectionNo = intent.extras!!.getInt("collection")
         packNo = intent.extras!!.getInt("pack")
         packNos = intent.extras!!.getIntegerArrayList("packs")
@@ -345,9 +362,23 @@ class ListCards : CardActionsActivity() {
                 false
             }
         }
-        changeFrontBackMenuItem = menu.findItem(R.id.change_front_back)
-        changeFrontBackMenuItem.setOnMenuItemClickListener {
-            frontBackReverse = !frontBackReverse
+        showCardSideMenuItem = menu.findItem(R.id.show_card_side)
+        val showCardSideMenu = showCardSideMenuItem.subMenu
+        showCardSideMenu?.findItem(R.id.show_card_side_front)?.setOnMenuItemClickListener {
+            frontBackReverse = false
+            showFrontAndBack = false
+            updateContent()
+            false
+        }
+        showCardSideMenu?.findItem(R.id.show_card_side_back)?.setOnMenuItemClickListener {
+            frontBackReverse = true
+            showFrontAndBack = false
+            updateContent()
+            false
+        }
+        showCardSideMenu?.findItem(R.id.show_card_side_both)?.setOnMenuItemClickListener {
+            frontBackReverse = false
+            showFrontAndBack = true
             updateContent()
             false
         }
@@ -514,8 +545,7 @@ class ListCards : CardActionsActivity() {
     }
 
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
-        changeFrontBackMenuItem.setTitle(if (frontBackReverse) R.string.change_back_front else R.string.change_front_back)
-        changeFrontBackMenuItem.isVisible = cardsListFiltered!!.isNotEmpty()
+        showCardSideMenuItem.isVisible = cardsListFiltered!!.isNotEmpty()
         changeListSortMenuItem.isVisible = cardsListFiltered!!.size > 1
         showQueryModeMenuItem.isVisible = cardsListFiltered!!.isNotEmpty()
         showListStatsMenuItem.isVisible = cardsListFiltered!!.isNotEmpty()
@@ -562,7 +592,11 @@ class ListCards : CardActionsActivity() {
     }
 
     private fun queryModeMinusAction(card: DB_Card) {
-        val known = 0.coerceAtLeast(card.known - 1)
+        val known = if (settings.getBoolean("query_mode_reset_progress", false)) {
+            0
+        } else {
+            0.coerceAtLeast(card.known - 1)
+        }
         queryModeCardKnownChanged(card, known)
         queryModeNextAction()
     }
@@ -946,6 +980,7 @@ class ListCards : CardActionsActivity() {
                 cardsListFiltered!!,
                 settings.getBoolean("ui_font_size", false),
                 frontBackReverse,
+                showFrontAndBack,
                 packNo,
                 collectionNo
             )
@@ -953,7 +988,7 @@ class ListCards : CardActionsActivity() {
             binding.recDefault.layoutManager = LinearLayoutManager(this)
             binding.recDefault.scrollToPosition(0)
         } else {
-            adapter!!.updateContent(tempCardList, frontBackReverse)
+            adapter!!.updateContent(tempCardList, frontBackReverse, showFrontAndBack)
         }
         invalidateOptionsMenu()
     }

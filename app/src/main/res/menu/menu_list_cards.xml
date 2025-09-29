@@ -51,12 +51,30 @@
         android:title="@string/list_stats"
         app:showAsAction="never" />
     <item
-        android:id="@+id/change_front_back"
+        android:id="@+id/show_card_side"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orderInCategory="500"
-        android:title="@string/change_front_back"
-        app:showAsAction="never" />
+        android:title="@string/show_card_side"
+        app:showAsAction="never">
+        <menu>
+            <item
+                android:id="@+id/show_card_side_front"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:title="@string/card_front" />
+            <item
+                android:id="@+id/show_card_side_back"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:title="@string/card_back" />
+            <item
+                android:id="@+id/show_card_side_both"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:title="@string/show_card_side_both" />
+        </menu>
+    </item>
     <item
         android:id="@+id/sort_menu"
         android:layout_width="match_parent"

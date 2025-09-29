@@ -55,6 +55,37 @@ class Settings : FileTools() {
             settingsEdit.putInt("default_sort", sortNew)
             settingsEdit.apply()
         }
+        binding.settingsFlashcardListSide.clearCheck()
+        when (settings.getInt("flashcard_list_side", Globals.SORT_CARDS_DEFAULT)) {
+            Globals.FLASHCARD_LIST_SIDE_BACK -> {
+                binding.settingsFlashcardListSideBack.isChecked = true
+            }
+
+            Globals.FLASHCARD_LIST_SIDE_BOTH -> {
+                binding.settingsFlashcardListSideBoth.isChecked = true
+            }
+
+            else -> {
+                binding.settingsFlashcardListSideFront.isChecked = true
+            }
+        }
+        binding.settingsFlashcardListSide.setOnCheckedChangeListener { _, id: Int ->
+            val sideNew = when (id) {
+                R.id.settings_flashcard_list_side_back -> {
+                    Globals.FLASHCARD_LIST_SIDE_BACK
+                }
+
+                R.id.settings_flashcard_list_side_both -> {
+                    Globals.FLASHCARD_LIST_SIDE_BOTH
+                }
+
+                else -> {
+                    Globals.FLASHCARD_LIST_SIDE_FRONT
+                }
+            }
+            settingsEdit.putInt("flashcard_list_side", sideNew)
+            settingsEdit.apply()
+        }
         val formatCards = settings.getBoolean("format_cards", false)
         binding.settingsFormatCards.isChecked = formatCards
         binding.settingsFormatCards.setOnCheckedChangeListener { _, c: Boolean ->
@@ -79,6 +110,12 @@ class Settings : FileTools() {
         binding.settingsFormatCardNotes.isChecked = formatCardNotes
         binding.settingsFormatCardNotes.setOnCheckedChangeListener { _, c: Boolean ->
             settingsEdit.putBoolean("format_card_notes", c)
+            settingsEdit.apply()
+        }
+        val queryModeResetProgress = settings.getBoolean("query_mode_reset_progress", false)
+        binding.settingsQueryModeResetProgress.isChecked = queryModeResetProgress
+        binding.settingsQueryModeResetProgress.setOnCheckedChangeListener { _, c: Boolean ->
+            settingsEdit.putBoolean("query_mode_reset_progress", c)
             settingsEdit.apply()
         }
         val uiBgImages = settings.getBoolean("ui_bg_images", true)

@@ -15,6 +15,8 @@ import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
@@ -26,7 +28,7 @@ import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.actions.CardActions
 import de.herrmann_engel.rbv.activities.ViewCard
 import de.herrmann_engel.rbv.adapters.compare.ListCardCompare
-import de.herrmann_engel.rbv.databinding.RecViewBinding
+import de.herrmann_engel.rbv.databinding.RecViewCardBinding
 import de.herrmann_engel.rbv.db.DB_Card
 import de.herrmann_engel.rbv.db.DB_Card_With_Meta
 import de.herrmann_engel.rbv.utils.ContextTools
@@ -37,10 +39,11 @@ class AdapterCards(
     private val cards: MutableList<DB_Card_With_Meta>,
     private val uiFontSizeBig: Boolean,
     private var reverse: Boolean,
+    private var showBothSides: Boolean,
     private val packNo: Int,
     private val collectionNo: Int
 ) : RecyclerView.Adapter<AdapterCards.ViewHolder>() {
-    class ViewHolder(val binding: RecViewBinding) : RecyclerView.ViewHolder(binding.root)
+    class ViewHolder(val binding: RecViewCardBinding) : RecyclerView.ViewHolder(binding.root)
 
     private val stringTools = StringTools()
     private var contextualMenuMode: ActionMode? = null
@@ -140,16 +143,18 @@ class AdapterCards(
     fun updateContent(
         cardsListNew: List<DB_Card_With_Meta>,
         reverse: Boolean,
+        showBothSides: Boolean
     ) {
         val diffResult =
             DiffUtil.calculateDiff(
                 ListCardCompare(
                     cards,
                     cardsListNew,
-                    this.reverse != reverse
+                    this.reverse != reverse || this.showBothSides != showBothSides
                 )
             )
         this.reverse = reverse
+        this.showBothSides = showBothSides
         cards.clear()
         cards.addAll(cardsListNew)
         diffResult.dispatchUpdatesTo(this)
@@ -157,7 +162,7 @@ class AdapterCards(
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         val binding =
-            RecViewBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false)
+            RecViewCardBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false)
         viewGroup.context.getSharedPreferences(Globals.SETTINGS_NAME, Context.MODE_PRIVATE)
         return ViewHolder(binding)
     }
@@ -165,21 +170,31 @@ class AdapterCards(
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         val context = viewHolder.binding.root.context
         if (uiFontSizeBig) {
-            viewHolder.binding.recName.setTextSize(
+            viewHolder.binding.recFront.setTextSize(
                 TypedValue.COMPLEX_UNIT_PX,
                 context.resources.getDimension(R.dimen.rec_view_font_size_big)
             )
-            viewHolder.binding.recDesc.setTextSize(
+            viewHolder.binding.recBack.setTextSize(
                 TypedValue.COMPLEX_UNIT_PX,
-                context.resources.getDimension(R.dimen.rec_view_font_size_below_big)
+                context.resources.getDimension(R.dimen.rec_view_font_size_big)
             )
         }
-        viewHolder.binding.recName.setTextColor(
+        viewHolder.binding.recFront.setTextColor(
             ContextCompat.getColor(
                 context,
                 R.color.default_text
             )
         )
+        viewHolder.binding.recBack.setTextColor(
+            ContextCompat.getColor(
+                context,
+                R.color.default_text
+            )
+        )
+        viewHolder.binding.root.weightSum = 1f
+        viewHolder.binding.recFront.visibility = VISIBLE
+        viewHolder.binding.recBack.visibility = GONE
+        viewHolder.binding.recMargin.visibility = GONE
         if (cards.isEmpty()) {
             if (packNo >= 0) {
                 val text =
@@ -204,80 +219,38 @@ class AdapterCards(
                 val addTextImage = addTextDrawable?.let { ImageSpan(it, ImageSpan.ALIGN_BOTTOM) }
                 val index = addText.indexOf("+")
                 addText.setSpan(addTextImage, index, index + 1, Spannable.SPAN_INCLUSIVE_EXCLUSIVE)
-                viewHolder.binding.recName.text = addText
+                viewHolder.binding.recFront.text = addText
             } else {
-                viewHolder.binding.recName.text =
+                viewHolder.binding.recFront.text =
                     context.resources.getString(R.string.welcome_card)
             }
         } else {
-            var cardText = if (reverse) {
-                cards[position].formattedBack ?: cards[position].card.back
-            } else cards[position].formattedFront ?: cards[position].card.front
-            cardText = cardText.replace(System.lineSeparator(), " ")
-            cardText = stringTools.shorten(cardText)
-            viewHolder.binding.recName.text =
-                String.format(Locale.ROOT, "%s (%d)", cardText, cards[position].card.known)
-            viewHolder.binding.recName.contentDescription =
-                String.format(
-                    Locale.ROOT,
-                    "%s (%s: %d)",
-                    cardText,
-                    context.resources.getString(R.string.card_known),
-                    cards[position].card.known
-                )
-            if (packNo < 0) {
-                val colors =
-                    context.resources.obtainTypedArray(R.array.pack_color_list)
-                val color = cards[position].packColor
-                if (color >= 0 && color < colors.length()) {
-                    viewHolder.binding.recName.setTextColor(colors.getColor(color, 0))
-                }
-                colors.recycle()
+            if (showBothSides) {
+                viewHolder.binding.root.weightSum = 2.1f
+                viewHolder.binding.recBack.visibility = VISIBLE
+                viewHolder.binding.recMargin.visibility = VISIBLE
+            } else if (reverse) {
+                viewHolder.binding.recFront.visibility = GONE
+                viewHolder.binding.recBack.visibility = VISIBLE
             }
-            val extra = cards[position].card.uid
-            viewHolder.binding.recName.setOnClickListener {
-                if (contextualMenuMode != null) {
-                    if (contextualMenuModeCardIdList.contains(extra)) {
-                        contextualMenuModeCardIdList.remove(extra)
-                        if (contextualMenuModeCardIdList.size == cards.size - 1 || contextualMenuModeCardIdList.size == MAX_SIZE_CARDS_CONTEXTUAL_MENU_PRINT) {
-                            contextualMenuMode?.invalidate()
-                        }
-                        contextualMenuModeFormatCard(extra)
-                        contextualMenuModeSelectedTitle()
-                        if (contextualMenuModeCardIdList.isEmpty()) {
-                            contextualMenuMode?.finish()
-                        }
-                    } else {
-                        contextualMenuModeSelectItem(extra)
-                    }
-                } else {
-                    val intent = Intent(context, ViewCard::class.java)
-                    intent.putExtra("collection", collectionNo)
-                    intent.putExtra("pack", packNo)
-                    intent.putExtra("card", extra)
-                    context.startActivity(intent)
-                }
-            }
-            viewHolder.binding.recName.setOnLongClickListener {
-                if (contextualMenuMode != null) {
-                    return@setOnLongClickListener false
-                }
-                contextualMenuModeCardIdList.clear()
-                contextualMenuModeActivity = ContextTools().getActivity(context)
-                contextualMenuMode =
-                    contextualMenuModeActivity?.startActionMode(contextualMenuModeCallback)
-                contextualMenuModeSelectItem(extra)
-                return@setOnLongClickListener true
-            }
+            prepareCardSide(false, cards[position], viewHolder)
+            prepareCardSide(true, cards[position], viewHolder)
         }
         if (contextualMenuMode != null && contextualMenuModeCardIdList.contains(cards[position].card.uid)) {
-            viewHolder.binding.recName.contentDescription = String.format(
+            viewHolder.binding.recFront.contentDescription = String.format(
                 Locale.ROOT,
                 "%s: %s",
                 context.resources.getString(R.string.selected),
-                viewHolder.binding.recName.contentDescription
+                viewHolder.binding.recFront.contentDescription
             )
-            viewHolder.binding.recName.setTypeface(null, BOLD)
+            viewHolder.binding.recFront.setTypeface(null, BOLD)
+            viewHolder.binding.recBack.contentDescription = String.format(
+                Locale.ROOT,
+                "%s: %s",
+                context.resources.getString(R.string.selected),
+                viewHolder.binding.recBack.contentDescription
+            )
+            viewHolder.binding.recBack.setTypeface(null, BOLD)
             viewHolder.binding.root.setBackgroundColor(
                 ContextCompat.getColor(
                     viewHolder.binding.root.context,
@@ -285,7 +258,8 @@ class AdapterCards(
                 )
             )
         } else {
-            viewHolder.binding.recName.setTypeface(null, NORMAL)
+            viewHolder.binding.recFront.setTypeface(null, NORMAL)
+            viewHolder.binding.recBack.setTypeface(null, NORMAL)
             viewHolder.binding.root.setBackgroundColor(Color.TRANSPARENT)
         }
     }
@@ -314,6 +288,77 @@ class AdapterCards(
                 contextualMenuModeCardIdList.size,
                 cards.size
             )
+        }
+    }
+
+    private fun prepareCardSide(back: Boolean, card: DB_Card_With_Meta, viewHolder: ViewHolder) {
+        val context = viewHolder.binding.root.context
+        val recText = if (back) {
+            viewHolder.binding.recBack
+        } else viewHolder.binding.recFront
+        var cardText = if (back) {
+            card.formattedBack ?: card.card.back
+        } else card.formattedFront ?: card.card.front
+        cardText = cardText.replace(System.lineSeparator(), " ")
+        cardText = stringTools.shorten(cardText)
+        if (showBothSides) {
+            recText.text = cardText
+            recText.contentDescription = cardText
+        } else {
+            recText.text =
+                String.format(Locale.ROOT, "%s (%d)", cardText, card.card.known)
+            recText.contentDescription =
+                String.format(
+                    Locale.ROOT,
+                    "%s (%s: %d)",
+                    cardText,
+                    context.resources.getString(R.string.card_known),
+                    card.card.known
+                )
+        }
+        if (packNo < 0) {
+            val colors =
+                context.resources.obtainTypedArray(R.array.pack_color_list)
+            val color = card.packColor
+            if (color >= 0 && color < colors.length()) {
+                recText.setTextColor(colors.getColor(color, 0))
+            }
+            colors.recycle()
+        }
+        val extra = card.card.uid
+        recText.setOnClickListener {
+            if (contextualMenuMode != null) {
+                if (contextualMenuModeCardIdList.contains(extra)) {
+                    contextualMenuModeCardIdList.remove(extra)
+                    if (contextualMenuModeCardIdList.size == cards.size - 1 || contextualMenuModeCardIdList.size == MAX_SIZE_CARDS_CONTEXTUAL_MENU_PRINT) {
+                        contextualMenuMode?.invalidate()
+                    }
+                    contextualMenuModeFormatCard(extra)
+                    contextualMenuModeSelectedTitle()
+                    if (contextualMenuModeCardIdList.isEmpty()) {
+                        contextualMenuMode?.finish()
+                    }
+                } else {
+                    contextualMenuModeSelectItem(extra)
+                }
+            } else {
+                val intent = Intent(context, ViewCard::class.java)
+                intent.putExtra("collection", collectionNo)
+                intent.putExtra("pack", packNo)
+                intent.putExtra("card", extra)
+                context.startActivity(intent)
+            }
+        }
+        recText.setOnLongClickListener {
+            if (contextualMenuMode != null) {
+                return@setOnLongClickListener false
+            }
+            contextualMenuModeCardIdList.clear()
+            contextualMenuModeActivity = ContextTools().getActivity(context)
+            contextualMenuMode =
+                contextualMenuModeActivity?.startActionMode(contextualMenuModeCallback)
+            contextualMenuModeSelectItem(extra)
+            return@setOnLongClickListener true
         }
     }
 }

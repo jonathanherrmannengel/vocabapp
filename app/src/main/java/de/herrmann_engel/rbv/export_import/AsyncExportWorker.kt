@@ -181,6 +181,15 @@ class AsyncExportWorker(
                         settings.getInt("default_sort", Globals.SORT_CARDS_DEFAULT).toString()
                     )
                 }
+                if (settings.contains("flashcard_list_side")) {
+                    exportSetting(
+                        "flashcard_list_side",
+                        file.name,
+                        "int",
+                        settings.getInt("flashcard_list_side", Globals.FLASHCARD_LIST_SIDE_FRONT)
+                            .toString()
+                    )
+                }
                 if (settings.contains("format_cards")) {
                     exportSetting(
                         "format_cards",
@@ -195,6 +204,14 @@ class AsyncExportWorker(
                         file.name,
                         "bool",
                         settings.getBoolean("format_card_notes", false).toString()
+                    )
+                }
+                if (settings.contains("query_mode_reset_progress")) {
+                    exportSetting(
+                        "query_mode_reset_progress",
+                        file.name,
+                        "bool",
+                        settings.getBoolean("query_mode_reset_progress", false).toString()
                     )
                 }
                 if (settings.contains("ui_bg_images")) {

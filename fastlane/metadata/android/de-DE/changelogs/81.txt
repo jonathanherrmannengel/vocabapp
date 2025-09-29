@@ -1,0 +1,2 @@
+Karteikartenliste: Ansicht beider Seiten gleichzeitig möglich.
+Einstellungen: Möglichkeit, bei falscher Antwort im Abfrage-Modus Lernfortschritt der Karteikarte auf Null zurückzusetzen.

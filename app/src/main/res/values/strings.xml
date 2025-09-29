@@ -116,8 +116,8 @@
     <string name="card_front">front</string>
     <string name="card_back">back</string>
     <string name="card_notes">notes</string>
-    <string name="change_front_back">Show back</string>
-    <string name="change_back_front">Show front</string>
+    <string name="show_card_side">show card side</string>
+    <string name="show_card_side_both">both sides</string>
     <string name="sort_random">Sort randomly</string>
     <string name="sort_normal">Sort by progress</string>
     <string name="sort_alphabetical">Sort alphabetical by flashcard front</string>
@@ -191,10 +191,13 @@
     <string name="advanced_search_repetition_value">last repetition value</string>
     <string name="advanced_search_packs_checkbox_description">deck “%1$s” (in filing box: “%2$s”)</string>
     <string name="settings_list_default_sort">Flashcard list: Default sort</string>
+    <string name="settings_flashcard_list_side">Flashcard list: Show side</string>
     <string name="settings_format">Flashcards: Formatting</string>
     <string name="settings_format_cards">front/back: simple</string>
     <string name="settings_format_cards_info">***Text*** = Bold and italic\n**Text** = Bold\n*Text* = Italic\n_Text_ = Underline</string>
     <string name="settings_format_card_notes">notes: Markdown</string>
+    <string name="settings_query_mode">Flashcards: Query mode</string>
+    <string name="settings_query_mode_reset_progress">Reset flashcard progress to zero on wrong answer</string>
     <string name="settings_ui">Customize UI</string>
     <string name="settings_ui_background_images">Show background images</string>
     <string name="settings_ui_increase_font_size">Increase font size</string>

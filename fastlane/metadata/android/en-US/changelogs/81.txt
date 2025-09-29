@@ -1,0 +1,2 @@
+Flashcard list: You may now view both sides simultaneously.
+Settings: Option to reset flashcard progress to zero on wrong answer in query mode.
