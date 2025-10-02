@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
+    android:paddingVertical="30dp"
     android:theme="@style/Theme.RBV">
 
     <LinearLayout
@@ -12,40 +13,13 @@
         android:orientation="vertical">
 
         <TextView
+            android:id="@+id/list_stat_cards_total"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="10dp"
-            android:text="@string/list_stat_cards"
             android:textAlignment="center"
             android:textColor="@color/light_black"
-            android:textSize="25sp" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:weightSum="2">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:padding="5dp"
-                android:text="@string/list_stat_cards_total"
-                android:textAlignment="textEnd"
-                android:textColor="@color/dark_grey"
-                android:textSize="20sp" />
-
-            <TextView
-                android:id="@+id/list_stat_cards_total_content"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:padding="5dp"
-                android:textAlignment="textStart"
-                android:textColor="@color/dark_grey"
-                android:textSize="20sp" />
-        </LinearLayout>
+            android:textSize="20sp" />
 
         <View
             android:layout_width="match_parent"
@@ -55,121 +29,40 @@
             android:importantForAccessibility="no" />
 
         <TextView
+            android:id="@+id/list_stat_progress_total"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="10dp"
-            android:text="@string/list_stat_progress"
             android:textAlignment="center"
             android:textColor="@color/light_black"
-            android:textSize="25sp" />
+            android:textSize="20sp" />
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/list_stat_progress_max"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:weightSum="2">
+            android:padding="10dp"
+            android:textAlignment="center"
+            android:textColor="@color/light_black"
+            android:textSize="20sp" />
 
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:padding="5dp"
-                android:text="@string/list_stat_progress_total"
-                android:textAlignment="textEnd"
-                android:textColor="@color/dark_grey"
-                android:textSize="20sp" />
-
-            <TextView
-                android:id="@+id/list_stat_progress_total_content"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:padding="5dp"
-                android:textAlignment="textStart"
-                android:textColor="@color/dark_grey"
-                android:textSize="20sp" />
-        </LinearLayout>
-
-        <LinearLayout
+        <TextView
+            android:id="@+id/list_stat_progress_min"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:weightSum="2">
+            android:padding="10dp"
+            android:textAlignment="center"
+            android:textColor="@color/light_black"
+            android:textSize="20sp" />
 
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:padding="5dp"
-                android:text="@string/list_stat_progress_max"
-                android:textAlignment="textEnd"
-                android:textColor="@color/dark_grey"
-                android:textSize="20sp" />
-
-            <TextView
-                android:id="@+id/list_stat_progress_max_content"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:padding="5dp"
-                android:textAlignment="textStart"
-                android:textColor="@color/dark_grey"
-                android:textSize="20sp" />
-        </LinearLayout>
-
-        <LinearLayout
+        <TextView
+            android:id="@+id/list_stat_progress_avg"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:weightSum="2">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:padding="5dp"
-                android:text="@string/list_stat_progress_min"
-                android:textAlignment="textEnd"
-                android:textColor="@color/dark_grey"
-                android:textSize="20sp" />
-
-            <TextView
-                android:id="@+id/list_stat_progress_min_content"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:padding="5dp"
-                android:textAlignment="textStart"
-                android:textColor="@color/dark_grey"
-                android:textSize="20sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:weightSum="2">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:padding="5dp"
-                android:text="@string/list_stat_progress_avg"
-                android:textAlignment="textEnd"
-                android:textColor="@color/dark_grey"
-                android:textSize="20sp" />
-
-            <TextView
-                android:id="@+id/list_stat_progress_avg_content"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:padding="5dp"
-                android:textAlignment="textStart"
-                android:textColor="@color/dark_grey"
-                android:textSize="20sp" />
-        </LinearLayout>
+            android:padding="10dp"
+            android:textAlignment="center"
+            android:textColor="@color/light_black"
+            android:textSize="20sp" />
 
         <View
             android:layout_width="match_parent"
@@ -181,34 +74,8 @@
         <TableLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingVertical="10dp"
             android:stretchColumns="*">
-
-            <TableRow android:padding="5dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/list_stat_progress"
-                    android:textColor="@color/dark_grey"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/list_stat_progress_counter_number"
-                    android:textColor="@color/dark_grey"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/list_stat_progress_counter_percent"
-                    android:textColor="@color/dark_grey"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
-            </TableRow>
 
             <TableRow
                 android:background="@color/progress0"
@@ -241,9 +108,9 @@
                 android:padding="5dp">
 
                 <TextView
+                    android:id="@+id/list_stat_progress_counter_known_1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/list_stat_progress_counter_known_1"
                     android:textColor="@color/button"
                     android:textSize="20sp" />
 
@@ -267,9 +134,9 @@
                 android:padding="5dp">
 
                 <TextView
+                    android:id="@+id/list_stat_progress_counter_known_2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/list_stat_progress_counter_known_2"
                     android:textColor="@color/button"
                     android:textSize="20sp" />
 
@@ -293,9 +160,9 @@
                 android:padding="5dp">
 
                 <TextView
+                    android:id="@+id/list_stat_progress_counter_known_3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/list_stat_progress_counter_known_3"
                     android:textColor="@color/button"
                     android:textSize="20sp" />
 
@@ -319,9 +186,9 @@
                 android:padding="5dp">
 
                 <TextView
+                    android:id="@+id/list_stat_progress_counter_known_4"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/list_stat_progress_counter_known_4"
                     android:textColor="@color/button"
                     android:textSize="20sp" />
 
@@ -347,7 +214,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/list_stat_progress_counter_known_5"
+                    android:text="@string/list_stat_progress_counter_known_5_or_more"
                     android:textColor="@color/button"
                     android:textSize="20sp" />
 

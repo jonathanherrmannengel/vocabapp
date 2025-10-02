@@ -141,18 +141,22 @@
     <string name="query_media_image_title">Bilddateien</string>
     <string name="query_media_all_title">Alle Mediendateien</string>
     <string name="list_stats">Listen-Statistiken</string>
-    <string name="list_stat_cards">Karteikarten</string>
-    <string name="list_stat_cards_total">Gesamt</string>
-    <string name="list_stat_progress_max">Höchster</string>
-    <string name="list_stat_progress_min">Niedrigster</string>
-    <string name="list_stat_progress_avg">Durchschnitt</string>
-    <string name="list_stat_progress_counter_percent">%</string>
-    <string name="list_stat_progress_counter_known_0">keiner</string>
-    <string name="list_stat_progress_counter_known_1">1</string>
-    <string name="list_stat_progress_counter_known_2">2</string>
-    <string name="list_stat_progress_counter_known_3">3</string>
-    <string name="list_stat_progress_counter_known_4">4</string>
-    <string name="list_stat_progress_counter_known_5">5+</string>
+    <string name="list_stat_progress">Lernfortschritt</string>
+    <string name="list_stat_cards_total">Karteikarten in Liste: %1$d</string>
+    <string name="list_stat_progress_total">Lernfortschritt gesamt: %1$d</string>
+    <string name="list_stat_progress_max">Höchster Lernfortschritt: %1$d</string>
+    <string name="list_stat_progress_min">Niedrigster Lernfortschritt: %1$d</string>
+    <string name="list_stat_progress_avg">Durchschnitts-Lernfortschritt: %1$.2f</string>
+    <plurals name="list_stat_progress_counter_known">
+        <item quantity="other">Lernfortschritt: %1$d</item>
+    </plurals>
+    <string name="list_stat_progress_counter_known_0">Kein Lernfortschritt</string>
+    <string name="list_stat_progress_counter_known_5_or_more">Lernfortschritt: 5+</string>
+    <plurals name="list_stat_progress_counter_number">
+        <item quantity="one">%1$d Karte</item>
+        <item quantity="other">%1$d Karten</item>
+    </plurals>
+    <string name="list_stat_progress_counter_percent">%1$d%%</string>
     <string name="selected_title">%1$d von %2$d</string>
     <string name="print_include_headings">Überschriften einschließen</string>
     <string name="print_include_progress">Lernfortschritt einschließen</string>

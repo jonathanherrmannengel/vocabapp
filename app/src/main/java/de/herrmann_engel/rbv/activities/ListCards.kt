@@ -445,29 +445,44 @@ class ListCards : CardActionsActivity() {
                 WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.MATCH_PARENT
             )
-            bindingListStatsDialog.listStatCardsTotalContent.text =
-                cardsListFiltered!!.size.toString()
+            bindingListStatsDialog.listStatCardsTotal.text =
+                String.format(
+                    getString(R.string.list_stat_cards_total),
+                    cardsListFiltered!!.size
+                )
             val statTotalProgress =
                 cardsListFiltered!!.stream().mapToInt { c: DB_Card_With_Meta? -> c!!.card.known }
                     .sum()
-            bindingListStatsDialog.listStatProgressTotalContent.text =
-                statTotalProgress.toString()
+            bindingListStatsDialog.listStatProgressTotal.text =
+                String.format(
+                    getString(R.string.list_stat_progress_total),
+                    statTotalProgress
+                )
             val statMaxProgress =
                 cardsListFiltered!!.stream().mapToInt { c: DB_Card_With_Meta? -> c!!.card.known }
                     .max().orElse(0)
-            bindingListStatsDialog.listStatProgressMaxContent.text =
-                statMaxProgress.toString()
+            bindingListStatsDialog.listStatProgressMax.text =
+                String.format(
+                    getString(R.string.list_stat_progress_max),
+                    statMaxProgress
+                )
             val statMinProgress =
                 cardsListFiltered!!.stream().mapToInt { c: DB_Card_With_Meta? -> c!!.card.known }
                     .min().orElse(0)
-            bindingListStatsDialog.listStatProgressMinContent.text =
-                statMinProgress.toString()
+            bindingListStatsDialog.listStatProgressMin.text =
+                String.format(
+                    getString(R.string.list_stat_progress_min),
+                    statMinProgress
+                )
             var statAvgProgress =
                 cardsListFiltered!!.stream().mapToInt { c: DB_Card_With_Meta? -> c!!.card.known }
                     .average().orElse(0.0)
             statAvgProgress = (statAvgProgress * 100.0).roundToInt() / 100.0
-            bindingListStatsDialog.listStatProgressAvgContent.text =
-                statAvgProgress.toString()
+            bindingListStatsDialog.listStatProgressAvg.text =
+                String.format(
+                    getString(R.string.list_stat_progress_avg),
+                    statAvgProgress
+                )
             val statProgressTableIs0 =
                 cardsListFiltered!!.stream().filter { c: DB_Card_With_Meta? -> c!!.card.known == 0 }
                     .count().toInt()
@@ -486,36 +501,92 @@ class ListCards : CardActionsActivity() {
             val statProgressTableIs5OrMore =
                 cardsListFiltered!!.stream().filter { c: DB_Card_With_Meta? -> c!!.card.known >= 5 }
                     .count().toInt()
-            var percentCurrent = statProgressTableIs0 / cardsListFiltered!!.size.toFloat()
+            var percentCurrent =
+                (statProgressTableIs0 / cardsListFiltered!!.size.toFloat() * 100).roundToInt()
             bindingListStatsDialog.listStatProgressCounterNumber0.text =
-                statProgressTableIs0.toString()
+                resources.getQuantityString(
+                    R.plurals.list_stat_progress_counter_number,
+                    statProgressTableIs0,
+                    statProgressTableIs0
+                )
             bindingListStatsDialog.listStatProgressCounterPercent0.text =
-                (percentCurrent * 100).roundToInt().toString()
-            percentCurrent = statProgressTableIs1 / cardsListFiltered!!.size.toFloat()
+                String.format(
+                    getString(R.string.list_stat_progress_counter_percent),
+                    percentCurrent,
+                )
+            percentCurrent =
+                (statProgressTableIs1 / cardsListFiltered!!.size.toFloat() * 100).roundToInt()
+            bindingListStatsDialog.listStatProgressCounterKnown1.text =
+                resources.getQuantityString(R.plurals.list_stat_progress_counter_known, 1, 1)
             bindingListStatsDialog.listStatProgressCounterNumber1.text =
-                statProgressTableIs1.toString()
+                resources.getQuantityString(
+                    R.plurals.list_stat_progress_counter_number,
+                    statProgressTableIs1,
+                    statProgressTableIs1
+                )
             bindingListStatsDialog.listStatProgressCounterPercent1.text =
-                (percentCurrent * 100).roundToInt().toString()
-            percentCurrent = statProgressTableIs2 / cardsListFiltered!!.size.toFloat()
+                String.format(
+                    getString(R.string.list_stat_progress_counter_percent),
+                    percentCurrent,
+                )
+            percentCurrent =
+                (statProgressTableIs2 / cardsListFiltered!!.size.toFloat() * 100).roundToInt()
+            bindingListStatsDialog.listStatProgressCounterKnown2.text =
+                resources.getQuantityString(R.plurals.list_stat_progress_counter_known, 2, 2)
             bindingListStatsDialog.listStatProgressCounterNumber2.text =
-                statProgressTableIs2.toString()
+                resources.getQuantityString(
+                    R.plurals.list_stat_progress_counter_number,
+                    statProgressTableIs2,
+                    statProgressTableIs2
+                )
             bindingListStatsDialog.listStatProgressCounterPercent2.text =
-                (percentCurrent * 100).roundToInt().toString()
-            percentCurrent = statProgressTableIs3 / cardsListFiltered!!.size.toFloat()
+                String.format(
+                    getString(R.string.list_stat_progress_counter_percent),
+                    percentCurrent,
+                )
+            percentCurrent =
+                (statProgressTableIs3 / cardsListFiltered!!.size.toFloat() * 100).roundToInt()
+            bindingListStatsDialog.listStatProgressCounterKnown3.text =
+                resources.getQuantityString(R.plurals.list_stat_progress_counter_known, 3, 3)
             bindingListStatsDialog.listStatProgressCounterNumber3.text =
-                statProgressTableIs3.toString()
+                resources.getQuantityString(
+                    R.plurals.list_stat_progress_counter_number,
+                    statProgressTableIs3,
+                    statProgressTableIs3
+                )
             bindingListStatsDialog.listStatProgressCounterPercent3.text =
-                (percentCurrent * 100).roundToInt().toString()
-            percentCurrent = statProgressTableIs4 / cardsListFiltered!!.size.toFloat()
+                String.format(
+                    getString(R.string.list_stat_progress_counter_percent),
+                    percentCurrent,
+                )
+            percentCurrent =
+                (statProgressTableIs4 / cardsListFiltered!!.size.toFloat() * 100).roundToInt()
+            bindingListStatsDialog.listStatProgressCounterKnown4.text =
+                resources.getQuantityString(R.plurals.list_stat_progress_counter_known, 4, 4)
             bindingListStatsDialog.listStatProgressCounterNumber4.text =
-                statProgressTableIs4.toString()
+                resources.getQuantityString(
+                    R.plurals.list_stat_progress_counter_number,
+                    statProgressTableIs4,
+                    statProgressTableIs4
+                )
             bindingListStatsDialog.listStatProgressCounterPercent4.text =
-                (percentCurrent * 100).roundToInt().toString()
-            percentCurrent = statProgressTableIs5OrMore / cardsListFiltered!!.size.toFloat()
+                String.format(
+                    getString(R.string.list_stat_progress_counter_percent),
+                    percentCurrent,
+                )
+            percentCurrent =
+                (statProgressTableIs5OrMore / cardsListFiltered!!.size.toFloat() * 100).roundToInt()
             bindingListStatsDialog.listStatProgressCounterNumber5.text =
-                statProgressTableIs5OrMore.toString()
+                resources.getQuantityString(
+                    R.plurals.list_stat_progress_counter_number,
+                    statProgressTableIs5OrMore,
+                    statProgressTableIs5OrMore
+                )
             bindingListStatsDialog.listStatProgressCounterPercent5.text =
-                (percentCurrent * 100).roundToInt().toString()
+                String.format(
+                    getString(R.string.list_stat_progress_counter_percent),
+                    percentCurrent,
+                )
             listStatsDialog.show()
             false
         }

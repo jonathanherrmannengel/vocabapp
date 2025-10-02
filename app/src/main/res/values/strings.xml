@@ -148,21 +148,22 @@
     <string name="query_media_image" translatable="false">@string/show_image_media</string>
     <string name="query_media_image_title">image files</string>
     <string name="list_stats">List stats</string>
-    <string name="list_stat_cards">flashcards</string>
-    <string name="list_stat_cards_total">total</string>
-    <string name="list_stat_progress" translatable="false">@string/card_known</string>
-    <string name="list_stat_progress_total" translatable="false">@string/list_stat_cards_total</string>
-    <string name="list_stat_progress_max">max</string>
-    <string name="list_stat_progress_min">min</string>
-    <string name="list_stat_progress_avg">average</string>
-    <string name="list_stat_progress_counter_number" translatable="false">@string/list_stat_cards</string>
-    <string name="list_stat_progress_counter_percent">%</string>
-    <string name="list_stat_progress_counter_known_0">none</string>
-    <string name="list_stat_progress_counter_known_1">1</string>
-    <string name="list_stat_progress_counter_known_2">2</string>
-    <string name="list_stat_progress_counter_known_3">3</string>
-    <string name="list_stat_progress_counter_known_4">4</string>
-    <string name="list_stat_progress_counter_known_5">5+</string>
+    <string name="list_stat_cards_total">Flashcards in list: %1$d</string>
+    <string name="list_stat_progress">progress</string>
+    <string name="list_stat_progress_total">Total progress: %1$d</string>
+    <string name="list_stat_progress_max">Maximum progress: %1$d</string>
+    <string name="list_stat_progress_min">Minimum progress: %1$d</string>
+    <string name="list_stat_progress_avg">Average progress: %1$.2f</string>
+    <plurals name="list_stat_progress_counter_known">
+        <item quantity="other">progress: %1$d</item>
+    </plurals>
+    <string name="list_stat_progress_counter_known_0">no progress</string>
+    <string name="list_stat_progress_counter_known_5_or_more">progress: 5+</string>
+    <plurals name="list_stat_progress_counter_number">
+        <item quantity="one">%1$d card</item>
+        <item quantity="other">%1$d cards</item>
+    </plurals>
+    <string name="list_stat_progress_counter_percent">%1$d%%</string>
     <string name="selected_title">%1$d of %2$d</string>
     <string name="print_include_headings">Include headings</string>
     <string name="print_include_progress">Include progress</string>
