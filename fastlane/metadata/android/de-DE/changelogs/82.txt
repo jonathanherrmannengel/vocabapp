@@ -1,0 +1,1 @@
+Vereinfachung der Darstellung der Listenstatistiken der Karteikartenliste.
