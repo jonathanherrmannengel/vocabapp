@@ -168,7 +168,12 @@ abstract class FileTools : RBVActivity() {
     }
 
     protected fun showMediaListDialog(mediaList: ArrayList<DB_Media>, cardNo: Int) {
-        showMediaListDialog(mediaList, cardNo, false, resources.getString(R.string.query_media_all_title))
+        showMediaListDialog(
+            mediaList,
+            cardNo,
+            false,
+            resources.getString(R.string.query_media_all_title)
+        )
     }
 
     private fun showMediaListDialog(

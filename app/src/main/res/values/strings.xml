@@ -94,7 +94,10 @@
     <string name="delete_file_info">Media deleted from database. Also delete file from disk?</string>
     <string name="delete_file_without_media_info">Delete file from disk?</string>
     <string name="delete_multiple_cards">You are about to delete %1$d flashcards. Continue?</string>
-    <string name="delete_multiple_packs">You are about to delete %1$d decks with %2$d flashcards. Continue?</string>
+    <plurals name="delete_multiple_packs">
+        <item quantity="one">You are about to delete %1$d decks with %2$d flashcard. Continue?</item>
+        <item quantity="other">You are about to delete %1$d decks with %2$d flashcards. Continue?</item>
+    </plurals>
     <string name="delete_pack_with_cards">This deck contains flashcards. If you proceed these flashcards will also be deleted. Delete anyway?</string>
     <string name="delete_collection_with_packs">This filing box contains decks. If you proceed these decks and their flashcards will also be deleted. Delete anyway?</string>
     <string name="move">move</string>
@@ -149,14 +152,11 @@
     <string name="query_media_image_title">image files</string>
     <string name="list_stats">List stats</string>
     <string name="list_stat_cards_total">Flashcards in list: %1$d</string>
-    <string name="list_stat_progress">progress</string>
     <string name="list_stat_progress_total">Total progress: %1$d</string>
     <string name="list_stat_progress_max">Maximum progress: %1$d</string>
     <string name="list_stat_progress_min">Minimum progress: %1$d</string>
     <string name="list_stat_progress_avg">Average progress: %1$.2f</string>
-    <plurals name="list_stat_progress_counter_known">
-        <item quantity="other">progress: %1$d</item>
-    </plurals>
+    <string name="list_stat_progress_counter_known">progress: %1$d</string>
     <string name="list_stat_progress_counter_known_0">no progress</string>
     <string name="list_stat_progress_counter_known_5_or_more">progress: 5+</string>
     <plurals name="list_stat_progress_counter_number">

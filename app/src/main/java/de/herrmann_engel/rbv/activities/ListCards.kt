@@ -517,7 +517,10 @@ class ListCards : CardActionsActivity() {
             percentCurrent =
                 (statProgressTableIs1 / cardsListFiltered!!.size.toFloat() * 100).roundToInt()
             bindingListStatsDialog.listStatProgressCounterKnown1.text =
-                resources.getQuantityString(R.plurals.list_stat_progress_counter_known, 1, 1)
+                String.format(
+                    getString(R.string.list_stat_progress_counter_known),
+                    1,
+                )
             bindingListStatsDialog.listStatProgressCounterNumber1.text =
                 resources.getQuantityString(
                     R.plurals.list_stat_progress_counter_number,
@@ -532,7 +535,10 @@ class ListCards : CardActionsActivity() {
             percentCurrent =
                 (statProgressTableIs2 / cardsListFiltered!!.size.toFloat() * 100).roundToInt()
             bindingListStatsDialog.listStatProgressCounterKnown2.text =
-                resources.getQuantityString(R.plurals.list_stat_progress_counter_known, 2, 2)
+                String.format(
+                    getString(R.string.list_stat_progress_counter_known),
+                    2,
+                )
             bindingListStatsDialog.listStatProgressCounterNumber2.text =
                 resources.getQuantityString(
                     R.plurals.list_stat_progress_counter_number,
@@ -547,7 +553,10 @@ class ListCards : CardActionsActivity() {
             percentCurrent =
                 (statProgressTableIs3 / cardsListFiltered!!.size.toFloat() * 100).roundToInt()
             bindingListStatsDialog.listStatProgressCounterKnown3.text =
-                resources.getQuantityString(R.plurals.list_stat_progress_counter_known, 3, 3)
+                String.format(
+                    getString(R.string.list_stat_progress_counter_known),
+                    3,
+                )
             bindingListStatsDialog.listStatProgressCounterNumber3.text =
                 resources.getQuantityString(
                     R.plurals.list_stat_progress_counter_number,
@@ -562,7 +571,10 @@ class ListCards : CardActionsActivity() {
             percentCurrent =
                 (statProgressTableIs4 / cardsListFiltered!!.size.toFloat() * 100).roundToInt()
             bindingListStatsDialog.listStatProgressCounterKnown4.text =
-                resources.getQuantityString(R.plurals.list_stat_progress_counter_known, 4, 4)
+                String.format(
+                    getString(R.string.list_stat_progress_counter_known),
+                    4,
+                )
             bindingListStatsDialog.listStatProgressCounterNumber4.text =
                 resources.getQuantityString(
                     R.plurals.list_stat_progress_counter_number,

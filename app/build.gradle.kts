@@ -58,7 +58,7 @@ android {
 }
 dependencies {
     val kotlinVersion = rootProject.extra.get("kotlinVersion") as String
-    val roomVersion = "2.8.2"
+    val roomVersion = "2.8.3"
     implementation("androidx.appcompat:appcompat:1.7.1")
     implementation("androidx.core:core-ktx:1.17.0")
     implementation("androidx.documentfile:documentfile:1.1.0")

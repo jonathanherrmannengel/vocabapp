@@ -35,8 +35,9 @@ class PackActions(val activity: Activity) {
                     numberOfCards += dbHelperGet.countCardsInPack(pack.uid)
                 }
                 bindingConfirmDeleteDialog.diaConfirmDesc.text =
-                    String.format(
-                        activity.resources.getString(R.string.delete_multiple_packs),
+                    activity.resources.getQuantityString(
+                        R.plurals.delete_multiple_packs,
+                        numberOfCards,
                         packs.size,
                         numberOfCards
                     )

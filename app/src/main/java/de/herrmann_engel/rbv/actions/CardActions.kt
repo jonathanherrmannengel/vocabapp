@@ -260,12 +260,18 @@ class CardActions(val activity: Activity) {
                             Globals.MAX_SIZE_CARD_IMAGE_PRINT
                         )
                     } else {
-                        htmlDocument += if (imageList.size == 1) {
-                            "<div class=\"image-div\" style=\"grid-template-columns:0.33fr;\">"
-                        } else if (imageList.size == 2) {
-                            "<div class=\"image-div\" style=\"grid-template-columns:0.33fr 0.33fr;\">"
-                        } else {
-                            "<div class=\"image-div\">"
+                        htmlDocument += when (imageList.size) {
+                            1 -> {
+                                "<div class=\"image-div\" style=\"grid-template-columns:0.33fr;\">"
+                            }
+
+                            2 -> {
+                                "<div class=\"image-div\" style=\"grid-template-columns:0.33fr 0.33fr;\">"
+                            }
+
+                            else -> {
+                                "<div class=\"image-div\">"
+                            }
                         }
                         for (item in imageList) {
                             val uri =

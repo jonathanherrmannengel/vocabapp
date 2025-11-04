@@ -126,11 +126,15 @@ class ListPacks : PackActionsActivity(), AsyncExportFinish, AsyncExportProgress 
             binding.backgroundImage.visibility = View.GONE
         }
         val uiFontSizeBig = settings.getBoolean("ui_font_size", false)
-        adapter?.updateContent(loadContent()) ?: {
-            adapter = AdapterPacks(loadContent(), uiFontSizeBig, collectionNo)
-            binding.recDefault.adapter = adapter
-            binding.recDefault.layoutManager = LinearLayoutManager(this)
-        }()
+        adapter?.updateContent(loadContent()) ?: run {
+            this@ListPacks.adapter = AdapterPacks(
+                this@ListPacks.loadContent(),
+                uiFontSizeBig,
+                this@ListPacks.collectionNo
+            )
+            this@ListPacks.binding.recDefault.adapter = this@ListPacks.adapter
+            this@ListPacks.binding.recDefault.layoutManager = LinearLayoutManager(this)
+        }
         if (collectionNo >= 0) {
             val colorsStatusBar = resources.obtainTypedArray(R.array.pack_color_statusbar)
             val colorsBackground =

@@ -177,238 +177,254 @@ class AdapterPacks(
         viewHolder.binding.recCollectionsName.textAlignment = View.TEXT_ALIGNMENT_INHERIT
         viewHolder.binding.recCollectionsPreviewText.visibility = View.VISIBLE
         viewHolder.binding.recCollectionsNumberText.visibility = View.VISIBLE
-        if (position == 0 && packs.size == 1) {
-            if (collection >= 0) {
-                val text =
-                    String.format(
-                        Locale.ROOT,
-                        "%s %s",
-                        context.resources.getString(R.string.welcome_pack),
-                        context.resources.getString(R.string.welcome_pack_create)
+        when (position) {
+            0 if packs.size == 1 -> {
+                if (collection >= 0) {
+                    val text =
+                        String.format(
+                            Locale.ROOT,
+                            "%s %s",
+                            context.resources.getString(R.string.welcome_pack),
+                            context.resources.getString(R.string.welcome_pack_create)
+                        )
+                    val addText = SpannableString(text)
+                    val addTextDrawable =
+                        ContextCompat.getDrawable(context, R.drawable.outline_add_24)
+                    addTextDrawable?.setTint(context.getColor(R.color.light_black))
+                    addTextDrawable?.setBounds(
+                        0,
+                        0,
+                        addTextDrawable.intrinsicWidth,
+                        addTextDrawable.intrinsicHeight
                     )
-                val addText = SpannableString(text)
-                val addTextDrawable = ContextCompat.getDrawable(context, R.drawable.outline_add_24)
-                addTextDrawable?.setTint(context.getColor(R.color.light_black))
-                addTextDrawable?.setBounds(
-                    0,
-                    0,
-                    addTextDrawable.intrinsicWidth,
-                    addTextDrawable.intrinsicHeight
-                )
-                val addTextImage = addTextDrawable?.let { ImageSpan(it, ImageSpan.ALIGN_BOTTOM) }
-                val index = addText.indexOf("+")
-                addText.setSpan(addTextImage, index, index + 1, Spannable.SPAN_INCLUSIVE_EXCLUSIVE)
-                viewHolder.binding.recCollectionsName.text = addText
-            } else {
-                viewHolder.binding.recCollectionsName.text =
-                    context.resources.getString(R.string.welcome_pack)
-            }
-            viewHolder.binding.recCollectionsName.textAlignment = View.TEXT_ALIGNMENT_CENTER
-            viewHolder.binding.recCollectionsDesc.visibility = View.GONE
-            viewHolder.binding.recCollectionsPreviewText.visibility = View.GONE
-            viewHolder.binding.recCollectionsNumberText.visibility = View.GONE
-            viewHolder.binding.recCollectionsName.setTextColor(
-                ContextCompat.getColor(
-                    context,
-                    R.color.default_text
-                )
-            )
-            background.mutate()
-            background.setStroke(0, Color.rgb(0, 0, 0))
-            background.setColor(Color.argb(0, 0, 0, 0))
-            backgroundBehind.mutate()
-            backgroundBehind.setStroke(0, Color.rgb(0, 0, 0))
-        } else if (position == 0) {
-            viewHolder.binding.root.setOnClickListener {
-                val intent = Intent(context, ListCards::class.java)
-                intent.putExtra("collection", collection)
-                intent.putExtra("pack", LIST_CARDS_GET_DB_PACKS_ALL)
-                context.startActivity(intent)
-            }
-            viewHolder.binding.recCollectionsName.text =
-                context.resources.getString(R.string.all_cards)
-            viewHolder.binding.recCollectionsDesc.visibility = View.VISIBLE
-            viewHolder.binding.recCollectionsDesc.text =
-                if (collection == LIST_CARDS_GET_DB_COLLECTIONS_ALL) {
-                    context.resources.getString(R.string.all_cards_desc)
+                    val addTextImage =
+                        addTextDrawable?.let { ImageSpan(it, ImageSpan.ALIGN_BOTTOM) }
+                    val index = addText.indexOf("+")
+                    addText.setSpan(
+                        addTextImage,
+                        index,
+                        index + 1,
+                        Spannable.SPAN_INCLUSIVE_EXCLUSIVE
+                    )
+                    viewHolder.binding.recCollectionsName.text = addText
                 } else {
-                    context.resources.getString(R.string.all_cards_desc_by_pack)
+                    viewHolder.binding.recCollectionsName.text =
+                        context.resources.getString(R.string.welcome_pack)
                 }
-            viewHolder.binding.recCollectionsPreviewText.text = "…"
-            if (packs[position].counter != -1) {
-                viewHolder.binding.recCollectionsNumberText.visibility = View.VISIBLE
-                viewHolder.binding.recCollectionsNumberText.text =
-                    packs[position].counter.toString()
-                viewHolder.binding.recCollectionsNumberText.contentDescription = String.format(
-                    Locale.ROOT, "%d %s",
-                    packs[position].counter,
-                    context.resources.getString(R.string.items)
-                )
-            } else {
-                viewHolder.binding.recCollectionsNumberText.visibility = View.GONE
-            }
-
-            viewHolder.binding.recCollectionsName.setTextColor(
-                ContextCompat.getColor(
-                    context,
-                    R.color.default_text
-                )
-            )
-            viewHolder.binding.recCollectionsPreviewText.setTextColor(
-                ContextCompat.getColor(
-                    context,
-                    R.color.default_text
-                )
-            )
-            viewHolder.binding.recCollectionsPreviewText.setBackgroundColor(
-                ContextCompat.getColor(
-                    context,
-                    R.color.pack_default_item_background
-                )
-            )
-            background.mutate()
-            background.setStroke(
-                2, ContextCompat.getColor(
-                    context,
-                    R.color.pack_default_item_stroke
-                )
-            )
-            background.setColor(
-                ContextCompat.getColor(
-                    context,
-                    R.color.pack_default_item_background_alpha
-                )
-            )
-            backgroundBehind.mutate()
-            backgroundBehind.setStroke(
-                1, ContextCompat.getColor(
-                    context,
-                    R.color.pack_default_item_background
-                )
-            )
-        } else {
-            val currentPack = packs[position].pack
-            val extra = currentPack.uid
-            viewHolder.binding.root.setOnClickListener {
-                if (contextualMenuMode != null) {
-                    if (contextualMenuModePackIdList.contains(extra)) {
-                        contextualMenuModePackIdList.remove(extra)
-                        if (contextualMenuModePackIdList.size == packs.size - 2) {
-                            contextualMenuMode?.invalidate()
-                        }
-                        contextualMenuModeFormatPack(extra)
-                        contextualMenuModeSelectedTitle()
-                        if (contextualMenuModePackIdList.isEmpty()) {
-                            contextualMenuMode?.finish()
-                        }
-                    } else {
-                        contextualMenuModeSelectItem(extra)
-                    }
-                } else {
-                    val intent = Intent(context, ListCards::class.java)
-                    intent.putExtra("collection", collection)
-                    intent.putExtra("pack", extra)
-                    context.startActivity(intent)
-                }
-            }
-            viewHolder.binding.root.setOnLongClickListener {
-                if (contextualMenuMode != null) {
-                    return@setOnLongClickListener false
-                }
-                contextualMenuModePackIdList.clear()
-                contextualMenuModeActivity = ContextTools().getActivity(context)
-                contextualMenuMode =
-                    contextualMenuModeActivity?.startActionMode(contextualMenuModeCallback)
-                contextualMenuModeSelectItem(extra)
-                return@setOnLongClickListener true
-            }
-            viewHolder.binding.recCollectionsName.text =
-                stringTools.shorten(currentPack.name)
-            if (contextualMenuMode != null && contextualMenuModePackIdList.contains(currentPack.uid)) {
-                viewHolder.binding.recCollectionsPreviewText.contentDescription =
-                    context.resources.getString(R.string.selected)
-                viewHolder.binding.recCollectionsPreviewText.importantForAccessibility =
-                    IMPORTANT_FOR_ACCESSIBILITY_YES
-                viewHolder.binding.recCollectionsName.setTypeface(null, Typeface.BOLD)
-            }
-            if (currentPack.desc.isNullOrEmpty()) {
+                viewHolder.binding.recCollectionsName.textAlignment = View.TEXT_ALIGNMENT_CENTER
                 viewHolder.binding.recCollectionsDesc.visibility = View.GONE
-            } else {
-                viewHolder.binding.recCollectionsDesc.visibility = View.VISIBLE
-                viewHolder.binding.recCollectionsDesc.text =
-                    stringTools.shorten(currentPack.desc)
-            }
-            val emojiText = currentPack.emoji
-            viewHolder.binding.recCollectionsPreviewText.text =
-                if (contextualMenuMode != null && contextualMenuModePackIdList.contains(currentPack.uid)) {
-                    "✓"
-                } else if (emojiText.isNullOrEmpty()) {
-                    val pattern = Regex("^(\\P{M}\\p{M}*+).*")
-                    currentPack.name.replace(pattern, "$1")
-                } else {
-                    emojiText
-                }
-            if (packs[position].counter != -1) {
-                viewHolder.binding.recCollectionsNumberText.visibility = View.VISIBLE
-                viewHolder.binding.recCollectionsNumberText.text =
-                    packs[position].counter.toString()
-                viewHolder.binding.recCollectionsNumberText.contentDescription = String.format(
-                    Locale.ROOT, "%d %s",
-                    packs[position].counter,
-                    context.resources.getString(R.string.items)
-                )
-            } else {
+                viewHolder.binding.recCollectionsPreviewText.visibility = View.GONE
                 viewHolder.binding.recCollectionsNumberText.visibility = View.GONE
-            }
-            if (collection == LIST_CARDS_GET_DB_COLLECTIONS_ALL) {
-                viewHolder.binding.recCollectionsParent.visibility = View.VISIBLE
-                viewHolder.binding.recCollectionsParent.text = packs[position].collectionName
-            }
-            val colors = context.resources.obtainTypedArray(R.array.pack_color_list)
-            val colorsBackground =
-                context.resources.obtainTypedArray(R.array.pack_color_background_light)
-            val colorsBackgroundAlpha =
-                context.resources.obtainTypedArray(R.array.pack_color_background_light_alpha)
-            val minimalLength = colors.length().coerceAtMost(colorsBackground.length())
-                .coerceAtMost(colorsBackgroundAlpha.length())
-            val color = currentPack.colors
-            if (color in 0..<minimalLength) {
-                viewHolder.binding.recCollectionsName.setTextColor(colors.getColor(color, 0))
-                viewHolder.binding.recCollectionsPreviewText.setTextColor(
-                    if (contextualMenuMode != null && contextualMenuModePackIdList.contains(
-                            currentPack.uid
-                        )
-                    ) {
-                        ContextCompat.getColor(
-                            context,
-                            R.color.default_text
-                        )
-                    } else {
-                        colors.getColor(color, 0)
-                    }
-                )
-                viewHolder.binding.recCollectionsPreviewText.setBackgroundColor(
-                    if (contextualMenuMode != null && contextualMenuModePackIdList.contains(
-                            currentPack.uid
-                        )
-                    ) {
-                        Color.TRANSPARENT
-                    } else {
-                        colorsBackground.getColor(
-                            color,
-                            0
-                        )
-                    }
+                viewHolder.binding.recCollectionsName.setTextColor(
+                    ContextCompat.getColor(
+                        context,
+                        R.color.default_text
+                    )
                 )
                 background.mutate()
-                background.setStroke(2, colors.getColor(color, 0))
-                background.setColor(colorsBackgroundAlpha.getColor(color, 0))
+                background.setStroke(0, Color.rgb(0, 0, 0))
+                background.setColor(Color.argb(0, 0, 0, 0))
                 backgroundBehind.mutate()
-                backgroundBehind.setStroke(1, colorsBackground.getColor(color, 0))
+                backgroundBehind.setStroke(0, Color.rgb(0, 0, 0))
             }
-            colors.recycle()
-            colorsBackground.recycle()
-            colorsBackgroundAlpha.recycle()
+
+            0 -> {
+                viewHolder.binding.root.setOnClickListener {
+                    val intent = Intent(context, ListCards::class.java)
+                    intent.putExtra("collection", collection)
+                    intent.putExtra("pack", LIST_CARDS_GET_DB_PACKS_ALL)
+                    context.startActivity(intent)
+                }
+                viewHolder.binding.recCollectionsName.text =
+                    context.resources.getString(R.string.all_cards)
+                viewHolder.binding.recCollectionsDesc.visibility = View.VISIBLE
+                viewHolder.binding.recCollectionsDesc.text =
+                    if (collection == LIST_CARDS_GET_DB_COLLECTIONS_ALL) {
+                        context.resources.getString(R.string.all_cards_desc)
+                    } else {
+                        context.resources.getString(R.string.all_cards_desc_by_pack)
+                    }
+                viewHolder.binding.recCollectionsPreviewText.text = "…"
+                if (packs[position].counter != -1) {
+                    viewHolder.binding.recCollectionsNumberText.visibility = View.VISIBLE
+                    viewHolder.binding.recCollectionsNumberText.text =
+                        packs[position].counter.toString()
+                    viewHolder.binding.recCollectionsNumberText.contentDescription = String.format(
+                        Locale.ROOT, "%d %s",
+                        packs[position].counter,
+                        context.resources.getString(R.string.items)
+                    )
+                } else {
+                    viewHolder.binding.recCollectionsNumberText.visibility = View.GONE
+                }
+
+                viewHolder.binding.recCollectionsName.setTextColor(
+                    ContextCompat.getColor(
+                        context,
+                        R.color.default_text
+                    )
+                )
+                viewHolder.binding.recCollectionsPreviewText.setTextColor(
+                    ContextCompat.getColor(
+                        context,
+                        R.color.default_text
+                    )
+                )
+                viewHolder.binding.recCollectionsPreviewText.setBackgroundColor(
+                    ContextCompat.getColor(
+                        context,
+                        R.color.pack_default_item_background
+                    )
+                )
+                background.mutate()
+                background.setStroke(
+                    2, ContextCompat.getColor(
+                        context,
+                        R.color.pack_default_item_stroke
+                    )
+                )
+                background.setColor(
+                    ContextCompat.getColor(
+                        context,
+                        R.color.pack_default_item_background_alpha
+                    )
+                )
+                backgroundBehind.mutate()
+                backgroundBehind.setStroke(
+                    1, ContextCompat.getColor(
+                        context,
+                        R.color.pack_default_item_background
+                    )
+                )
+            }
+
+            else -> {
+                val currentPack = packs[position].pack
+                val extra = currentPack.uid
+                viewHolder.binding.root.setOnClickListener {
+                    if (contextualMenuMode != null) {
+                        if (contextualMenuModePackIdList.contains(extra)) {
+                            contextualMenuModePackIdList.remove(extra)
+                            if (contextualMenuModePackIdList.size == packs.size - 2) {
+                                contextualMenuMode?.invalidate()
+                            }
+                            contextualMenuModeFormatPack(extra)
+                            contextualMenuModeSelectedTitle()
+                            if (contextualMenuModePackIdList.isEmpty()) {
+                                contextualMenuMode?.finish()
+                            }
+                        } else {
+                            contextualMenuModeSelectItem(extra)
+                        }
+                    } else {
+                        val intent = Intent(context, ListCards::class.java)
+                        intent.putExtra("collection", collection)
+                        intent.putExtra("pack", extra)
+                        context.startActivity(intent)
+                    }
+                }
+                viewHolder.binding.root.setOnLongClickListener {
+                    if (contextualMenuMode != null) {
+                        return@setOnLongClickListener false
+                    }
+                    contextualMenuModePackIdList.clear()
+                    contextualMenuModeActivity = ContextTools().getActivity(context)
+                    contextualMenuMode =
+                        contextualMenuModeActivity?.startActionMode(contextualMenuModeCallback)
+                    contextualMenuModeSelectItem(extra)
+                    return@setOnLongClickListener true
+                }
+                viewHolder.binding.recCollectionsName.text =
+                    stringTools.shorten(currentPack.name)
+                if (contextualMenuMode != null && contextualMenuModePackIdList.contains(currentPack.uid)) {
+                    viewHolder.binding.recCollectionsPreviewText.contentDescription =
+                        context.resources.getString(R.string.selected)
+                    viewHolder.binding.recCollectionsPreviewText.importantForAccessibility =
+                        IMPORTANT_FOR_ACCESSIBILITY_YES
+                    viewHolder.binding.recCollectionsName.setTypeface(null, Typeface.BOLD)
+                }
+                if (currentPack.desc.isNullOrEmpty()) {
+                    viewHolder.binding.recCollectionsDesc.visibility = View.GONE
+                } else {
+                    viewHolder.binding.recCollectionsDesc.visibility = View.VISIBLE
+                    viewHolder.binding.recCollectionsDesc.text =
+                        stringTools.shorten(currentPack.desc)
+                }
+                val emojiText = currentPack.emoji
+                viewHolder.binding.recCollectionsPreviewText.text =
+                    if (contextualMenuMode != null && contextualMenuModePackIdList.contains(
+                            currentPack.uid
+                        )
+                    ) {
+                        "✓"
+                    } else if (emojiText.isNullOrEmpty()) {
+                        val pattern = Regex("^(\\P{M}\\p{M}*+).*")
+                        currentPack.name.replace(pattern, "$1")
+                    } else {
+                        emojiText
+                    }
+                if (packs[position].counter != -1) {
+                    viewHolder.binding.recCollectionsNumberText.visibility = View.VISIBLE
+                    viewHolder.binding.recCollectionsNumberText.text =
+                        packs[position].counter.toString()
+                    viewHolder.binding.recCollectionsNumberText.contentDescription = String.format(
+                        Locale.ROOT, "%d %s",
+                        packs[position].counter,
+                        context.resources.getString(R.string.items)
+                    )
+                } else {
+                    viewHolder.binding.recCollectionsNumberText.visibility = View.GONE
+                }
+                if (collection == LIST_CARDS_GET_DB_COLLECTIONS_ALL) {
+                    viewHolder.binding.recCollectionsParent.visibility = View.VISIBLE
+                    viewHolder.binding.recCollectionsParent.text = packs[position].collectionName
+                }
+                val colors = context.resources.obtainTypedArray(R.array.pack_color_list)
+                val colorsBackground =
+                    context.resources.obtainTypedArray(R.array.pack_color_background_light)
+                val colorsBackgroundAlpha =
+                    context.resources.obtainTypedArray(R.array.pack_color_background_light_alpha)
+                val minimalLength = colors.length().coerceAtMost(colorsBackground.length())
+                    .coerceAtMost(colorsBackgroundAlpha.length())
+                val color = currentPack.colors
+                if (color in 0..<minimalLength) {
+                    viewHolder.binding.recCollectionsName.setTextColor(colors.getColor(color, 0))
+                    viewHolder.binding.recCollectionsPreviewText.setTextColor(
+                        if (contextualMenuMode != null && contextualMenuModePackIdList.contains(
+                                currentPack.uid
+                            )
+                        ) {
+                            ContextCompat.getColor(
+                                context,
+                                R.color.default_text
+                            )
+                        } else {
+                            colors.getColor(color, 0)
+                        }
+                    )
+                    viewHolder.binding.recCollectionsPreviewText.setBackgroundColor(
+                        if (contextualMenuMode != null && contextualMenuModePackIdList.contains(
+                                currentPack.uid
+                            )
+                        ) {
+                            Color.TRANSPARENT
+                        } else {
+                            colorsBackground.getColor(
+                                color,
+                                0
+                            )
+                        }
+                    )
+                    background.mutate()
+                    background.setStroke(2, colors.getColor(color, 0))
+                    background.setColor(colorsBackgroundAlpha.getColor(color, 0))
+                    backgroundBehind.mutate()
+                    backgroundBehind.setStroke(1, colorsBackground.getColor(color, 0))
+                }
+                colors.recycle()
+                colorsBackground.recycle()
+                colorsBackgroundAlpha.recycle()
+            }
         }
     }
 

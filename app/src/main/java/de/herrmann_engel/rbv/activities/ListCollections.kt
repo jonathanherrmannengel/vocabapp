@@ -308,11 +308,12 @@ class ListCollections : FileTools(), AsyncImportFinish, AsyncImportProgress, Asy
     private fun updateSettingsAndContent() {
         val settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE)
         val uiFontSizeBig = settings.getBoolean("ui_font_size", false)
-        adapter?.updateSettingsAndContent(loadContent(), uiFontSizeBig) ?: {
-            adapter = AdapterCollections(loadContent(), uiFontSizeBig)
-            binding.recDefault.adapter = adapter
-            binding.recDefault.layoutManager = LinearLayoutManager(this)
-        }()
+        adapter?.updateSettingsAndContent(loadContent(), uiFontSizeBig) ?: run {
+            this@ListCollections.adapter =
+                AdapterCollections(this@ListCollections.loadContent(), uiFontSizeBig)
+            this@ListCollections.binding.recDefault.adapter = this@ListCollections.adapter
+            this@ListCollections.binding.recDefault.layoutManager = LinearLayoutManager(this)
+        }
     }
 
     override fun importCardsResult(result: Int) {
