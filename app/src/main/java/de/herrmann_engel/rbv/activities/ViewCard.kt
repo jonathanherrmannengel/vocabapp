@@ -3,6 +3,7 @@ package de.herrmann_engel.rbv.activities
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.PorterDuff
+import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.os.Bundle
 import android.text.SpannableString
@@ -251,7 +252,10 @@ class ViewCard : CardActionsActivity() {
             val colorBackgroundLight = colorsBackgroundLight.getColor(packColors, 0)
             supportActionBar?.setBackgroundDrawable(colorStatusBar.toDrawable())
             binding.root.setBackgroundColor(colorBackground)
-            binding.cardKnownProgress.setBackgroundColor(colorBackgroundLight)
+            val cardKnownProgressDrawable = GradientDrawable()
+            cardKnownProgressDrawable.setColor(colorBackgroundLight)
+            cardKnownProgressDrawable.cornerRadius = 50f
+            binding.cardKnownProgress.background = cardKnownProgressDrawable
         }
         colorsStatusBar.recycle()
         colorsBackground.recycle()

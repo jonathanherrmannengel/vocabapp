@@ -58,7 +58,7 @@ android {
 }
 dependencies {
     val kotlinVersion = rootProject.extra.get("kotlinVersion") as String
-    val roomVersion = "2.8.3"
+    val roomVersion = "2.8.4"
     implementation("androidx.appcompat:appcompat:1.7.1")
     implementation("androidx.core:core-ktx:1.17.0")
     implementation("androidx.documentfile:documentfile:1.1.0")
@@ -71,7 +71,7 @@ dependencies {
     implementation("io.noties.markwon:core:4.6.2")
     implementation("io.noties.markwon:linkify:4.6.2")
     implementation("me.saket:better-link-movement-method:2.2.0")
-    implementation("com.vanniktech:emoji-twitter:0.22.0")
+    implementation("com.vanniktech:emoji-twitter:0.23.0")
     implementation("io.coil-kt.coil3:coil:3.3.0")
     implementation("com.github.rtugeek:colorseekbar:2.1.0")
     implementation("com.atlassian.commonmark:commonmark:0.13.0")
