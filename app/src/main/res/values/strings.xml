@@ -139,6 +139,9 @@
     <string name="tag">tag</string>
     <string name="tag_emoji">Emoji for tag</string>
     <string name="tags">tags</string>
+    <string name="creation_date">creation time: %1$s</string>
+    <string name="last_repetition_date">time of last repetition: %1$s</string>
+    <string name="last_repetition_none">no repetition yet</string>
     <string name="card_known">progress</string>
     <string name="query_mode">Query mode</string>
     <string name="query_mode_title">%1$s (%2$d of %3$d)</string>

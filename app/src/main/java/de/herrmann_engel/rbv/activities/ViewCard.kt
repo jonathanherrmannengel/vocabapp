@@ -159,15 +159,20 @@ class ViewCard : CardActionsActivity() {
                 resources.getDimension(R.dimen.card_notes_size_big)
             )
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val instant = Instant.ofEpochSecond(card.date)
-            val dateTimeFormatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)
-                .withLocale(Locale.ROOT)
-                .withZone(ZoneId.systemDefault())
-            binding.cardDate.text = dateTimeFormatter.format(instant)
-        } else {
-            binding.cardDate.text = Date(card.date * 1000).toString()
-        }
+        binding.cardDate.text = String.format(
+            Locale.ROOT,
+            getString(R.string.creation_date),
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val instant = Instant.ofEpochSecond(card.date)
+                val dateTimeFormatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)
+                    .withLocale(Locale.ROOT)
+                    .withZone(ZoneId.systemDefault())
+                dateTimeFormatter.format(instant)
+            } else {
+                Date(card.date * 1000).toString()
+            }
+        )
+        updateCardLastRepetition()
         known = card.known
         updateCardKnown()
         binding.cardMinus.setOnClickListener {
@@ -262,6 +267,28 @@ class ViewCard : CardActionsActivity() {
         colorsBackgroundLight.recycle()
     }
 
+    private fun updateCardLastRepetition() {
+        binding.cardDateLastRepetition.text =
+            if (card.lastRepetition == 0L) {
+                getString(R.string.last_repetition_none)
+            } else {
+                String.format(
+                    Locale.ROOT,
+                    getString(R.string.last_repetition_date),
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        val instant = Instant.ofEpochSecond(card.lastRepetition)
+                        val dateTimeFormatter =
+                            DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)
+                                .withLocale(Locale.ROOT)
+                                .withZone(ZoneId.systemDefault())
+                        dateTimeFormatter.format(instant)
+                    } else {
+                        Date(card.lastRepetition * 1000).toString()
+                    }
+                )
+            }
+    }
+
     private fun updateCardKnown() {
         binding.cardKnown.text = known.toString()
         binding.cardKnown.contentDescription =
@@ -271,7 +298,7 @@ class ViewCard : CardActionsActivity() {
             ContextCompat.getColor(this, if (known > 0) R.color.dark_red else R.color.dark_grey),
             PorterDuff.Mode.MULTIPLY
         )
-
+        updateCardLastRepetition()
     }
 
     override fun movedCards(cardIds: ArrayList<Int>) {

@@ -42,7 +42,15 @@
                 android:id="@+id/card_date"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="40dp"
+                android:layout_marginBottom="5dp"
+                android:gravity="center"
+                android:textColor="@color/light_black" />
+
+            <TextView
+                android:id="@+id/card_date_last_repetition"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
                 android:gravity="center"
                 android:textColor="@color/light_black" />
 
@@ -113,7 +121,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
-                    android:layout_marginBottom="40dp"
+                    android:layout_marginBottom="20dp"
                     android:gravity="center"
                     android:textColor="@color/light_black"
                     android:textIsSelectable="true"
@@ -123,14 +131,14 @@
             <Button
                 android:id="@+id/view_card_images"
                 style="@style/material_button"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="5dp"
                 android:text="@string/show_image_media"
                 android:textSize="22sp" />
 
             <Button
                 android:id="@+id/view_card_media"
                 style="@style/material_button"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="5dp"
                 android:text="@string/show_all_media"
                 android:textSize="22sp" />
 

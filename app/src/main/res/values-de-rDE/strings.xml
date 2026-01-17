@@ -134,6 +134,9 @@
     <string name="tag">Schlagwort</string>
     <string name="tag_emoji">Emoji für Schlagwort</string>
     <string name="tags">Schlagworte</string>
+    <string name="creation_date">Erstellzeitpunkt: %1$s</string>
+    <string name="last_repetition_date">Zeitpunkt letzter Wiederholung: %1$s</string>
+    <string name="last_repetition_none">Keine Wiederholung bisher</string>
     <string name="card_known">Fortschritt</string>
     <string name="query_mode">Abfrage-Modus</string>
     <string name="query_mode_title">%1$s (%2$d von %3$d)</string>
