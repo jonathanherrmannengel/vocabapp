@@ -1,6 +1,5 @@
 plugins {
     id("com.android.application")
-    id("org.jetbrains.kotlin.android")
 }
 android {
     compileSdk = 36
@@ -8,8 +7,8 @@ android {
         applicationId = "de.herrmann_engel.rbv"
         minSdk = 25
         targetSdk = 36
-        versionCode = 82
-        versionName = "3.4.8"
+        versionCode = 83
+        versionName = "3.4.9"
         javaCompileOptions {
             annotationProcessorOptions {
                 arguments += mapOf(

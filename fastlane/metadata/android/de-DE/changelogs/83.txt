@@ -1,0 +1,2 @@
+Kleinere Anpassungen an der Nutzeroberfläche.
+Aktualisierte Abhängigkeiten.
