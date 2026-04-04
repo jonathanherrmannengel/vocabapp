@@ -67,13 +67,19 @@ public class AppDatabaseBuilder {
             database.execSQL("ALTER TABLE db_tag ADD COLUMN color TEXT");
         }
     };
+    private final Migration MIGRATION_10_11 = new Migration(10, 11) {
+        @Override
+        public void migrate(SupportSQLiteDatabase database) {
+            database.execSQL("ALTER TABLE db_card ADD COLUMN count_repetitions INTEGER DEFAULT 0 NOT NULL");
+        }
+    };
 
     public AppDatabase get(Context context) {
         return Room.databaseBuilder(
                         context,
                         AppDatabase.class, Globals.DB_NAME)
                 .allowMainThreadQueries()
-                .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10)
+                .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11)
                 .build();
     }
 }

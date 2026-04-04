@@ -172,13 +172,13 @@ class ViewCard : CardActionsActivity() {
                 Date(card.date * 1000).toString()
             }
         )
-        updateCardLastRepetition()
         known = card.known
         updateCardKnown()
         binding.cardMinus.setOnClickListener {
             known = 0.coerceAtLeast(--known)
             card.known = known
             card.lastRepetition = System.currentTimeMillis() / 1000L
+            card.countRepetitions++
             dbHelperUpdate.updateCard(card)
             updateCardKnown()
         }
@@ -186,6 +186,7 @@ class ViewCard : CardActionsActivity() {
             known++
             card.known = known
             card.lastRepetition = System.currentTimeMillis() / 1000L
+            card.countRepetitions++
             dbHelperUpdate.updateCard(card)
             updateCardKnown()
         }

@@ -242,6 +242,11 @@ class AsyncImportWorker(
                                         } else {
                                             0L
                                         }
+                                        val countRepetitions = if (line.size >= 10) {
+                                            Integer.parseInt((line[9] ?: "0"))
+                                        } else {
+                                            0
+                                        }
                                         val sameNamed =
                                             helperGet.getSingleCardIdByPackAndFrontAndBackAndNotes(
                                                 currentPack,
@@ -257,7 +262,8 @@ class AsyncImportWorker(
                                                 currentPack,
                                                 known,
                                                 date,
-                                                lastRepetition
+                                                lastRepetition,
+                                                countRepetitions
                                             ).toInt()
                                             cardUidConverter.insertPair(cardUidOld, cardUidNew)
                                         } else if (mode == Globals.IMPORT_MODE_INTEGRATE) {

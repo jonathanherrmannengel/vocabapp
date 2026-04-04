@@ -24,6 +24,8 @@ public class DB_Card {
     public String notes;
     @ColumnInfo(name = "last_repetition")
     public long lastRepetition;
+    @ColumnInfo(name = "count_repetitions")
+    public int countRepetitions;
 
     @Override
     public boolean equals(Object o) {
