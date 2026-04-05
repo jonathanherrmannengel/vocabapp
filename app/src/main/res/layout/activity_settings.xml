@@ -61,6 +61,14 @@
                     android:text="@string/sort_repetition"
                     android:textColor="@color/light_black"
                     android:textSize="16sp" />
+
+                <RadioButton
+                    android:id="@+id/settings_sort_mixed"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/sort_mixed"
+                    android:textColor="@color/light_black"
+                    android:textSize="16sp" />
             </RadioGroup>
 
             <View

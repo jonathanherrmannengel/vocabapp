@@ -21,6 +21,7 @@ object Globals {
     const val SORT_CARDS_RANDOM = 1
     const val SORT_CARDS_ALPHABETICAL = 2
     const val SORT_CARDS_REPETITION = 3
+    const val SORT_CARDS_MIXED = 4
     const val FLASHCARD_LIST_SIDE_FRONT = 0
     const val FLASHCARD_LIST_SIDE_BACK = 1
     const val FLASHCARD_LIST_SIDE_BOTH = 2

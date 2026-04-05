@@ -125,8 +125,10 @@
     <string name="sort_normal">Sort by progress</string>
     <string name="sort_alphabetical">Sort alphabetical by flashcard front</string>
     <string name="sort_repetition">Sort by last repetition</string>
+    <string name="sort_mixed">Sort by mixed learning criteria</string>
     <string name="sort_random_short">randomly</string>
     <string name="sort_normal_short">by progress</string>
+    <string name="sort_mixed_short">by mixed criteria</string>
     <string name="sort_alphabetical_short">alphabetical by front</string>
     <string name="sort_repetition_short">by last repetition</string>
     <string name="sort_menu">Sort</string>

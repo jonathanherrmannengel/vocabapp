@@ -408,6 +408,12 @@ class ListCards : CardActionsActivity() {
             updateContent(true)
             false
         }
+        sortMenu?.findItem(R.id.sort_menu_mixed)?.setOnMenuItemClickListener {
+            listSort = Globals.SORT_CARDS_MIXED
+            sortList()
+            updateContent(true)
+            false
+        }
         showQueryModeMenuItem = menu.findItem(R.id.start_query)
         showQueryModeMenuItem.setOnMenuItemClickListener {
             queryModeDialog.setContentView(bindingQueryModeDialog.root)

@@ -119,11 +119,13 @@
     <string name="sort_random">Zufallssortierung</string>
     <string name="sort_normal">Sortierung nach Lernfortschritt</string>
     <string name="sort_alphabetical">Alphabetische Sortierung nach Karteikarten-Vorderseite</string>
-    <string name="sort_repetition">Sortiertung nach letzter Wiederholung</string>
+    <string name="sort_repetition">Sortierung nach letzter Wiederholung</string>
+    <string name="sort_mixed">Sortierung nach gemischten Lernkriterien</string>
     <string name="sort_random_short">zufällig</string>
     <string name="sort_normal_short">nach Lernfortschritt</string>
     <string name="sort_alphabetical_short">alphabetisch nach Vorderseite</string>
     <string name="sort_repetition_short">nach letzter Wiederholung</string>
+    <string name="sort_mixed_short">nach gemischten Kriterien</string>
     <string name="sort_menu">Sortierung</string>
     <string name="collection_details">Karteikasten-Details</string>
     <string name="pack_details">Kartenstapel-Details</string>

@@ -1,0 +1,9 @@
+Sortierung nach Lernfortschritt: Sortierung nach Lernfortschritt aufsteigend, dann nach Zeitpunkt der Erstellung absteigend
+
+Zufallssortierung: Karteikarten mischen
+
+Alphabetische Sortierung nach Karteikarten-Vorderseite: Alphabetische Sortierung nach Karteikarten-Vorderseite aufsteigend, dann alphabetische Sortierung nach Karteikarten-Rückseite aufsteigend
+
+Sortierung nach letzter Wiederholung: Sortierung nach Zeitpunkt letzter Wiederholung absteigend, dann nach Zeitpunkt der Erstellung absteigend
+
+Sortierung nach gemischten Lernkriterien: Sortierung nach drei Kriterien: Geringer Lernfortschritt, Lernfortschritt / Wiederholungszähler Verhältnis, Zufall

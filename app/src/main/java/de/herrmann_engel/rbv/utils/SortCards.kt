@@ -38,6 +38,10 @@ class SortCards {
                 list.sortWith(compareByDescending<DB_Card_With_Meta?> { it?.card?.lastRepetition }.thenByDescending { it?.card?.date })
             }
 
+            Globals.SORT_CARDS_MIXED -> {
+                list.sortWith(compareByDescending<DB_Card_With_Meta?> { it?.mixedWeight })
+            }
+
             else -> {
                 list.sortWith(compareBy<DB_Card_With_Meta?> { it?.card?.known }.thenByDescending { it?.card?.date })
             }

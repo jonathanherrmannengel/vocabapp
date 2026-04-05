@@ -103,6 +103,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:title="@string/sort_repetition_short" />
+            <item
+                android:id="@+id/sort_menu_mixed"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:title="@string/sort_mixed_short" />
         </menu>
     </item>
 </menu>

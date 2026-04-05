@@ -10,6 +10,7 @@ public class DB_Card_With_Meta {
     public DB_Card card;
     public int packColor;
     public String tagNames;
+    public double mixedWeight;
     @Ignore
     public String formattedFront;
     @Ignore

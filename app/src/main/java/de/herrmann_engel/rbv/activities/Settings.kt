@@ -30,6 +30,10 @@ class Settings : FileTools() {
                 binding.settingsSortRepetition.isChecked = true
             }
 
+            Globals.SORT_CARDS_MIXED -> {
+                binding.settingsSortMixed.isChecked = true
+            }
+
             else -> {
                 binding.settingsSortNormal.isChecked = true
             }
@@ -46,6 +50,10 @@ class Settings : FileTools() {
 
                 R.id.settings_sort_repetition -> {
                     Globals.SORT_CARDS_REPETITION
+                }
+
+                R.id.settings_sort_mixed -> {
+                    Globals.SORT_CARDS_MIXED
                 }
 
                 else -> {

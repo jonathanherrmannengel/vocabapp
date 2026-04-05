@@ -1,0 +1,9 @@
+Sort by progress: Sort by progress ascending, then by creation time descending
+
+Sort randomly: Shuffle flashcards
+
+Sort alphabetical by flashcard front: Sort alphabetical by flashcard front ascending, then alphabetical by flashcard back ascending
+
+Sort by last repetition: Sort by time of last repetition descending, then by creation time descending
+
+Sort by mixed learning criteria: Sort by three criteria: low progress, progress / repetition counter ratio and randomly
