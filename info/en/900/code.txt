@@ -12,7 +12,7 @@
 "tags","1","ReallyBasicTag","📣","#1b2c66"
 "tags_link_card_schema","uid","tagId","cardId"
 "tags_link_card","1","1","1"
-"app_setting","default_sort","int","0|1|2|3"
+"app_setting","default_sort","int","0|1|2|3|4"
 "app_setting","flashcard_list_side","int","0|1|2"
 "app_setting","format_cards","bool","true|false"
 "app_setting","format_card_notes","bool","true|false"
