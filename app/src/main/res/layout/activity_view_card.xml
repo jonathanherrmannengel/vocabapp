@@ -142,16 +142,38 @@
                 android:text="@string/show_all_media"
                 android:textSize="22sp" />
 
-            <TextView
-                android:id="@+id/card_notes"
+            <LinearLayout
+                android:id="@+id/card_notes_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="40dp"
                 android:layout_marginBottom="20dp"
+                android:background="@android:color/transparent"
                 android:gravity="center"
-                android:textColor="@color/light_black"
-                android:textIsSelectable="true"
-                android:textSize="@dimen/card_notes_size_default" />
+                android:orientation="vertical">
+
+                <View
+                    android:id="@+id/card_notes_divider"
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="20dp"
+                    android:background="@color/light_black"
+                    android:importantForAccessibility="no"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/card_notes"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="5dp"
+                    android:gravity="center"
+                    android:textColor="@color/light_black"
+                    android:textIsSelectable="true"
+                    android:textSize="@dimen/card_notes_size_default" />
+            </LinearLayout>
 
         </LinearLayout>
     </ScrollView>

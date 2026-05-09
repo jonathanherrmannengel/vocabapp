@@ -134,6 +134,7 @@
     <string name="sort_menu">Sort</string>
     <string name="collection_details">Filing box details</string>
     <string name="pack_details">Deck details</string>
+    <string name="card_details">Flashcard details</string>
     <string name="card_plus">got it right</string>
     <string name="card_minus">got it wrong</string>
     <string name="skip">skip</string>

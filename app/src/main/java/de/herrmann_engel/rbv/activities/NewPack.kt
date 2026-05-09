@@ -7,7 +7,6 @@ import android.view.Menu
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.core.graphics.drawable.toDrawable
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.databinding.ActivityNewCollectionOrPackBinding
 import de.herrmann_engel.rbv.databinding.DiaConfirmBinding
@@ -24,16 +23,12 @@ class NewPack : RBVActivity() {
         val dbHelperGet = DB_Helper_Get(this)
         collectionNo = intent.extras!!.getInt("collection")
         val colors = resources.obtainTypedArray(R.array.pack_color_main)
-        val colorsStatusBar = resources.obtainTypedArray(R.array.pack_color_statusbar)
         val colorsBackground = resources.obtainTypedArray(R.array.pack_color_background)
-        val minimalLength = colors.length().coerceAtMost(colorsStatusBar.length())
-            .coerceAtMost(colorsBackground.length())
+        val minimalLength = colors.length().coerceAtMost(colorsBackground.length())
         val collectionColors = dbHelperGet.getSingleCollection(collectionNo).colors
         if (collectionColors in 0..<minimalLength) {
             val color = colors.getColor(collectionColors, 0)
-            val colorStatusBar = colorsStatusBar.getColor(collectionColors, 0)
             val colorBackground = colorsBackground.getColor(collectionColors, 0)
-            supportActionBar?.setBackgroundDrawable(colorStatusBar.toDrawable())
             binding.newCollectionOrPackNameLayout.boxStrokeColor = color
             binding.newCollectionOrPackNameLayout.hintTextColor =
                 ColorStateList.valueOf(color)
@@ -43,7 +38,6 @@ class NewPack : RBVActivity() {
             binding.root.setBackgroundColor(colorBackground)
         }
         colors.recycle()
-        colorsStatusBar.recycle()
         colorsBackground.recycle()
         binding.newCollectionOrPackNameLayout.hint = String.format(
             getString(R.string.collection_or_pack_name_format),

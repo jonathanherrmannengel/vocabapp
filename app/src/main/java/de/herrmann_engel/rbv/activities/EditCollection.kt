@@ -94,19 +94,17 @@ class EditCollection : RBVActivity() {
         })
         val colorNames = resources.obtainTypedArray(R.array.pack_color_names)
         val colors = resources.obtainTypedArray(R.array.pack_color_main)
-        val colorsStatusBar = resources.obtainTypedArray(R.array.pack_color_statusbar)
         val colorsBackground = resources.obtainTypedArray(R.array.pack_color_background)
         val minimalLength =
-            colorNames.length().coerceAtMost(colors.length()).coerceAtMost(colorsStatusBar.length())
+            colorNames.length().coerceAtMost(colors.length())
                 .coerceAtMost(colorsBackground.length())
         var i = 0
         while (i < minimalLength) {
             val colorName = colorNames.getString(i)
             val color = colors.getColor(i, 0)
-            val colorStatusBar = colorsStatusBar.getColor(i, 0)
             val colorBackground = colorsBackground.getColor(i, 0)
             if (collection.colors == i) {
-                setColors(color, colorStatusBar, colorBackground)
+                setColors(color, colorBackground)
             }
             val colorView = ImageButton(this)
             colorView.setImageDrawable(color.toDrawable())
@@ -118,7 +116,7 @@ class EditCollection : RBVActivity() {
             colorView.setPadding(0, 0, 0, 0)
             val finalI = i
             colorView.setOnClickListener {
-                setColors(color, colorStatusBar, colorBackground)
+                setColors(color, colorBackground)
                 collection.colors = finalI
             }
             colorView.contentDescription = colorName
@@ -130,7 +128,6 @@ class EditCollection : RBVActivity() {
         }
         colorNames.recycle()
         colors.recycle()
-        colorsStatusBar.recycle()
         colorsBackground.recycle()
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -177,8 +174,7 @@ class EditCollection : RBVActivity() {
         return true
     }
 
-    private fun setColors(main: Int, statusBar: Int, background: Int) {
-        supportActionBar?.setBackgroundDrawable(statusBar.toDrawable())
+    private fun setColors(main: Int, background: Int) {
         binding.editCollectionOrPackNameLayout.boxStrokeColor = main
         binding.editCollectionOrPackNameLayout.hintTextColor = ColorStateList.valueOf(main)
         binding.editCollectionOrPackDescLayout.boxStrokeColor = main

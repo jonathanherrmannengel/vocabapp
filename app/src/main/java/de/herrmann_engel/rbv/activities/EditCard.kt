@@ -9,7 +9,6 @@ import android.view.Menu
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.core.graphics.drawable.toDrawable
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.databinding.ActivityEditCardBinding
 import de.herrmann_engel.rbv.databinding.DiaConfirmBinding
@@ -43,16 +42,12 @@ class EditCard : RBVActivity() {
         binding.editCardNotesLayout.hint =
             String.format(getString(R.string.optional), getString(R.string.card_notes))
         val colors = resources.obtainTypedArray(R.array.pack_color_main)
-        val colorsStatusBar = resources.obtainTypedArray(R.array.pack_color_statusbar)
         val colorsBackground = resources.obtainTypedArray(R.array.pack_color_background)
-        val minimalLength = colors.length().coerceAtMost(colorsStatusBar.length())
-            .coerceAtMost(colorsBackground.length())
+        val minimalLength = colors.length().coerceAtMost(colorsBackground.length())
         val packColors = dbHelperGet.getSinglePack(card.pack).colors
         if (packColors in 0..<minimalLength) {
             val color = colors.getColor(packColors, 0)
-            val colorStatusBar = colorsStatusBar.getColor(packColors, 0)
             val colorBackground = colorsBackground.getColor(packColors, 0)
-            supportActionBar?.setBackgroundDrawable(colorStatusBar.toDrawable())
             binding.editCardFrontLayout.boxStrokeColor = color
             binding.editCardFrontLayout.hintTextColor =
                 ColorStateList.valueOf(color)
@@ -65,7 +60,6 @@ class EditCard : RBVActivity() {
             binding.root.setBackgroundColor(colorBackground)
         }
         colors.recycle()
-        colorsStatusBar.recycle()
         colorsBackground.recycle()
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {

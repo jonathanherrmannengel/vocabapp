@@ -129,6 +129,7 @@
     <string name="sort_menu">Sortierung</string>
     <string name="collection_details">Karteikasten-Details</string>
     <string name="pack_details">Kartenstapel-Details</string>
+    <string name="card_details">Karteikarten-Details</string>
     <string name="card_plus">Gewusst</string>
     <string name="card_minus">Nicht gewusst</string>
     <string name="skip">Überspringen</string>

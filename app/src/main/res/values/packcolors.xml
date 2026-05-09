@@ -12,12 +12,6 @@
         <item>@color/ijgreen</item>
         <item>@color/ijyellow</item>
     </array>
-    <array name="pack_color_statusbar">
-        <item>@color/statusbar_back</item>
-        <item>@color/statusbar_back1</item>
-        <item>@color/statusbar_back2</item>
-        <item>@color/statusbar_back3</item>
-    </array>
     <array name="pack_color_background">
         <item>@color/background</item>
         <item>@color/background1</item>

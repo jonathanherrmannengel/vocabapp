@@ -8,7 +8,6 @@ import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.graphics.drawable.toDrawable
 import androidx.documentfile.provider.DocumentFile
 import androidx.recyclerview.widget.LinearLayoutManager
 import de.herrmann_engel.rbv.R
@@ -88,17 +87,13 @@ class EditCardMedia : FileTools() {
         dbHelperGet = DB_Helper_Get(this)
         cardNo = intent.extras!!.getInt("card")
         val card = dbHelperGet.getSingleCard(cardNo)
-        val colorsStatusBar = resources.obtainTypedArray(R.array.pack_color_statusbar)
         val colorsBackground = resources.obtainTypedArray(R.array.pack_color_background)
-        val minimalLength = colorsStatusBar.length().coerceAtMost(colorsBackground.length())
+        val minimalLength = colorsBackground.length()
         val packColors = dbHelperGet.getSinglePack(card.pack).colors
         if (packColors in 0..<minimalLength) {
-            val colorStatusBar = colorsStatusBar.getColor(packColors, 0)
             val colorBackground = colorsBackground.getColor(packColors, 0)
-            supportActionBar?.setBackgroundDrawable(colorStatusBar.toDrawable())
             binding.root.setBackgroundColor(colorBackground)
         }
-        colorsStatusBar.recycle()
         colorsBackground.recycle()
         binding.addMediaButton.setOnClickListener {
             val folder = cardMediaFolder

@@ -23,8 +23,10 @@ import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.edit
-import androidx.core.graphics.drawable.toDrawable
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
+import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.LinearLayoutManager
 import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.Globals.LIST_CARDS_GET_DB_COLLECTIONS_ALL
@@ -131,6 +133,11 @@ class ListCards : CardActionsActivity() {
         bindingQueryModeDialog = DiaQueryBinding.inflate(
             layoutInflater
         )
+        ViewCompat.setOnApplyWindowInsetsListener(binding.recDefault) { v, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.updatePadding(insets.left, insets.top, insets.right, insets.bottom)
+            WindowInsetsCompat.CONSUMED
+        }
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -215,32 +222,24 @@ class ListCards : CardActionsActivity() {
 
         // Colors
         if (packNo >= 0) {
-            val colorsStatusBar = resources.obtainTypedArray(R.array.pack_color_statusbar)
             val colorsBackground =
                 resources.obtainTypedArray(R.array.pack_color_background_list)
-            val minimalLength = colorsStatusBar.length().coerceAtMost(colorsBackground.length())
+            val minimalLength = colorsBackground.length()
             val packColors = dbHelperGet.getSinglePack(packNo).colors
             if (packColors in 0..<minimalLength) {
-                val colorStatusBar = colorsStatusBar.getColor(packColors, 0)
                 val colorBackground = colorsBackground.getColor(packColors, 0)
-                supportActionBar?.setBackgroundDrawable(colorStatusBar.toDrawable())
                 binding.root.setBackgroundColor(colorBackground)
             }
-            colorsStatusBar.recycle()
             colorsBackground.recycle()
         } else if (collectionNo >= 0) {
-            val colorsStatusBar = resources.obtainTypedArray(R.array.pack_color_statusbar)
             val colorsBackground =
                 resources.obtainTypedArray(R.array.pack_color_background_list)
-            val minimalLength = colorsStatusBar.length().coerceAtMost(colorsBackground.length())
+            val minimalLength = colorsBackground.length()
             val collectionColors = dbHelperGet.getSingleCollection(collectionNo).colors
             if (collectionColors in 0..<minimalLength) {
-                val colorStatusBar = colorsStatusBar.getColor(collectionColors, 0)
                 val colorBackground = colorsBackground.getColor(collectionColors, 0)
-                supportActionBar?.setBackgroundDrawable(colorStatusBar.toDrawable())
                 binding.root.setBackgroundColor(colorBackground)
             }
-            colorsStatusBar.recycle()
             colorsBackground.recycle()
         }
 

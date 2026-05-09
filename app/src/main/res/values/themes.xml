@@ -2,29 +2,29 @@
 <resources>
     <!-- Base application theme. -->
     <style name="Theme.RBV" parent="Theme.Material3.DayNight">
-        <!-- Primary brand color. -->
+        <!-- Primary colors -->
         <item name="colorPrimary">@color/ijblue</item>
         <item name="colorOnPrimary">@color/white</item>
         <item name="colorSecondary">@color/highlight</item>
         <item name="android:textColorLink">@color/hyperlink</item>
-        <!-- Status bar color. -->
+        <!-- Status bar -->
         <item name="android:statusBarColor">@color/statusbar_back_default</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <!-- Action bar -->
         <item name="actionBarTheme">@style/Theme.RBV.ActionBar</item>
         <item name="actionOverflowMenuStyle">@style/Theme.RBV.ActionBarOverflow</item>
-        <!-- Action mode color. -->
+        <!-- Action mode -->
         <item name="actionModeStyle">@style/Theme.RBV.ActionMode</item>
-        <!-- Default background color. -->
+        <!-- Default background color -->
         <item name="android:windowBackground">@color/background_default</item>
-        <!-- No animations. -->
+        <!-- No animations -->
         <item name="android:windowAnimationStyle">@null</item>
     </style>
 
     <style name="Theme.RBV.ActionBar" parent="@style/ThemeOverlay.Material3.ActionBar">
-        <item name="colorSurfaceContainer">@color/statusbar_back</item>
-        <item name="elevationOverlayColor">@color/statusbar_back</item>
-        <item name="colorOnSurface">@android:color/white</item>
-        <item name="android:editTextColor">@color/light_grey_statusbar</item>
-        <item name="android:textColorHint">@color/light_grey_statusbar_alpha</item>
+        <item name="colorSurfaceContainer">@android:color/transparent</item>
+        <item name="elevationOverlayColor">@android:color/transparent</item>
+        <item name="colorOnSurface">@color/default_text</item>
         <item name="android:tint">?attr/colorOnSurface</item>
     </style>
 

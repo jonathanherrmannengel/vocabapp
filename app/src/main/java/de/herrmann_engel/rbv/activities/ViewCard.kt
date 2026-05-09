@@ -16,7 +16,6 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.toDrawable
 import androidx.core.graphics.toColorInt
 import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.R
@@ -126,8 +125,9 @@ class ViewCard : CardActionsActivity() {
         }
         val formatCardNotes = settings.getBoolean("format_card_notes", false)
         if (!card.notes.isNullOrBlank()) {
-            binding.cardNotes.visibility = View.VISIBLE
+            binding.cardNotesContainer.visibility = View.VISIBLE
             if (formatCardNotes) {
+                binding.cardNotesDivider.visibility = View.VISIBLE
                 val markwon = Markwon.builder(this)
                     .usePlugin(
                         LinkifyPlugin.create(
@@ -143,7 +143,7 @@ class ViewCard : CardActionsActivity() {
                 binding.cardNotes.text = card.notes
             }
         } else {
-            binding.cardNotes.visibility = View.GONE
+            binding.cardNotesContainer.visibility = View.GONE
         }
         if (increaseFontSize) {
             binding.cardFront.setTextSize(
@@ -191,7 +191,7 @@ class ViewCard : CardActionsActivity() {
             updateCardKnown()
         }
         updateColors()
-        title = cardFront
+        title = getString(R.string.card_details)
         setMediaButtons()
     }
 
@@ -245,25 +245,20 @@ class ViewCard : CardActionsActivity() {
     }
 
     private fun updateColors() {
-        val colorsStatusBar = resources.obtainTypedArray(R.array.pack_color_statusbar)
         val colorsBackground = resources.obtainTypedArray(R.array.pack_color_background)
         val colorsBackgroundLight =
             resources.obtainTypedArray(R.array.pack_color_background_light)
-        val minimalLength = colorsStatusBar.length().coerceAtMost(colorsBackground.length())
-            .coerceAtMost(colorsBackgroundLight.length())
+        val minimalLength = colorsBackground.length().coerceAtMost(colorsBackgroundLight.length())
         val packColors = dbHelperGet.getSinglePack(card.pack).colors
         if (packColors in 0..<minimalLength) {
-            val colorStatusBar = colorsStatusBar.getColor(packColors, 0)
             val colorBackground = colorsBackground.getColor(packColors, 0)
             val colorBackgroundLight = colorsBackgroundLight.getColor(packColors, 0)
-            supportActionBar?.setBackgroundDrawable(colorStatusBar.toDrawable())
             binding.root.setBackgroundColor(colorBackground)
             val cardKnownProgressDrawable = GradientDrawable()
             cardKnownProgressDrawable.setColor(colorBackgroundLight)
             cardKnownProgressDrawable.cornerRadius = 50f
             binding.cardKnownProgress.background = cardKnownProgressDrawable
         }
-        colorsStatusBar.recycle()
         colorsBackground.recycle()
         colorsBackgroundLight.recycle()
     }

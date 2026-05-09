@@ -8,7 +8,6 @@ import android.util.TypedValue
 import android.view.Menu
 import android.view.View
 import android.view.WindowManager
-import androidx.core.graphics.drawable.toDrawable
 import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.databinding.ActivityViewCollectionOrPackBinding
@@ -56,7 +55,7 @@ class ViewCollection : RBVActivity() {
         val settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE)
         val increaseFontSize = settings.getBoolean("ui_font_size", false)
         collection = dbHelperGet.getSingleCollection(collectionNo)
-        title = collection.name
+        title = getString(R.string.collection_details)
         binding.collectionOrPackName.text = collection.name
         if (collection.emoji.isNullOrBlank()) {
             binding.collectionOrPackEmoji.visibility = View.GONE
@@ -93,17 +92,13 @@ class ViewCollection : RBVActivity() {
         } else {
             binding.collectionOrPackDate.text = Date(collection.date * 1000).toString()
         }
-        val colorsStatusBar = resources.obtainTypedArray(R.array.pack_color_statusbar)
         val colorsBackground = resources.obtainTypedArray(R.array.pack_color_background)
-        val minimalLength = colorsStatusBar.length().coerceAtMost(colorsBackground.length())
+        val minimalLength = colorsBackground.length()
         val collectionColors = collection.colors
         if (collectionColors in 0..<minimalLength) {
-            val colorStatusBar = colorsStatusBar.getColor(collectionColors, 0)
             val colorBackground = colorsBackground.getColor(collectionColors, 0)
-            supportActionBar?.setBackgroundDrawable(colorStatusBar.toDrawable())
             binding.root.setBackgroundColor(colorBackground)
         }
-        colorsStatusBar.recycle()
         colorsBackground.recycle()
     }
 

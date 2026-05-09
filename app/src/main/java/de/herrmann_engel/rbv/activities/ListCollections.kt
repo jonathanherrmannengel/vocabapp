@@ -12,6 +12,9 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.FileProvider
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.LinearLayoutManager
 import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.Globals.IMPORT_MODE_SIMPLE_LIST
@@ -87,6 +90,11 @@ class ListCollections : FileTools(), AsyncImportFinish, AsyncImportProgress, Asy
         setContentView(binding.root)
         dbHelperGet = DB_Helper_Get(this)
         setTitle(R.string.app_name)
+        ViewCompat.setOnApplyWindowInsetsListener(binding.recDefault) { v, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.updatePadding(insets.left, insets.top, insets.right, insets.bottom)
+            WindowInsetsCompat.CONSUMED
+        }
         MainScope().launch(Dispatchers.Default) {
             cleanUp()
         }

@@ -13,11 +13,7 @@
     <color name="ijred">#550000</color>
     <color name="ijgreen">#104422</color>
     <color name="ijyellow">#c7a700</color>
-    <color name="statusbar_back_default">#100520</color>
-    <color name="statusbar_back">@color/ijblue</color>
-    <color name="statusbar_back1">@color/ijred</color>
-    <color name="statusbar_back2">@color/ijgreen</color>
-    <color name="statusbar_back3">@color/ijyellow</color>
+    <color name="statusbar_back_default">#090913</color>
     <color name="background_default">#f1f1ff</color>
     <color name="icon_background">@color/background_default</color>
     <color name="background">@color/background_default</color>
@@ -41,8 +37,6 @@
     <color name="light_grey_alpha1">#40ffd0d0</color>
     <color name="light_grey_alpha2">#40bfdfbf</color>
     <color name="light_grey_alpha3">#40fefeaf</color>
-    <color name="light_grey_statusbar">@color/light_grey</color>
-    <color name="light_grey_statusbar_alpha">@color/light_grey_alpha</color>
     <color name="pack_color_background_highlight">#aabbff</color>
     <color name="pack_color_background_highlight1">#ff9999</color>
     <color name="pack_color_background_highlight2">#aaffbb</color>

@@ -38,8 +38,8 @@
                 android:id="@+id/collection_or_pack_desc"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
                 android:layout_marginTop="20dp"
+                android:gravity="center"
                 android:textColor="@color/default_text"
                 android:textSize="@dimen/details_desc_size_default" />
 

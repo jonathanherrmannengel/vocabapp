@@ -1,0 +1,3 @@
+Sortierung nach gemischten Lernkriterien.
+Anpassungen an der Nutzeroberfläche.
+Aktualisierte Abhängigkeiten.

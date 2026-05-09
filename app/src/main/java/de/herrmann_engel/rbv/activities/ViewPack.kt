@@ -7,7 +7,6 @@ import android.util.TypedValue
 import android.view.Menu
 import android.view.View
 import android.widget.Toast
-import androidx.core.graphics.drawable.toDrawable
 import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.actions.PackActions
@@ -41,7 +40,7 @@ class ViewPack : PackActionsActivity() {
         val settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE)
         val increaseFontSize = settings.getBoolean("ui_font_size", false)
         pack = dbHelperGet.getSinglePack(packNo)
-        title = pack.name
+        title = getString(R.string.pack_details)
         if (pack.emoji.isNullOrBlank()) {
             binding.collectionOrPackEmoji.visibility = View.GONE
         } else {
@@ -78,17 +77,13 @@ class ViewPack : PackActionsActivity() {
         } else {
             binding.collectionOrPackDate.text = Date(pack.date * 1000).toString()
         }
-        val colorsStatusBar = resources.obtainTypedArray(R.array.pack_color_statusbar)
         val colorsBackground = resources.obtainTypedArray(R.array.pack_color_background)
-        val minimalLength = colorsStatusBar.length().coerceAtMost(colorsBackground.length())
+        val minimalLength = colorsBackground.length()
         val packColors = pack.colors
         if (packColors in 0..<minimalLength) {
-            val colorStatusBar = colorsStatusBar.getColor(packColors, 0)
             val colorBackground = colorsBackground.getColor(packColors, 0)
-            supportActionBar?.setBackgroundDrawable(colorStatusBar.toDrawable())
             binding.root.setBackgroundColor(colorBackground)
         }
-        colorsStatusBar.recycle()
         colorsBackground.recycle()
     }
 

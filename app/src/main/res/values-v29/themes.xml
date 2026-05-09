@@ -19,10 +19,6 @@
         <item name="android:windowBackground">@color/background_default</item>
         <!-- No animations -->
         <item name="android:windowAnimationStyle">@null</item>
-        <!-- Splash screen -->
-        <item name="android:windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_foreground</item>
-        <item name="android:windowSplashScreenIconBackgroundColor">@android:color/transparent</item>
-        <item name="android:windowSplashScreenBrandingImage">@drawable/rbv_colors</item>
     </style>
 
     <style name="Theme.RBV.ActionBar" parent="@style/ThemeOverlay.Material3.ActionBar">

@@ -9,7 +9,9 @@ import android.view.WindowManager
 import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.FileProvider
-import androidx.core.graphics.drawable.toDrawable
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.LinearLayoutManager
 import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.R
@@ -35,6 +37,11 @@ class ListPacks : PackActionsActivity(), AsyncExportFinish, AsyncExportProgress 
         setContentView(binding.root)
         dbHelperGet = DB_Helper_Get(this)
         collectionNo = intent.extras!!.getInt("collection")
+        ViewCompat.setOnApplyWindowInsetsListener(binding.recDefault) { v, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.updatePadding(insets.left, insets.top, insets.right, insets.bottom)
+            WindowInsetsCompat.CONSUMED
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -136,18 +143,14 @@ class ListPacks : PackActionsActivity(), AsyncExportFinish, AsyncExportProgress 
             this@ListPacks.binding.recDefault.layoutManager = LinearLayoutManager(this)
         }
         if (collectionNo >= 0) {
-            val colorsStatusBar = resources.obtainTypedArray(R.array.pack_color_statusbar)
             val colorsBackground =
                 resources.obtainTypedArray(R.array.pack_color_background_list)
-            val minimalLength = colorsStatusBar.length().coerceAtMost(colorsBackground.length())
+            val minimalLength = colorsBackground.length()
             val collectionColors = dbHelperGet.getSingleCollection(collectionNo).colors
             if (collectionColors in 0..<minimalLength) {
-                val colorStatusBar = colorsStatusBar.getColor(collectionColors, 0)
                 val colorBackground = colorsBackground.getColor(collectionColors, 0)
-                supportActionBar?.setBackgroundDrawable(colorStatusBar.toDrawable())
                 binding.root.setBackgroundColor(colorBackground)
             }
-            colorsStatusBar.recycle()
             colorsBackground.recycle()
         }
     }
