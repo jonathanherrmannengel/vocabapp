@@ -42,14 +42,24 @@ class ViewPack : PackActionsActivity() {
         val increaseFontSize = settings.getBoolean("ui_font_size", false)
         pack = dbHelperGet.getSinglePack(packNo)
         title = pack.name
+        if (pack.emoji.isNullOrBlank()) {
+            binding.collectionOrPackEmoji.visibility = View.GONE
+        } else {
+            binding.collectionOrPackEmoji.visibility = View.VISIBLE
+            binding.collectionOrPackEmoji.text = pack.emoji
+        }
         binding.collectionOrPackName.text = pack.name
-        if (pack.desc.isNullOrEmpty()) {
+        if (pack.desc.isNullOrBlank()) {
             binding.collectionOrPackDesc.visibility = View.GONE
         } else {
             binding.collectionOrPackDesc.visibility = View.VISIBLE
             binding.collectionOrPackDesc.text = pack.desc
         }
         if (increaseFontSize) {
+            binding.collectionOrPackEmoji.setTextSize(
+                TypedValue.COMPLEX_UNIT_PX,
+                resources.getDimension(R.dimen.details_name_size_big)
+            )
             binding.collectionOrPackName.setTextSize(
                 TypedValue.COMPLEX_UNIT_PX,
                 resources.getDimension(R.dimen.details_name_size_big)

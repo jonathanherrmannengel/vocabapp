@@ -125,7 +125,7 @@ class ViewCard : CardActionsActivity() {
             binding.cardTags.visibility = View.GONE
         }
         val formatCardNotes = settings.getBoolean("format_card_notes", false)
-        if (!card.notes.isNullOrEmpty()) {
+        if (!card.notes.isNullOrBlank()) {
             binding.cardNotes.visibility = View.VISIBLE
             if (formatCardNotes) {
                 val markwon = Markwon.builder(this)

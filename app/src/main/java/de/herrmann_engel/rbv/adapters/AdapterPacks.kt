@@ -343,25 +343,24 @@ class AdapterPacks(
                         IMPORTANT_FOR_ACCESSIBILITY_YES
                     viewHolder.binding.recCollectionsName.setTypeface(null, Typeface.BOLD)
                 }
-                if (currentPack.desc.isNullOrEmpty()) {
+                if (currentPack.desc.isNullOrBlank()) {
                     viewHolder.binding.recCollectionsDesc.visibility = View.GONE
                 } else {
                     viewHolder.binding.recCollectionsDesc.visibility = View.VISIBLE
                     viewHolder.binding.recCollectionsDesc.text =
                         stringTools.shorten(currentPack.desc)
                 }
-                val emojiText = currentPack.emoji
                 viewHolder.binding.recCollectionsPreviewText.text =
                     if (contextualMenuMode != null && contextualMenuModePackIdList.contains(
                             currentPack.uid
                         )
                     ) {
                         "✓"
-                    } else if (emojiText.isNullOrEmpty()) {
+                    } else if (currentPack.emoji.isNullOrBlank()) {
                         val pattern = Regex("^(\\P{M}\\p{M}*+).*")
                         currentPack.name.replace(pattern, "$1")
                     } else {
-                        emojiText
+                        currentPack.emoji
                     }
                 if (packs[position].counter != -1) {
                     viewHolder.binding.recCollectionsNumberText.visibility = View.VISIBLE

@@ -58,13 +58,23 @@ class ViewCollection : RBVActivity() {
         collection = dbHelperGet.getSingleCollection(collectionNo)
         title = collection.name
         binding.collectionOrPackName.text = collection.name
-        if (collection.desc.isNullOrEmpty()) {
+        if (collection.emoji.isNullOrBlank()) {
+            binding.collectionOrPackEmoji.visibility = View.GONE
+        } else {
+            binding.collectionOrPackEmoji.visibility = View.VISIBLE
+            binding.collectionOrPackEmoji.text = collection.emoji
+        }
+        if (collection.desc.isNullOrBlank()) {
             binding.collectionOrPackDesc.visibility = View.GONE
         } else {
             binding.collectionOrPackDesc.visibility = View.VISIBLE
             binding.collectionOrPackDesc.text = collection.desc
         }
         if (increaseFontSize) {
+            binding.collectionOrPackEmoji.setTextSize(
+                TypedValue.COMPLEX_UNIT_PX,
+                resources.getDimension(R.dimen.details_name_size_big)
+            )
             binding.collectionOrPackName.setTextSize(
                 TypedValue.COMPLEX_UNIT_PX,
                 resources.getDimension(R.dimen.details_name_size_big)

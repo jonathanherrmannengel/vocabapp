@@ -18,10 +18,18 @@
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/collection_or_pack_emoji"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="40dp"
+                android:gravity="center"
+                android:textColor="@color/default_text"
+                android:textSize="@dimen/details_name_size_default" />
+
+            <TextView
                 android:id="@+id/collection_or_pack_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
                 android:gravity="center"
                 android:textColor="@color/default_text"
                 android:textSize="@dimen/details_name_size_default" />
@@ -30,8 +38,8 @@
                 android:id="@+id/collection_or_pack_desc"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="40dp"
                 android:gravity="center"
+                android:layout_marginTop="20dp"
                 android:textColor="@color/default_text"
                 android:textSize="@dimen/details_desc_size_default" />
 
@@ -39,6 +47,7 @@
                 android:id="@+id/collection_or_pack_date"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
                 android:gravity="center"
                 android:textColor="@color/light_black" />
         </LinearLayout>

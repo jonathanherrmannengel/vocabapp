@@ -246,20 +246,19 @@ class AdapterCollections(
                 }
                 viewHolder.binding.recCollectionsName.text =
                     stringTools.shorten(currentCollection.name)
-                if (currentCollection.desc.isNullOrEmpty()) {
+                if (currentCollection.desc.isNullOrBlank()) {
                     viewHolder.binding.recCollectionsDesc.visibility = View.GONE
                 } else {
                     viewHolder.binding.recCollectionsDesc.visibility = View.VISIBLE
                     viewHolder.binding.recCollectionsDesc.text = stringTools
                         .shorten(currentCollection.desc)
                 }
-                val emojiText = currentCollection.emoji
                 viewHolder.binding.recCollectionsPreviewText.text =
-                    if (emojiText.isNullOrEmpty()) {
+                    if (currentCollection.emoji.isNullOrBlank()) {
                         val pattern = Regex("^(\\P{M}\\p{M}*+).*")
                         currentCollection.name.replace(pattern, "$1")
                     } else {
-                        emojiText
+                        currentCollection.emoji
                     }
                 if (collections[position].counter != -1) {
                     viewHolder.binding.recCollectionsNumberText.visibility = View.VISIBLE

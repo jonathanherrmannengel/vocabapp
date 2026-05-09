@@ -13,16 +13,16 @@ class SortCards {
             Globals.SORT_CARDS_ALPHABETICAL -> {
                 list.sortWith(Comparator { a, b ->
                     return@Comparator compareCardsAlphabetical(
-                            a.formattedFront ?: a.card.front,
-                            b.formattedFront ?: b.card.front
-                        ).let {
-                            if (it == 0) {
-                                compareCardsAlphabetical(
-                                    a.formattedBack ?: a.card.back,
-                                    b.formattedBack ?: b.card.back
-                                )
-                            } else it
-                        }
+                        a.formattedFront ?: a.card.front,
+                        b.formattedFront ?: b.card.front
+                    ).let {
+                        if (it == 0) {
+                            compareCardsAlphabetical(
+                                a.formattedBack ?: a.card.back,
+                                b.formattedBack ?: b.card.back
+                            )
+                        } else it
+                    }
                 })
             }
 

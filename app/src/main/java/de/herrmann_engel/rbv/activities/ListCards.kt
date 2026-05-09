@@ -735,7 +735,7 @@ class ListCards : CardActionsActivity() {
             )
         }
 
-        if (card.notes.isNullOrEmpty()) {
+        if (card.notes.isNullOrBlank()) {
             bindingQueryModeDialog.queryButtonNotes.visibility = View.GONE
         } else {
             bindingQueryModeDialog.queryButtonNotes.visibility = View.VISIBLE
