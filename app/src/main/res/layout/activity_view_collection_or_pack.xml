@@ -17,7 +17,7 @@
             android:layout_marginBottom="20dp"
             android:orientation="vertical">
 
-            <TextView
+            <com.vanniktech.emoji.EmojiTextView
                 android:id="@+id/collection_or_pack_emoji"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

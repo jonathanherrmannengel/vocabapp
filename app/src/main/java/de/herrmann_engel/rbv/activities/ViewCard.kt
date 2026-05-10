@@ -73,16 +73,12 @@ class ViewCard : CardActionsActivity() {
         val formatCards = settings.getBoolean("format_cards", false)
         val increaseFontSize = settings.getBoolean("ui_font_size", false)
         card = dbHelperGet.getSingleCard(cardNo)
-        val cardFront: String
         if (formatCards) {
             val formatString = StringTools()
-            val cardFrontSpannable = formatString.format(card.front)
-            cardFront = cardFrontSpannable.toString()
-            binding.cardFront.text = cardFrontSpannable
+            binding.cardFront.text = formatString.format(card.front)
             binding.cardBack.text = formatString.format(card.back)
         } else {
-            cardFront = card.front
-            binding.cardFront.text = cardFront
+            binding.cardFront.text = card.front
             binding.cardBack.text = card.back
         }
         val cardTags = dbHelperGet.getCardTags(card.uid)
@@ -108,16 +104,16 @@ class ViewCard : CardActionsActivity() {
                     tagText = it.emoji + " " + tagText
                 }
                 val spannableString = SpannableString(tagText)
-                builder.append(spannableString)
-                builder.setSpan(
+                spannableString.setSpan(
                     TagSpan(
                         this,
                         color
                     ),
-                    builder.length - spannableString.length,
-                    builder.length,
+                    0,
+                    spannableString.length,
                     SPAN_EXCLUSIVE_EXCLUSIVE
                 )
+                builder.append(spannableString)
             }
             binding.cardTags.text = builder
         } else {

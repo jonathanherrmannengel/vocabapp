@@ -27,6 +27,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.Globals.LIST_CARDS_GET_DB_COLLECTIONS_ALL
@@ -52,6 +53,8 @@ import de.herrmann_engel.rbv.utils.SortCards
 import de.herrmann_engel.rbv.utils.StringTools
 import io.noties.markwon.Markwon
 import io.noties.markwon.linkify.LinkifyPlugin
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import me.saket.bettermovementmethod.BetterLinkMovementMethod
 import kotlin.math.abs
 import kotlin.math.roundToInt
@@ -148,46 +151,48 @@ class ListCards : CardActionsActivity() {
                 deleteCardFromList(cardDeleted)
             }
             val cardAdded = intent.extras!!.getInt("cardAdded")
-            if (cardAdded != 0 && cardsList!!.stream()
-                    .noneMatch { i: DB_Card_With_Meta? -> i!!.card.uid == cardAdded }
+            if (cardAdded != 0 && cardsList?.let {
+                    it.stream().noneMatch { i -> i.card.uid == cardAdded }
+                } == true
             ) {
-                try {
-                    val cardWithMetaNew = dbHelperGet.getSingleCardWithMeta(cardAdded)
+                dbHelperGet.getSingleCardWithMeta(cardAdded)?.let {
                     if (settings.getBoolean("format_cards", false)) {
-                        FormatCards().formatCard(cardWithMetaNew, false)
+                        FormatCards().formatCard(it, false)
                     }
-                    cardsList!!.add(cardWithMetaNew)
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show()
-                }
+                    cardsList?.add(it)
+                } ?: Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show()
             }
             val cardUpdated = intent.extras!!.getInt("cardUpdated")
             if (cardUpdated != 0) {
-                try {
-                    val cardWithMetaNew = dbHelperGet.getSingleCardWithMeta(cardUpdated)
-                    val cardWithMetaOld = cardsList!!.stream()
-                        .filter { i: DB_Card_With_Meta? -> i!!.card.uid == cardWithMetaNew!!.card.uid }
-                        .findFirst().orElse(null)
-                    if (cardWithMetaNew != null && cardWithMetaOld != null) {
+                val cardWithMetaNew = dbHelperGet.getSingleCardWithMeta(cardUpdated)
+                val cardWithMetaOld = cardsList?.stream()
+                    ?.filter { i -> i.card.uid == cardWithMetaNew?.card?.uid }
+                    ?.findFirst()?.orElse(null)
+                if (cardWithMetaNew != null && cardWithMetaOld != null) {
                         if (settings.getBoolean("format_cards", false)) {
                             FormatCards().formatCard(
                                 cardWithMetaNew,
                                 cardWithMetaOld.formattingIsInaccurate
                             )
                         }
-                        var index = cardsList!!.indexOf(cardWithMetaOld)
+                    cardsList?.let {
+                        val index = it.indexOf(cardWithMetaOld)
                         if (index != -1) {
-                            cardsList!![index] = cardWithMetaNew
+                            it[index] = cardWithMetaNew
                         }
-                        index = cardsListFiltered!!.indexOf(cardWithMetaOld)
+                    } ?: Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show()
+                    cardsListFiltered?.let {
+                        val index = it.indexOf(cardWithMetaOld)
                         if (index != -1) {
-                            cardsListFiltered!![index] = cardWithMetaNew
-                            adapter!!.notifyItemChanged(index)
+                            it[index] = cardWithMetaNew
+                            adapter?.notifyItemChanged(index) ?: Toast.makeText(
+                                this,
+                                R.string.error,
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
-                    }
-                } catch (e: Exception) {
-                    e.printStackTrace()
+                    } ?: Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show()
+                } else {
                     Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show()
                 }
             }
@@ -208,6 +213,9 @@ class ListCards : CardActionsActivity() {
 
     public override fun onResume() {
         super.onResume()
+
+        // Reset options menu
+        invalidateOptionsMenu()
 
         // Set title
         if (collectionNo >= 0 && packNo == LIST_CARDS_GET_DB_PACKS_ALL) {
@@ -241,98 +249,105 @@ class ListCards : CardActionsActivity() {
             colorsBackground.recycle()
         }
 
-        // Get cards
-        if (cardsList == null) {
-            cardsList =
-                if (collectionNo == LIST_CARDS_GET_DB_COLLECTIONS_ALL && packNo == LIST_CARDS_GET_DB_PACKS_ALL) {
-                    dbHelperGet.allCardsWithMeta
-                } else if (packNo == LIST_CARDS_GET_DB_PACKS_ALL) {
-                    dbHelperGet.getAllCardsByCollectionWithMeta(collectionNo)
-                } else if (packNo == LIST_CARDS_GET_DB_PACKS_ADVANCED_SEARCH_LIST) {
-                    dbHelperGet.getAllCardsWithMetaFiltered(
-                        packNos,
-                        if (tagNo == LIST_CARDS_GET_DB_TAGS_ADVANCED_SEARCH_ALL) {
-                            null
-                        } else {
-                            tagNos
-                        },
-                        progressGreater,
-                        progressNumber,
-                        repetitionOlder,
-                        repetitionNumber
-                    )
-                } else if (packNo == LIST_CARDS_GET_DB_PACKS_ADVANCED_SEARCH_ALL) {
-                    dbHelperGet.getAllCardsWithMetaFiltered(
-                        null,
-                        if (tagNo == LIST_CARDS_GET_DB_TAGS_ADVANCED_SEARCH_ALL) {
-                            null
-                        } else {
-                            tagNos
-                        },
-                        progressGreater,
-                        progressNumber,
-                        repetitionOlder,
-                        repetitionNumber
-                    )
-                } else {
-                    dbHelperGet.getAllCardsByPackWithMeta(packNo)
-                }
-            if (settings.getBoolean("format_cards", false)) {
-                FormatCards().formatCards(cardsList!!)
-            }
-            sortList()
-        }
-
-        // Warning: Big lists
-        if (cardsList!!.size > Globals.MAX_SIZE_CARDS_LIST_ACCURATE) {
-            val config = getSharedPreferences(Globals.CONFIG_NAME, MODE_PRIVATE)
-            val formatCardsActivated = settings.getBoolean("format_cards", false)
-            val warnInaccurateFormat =
-                formatCardsActivated && config.getBoolean("inaccurate_warning_format", true)
-            val warnInaccurateNoFormat =
-                !formatCardsActivated && config.getBoolean("inaccurate_warning_no_format", true)
-            if (warnInaccurateFormat || warnInaccurateNoFormat) {
-                config.edit {
-                    val infoDialog = Dialog(this@ListCards, R.style.dia_view)
-                    val bindingInfoDialog = DiaInfoBinding.inflate(
-                        layoutInflater
-                    )
-                    infoDialog.setContentView(bindingInfoDialog.root)
-                    infoDialog.setTitle(resources.getString(R.string.info))
-                    infoDialog.window!!.setLayout(
-                        WindowManager.LayoutParams.MATCH_PARENT,
-                        WindowManager.LayoutParams.MATCH_PARENT
-                    )
-                    val warnings: MutableList<String> = ArrayList()
-                    warnings.add(
-                        String.format(
-                            resources.getString(R.string.warn_inaccurate),
-                            Globals.MAX_SIZE_CARDS_LIST_ACCURATE
+        lifecycleScope.launch(Dispatchers.IO) {
+            // Get cards
+            if (cardsList == null) {
+                cardsList =
+                    if (collectionNo == LIST_CARDS_GET_DB_COLLECTIONS_ALL && packNo == LIST_CARDS_GET_DB_PACKS_ALL) {
+                        dbHelperGet.allCardsWithMeta
+                    } else if (packNo == LIST_CARDS_GET_DB_PACKS_ALL) {
+                        dbHelperGet.getAllCardsByCollectionWithMeta(collectionNo)
+                    } else if (packNo == LIST_CARDS_GET_DB_PACKS_ADVANCED_SEARCH_LIST) {
+                        dbHelperGet.getAllCardsWithMetaFiltered(
+                            packNos,
+                            if (tagNo == LIST_CARDS_GET_DB_TAGS_ADVANCED_SEARCH_ALL) {
+                                null
+                            } else {
+                                tagNos
+                            },
+                            progressGreater,
+                            progressNumber,
+                            repetitionOlder,
+                            repetitionNumber
                         )
-                    )
-                    if (warnInaccurateFormat) {
-                        putBoolean("inaccurate_warning_format", false)
-                        warnings.add(resources.getString(R.string.warn_inaccurate_list))
+                    } else if (packNo == LIST_CARDS_GET_DB_PACKS_ADVANCED_SEARCH_ALL) {
+                        dbHelperGet.getAllCardsWithMetaFiltered(
+                            null,
+                            if (tagNo == LIST_CARDS_GET_DB_TAGS_ADVANCED_SEARCH_ALL) {
+                                null
+                            } else {
+                                tagNos
+                            },
+                            progressGreater,
+                            progressNumber,
+                            repetitionOlder,
+                            repetitionNumber
+                        )
+                    } else {
+                        dbHelperGet.getAllCardsByPackWithMeta(packNo)
                     }
-                    if (warnInaccurateNoFormat) {
-                        putBoolean("inaccurate_warning_no_format", false)
+                if (settings.getBoolean("format_cards", false)) {
+                    FormatCards().formatCards(cardsList!!)
+                }
+                sortList()
+            }
+
+            runOnUiThread {
+                // Warning: Big lists
+                if ((cardsList?.size ?: 0) > Globals.MAX_SIZE_CARDS_LIST_ACCURATE) {
+                    val config = getSharedPreferences(Globals.CONFIG_NAME, MODE_PRIVATE)
+                    val formatCardsActivated = settings.getBoolean("format_cards", false)
+                    val warnInaccurateFormat =
+                        formatCardsActivated && config.getBoolean("inaccurate_warning_format", true)
+                    val warnInaccurateNoFormat =
+                        !formatCardsActivated && config.getBoolean(
+                            "inaccurate_warning_no_format",
+                            true
+                        )
+                    if (warnInaccurateFormat || warnInaccurateNoFormat) {
+                        config.edit {
+                            val infoDialog = Dialog(this@ListCards, R.style.dia_view)
+                            val bindingInfoDialog = DiaInfoBinding.inflate(
+                                layoutInflater
+                            )
+                            infoDialog.setContentView(bindingInfoDialog.root)
+                            infoDialog.setTitle(resources.getString(R.string.info))
+                            infoDialog.window!!.setLayout(
+                                WindowManager.LayoutParams.MATCH_PARENT,
+                                WindowManager.LayoutParams.MATCH_PARENT
+                            )
+                            val warnings: MutableList<String> = ArrayList()
+                            warnings.add(
+                                String.format(
+                                    resources.getString(R.string.warn_inaccurate),
+                                    Globals.MAX_SIZE_CARDS_LIST_ACCURATE
+                                )
+                            )
+                            if (warnInaccurateFormat) {
+                                putBoolean("inaccurate_warning_format", false)
+                                warnings.add(resources.getString(R.string.warn_inaccurate_list))
+                            }
+                            if (warnInaccurateNoFormat) {
+                                putBoolean("inaccurate_warning_no_format", false)
+                            }
+                            warnings.add(resources.getString(R.string.warn_inaccurate_search))
+                            warnings.add(resources.getString(R.string.warn_inaccurate_note))
+                            bindingInfoDialog.diaInfoText.text = java.lang.String.join(
+                                System.lineSeparator().plus(System.lineSeparator()),
+                                warnings
+                            )
+                            infoDialog.show()
+                        }
                     }
-                    warnings.add(resources.getString(R.string.warn_inaccurate_search))
-                    warnings.add(resources.getString(R.string.warn_inaccurate_note))
-                    bindingInfoDialog.diaInfoText.text = java.lang.String.join(
-                        System.lineSeparator().plus(System.lineSeparator()),
-                        warnings
-                    )
-                    infoDialog.show()
+                }
+
+                // Display content
+                if (queryModeDialog.isShowing) {
+                    nextQuery(true)
+                } else {
+                    updateContent()
                 }
             }
-        }
-
-        // Display content
-        if (queryModeDialog.isShowing) {
-            nextQuery(true)
-        } else {
-            updateContent()
         }
     }
 
@@ -631,19 +646,21 @@ class ListCards : CardActionsActivity() {
     }
 
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
-        showCardSideMenuItem.isVisible = cardsListFiltered!!.isNotEmpty()
-        changeListSortMenuItem.isVisible = cardsListFiltered!!.size > 1
-        showQueryModeMenuItem.isVisible = cardsListFiltered!!.isNotEmpty()
-        showListStatsMenuItem.isVisible = cardsListFiltered!!.isNotEmpty()
-        searchCardsMenuItem.isVisible = cardsListFiltered!!.isNotEmpty()
-        if (searchQuery?.isNotEmpty() == true) {
+        showCardSideMenuItem.isVisible = !cardsListFiltered.isNullOrEmpty()
+        changeListSortMenuItem.isVisible = (cardsListFiltered?.size ?: 0) > 1
+        showQueryModeMenuItem.isVisible = !cardsListFiltered.isNullOrEmpty()
+        showListStatsMenuItem.isVisible = !cardsListFiltered.isNullOrEmpty()
+        searchCardsMenuItem.isVisible = !cardsListFiltered.isNullOrEmpty()
+        if (!searchQuery.isNullOrEmpty()) {
             searchCardsOffMenuItem.isVisible = true
         }
         return true
     }
 
     private fun sortList() {
-        SortCards().sortCards(cardsList!!, listSort)
+        cardsList?.let {
+            SortCards().sortCards(it, listSort)
+        }
     }
 
     private fun queryModeNextAction() {
@@ -1047,37 +1064,40 @@ class ListCards : CardActionsActivity() {
     }
 
     private fun updateContent(recreate: Boolean) {
-        var tempCardList: MutableList<DB_Card_With_Meta> = ArrayList(cardsList!!)
-        // Search
-        if (searchQuery != null && searchQuery!!.isNotEmpty()) {
-            val searchResults: MutableList<DB_Card_With_Meta> = ArrayList(tempCardList)
-            SearchCards().searchCards(searchResults, searchQuery!!)
-            if (searchResults.isEmpty()) {
-                searchCardsOffMenuItem.isVisible = false
-                searchQuery = ""
-                Toast.makeText(this, R.string.search_no_results, Toast.LENGTH_LONG).show()
-            } else {
-                tempCardList = searchResults
+        cardsList?.let {
+            var tempCardList: MutableList<DB_Card_With_Meta> = ArrayList(it)
+            // Search
+            val searchQueryLocal = searchQuery
+            if (!searchQueryLocal.isNullOrEmpty()) {
+                val searchResults: MutableList<DB_Card_With_Meta> = ArrayList(tempCardList)
+                SearchCards().searchCards(searchResults, searchQueryLocal)
+                if (searchResults.isEmpty()) {
+                    searchCardsOffMenuItem.isVisible = false
+                    searchQuery = ""
+                    Toast.makeText(this, R.string.search_no_results, Toast.LENGTH_LONG).show()
+                } else {
+                    tempCardList = searchResults
+                }
             }
-        }
-        // Set recycler view
-        if (adapter == null || cardsListFiltered == null || recreate || cardsListFiltered!!.isEmpty() || tempCardList.isEmpty()) {
-            cardsListFiltered = tempCardList
-            adapter = AdapterCards(
-                cardsListFiltered!!,
-                settings.getBoolean("ui_font_size", false),
-                frontBackReverse,
-                showFrontAndBack,
-                packNo,
-                collectionNo
-            )
-            binding.recDefault.adapter = adapter
-            binding.recDefault.layoutManager = LinearLayoutManager(this)
-            binding.recDefault.scrollToPosition(0)
-        } else {
-            adapter!!.updateContent(tempCardList, frontBackReverse, showFrontAndBack)
-        }
-        invalidateOptionsMenu()
+            // Set recycler view
+            if (adapter == null || cardsListFiltered == null || recreate || cardsListFiltered!!.isEmpty() || tempCardList.isEmpty()) {
+                cardsListFiltered = tempCardList
+                adapter = AdapterCards(
+                    cardsListFiltered!!,
+                    settings.getBoolean("ui_font_size", false),
+                    frontBackReverse,
+                    showFrontAndBack,
+                    packNo,
+                    collectionNo
+                )
+                binding.recDefault.adapter = adapter
+                binding.recDefault.layoutManager = LinearLayoutManager(this)
+                binding.recDefault.scrollToPosition(0)
+            } else {
+                adapter!!.updateContent(tempCardList, frontBackReverse, showFrontAndBack)
+            }
+            invalidateOptionsMenu()
+        } ?: Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show()
     }
 
     private fun updateContent() {
@@ -1085,7 +1105,7 @@ class ListCards : CardActionsActivity() {
     }
 
     private fun deleteCardFromList(cardId: Int) {
-        cardsList!!.removeIf { c: DB_Card_With_Meta? -> c!!.card.uid == cardId }
+        cardsList?.removeIf { c -> c.card.uid == cardId }
     }
 
     override fun deletedCards(cardIds: ArrayList<Int>) {

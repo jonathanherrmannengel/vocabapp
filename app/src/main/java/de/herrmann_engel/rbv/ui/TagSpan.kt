@@ -96,7 +96,7 @@ class TagSpan(private val context: Context, private val backgroundColor: Int) : 
     }
 
     companion object {
-        private const val PADDING = 50.0f
-        private const val MARGIN = 25.0f
+        private const val PADDING = 70.0f
+        private const val MARGIN = 55.0f
     }
 }
