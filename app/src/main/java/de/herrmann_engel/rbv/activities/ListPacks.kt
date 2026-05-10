@@ -12,6 +12,7 @@ import androidx.core.content.FileProvider
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.R
@@ -23,6 +24,8 @@ import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.export_import.AsyncExport
 import de.herrmann_engel.rbv.export_import.AsyncExportFinish
 import de.herrmann_engel.rbv.export_import.AsyncExportProgress
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.io.File
 import java.util.Locale
 
@@ -49,7 +52,10 @@ class ListPacks : PackActionsActivity(), AsyncExportFinish, AsyncExportProgress 
         val startNewPack = menu.findItem(R.id.start_new_pack)
         val packDetails = menu.findItem(R.id.pack_details)
         val export = menu.findItem(R.id.export_single)
-        if (collectionNo == Globals.LIST_CARDS_GET_DB_COLLECTIONS_ALL) {
+        if (collectionNo == Globals.LIST_CARDS_GET_DB_COLLECTIONS_ALL || !dbHelperGet.existsCollection(
+                collectionNo
+            )
+        ) {
             startNewPack.isVisible = false
             packDetails.isVisible = false
             export.isVisible = false
@@ -113,7 +119,7 @@ class ListPacks : PackActionsActivity(), AsyncExportFinish, AsyncExportProgress 
             }
         }
         if (collectionNo >= 0) {
-            title = dbHelperGet.getSingleCollection(collectionNo).name
+            title = dbHelperGet.getSingleCollection(collectionNo)?.name
         }
         return true
     }
@@ -133,23 +139,28 @@ class ListPacks : PackActionsActivity(), AsyncExportFinish, AsyncExportProgress 
             binding.backgroundImage.visibility = View.GONE
         }
         val uiFontSizeBig = settings.getBoolean("ui_font_size", false)
-        adapter?.updateContent(loadContent()) ?: run {
-            this@ListPacks.adapter = AdapterPacks(
-                this@ListPacks.loadContent(),
-                uiFontSizeBig,
-                this@ListPacks.collectionNo
-            )
-            this@ListPacks.binding.recDefault.adapter = this@ListPacks.adapter
-            this@ListPacks.binding.recDefault.layoutManager = LinearLayoutManager(this)
+        lifecycleScope.launch(Dispatchers.IO) {
+            val content = loadContent()
+            runOnUiThread {
+                adapter?.updateContent(content) ?: run {
+                    adapter = AdapterPacks(
+                        content, uiFontSizeBig, collectionNo
+                    )
+                    binding.recDefault.adapter = adapter
+                    binding.recDefault.layoutManager =
+                        LinearLayoutManager(this@ListPacks)
+                }
+            }
         }
         if (collectionNo >= 0) {
             val colorsBackground =
                 resources.obtainTypedArray(R.array.pack_color_background_list)
             val minimalLength = colorsBackground.length()
-            val collectionColors = dbHelperGet.getSingleCollection(collectionNo).colors
-            if (collectionColors in 0..<minimalLength) {
-                val colorBackground = colorsBackground.getColor(collectionColors, 0)
-                binding.root.setBackgroundColor(colorBackground)
+            dbHelperGet.getSingleCollection(collectionNo)?.let {
+                if (it.colors in 0..<minimalLength) {
+                    val colorBackground = colorsBackground.getColor(it.colors, 0)
+                    binding.root.setBackgroundColor(colorBackground)
+                }
             }
             colorsBackground.recycle()
         }
@@ -210,11 +221,11 @@ class ListPacks : PackActionsActivity(), AsyncExportFinish, AsyncExportProgress 
 
 
     override fun deletedPacks(packIds: ArrayList<Int>) {
-        adapter!!.updateContent(loadContent())
+        adapter?.updateContent(loadContent())
 
     }
 
     override fun movedPacks(packIds: ArrayList<Int>) {
-        adapter!!.updateContent(loadContent())
+        adapter?.updateContent(loadContent())
     }
 }

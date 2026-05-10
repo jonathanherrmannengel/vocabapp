@@ -68,6 +68,14 @@ public class DB_Helper_Get {
     }
 
     // Exists Entry?
+    public boolean existsCollection(int id) {
+        return dbHelper.collection_dao.existsCollection(id);
+    }
+
+    public boolean existsPack(int id) {
+        return dbHelper.pack_dao.existsPack(id);
+    }
+
     public boolean existsMedia(String file) {
         return dbHelper.media_dao.existsMedia(file);
     }

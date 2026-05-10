@@ -15,6 +15,7 @@ import androidx.core.content.FileProvider
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.Globals.IMPORT_MODE_SIMPLE_LIST
@@ -316,11 +317,18 @@ class ListCollections : FileTools(), AsyncImportFinish, AsyncImportProgress, Asy
     private fun updateSettingsAndContent() {
         val settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE)
         val uiFontSizeBig = settings.getBoolean("ui_font_size", false)
-        adapter?.updateSettingsAndContent(loadContent(), uiFontSizeBig) ?: run {
-            this@ListCollections.adapter =
-                AdapterCollections(this@ListCollections.loadContent(), uiFontSizeBig)
-            this@ListCollections.binding.recDefault.adapter = this@ListCollections.adapter
-            this@ListCollections.binding.recDefault.layoutManager = LinearLayoutManager(this)
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            val content = loadContent()
+            runOnUiThread {
+                adapter?.updateSettingsAndContent(content, uiFontSizeBig) ?: run {
+                    adapter =
+                        AdapterCollections(content, uiFontSizeBig)
+                    binding.recDefault.adapter = adapter
+                    binding.recDefault.layoutManager =
+                        LinearLayoutManager(this@ListCollections)
+                }
+            }
         }
     }
 
@@ -332,9 +340,7 @@ class ListCollections : FileTools(), AsyncImportFinish, AsyncImportProgress, Asy
                 } else {
                     Toast.makeText(this, R.string.import_warn, Toast.LENGTH_LONG).show()
                 }
-                if (adapter != null) {
-                    updateSettingsAndContent()
-                }
+                updateSettingsAndContent()
                 val settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE)
                 when (settings.getInt("ui_mode", Globals.UI_MODE_DAY)) {
                     Globals.UI_MODE_NIGHT -> {

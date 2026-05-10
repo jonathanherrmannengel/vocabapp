@@ -57,7 +57,7 @@
     <item>
         <identifier>Apache-2.0</identifier>
         <projectDev>Google</projectDev>
-        <projectName>AndroidX (androidx.appcompat, androidx.core, androidx.documentfile, androidx.room)</projectName>
+        <projectName>AndroidX (androidx.appcompat, androidx.core, androidx.documentfile, androidx.lifecycle, androidx.room)</projectName>
     </item>
     <item>
         <identifier>Apache-2.0</identifier>

@@ -210,14 +210,10 @@ class ListCards : CardActionsActivity() {
         super.onResume()
 
         // Set title
-        try {
-            if (collectionNo >= 0 && packNo == LIST_CARDS_GET_DB_PACKS_ALL) {
-                title = dbHelperGet.getSingleCollection(collectionNo).name
-            } else if (packNo >= 0) {
-                title = dbHelperGet.getSinglePack(packNo).name
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
+        if (collectionNo >= 0 && packNo == LIST_CARDS_GET_DB_PACKS_ALL) {
+            title = dbHelperGet.getSingleCollection(collectionNo)?.name
+        } else if (packNo >= 0) {
+            title = dbHelperGet.getSinglePack(packNo)?.name
         }
 
         // Colors
@@ -225,20 +221,22 @@ class ListCards : CardActionsActivity() {
             val colorsBackground =
                 resources.obtainTypedArray(R.array.pack_color_background_list)
             val minimalLength = colorsBackground.length()
-            val packColors = dbHelperGet.getSinglePack(packNo).colors
-            if (packColors in 0..<minimalLength) {
-                val colorBackground = colorsBackground.getColor(packColors, 0)
-                binding.root.setBackgroundColor(colorBackground)
+            dbHelperGet.getSinglePack(packNo)?.let {
+                if (it.colors in 0..<minimalLength) {
+                    val colorBackground = colorsBackground.getColor(it.colors, 0)
+                    binding.root.setBackgroundColor(colorBackground)
+                }
             }
             colorsBackground.recycle()
         } else if (collectionNo >= 0) {
             val colorsBackground =
                 resources.obtainTypedArray(R.array.pack_color_background_list)
             val minimalLength = colorsBackground.length()
-            val collectionColors = dbHelperGet.getSingleCollection(collectionNo).colors
-            if (collectionColors in 0..<minimalLength) {
-                val colorBackground = colorsBackground.getColor(collectionColors, 0)
+            dbHelperGet.getSingleCollection(collectionNo)?.let {
+                if (it.colors in 0..<minimalLength) {
+                    val colorBackground = colorsBackground.getColor(it.colors, 0)
                 binding.root.setBackgroundColor(colorBackground)
+                }
             }
             colorsBackground.recycle()
         }
@@ -343,7 +341,7 @@ class ListCards : CardActionsActivity() {
         menuInflater.inflate(R.menu.menu_list_cards, menu)
         val startNewCardMenuItem = menu.findItem(R.id.start_new_card)
         val startPackDetailsMenuItem = menu.findItem(R.id.pack_details)
-        if (packNo < 0) {
+        if (packNo < 0 || !dbHelperGet.existsPack(packNo)) {
             startNewCardMenuItem.isVisible = false
             startPackDetailsMenuItem.isVisible = false
         } else {

@@ -18,6 +18,9 @@ public interface DB_Collection_DAO {
     @Query("SELECT COUNT(*) FROM db_collection")
     int countCollections();
 
+    @Query("SELECT EXISTS (SELECT 1 FROM db_collection WHERE uid=:cid LIMIT 1)")
+    boolean existsCollection(int cid);
+
     @Query("SELECT * FROM db_collection ORDER BY name COLLATE NOCASE ASC, uid DESC")
     List<DB_Collection> getAll();
 
