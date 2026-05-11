@@ -1,3 +1,4 @@
 Sortierung nach gemischten Lernkriterien.
 Anpassungen an der Nutzeroberfläche.
+Verbessertes Laden von Listen.
 Aktualisierte Abhängigkeiten.

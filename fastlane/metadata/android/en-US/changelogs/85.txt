@@ -1,3 +1,4 @@
 Sort by mixed learning criteria.
 UI adjustments.
+Improved list loading.
 Update dependencies.
