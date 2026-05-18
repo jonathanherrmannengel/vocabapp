@@ -19,7 +19,6 @@
         android:layout_height="match_parent"
         android:gravity="center">
 
-
         <Button
             android:id="@+id/online_help_button"
             style="@style/media_button"
