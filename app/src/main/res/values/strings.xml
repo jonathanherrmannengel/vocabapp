@@ -1,11 +1,13 @@
 <resources>
     <string name="app_name" translatable="false">ReallyBasicVocab</string>
     <string name="app_name_short" translatable="false">R5B4 Vocab</string>
-    <string name="licenses">Licenses</string>
+    <string name="licenses_emoji_project_id" translatable="false">🆔</string>
     <string name="licenses_emoji_project_dev" translatable="false">🧑</string>
     <string name="licenses_emoji_project_url" translatable="false">🌐</string>
     <string name="licenses_emoji_project_code" translatable="false">📜</string>
     <string name="licenses_emoji_license_short" translatable="false">⚖️</string>
+    <string name="licenses">Licenses</string>
+    <string name="online_help">Online help</string>
     <string name="settings">Settings</string>
     <string name="yes">yes</string>
     <string name="no">no</string>
@@ -178,7 +180,7 @@
     <string name="print_include_media_list">Include media list</string>
     <string name="print_include_tag_list">Include tag list</string>
     <string name="color">color</string>
-    <string name="info">info</string>
+    <string name="info">Information</string>
     <string name="search">Search</string>
     <string name="search_no_results">no search results</string>
     <string name="search_off">Reset search</string>

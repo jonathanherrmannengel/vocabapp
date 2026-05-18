@@ -126,7 +126,7 @@ class CardActions(val activity: Activity) {
         val jobName: String
         if (cards.size == 1) {
             jobName = "rbv_flashcard_" + cards[0].uid
-            if (cards[0].notes == null || cards[0].notes.isEmpty()) {
+            if (cards[0].notes == null || cards[0].notes.isBlank()) {
                 bindingPrintDialog.diaPrintIncludeNotesLayout.visibility = View.GONE
                 bindingPrintDialog.diaPrintIncludeNotes.isChecked = false
             }
@@ -219,7 +219,7 @@ class CardActions(val activity: Activity) {
                     card.back.toSpanned()
                 }.toHtml()
                 htmlDocument += "</div></article>"
-                if (card.notes != null && card.notes.isNotEmpty() && bindingPrintDialog.diaPrintIncludeNotes.isChecked) {
+                if (card.notes != null && card.notes.isNotBlank() && bindingPrintDialog.diaPrintIncludeNotes.isChecked) {
                     htmlDocument += "<article>"
                     if (bindingPrintDialog.diaPrintIncludeHeadings.isChecked) {
                         htmlDocument += "<h2 class=\"title border-top\" dir=\"auto\">" + activity.getString(

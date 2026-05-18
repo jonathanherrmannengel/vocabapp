@@ -38,5 +38,5 @@ object Globals {
     const val LIST_CARDS_GET_DB_PACKS_ADVANCED_SEARCH_ALL = -3
     const val LIST_CARDS_GET_DB_TAGS_ADVANCED_SEARCH_LIST = -2
     const val LIST_CARDS_GET_DB_TAGS_ADVANCED_SEARCH_ALL = -3
-
+    const val ONLINE_HELP = "https://herrmann-engel.de/projekte/rbv/info/"
 }

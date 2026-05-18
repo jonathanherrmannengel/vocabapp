@@ -33,10 +33,6 @@ class AdapterOSS(private val licenses: List<OSSLicenses>) :
                 TypedValue.COMPLEX_UNIT_PX,
                 viewGroup.context.resources.getDimension(R.dimen.rec_view_font_size_big)
             )
-            binding.recDesc.setTextSize(
-                TypedValue.COMPLEX_UNIT_PX,
-                viewGroup.context.resources.getDimension(R.dimen.rec_view_font_size_below_big)
-            )
         }
         return ViewHolder(binding)
     }
@@ -57,17 +53,22 @@ class AdapterOSS(private val licenses: List<OSSLicenses>) :
                     WindowManager.LayoutParams.MATCH_PARENT,
                     WindowManager.LayoutParams.MATCH_PARENT
                 )
-                if (license.project.dev.isEmpty()) {
+                if (license.project.id.isBlank()) {
+                    bindingOssDialog.diaOssProjectId.visibility = View.GONE
+                } else {
+                    bindingOssDialog.diaOssProjectIdText.text = license.project.id
+                }
+                if (license.project.dev.isBlank()) {
                     bindingOssDialog.diaOssProjectDev.visibility = View.GONE
                 } else {
                     bindingOssDialog.diaOssProjectDevText.text = license.project.dev
                 }
-                if (license.project.url.isEmpty()) {
+                if (license.project.url.isBlank()) {
                     bindingOssDialog.diaOssProjectUrl.visibility = View.GONE
                 } else {
                     bindingOssDialog.diaOssProjectUrlText.text = license.project.url
                 }
-                if (license.project.code.isEmpty()) {
+                if (license.project.code.isBlank()) {
                     bindingOssDialog.diaOssProjectCode.visibility = View.GONE
                 } else {
                     bindingOssDialog.diaOssProjectCodeText.text = license.project.code

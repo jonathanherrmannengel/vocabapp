@@ -169,12 +169,12 @@ class ListCards : CardActionsActivity() {
                     ?.filter { i -> i.card.uid == cardWithMetaNew?.card?.uid }
                     ?.findFirst()?.orElse(null)
                 if (cardWithMetaNew != null && cardWithMetaOld != null) {
-                        if (settings.getBoolean("format_cards", false)) {
-                            FormatCards().formatCard(
-                                cardWithMetaNew,
-                                cardWithMetaOld.formattingIsInaccurate
-                            )
-                        }
+                    if (settings.getBoolean("format_cards", false)) {
+                        FormatCards().formatCard(
+                            cardWithMetaNew,
+                            cardWithMetaOld.formattingIsInaccurate
+                        )
+                    }
                     cardsList?.let {
                         val index = it.indexOf(cardWithMetaOld)
                         if (index != -1) {
@@ -243,7 +243,7 @@ class ListCards : CardActionsActivity() {
             dbHelperGet.getSingleCollection(collectionNo)?.let {
                 if (it.colors in 0..<minimalLength) {
                     val colorBackground = colorsBackground.getColor(it.colors, 0)
-                binding.root.setBackgroundColor(colorBackground)
+                    binding.root.setBackgroundColor(colorBackground)
                 }
             }
             colorsBackground.recycle()

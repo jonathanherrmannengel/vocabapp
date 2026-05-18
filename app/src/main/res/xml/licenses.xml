@@ -16,13 +16,15 @@
     </item>
     <item>
         <identifier>Apache-2.0</identifier>
-        <projectName>OpenCSV (com.opencsv)</projectName>
+        <projectName>OpenCSV</projectName>
+        <projectId>com.opencsv</projectId>
         <projectCode>https://sourceforge.net/p/opencsv/source/ci/master/tree/</projectCode>
         <projectUrl>http://opencsv.sourceforge.net/</projectUrl>
     </item>
     <item>
         <identifier>Apache-2.0</identifier>
-        <projectName>Markwon (io.noties.markwon:core, io.noties.markwon:linkify)</projectName>
+        <projectName>Markwon</projectName>
+        <projectId>io.noties.markwon:core, io.noties.markwon:linkify</projectId>
         <projectCode>https://github.com/noties/Markwon/</projectCode>
         <projectUrl>https://noties.io/Markwon/</projectUrl>
     </item>
@@ -33,41 +35,48 @@
     </item>
     <item>
         <identifier>Apache-2.0</identifier>
-        <projectName>Coil (io.coil-kt.coil3)</projectName>
+        <projectName>Coil</projectName>
+        <projectId>io.coil-kt.coil3</projectId>
         <projectCode>https://github.com/coil-kt/coil</projectCode>
         <projectUrl>https://coil-kt.github.io/coil/</projectUrl>
     </item>
     <item>
         <identifier>Apache-2.0</identifier>
-        <projectName>Emoji (com.vanniktech:emoji-twitter)</projectName>
+        <projectName>Emoji</projectName>
+        <projectId>com.vanniktech:emoji-twitter</projectId>
         <projectCode>https://github.com/vanniktech/Emoji</projectCode>
     </item>
     <item>
         <identifier>Apache-2.0</identifier>
         <projectDev>Saket Narayan</projectDev>
-        <projectName>BetterLinkMovementMethod (me.saket:better-link-movement-method)</projectName>
+        <projectName>BetterLinkMovementMethod</projectName>
+        <projectId>me.saket:better-link-movement-method</projectId>
         <projectCode>https://github.com/saket/Better-Link-Movement-Method</projectCode>
     </item>
     <item>
         <identifier>WTFPL-colorseekbar</identifier>
         <projectDev>Leon Fu</projectDev>
-        <projectName>ColorSeekBar (com.github.rtugeek:colorseekbar)</projectName>
+        <projectName>ColorSeekBar</projectName>
+        <projectId>com.github.rtugeek:colorseekbar</projectId>
         <projectCode>https://github.com/rtugeek/ColorSeekBar</projectCode>
     </item>
     <item>
         <identifier>Apache-2.0</identifier>
         <projectDev>Google</projectDev>
-        <projectName>AndroidX (androidx.appcompat, androidx.core, androidx.documentfile, androidx.lifecycle, androidx.room)</projectName>
+        <projectName>AndroidX</projectName>
+        <projectId>androidx.appcompat, androidx.core, androidx.documentfile, androidx.lifecycle, androidx.room</projectId>
     </item>
     <item>
         <identifier>Apache-2.0</identifier>
         <projectDev>Google</projectDev>
-        <projectName>Google Android Material (com.google.android.material)</projectName>
+        <projectName>Google Android Material</projectName>
+        <projectId>com.google.android.material</projectId>
     </item>
     <item>
         <identifier>Apache-2.0</identifier>
         <projectDev>JetBrains</projectDev>
-        <projectName>JetBrains Kotlin, JetBrains Kotlinx (org.jetbrains.kotlin, org.jetbrains.kotlinx)</projectName>
+        <projectName>JetBrains Kotlin, JetBrains Kotlinx</projectName>
+        <projectId>org.jetbrains.kotlin, org.jetbrains.kotlinx</projectId>
     </item>
     <item>
         <identifier>CC-BY-SA-4.0</identifier>

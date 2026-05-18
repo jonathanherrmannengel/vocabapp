@@ -251,7 +251,7 @@ class ListCollections : FileTools(), AsyncImportFinish, AsyncImportProgress, Asy
             return@setOnMenuItemClickListener true
         }
         menu.findItem(R.id.menu_list_collections_start_about_app).setOnMenuItemClickListener {
-            this.startActivity(Intent(this, AppLicenses::class.java))
+            this.startActivity(Intent(this, AppInformation::class.java))
             return@setOnMenuItemClickListener true
         }
         return true

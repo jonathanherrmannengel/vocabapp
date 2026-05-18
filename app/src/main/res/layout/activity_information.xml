@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center">
+
+    <ImageView
+        android:id="@+id/information_background_image"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alpha="0.25"
+        android:importantForAccessibility="no"
+        android:scaleType="centerCrop"
+        android:visibility="gone" />
+
+    <RelativeLayout
+        android:id="@+id/information_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center">
+
+
+        <Button
+            android:id="@+id/online_help_button"
+            style="@style/media_button"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="20dp"
+            android:text="@string/online_help"
+            android:textSize="13sp" />
+
+        <View
+            android:id="@+id/information_divider"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_below="@id/online_help_button"
+            android:layout_margin="10dp"
+            android:background="@color/light_black"
+            android:importantForAccessibility="no" />
+
+        <RelativeLayout
+            android:id="@+id/licenses_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/information_divider"
+            android:gravity="center">
+
+            <ImageView
+                android:id="@+id/licenses_background_image"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:alpha="0.25"
+                android:importantForAccessibility="no"
+                android:scaleType="fitCenter"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/title_licenses"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="0dp"
+                android:gravity="center_horizontal"
+                android:text="@string/licenses"
+                android:textColor="@color/default_text"
+                android:textSize="@dimen/title_size_default" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rec_licenses"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@id/title_licenses"
+                android:layout_margin="20dp" />
+
+        </RelativeLayout>
+    </RelativeLayout>
+</RelativeLayout>

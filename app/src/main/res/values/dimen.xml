@@ -16,4 +16,6 @@
     <dimen name="details_name_size_big">23sp</dimen>
     <dimen name="details_desc_size_default">17sp</dimen>
     <dimen name="details_desc_size_big">20sp</dimen>
+    <dimen name="title_size_default">23sp</dimen>
+    <dimen name="title_size_big">26sp</dimen>
 </resources>

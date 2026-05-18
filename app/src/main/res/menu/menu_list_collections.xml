@@ -50,7 +50,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orderInCategory="200"
-        android:title="@string/licenses"
+        android:title="@string/info"
         app:showAsAction="never" />
     <item
         android:id="@+id/menu_list_collections_import_simple_list"

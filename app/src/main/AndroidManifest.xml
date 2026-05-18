@@ -25,9 +25,9 @@
             android:configChanges="orientation|screenSize|screenLayout"
             android:label="@string/edit_card_tag" />
         <activity
-            android:name=".activities.AppLicenses"
+            android:name=".activities.AppInformation"
             android:configChanges="orientation|screenSize|screenLayout"
-            android:label="@string/licenses" />
+            android:label="@string/info" />
         <activity
             android:name=".activities.Settings"
             android:configChanges="orientation|screenSize|screenLayout"
