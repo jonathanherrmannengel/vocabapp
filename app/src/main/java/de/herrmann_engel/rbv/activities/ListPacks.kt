@@ -7,6 +7,7 @@ import android.view.Menu
 import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.FileProvider
 import androidx.core.view.ViewCompat
@@ -45,6 +46,7 @@ class ListPacks : PackActionsActivity(), AsyncExportFinish, AsyncExportProgress 
             v.updatePadding(insets.left, insets.top, insets.right, insets.bottom)
             WindowInsetsCompat.CONSUMED
         }
+        enableEdgeToEdge()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

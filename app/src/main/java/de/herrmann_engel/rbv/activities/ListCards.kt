@@ -20,6 +20,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.edit
@@ -141,6 +142,7 @@ class ListCards : CardActionsActivity() {
             v.updatePadding(insets.left, insets.top, insets.right, insets.bottom)
             WindowInsetsCompat.CONSUMED
         }
+        enableEdgeToEdge()
     }
 
     override fun onNewIntent(intent: Intent) {

@@ -7,6 +7,7 @@ import android.view.Menu
 import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatDelegate
@@ -96,6 +97,7 @@ class ListCollections : FileTools(), AsyncImportFinish, AsyncImportProgress, Asy
             v.updatePadding(insets.left, insets.top, insets.right, insets.bottom)
             WindowInsetsCompat.CONSUMED
         }
+        enableEdgeToEdge()
         MainScope().launch(Dispatchers.Default) {
             cleanUp()
         }

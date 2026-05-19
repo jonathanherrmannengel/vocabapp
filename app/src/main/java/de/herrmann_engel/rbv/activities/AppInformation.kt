@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.TypedValue
 import android.view.View
 import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
@@ -119,5 +120,6 @@ class AppInformation : RBVActivity() {
             v.updatePadding(insets.left, insets.top, insets.right, insets.bottom)
             WindowInsetsCompat.CONSUMED
         }
+        enableEdgeToEdge()
     }
 }
