@@ -3,6 +3,10 @@ package de.herrmann_engel.rbv.activities
 import android.os.Bundle
 import android.view.inputmethod.EditorInfo
 import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.LinearLayoutManager
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.adapters.AdapterTagLinkCard
@@ -40,6 +44,12 @@ class EditCardTags : RBVActivity() {
         binding.editCardTagsGo.setOnClickListener {
             createNewTag()
         }
+        ViewCompat.setOnApplyWindowInsetsListener(binding.editCardTagsLayout) { v, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.updatePadding(insets.left, insets.top, insets.right, insets.bottom)
+            WindowInsetsCompat.CONSUMED
+        }
+        enableEdgeToEdge()
     }
 
     override fun onResume() {

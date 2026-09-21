@@ -15,8 +15,12 @@ import android.view.Menu
 import android.view.View
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.enableEdgeToEdge
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.toColorInt
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.actions.CardActions
@@ -65,6 +69,13 @@ class ViewCard : CardActionsActivity() {
                 startActivity(intent)
             }
         })
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.viewCardLayout) { v, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.updatePadding(insets.left, insets.top, insets.right, insets.bottom)
+            WindowInsetsCompat.CONSUMED
+        }
+        enableEdgeToEdge()
     }
 
     override fun onResume() {

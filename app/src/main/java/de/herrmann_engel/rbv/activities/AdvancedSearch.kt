@@ -3,12 +3,19 @@ package de.herrmann_engel.rbv.activities
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.LinearLayoutManager
+import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.Globals.LIST_CARDS_GET_DB_COLLECTIONS_ALL
 import de.herrmann_engel.rbv.Globals.LIST_CARDS_GET_DB_PACKS_ADVANCED_SEARCH_ALL
 import de.herrmann_engel.rbv.Globals.LIST_CARDS_GET_DB_PACKS_ADVANCED_SEARCH_LIST
 import de.herrmann_engel.rbv.Globals.LIST_CARDS_GET_DB_TAGS_ADVANCED_SEARCH_ALL
 import de.herrmann_engel.rbv.Globals.LIST_CARDS_GET_DB_TAGS_ADVANCED_SEARCH_LIST
+import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.adapters.AdapterPacksAdvancedSearch
 import de.herrmann_engel.rbv.adapters.AdapterTagsAdvancedSearch
 import de.herrmann_engel.rbv.databinding.ActivityAdvancedSearchBinding
@@ -112,6 +119,22 @@ class AdvancedSearch : RBVActivity() {
             intent.putExtra("repetitionNumber", repetitionNumber)
             startActivity(intent)
         }
+        val settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE)
+        if (settings.getBoolean("ui_bg_images", true)) {
+            binding.backgroundImage.visibility = View.VISIBLE
+            binding.backgroundImage.setImageDrawable(
+                AppCompatResources.getDrawable(
+                    this,
+                    R.drawable.bg_advanced_search
+                )
+            )
+        }
+        ViewCompat.setOnApplyWindowInsetsListener(binding.advancedSearchContainer) { v, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.updatePadding(insets.left, insets.top, insets.right, insets.bottom)
+            WindowInsetsCompat.CONSUMED
+        }
+        enableEdgeToEdge()
     }
 
     override fun onResume() {

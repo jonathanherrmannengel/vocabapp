@@ -7,6 +7,10 @@ import android.util.TypedValue
 import android.view.Menu
 import android.view.View
 import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.actions.PackActions
@@ -33,6 +37,12 @@ class ViewPack : PackActionsActivity() {
         dbHelperGet = DB_Helper_Get(this)
         collectionNo = intent.extras!!.getInt("collection")
         packNo = intent.extras!!.getInt("pack")
+        ViewCompat.setOnApplyWindowInsetsListener(binding.viewCollectionOrPackLayout) { v, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.updatePadding(insets.left, insets.top, insets.right, insets.bottom)
+            WindowInsetsCompat.CONSUMED
+        }
+        enableEdgeToEdge()
     }
 
     public override fun onResume() {

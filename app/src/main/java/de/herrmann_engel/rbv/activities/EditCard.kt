@@ -9,6 +9,10 @@ import android.view.Menu
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.enableEdgeToEdge
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.databinding.ActivityEditCardBinding
 import de.herrmann_engel.rbv.databinding.DiaConfirmBinding
@@ -85,6 +89,12 @@ class EditCard : RBVActivity() {
                 }
             }
         })
+        ViewCompat.setOnApplyWindowInsetsListener(binding.editCardLayout) { v, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.updatePadding(insets.left, insets.top, insets.right, insets.bottom)
+            WindowInsetsCompat.CONSUMED
+        }
+        enableEdgeToEdge()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

@@ -8,7 +8,7 @@ android {
         minSdk = 25
         targetSdk = 37
         versionCode = 85
-        versionName = "3.4.11"
+        versionName = "3.5.0"
         javaCompileOptions {
             annotationProcessorOptions {
                 arguments += mapOf(

@@ -96,4 +96,10 @@
         <projectName>drawable bg_cards (modified)</projectName>
         <projectUrl>https://commons.wikimedia.org/wiki/File:3x5_Notecard.jpg</projectUrl>
     </item>
+    <item>
+        <identifier>public-domain</identifier>
+        <projectDev>Mis306 at English Wikibooks</projectDev>
+        <projectName>drawable bg_advanced_search (modified)</projectName>
+        <projectUrl>https://commons.wikimedia.org/wiki/File:Magnifying_Glass_Photo.jpg</projectUrl>
+    </item>
 </licenses>
