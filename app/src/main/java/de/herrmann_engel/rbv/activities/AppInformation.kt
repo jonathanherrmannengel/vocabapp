@@ -14,7 +14,6 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.LinearLayoutManager
 import de.herrmann_engel.rbv.Globals
-import de.herrmann_engel.rbv.Globals.ONLINE_HELP
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.adapters.AdapterOSS
 import de.herrmann_engel.rbv.databinding.ActivityInformationBinding
@@ -112,7 +111,7 @@ class AppInformation : RBVActivity() {
         binding.onlineHelpButton.setOnClickListener {
             val intent = Intent()
             intent.action = Intent.ACTION_VIEW
-            intent.setData(ONLINE_HELP.toUri())
+            intent.data = String.format(Globals.ONLINE_HELP, resources.configuration.locales.get(0).language).toUri()
             this.startActivity(intent)
         }
         ViewCompat.setOnApplyWindowInsetsListener(binding.informationContainer) { v, windowInsets ->

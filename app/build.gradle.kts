@@ -57,9 +57,9 @@ android {
 }
 dependencies {
     val kotlinVersion = rootProject.extra.get("kotlinVersion") as String
-    val roomVersion = "2.8.4"
+    val roomVersion = "2.8.5"
     implementation("androidx.appcompat:appcompat:1.8.0")
-    implementation("androidx.core:core-ktx:1.19.0")
+    implementation("androidx.core:core-ktx:1.19.1")
     implementation("androidx.documentfile:documentfile:1.1.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.11.0")
     implementation("androidx.room:room-runtime:$roomVersion")
@@ -72,7 +72,7 @@ dependencies {
     implementation("io.noties.markwon:linkify:4.6.2")
     implementation("me.saket:better-link-movement-method:2.2.0")
     implementation("com.vanniktech:emoji-twitter:0.24.1")
-    implementation("io.coil-kt.coil3:coil:3.6.2")
+    implementation("io.coil-kt.coil3:coil:3.6.3")
     implementation("com.github.rtugeek:colorseekbar:2.1.0")
     implementation("com.atlassian.commonmark:commonmark:0.13.0")
     //match Markwon version of commonmark
