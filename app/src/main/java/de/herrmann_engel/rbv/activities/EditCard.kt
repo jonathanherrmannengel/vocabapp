@@ -20,9 +20,13 @@ import de.herrmann_engel.rbv.db.DB_Card
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Update
 
+/**
+ * Form to edit the card passed as "card" extra. The form is colored like the card's pack.
+ */
 class EditCard : RBVActivity() {
     private lateinit var binding: ActivityEditCardBinding
     private lateinit var card: DB_Card
+    // If set, return to the card list after closing instead of the previous screen
     private var backToList = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,6 +37,7 @@ class EditCard : RBVActivity() {
         backToList = intent.extras!!.getBoolean("backToList")
         card = dbHelperGet.getSingleCard(cardNo)
         binding.editCardFront.setText(card.front)
+        // Allow multiple lines in the input field if the text already has multiple lines
         if (card.front.contains(System.lineSeparator())) {
             binding.editCardFront.inputType = InputType.TYPE_TEXT_FLAG_MULTI_LINE
             binding.editCardFront.isSingleLine = false
@@ -65,6 +70,7 @@ class EditCard : RBVActivity() {
         }
         colors.recycle()
         colorsBackground.recycle()
+        // Ask before discarding changes
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 val front = binding.editCardFront.text.toString()
@@ -89,6 +95,7 @@ class EditCard : RBVActivity() {
                 }
             }
         })
+        // Edge-to-edge: keep the content clear of the system bars
         ViewCompat.setOnApplyWindowInsetsListener(binding.editCardLayout) { v, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.updatePadding(insets.left, insets.top, insets.right, insets.bottom)
@@ -114,6 +121,7 @@ class EditCard : RBVActivity() {
         return true
     }
 
+    // Returns to the card list (which then reloads the card) or simply finishes
     private fun close() {
         if (backToList) {
             val intent = Intent(this, ListCards::class.java)

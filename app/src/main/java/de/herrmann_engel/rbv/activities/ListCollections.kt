@@ -42,14 +42,20 @@ import kotlinx.coroutines.launch
 import java.io.File
 import java.util.Locale
 
+/**
+ * Start screen: list of all collections. The menu offers creating collections, import and
+ * export of all data, advanced search, media management, settings and app information.
+ */
 class ListCollections : FileTools(), AsyncImportFinish, AsyncImportProgress, AsyncExportFinish,
     AsyncExportProgress {
     private lateinit var binding: ActivityDefaultRecBinding
     private lateinit var dbHelperGet: DB_Helper_Get
     private var adapter: AdapterCollections? = null
+    // Import options chosen in the import dialog, used once the user has picked the file
     private var importMode = 0
     private var importIncludeSettings = false
     private var importIncludeMedia = false
+    // Result of the file picker for the import: start the import in the background
     private val launcherImportFile = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result: ActivityResult ->
@@ -68,8 +74,10 @@ class ListCollections : FileTools(), AsyncImportFinish, AsyncImportProgress, Asy
             Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show()
         }
     }
+    // Export options chosen in the export dialog, used once the user has picked the destination
     private var exportIncludeSettings = false
     private var exportIncludeMedia = false
+    // Result of the file picker for the export destination: start the export in the background
     private val launcherExportFile = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result: ActivityResult ->
@@ -92,12 +100,14 @@ class ListCollections : FileTools(), AsyncImportFinish, AsyncImportProgress, Asy
         setContentView(binding.root)
         dbHelperGet = DB_Helper_Get(this)
         setTitle(R.string.app_name)
+        // Edge-to-edge: keep the content clear of the system bars
         ViewCompat.setOnApplyWindowInsetsListener(binding.recDefault) { v, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.updatePadding(insets.left, insets.top, insets.right, insets.bottom)
             WindowInsetsCompat.CONSUMED
         }
         enableEdgeToEdge()
+        // Housekeeping in the background on app start
         MainScope().launch(Dispatchers.Default) {
             cleanUp()
         }
@@ -126,6 +136,7 @@ class ListCollections : FileTools(), AsyncImportFinish, AsyncImportProgress, Asy
                 WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.MATCH_PARENT
             )
+            // Defaults: merge into existing data; for an empty app, import everything including settings
             if (dbHelperGet.hasCollections()) {
                 bindingStartImportDialog.diaImportRadioIntegrate.isChecked = true
                 bindingStartImportDialog.diaImportRadioDuplicates.isChecked = false
@@ -168,6 +179,7 @@ class ListCollections : FileTools(), AsyncImportFinish, AsyncImportProgress, Asy
             startImportDialog.show()
             return@setOnMenuItemClickListener true
         }
+        // Import of a simple CSV list of cards into a new pack
         menu.findItem(R.id.menu_list_collections_import_simple_list).setOnMenuItemClickListener {
             val startImportDialog = Dialog(this, R.style.dia_view)
             val bindingStartImportDialog = DiaConfirmBinding.inflate(
@@ -259,6 +271,7 @@ class ListCollections : FileTools(), AsyncImportFinish, AsyncImportProgress, Asy
         return true
     }
 
+    // Hide menu items that are useless without collections, cards or media
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
         val exportAllMenuItem = menu.findItem(R.id.menu_list_collections_export)
         val startAdvancedSearchMenuItem =
@@ -287,6 +300,10 @@ class ListCollections : FileTools(), AsyncImportFinish, AsyncImportProgress, Asy
         updateSettingsAndContent()
     }
 
+    /**
+     * Updates the .nomedia file, removes dead media links and unused tags and deletes cached
+     * files (e.g. old exports) older than one day.
+     */
     private fun cleanUp() {
         handleNoMediaFile()
         val dbHelperDelete = DB_Helper_Delete(this@ListCollections)
@@ -303,6 +320,10 @@ class ListCollections : FileTools(), AsyncImportFinish, AsyncImportProgress, Asy
         }
     }
 
+    /**
+     * Loads the collections including the placeholder for "all packs" as first item. For long
+     * lists, the packs per collection are not counted to save time.
+     */
     private fun loadContent(): MutableList<DB_Collection_With_Meta> {
         val currentList =
             if (dbHelperGet.countCollections() > MAX_SIZE_COLLECTIONS_OR_PACKS_LIST_COUNTER) {
@@ -316,6 +337,7 @@ class ListCollections : FileTools(), AsyncImportFinish, AsyncImportProgress, Asy
         return currentList
     }
 
+    // Load the collections in the background; create the adapter on first load, update it afterwards
     private fun updateSettingsAndContent() {
         val settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE)
         val uiFontSizeBig = settings.getBoolean("ui_font_size", false)
@@ -344,6 +366,7 @@ class ListCollections : FileTools(), AsyncImportFinish, AsyncImportProgress, Asy
                 }
                 updateSettingsAndContent()
                 val settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE)
+                // Apply the theme setting, which may have been changed by the import
                 when (settings.getInt("ui_mode", Globals.UI_MODE_DAY)) {
                     Globals.UI_MODE_NIGHT -> {
                         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
@@ -367,6 +390,7 @@ class ListCollections : FileTools(), AsyncImportFinish, AsyncImportProgress, Asy
         runOnUiThread { Toast.makeText(this, progress, Toast.LENGTH_SHORT).show() }
     }
 
+    // The exported file has already been saved to the chosen location; additionally offer to share it
     override fun exportCardsResult(result: File?) {
         runOnUiThread {
             if (result == null) {
@@ -398,6 +422,7 @@ class ListCollections : FileTools(), AsyncImportFinish, AsyncImportProgress, Asy
     override fun notifyFolderSet() {}
     override fun notifyMissingAction(id: Int) {}
 
+    // Lets the user pick the file to import
     private fun startImport() {
         val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
         intent.addCategory(Intent.CATEGORY_OPENABLE)

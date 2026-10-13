@@ -20,6 +20,9 @@ import de.herrmann_engel.rbv.databinding.ActivityInformationBinding
 import de.herrmann_engel.rbv.oss.OSSLicenses
 import de.herrmann_engel.rbv.oss.OSSProject
 
+/**
+ * App information: link to the online help and the list of open source licenses.
+ */
 class AppInformation : RBVActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,6 +31,8 @@ class AppInformation : RBVActivity() {
         )
         setContentView(binding.root)
         try {
+            // Read the used open source projects from res/xml/licenses.xml. Each <item> describes a
+            // project; its child elements are collected until the closing </item>.
             val parser = resources.getXml(R.xml.licenses)
             var eventType = parser.eventType
             val licenses: MutableList<OSSLicenses> = ArrayList()
@@ -108,12 +113,14 @@ class AppInformation : RBVActivity() {
                 resources.getDimension(R.dimen.title_size_big)
             )
         }
+        // Open the online help in the language of the device
         binding.onlineHelpButton.setOnClickListener {
             val intent = Intent()
             intent.action = Intent.ACTION_VIEW
             intent.data = String.format(Globals.ONLINE_HELP, resources.configuration.locales.get(0).language).toUri()
             this.startActivity(intent)
         }
+        // Edge-to-edge: keep the content clear of the system bars
         ViewCompat.setOnApplyWindowInsetsListener(binding.informationContainer) { v, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.updatePadding(insets.left, insets.top, insets.right, insets.bottom)

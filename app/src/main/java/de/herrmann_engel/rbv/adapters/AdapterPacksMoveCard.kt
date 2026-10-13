@@ -19,6 +19,9 @@ import de.herrmann_engel.rbv.db.utils.DB_Helper_Update
 import de.herrmann_engel.rbv.utils.ContextTools
 import de.herrmann_engel.rbv.utils.StringTools
 
+/**
+ * Pack list in the "move card" dialog. Clicking a pack moves the cards there.
+ */
 class AdapterPacksMoveCard(
     private val packs: List<DB_Pack>,
     private val collectionNo: Int,
@@ -37,6 +40,7 @@ class AdapterPacksMoveCard(
         )
         val settings =
             viewGroup.context.getSharedPreferences(Globals.SETTINGS_NAME, Context.MODE_PRIVATE)
+        // Larger font size setting
         if (settings.getBoolean("ui_font_size", false)) {
             binding.recName.setTextSize(
                 TypedValue.COMPLEX_UNIT_PX,
@@ -59,6 +63,7 @@ class AdapterPacksMoveCard(
         }
         colors.recycle()
         viewHolder.binding.recName.text = packs[position].name
+        // Packs of all collections are listed: show the collection name as well
         if (collectionNo == LIST_CARDS_GET_DB_COLLECTIONS_ALL) {
             val collectionName =
                 stringTools.shorten(
@@ -74,6 +79,7 @@ class AdapterPacksMoveCard(
             val updateHelper =
                 DB_Helper_Update(context)
             val cardIds = arrayListOf<Int>()
+            // Only cards not already in the target pack are moved and reported
             for (card in cards) {
                 if (card.pack != currentPackId) {
                     cardIds.add(card.uid)

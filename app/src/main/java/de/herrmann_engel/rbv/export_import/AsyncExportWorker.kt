@@ -14,6 +14,15 @@ import java.io.InputStream
 import java.io.OutputStream
 import java.util.Locale
 
+/**
+ * Exports the database (or a single collection) into a CSV file in the cache directory and,
+ * if an export URI is given, copies it there.
+ *
+ * Every row starts with the type of the entry (e.g. "collection", "packs", "cards", "tags",
+ * "app_setting"), followed by the database columns. Before the first row of a type, a
+ * "<type>_schema" row lists the column names. Only database entries are exported, not the
+ * media files themselves.
+ */
 class AsyncExportWorker(
     val context: Context,
     private val listener: AsyncExportFinish,
@@ -30,6 +39,7 @@ class AsyncExportWorker(
         listener.exportCardsResult(exportFile())
     }
 
+    // Appends a single setting as an "app_setting" row (name, type, value)
     private fun exportSetting(name: String, filename: String, type: String, value: String) {
         val file = File(context.cacheDir, filename)
         val csvWrite = CSVWriter(FileWriter(file, true))
@@ -38,6 +48,10 @@ class AsyncExportWorker(
         csvWrite.close()
     }
 
+    /**
+     * Writes all rows of the cursor to the file, prefixed by name. Writes the schema row first
+     * if isFirst is set. Returns false on errors.
+     */
     private fun exportCSV(
         name: String,
         filename: String,
@@ -66,6 +80,7 @@ class AsyncExportWorker(
                     cursor.moveToNext()
                     progress++
                     val currentTime = System.currentTimeMillis()
+                    // Report progress every 1000 rows, at most once per second
                     if (progress % 1000 == 0 && currentTime - lastProgressSentTime > 1000) {
                         lastProgressSentTime = currentTime
                         listenerProgress.exportCardsProgress(
@@ -85,6 +100,7 @@ class AsyncExportWorker(
         return true
     }
 
+    // Returns the exported file or null on errors
     private fun exportFile(): File? {
         try {
             val dbHelperExport = DB_Helper_Export(context)
@@ -107,6 +123,8 @@ class AsyncExportWorker(
                     Globals.EXPORT_FILE_EXTENSION
                 )
             )
+            // Collection, packs and cards are exported collection by collection; the first call
+            // overwrites an existing file from a previous export, later calls append to it
             var isFirst = true
             for (i in collectionNos.indices) {
                 val currentCollectionNo = collectionNos[i]
@@ -247,6 +265,7 @@ class AsyncExportWorker(
                     )
                 }
             }
+            // Copy the file to the location chosen by the user
             if (exportFileUri != null) {
                 try {
                     val inputStream: InputStream = FileInputStream(file)

@@ -10,6 +10,9 @@ import androidx.room.Update;
 
 import java.util.List;
 
+/**
+ * Data access for collections. Lists are sorted by name (case-insensitive), newest first for equal names.
+ */
 @Dao
 public interface DB_Collection_DAO {
     @Query("SELECT EXISTS (SELECT 1 FROM db_collection LIMIT 1)")
@@ -30,6 +33,7 @@ public interface DB_Collection_DAO {
     @Query("SELECT *, (SELECT COUNT(*) FROM db_pack WHERE collection=db_collection.uid) AS counter FROM db_collection ORDER BY name COLLATE NOCASE ASC, uid DESC")
     List<DB_Collection_With_Meta> getAllWithMeta();
 
+    // Same as getAllWithMeta() but skips counting packs (faster); counter is -1
     @Query("SELECT *, -1 AS counter FROM db_collection ORDER BY name COLLATE NOCASE ASC, uid DESC")
     List<DB_Collection_With_Meta> getAllWithMetaNoCounter();
 
@@ -39,6 +43,7 @@ public interface DB_Collection_DAO {
     @Query("SELECT * FROM db_collection WHERE uid=:cid LIMIT 1")
     DB_Collection getOne(int cid);
 
+    // Raw cursor used by the CSV export
     @Query("SELECT * FROM db_collection WHERE uid=:cid")
     Cursor getOneExport(int cid);
 

@@ -10,6 +10,9 @@ import com.vanniktech.emoji.twitter.TwitterEmojiProvider
 import de.herrmann_engel.rbv.Globals.UI_MODE_DAY
 import de.herrmann_engel.rbv.Globals.UI_MODE_NIGHT
 
+/**
+ * Application entry point: sets up the emoji provider and applies the theme (day/night) setting.
+ */
 class RBVApplication : Application() {
     override fun onCreate() {
         super.onCreate()

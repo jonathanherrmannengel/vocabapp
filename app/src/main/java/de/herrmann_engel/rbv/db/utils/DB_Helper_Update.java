@@ -7,6 +7,9 @@ import de.herrmann_engel.rbv.db.DB_Collection;
 import de.herrmann_engel.rbv.db.DB_Pack;
 import de.herrmann_engel.rbv.db.DB_Tag;
 
+/**
+ * Updates existing entries. Methods return false if the new values are invalid (e.g. empty names).
+ */
 public class DB_Helper_Update {
 
     private final DB_Helper dbHelper;

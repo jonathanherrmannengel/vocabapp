@@ -15,6 +15,9 @@ import de.herrmann_engel.rbv.adapters.AdapterFilesManage
 import de.herrmann_engel.rbv.databinding.ActivityManageFilesBinding
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 
+/**
+ * Lists files in the media folder that are not registered as media in the database.
+ */
 class ManageFiles : FileTools() {
     private lateinit var binding: ActivityManageFilesBinding
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,6 +34,7 @@ class ManageFiles : FileTools() {
                 )
             )
         }
+        // Edge-to-edge: keep the content clear of the system bars
         ViewCompat.setOnApplyWindowInsetsListener(binding.recFilesManage) { v, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.updatePadding(insets.left, insets.top, insets.right, insets.bottom)
@@ -55,6 +59,7 @@ class ManageFiles : FileTools() {
         if (files != null) {
             val filesWithoutMedia = ArrayList<DocumentFile>()
             val dbHelperGet = DB_Helper_Get(this)
+            // Ignore directories and the .nomedia file
             for (file in files) {
                 if (!dbHelperGet.existsMedia(file.name) && file.isFile && file.name != ".nomedia") {
                     filesWithoutMedia.add(file)

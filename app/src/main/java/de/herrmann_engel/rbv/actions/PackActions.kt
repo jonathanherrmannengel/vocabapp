@@ -14,8 +14,17 @@ import de.herrmann_engel.rbv.db.DB_Pack
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Delete
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 
+/**
+ * Dialogs for actions on one or more packs: delete and move to another collection.
+ * The activity has to be a [PackActionsActivity].
+ */
 class PackActions(val activity: Activity) {
 
+    /**
+     * Asks for confirmation and deletes the packs. If multiple packs or a pack containing cards
+     * are to be deleted, a second confirmation is required (forceDelete is set for the second
+     * dialog) and the contained cards are deleted as well.
+     */
     private fun delete(packs: ArrayList<DB_Pack>, forceDelete: Boolean) {
         val confirmDeleteDialog = Dialog(activity, R.style.dia_view)
         val bindingConfirmDeleteDialog = DiaConfirmBinding.inflate(
@@ -73,6 +82,7 @@ class PackActions(val activity: Activity) {
         delete(arrayListOf(pack))
     }
 
+    // Lets the user choose a collection to move the packs to
     fun move(packs: ArrayList<DB_Pack>) {
         val moveDialog = Dialog(activity, R.style.dia_view)
         val bindingMoveDialog = DiaRecBinding.inflate(

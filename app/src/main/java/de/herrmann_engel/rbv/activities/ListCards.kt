@@ -60,6 +60,15 @@ import me.saket.bettermovementmethod.BetterLinkMovementMethod
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
+/**
+ * Card list of a pack, a collection, all cards or the results of an advanced search
+ * (depending on the "collection", "pack" and filter extras, see the LIST_CARDS_GET_DB_*
+ * constants in Globals).
+ *
+ * Besides the list (sortable, searchable, showing front/back/both sides) it offers statistics
+ * and the query mode: a dialog asking the cards one after another, where the user rates each
+ * card as known or not known (by buttons or swipes).
+ */
 class ListCards : CardActionsActivity() {
     private lateinit var binding: ActivityDefaultRecBinding
     private lateinit var dbHelperGet: DB_Helper_Get
@@ -74,10 +83,12 @@ class ListCards : CardActionsActivity() {
     private lateinit var searchCardsMenuItem: MenuItem
     private lateinit var searchCardsOffMenuItem: MenuItem
     private var adapter: AdapterCards? = null
+    // All cards of this list (sorted) and the currently displayed cards (after search)
     private var cardsList: MutableList<DB_Card_With_Meta>? = null
     private var cardsListFiltered: MutableList<DB_Card_With_Meta>? = null
     private var collectionNo = 0
     private var packNo = 0
+    // Advanced search filters
     private var packNos: ArrayList<Int>? = null
     private var tagNo = 0
     private var tagNos: ArrayList<Int>? = null
@@ -89,6 +100,7 @@ class ListCards : CardActionsActivity() {
     private var showFrontAndBack = false
     private var listSort = Globals.SORT_CARDS_DEFAULT
     private var searchQuery: String? = null
+    // Position of the current card in query mode
     private var cardPosition = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -99,6 +111,7 @@ class ListCards : CardActionsActivity() {
         dbHelperUpdate = DB_Helper_Update(this)
         settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE)
         listSort = settings.getInt("default_sort", Globals.SORT_CARDS_DEFAULT)
+        // Initial side(s) to show, can be changed via the menu
         when (settings.getInt("flashcard_list_side", Globals.FLASHCARD_LIST_SIDE_FRONT)) {
             Globals.FLASHCARD_LIST_SIDE_BACK -> {
                 frontBackReverse = true
@@ -133,10 +146,12 @@ class ListCards : CardActionsActivity() {
                 )
             )
         }
+        // The query mode dialog is created once and reused
         queryModeDialog = Dialog(this, R.style.dia_view)
         bindingQueryModeDialog = DiaQueryBinding.inflate(
             layoutInflater
         )
+        // Edge-to-edge: keep the content clear of the system bars
         ViewCompat.setOnApplyWindowInsetsListener(binding.recDefault) { v, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.updatePadding(insets.left, insets.top, insets.right, insets.bottom)
@@ -145,6 +160,10 @@ class ListCards : CardActionsActivity() {
         enableEdgeToEdge()
     }
 
+    /**
+     * Other activities return here (single top) with the id of a deleted, added or updated card,
+     * so the loaded list can be updated without reloading everything from the database.
+     */
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         if (cardsList != null) {
@@ -202,6 +221,7 @@ class ListCards : CardActionsActivity() {
     }
 
     override fun notifyFolderSet() {}
+    // Missing media file: open the card's media settings
     override fun notifyMissingAction(id: Int) {
         try {
             val intent = Intent(this, EditCardMedia::class.java)
@@ -253,6 +273,7 @@ class ListCards : CardActionsActivity() {
 
         lifecycleScope.launch(Dispatchers.IO) {
             // Get cards
+            // Cards are only loaded once; later changes are applied via onNewIntent and the callbacks
             if (cardsList == null) {
                 cardsList =
                     if (collectionNo == LIST_CARDS_GET_DB_COLLECTIONS_ALL && packNo == LIST_CARDS_GET_DB_PACKS_ALL) {
@@ -296,6 +317,7 @@ class ListCards : CardActionsActivity() {
 
             runOnUiThread {
                 // Warning: Big lists
+                // Show the warning about inaccurate formatting/search only once per mode (stored in the config)
                 if ((cardsList?.size ?: 0) > Globals.MAX_SIZE_CARDS_LIST_ACCURATE) {
                     val config = getSharedPreferences(Globals.CONFIG_NAME, MODE_PRIVATE)
                     val formatCardsActivated = settings.getBoolean("format_cards", false)
@@ -344,6 +366,7 @@ class ListCards : CardActionsActivity() {
                 }
 
                 // Display content
+                // Keep the query mode open after returning, e.g. from editing a card
                 if (queryModeDialog.isShowing) {
                     nextQuery(true)
                 } else {
@@ -428,6 +451,7 @@ class ListCards : CardActionsActivity() {
             updateContent(true)
             false
         }
+        // Query mode starts at the first visible card; afterwards the list scrolls to the last queried card
         showQueryModeMenuItem = menu.findItem(R.id.start_query)
         showQueryModeMenuItem.setOnMenuItemClickListener {
             queryModeDialog.setContentView(bindingQueryModeDialog.root)
@@ -453,6 +477,8 @@ class ListCards : CardActionsActivity() {
             queryModeDialog.show()
             false
         }
+        // Statistics of the displayed cards: total and progress (sum, max, min, average) and
+        // a table of the number and share of cards per progress value (0 to 4, 5 or more)
         showListStatsMenuItem = menu.findItem(R.id.show_list_stats)
         showListStatsMenuItem.setOnMenuItemClickListener {
             val listStatsDialog = Dialog(this, R.style.dia_view)
@@ -622,6 +648,7 @@ class ListCards : CardActionsActivity() {
             listStatsDialog.show()
             false
         }
+        // Search on submit; the "search off" item resets the search
         searchCardsMenuItem = menu.findItem(R.id.search_cards)
         val searchView = searchCardsMenuItem.actionView as SearchView
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
@@ -665,6 +692,7 @@ class ListCards : CardActionsActivity() {
         }
     }
 
+    // Goes to the next/previous card in query mode; closes the dialog at the end of the list
     private fun queryModeNextAction() {
         cardPosition++
         if (cardPosition >= cardsListFiltered!!.size) {
@@ -683,6 +711,7 @@ class ListCards : CardActionsActivity() {
         }
     }
 
+    // Saves the new progress as a repetition of the card
     private fun queryModeCardKnownChanged(card: DB_Card, known: Int) {
         card.known = known
         card.lastRepetition = System.currentTimeMillis() / 1000L
@@ -697,6 +726,7 @@ class ListCards : CardActionsActivity() {
         queryModeNextAction()
     }
 
+    // Card not known: decrease the progress by 1 or reset it to 0, depending on the settings
     private fun queryModeMinusAction(card: DB_Card) {
         val known = if (settings.getBoolean("query_mode_reset_progress", false)) {
             0
@@ -711,6 +741,16 @@ class ListCards : CardActionsActivity() {
         nextQuery(false)
     }
 
+    /**
+     * Shows the card at cardPosition in the query mode dialog. First only one side is shown;
+     * after revealing the other side, the card can be rated.
+     *
+     * Swipe gestures: left/right go to the next/previous card, up/down (only after revealing)
+     * rate the card as known/not known. While swiping, a colored bar grows from the edge; a
+     * completed swipe fills the screen with it shortly before the action is executed.
+     *
+     * @param onlyUpdate only update texts and actions, keep the current state (e.g. revealed side)
+     */
     @SuppressLint("ClickableViewAccessibility")
     private fun nextQuery(onlyUpdate: Boolean) {
         val cardWithMeta = cardsListFiltered!![cardPosition]
@@ -794,10 +834,12 @@ class ListCards : CardActionsActivity() {
             rootBackground.findDrawableByLayerId(R.id.dia_query_root_background_top) as GradientDrawable
         val rootBackgroundBottom =
             rootBackground.findDrawableByLayerId(R.id.dia_query_root_background_bottom) as GradientDrawable
+        // The colored edges of the dialog hint at the available swipe directions
         rootBackgroundLeft.alpha = if (cardPosition > 0) 255 else 0
         bindingQueryModeDialog.root.setOnTouchListener(object : SwipeEvents() {
             val ANIM_GROW_TIME = 150
             val ANIM_DISPlAY_TIME = 300
+            // Blocks further gestures while an animation is running
             var allowTouchEvent = true
             override fun onMoveX(distance: Float) {
                 if (allowTouchEvent) {
@@ -972,6 +1014,7 @@ class ListCards : CardActionsActivity() {
             queryModeMinusAction(card)
         }
 
+        // Reset the dialog for a new card: title, colors, media buttons, hidden back side
         if (!onlyUpdate) {
             queryModeDialog.setTitle(
                 String.format(
@@ -1047,6 +1090,7 @@ class ListCards : CardActionsActivity() {
             bindingQueryModeDialog.queryHide.visibility = View.GONE
             bindingQueryModeDialog.queryButtonEdit.visibility = View.GONE
             bindingQueryModeDialog.queryButtonHide.visibility = View.VISIBLE
+            // Reveal the other side and enable rating the card
             bindingQueryModeDialog.queryButtonHide.setOnClickListener {
                 bindingQueryModeDialog.queryButtonHide.visibility = View.GONE
                 bindingQueryModeDialog.queryHide.visibility = View.VISIBLE
@@ -1065,6 +1109,10 @@ class ListCards : CardActionsActivity() {
         }
     }
 
+    /**
+     * Applies the search to the cards and displays the result. The adapter is recreated if
+     * requested (e.g. after sorting) or if the list was or becomes empty; otherwise it is updated.
+     */
     private fun updateContent(recreate: Boolean) {
         cardsList?.let {
             var tempCardList: MutableList<DB_Card_With_Meta> = ArrayList(it)
@@ -1117,6 +1165,7 @@ class ListCards : CardActionsActivity() {
         updateContent()
     }
 
+    // Moving is only possible in pack lists, so moved cards no longer belong to this list
     override fun movedCards(cardIds: ArrayList<Int>) {
         for (cardId in cardIds) {
             deleteCardFromList(cardId)

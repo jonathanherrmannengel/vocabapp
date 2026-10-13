@@ -17,6 +17,10 @@ import de.herrmann_engel.rbv.databinding.DiaConfirmBinding
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Create
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 
+/**
+ * Form to create a new pack in the collection passed as "collection" extra.
+ * The form is colored like the collection; the new pack inherits its color.
+ */
 class NewPack : RBVActivity() {
     private lateinit var binding: ActivityNewCollectionOrPackBinding
     private var collectionNo = 0
@@ -50,6 +54,7 @@ class NewPack : RBVActivity() {
         binding.newCollectionOrPackDescLayout.hint =
             String.format(getString(R.string.optional), getString(R.string.collection_or_pack_desc))
 
+        // Ask before discarding entered text
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 val name = binding.newCollectionOrPackName.text.toString()
@@ -74,6 +79,7 @@ class NewPack : RBVActivity() {
             }
         })
 
+        // Edge-to-edge: keep the content clear of the system bars
         ViewCompat.setOnApplyWindowInsetsListener(binding.newCollectionOrPackLayout) { v, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.updatePadding(insets.left, insets.top, insets.right, insets.bottom)

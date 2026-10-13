@@ -4,6 +4,9 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+/**
+ * A tag that can be assigned to cards. Tag names are unique.
+ */
 @Entity
 public class DB_Tag {
     @PrimaryKey(autoGenerate = true)

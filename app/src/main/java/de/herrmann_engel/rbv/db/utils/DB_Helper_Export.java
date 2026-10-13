@@ -6,6 +6,9 @@ import android.database.MatrixCursor;
 
 import java.util.List;
 
+/**
+ * Provides raw database cursors for the CSV export, either for everything or for a single collection.
+ */
 public class DB_Helper_Export {
 
     private final DB_Helper dbHelper;
@@ -26,6 +29,10 @@ public class DB_Helper_Export {
         return dbHelper.pack_dao.getAllExportByCollection(collection);
     }
 
+    /**
+     * Returns all cards of the packs in the given collection. The rows are copied as strings
+     * into a new cursor.
+     */
     public Cursor getAllCardsByCollection(int collection) {
         List<Integer> packIDs = dbHelper.pack_dao.getAllIdsByCollection(collection);
         Cursor cardsCursor = dbHelper.card_dao.getAllExport();
@@ -33,6 +40,7 @@ public class DB_Helper_Export {
         MatrixCursor cursor = new MatrixCursor(names);
         if (cardsCursor.moveToFirst()) {
             do {
+                // Column 3 is the pack of the card
                 if (packIDs.contains(cardsCursor.getInt(3))) {
                     Object[] row = new Object[names.length];
                     for (int i = 0; i < names.length; i++) {

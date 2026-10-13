@@ -5,9 +5,17 @@ import android.view.MotionEvent
 import android.view.View
 import kotlin.math.abs
 
+/**
+ * Touch listener detecting swipes from the edges of a view. Subclasses override the callbacks.
+ *
+ * A swipe has to start within SWIPE_START_DISTANCE_MAX pixels of the edge it starts from.
+ * While moving, onMoveX/onMoveY report the distance; once the distance reaches SWIPE_DISTANCE_MIN,
+ * the matching onSwipe* callback is called once.
+ */
 open class SwipeEvents : View.OnTouchListener {
     private var initialY = 0f
     private var initialX = 0f
+    // 0: no direction yet, -1: gesture finished or cancelled, else one of the MOVE_DIRECTION_* constants
     private var moveDirection = 0
 
     @SuppressLint("ClickableViewAccessibility")
@@ -21,8 +29,10 @@ open class SwipeEvents : View.OnTouchListener {
         } else if (action == MotionEvent.ACTION_MOVE) {
             val distanceX = event.x - initialX
             val distanceY = event.y - initialY
+            // Horizontal movement
             if (abs(distanceX) > abs(distanceY)) {
                 if (abs(distanceX) < SWIPE_DISTANCE_MIN) {
+                    // Determine the direction once, only if the gesture started near the corresponding edge
                     if (moveDirection == 0) {
                         if (distanceX > 0 && initialX < SWIPE_START_DISTANCE_MAX) {
                             moveDirection = MOVE_DIRECTION_RIGHT
@@ -71,6 +81,7 @@ open class SwipeEvents : View.OnTouchListener {
         return false
     }
 
+    // Called when the gesture ends without a swipe
     open fun onMoveCancel() {
         moveDirection = -1
     }

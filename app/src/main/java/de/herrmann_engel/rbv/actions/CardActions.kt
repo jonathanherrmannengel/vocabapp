@@ -32,8 +32,16 @@ import org.commonmark.parser.Parser
 import org.commonmark.renderer.html.HtmlRenderer
 import java.util.Locale
 
+/**
+ * Dialogs for actions on one or more cards: delete, move to another pack and print.
+ * The activity has to be a [CardActionsActivity].
+ */
 class CardActions(val activity: Activity) {
 
+    /**
+     * Asks for confirmation and deletes the cards. Deleting multiple cards requires a second
+     * confirmation (forceDelete is set for the second dialog).
+     */
     private fun delete(cards: ArrayList<DB_Card>, forceDelete: Boolean) {
         val confirmDeleteDialog = Dialog(activity, R.style.dia_view)
         val bindingConfirmDeleteDialog = DiaConfirmBinding.inflate(
@@ -79,6 +87,10 @@ class CardActions(val activity: Activity) {
         delete(arrayListOf(card))
     }
 
+    /**
+     * Lets the user choose a pack to move the cards to. Only packs of the given collection are
+     * offered, unless collectionNo is LIST_CARDS_GET_DB_COLLECTIONS_ALL.
+     */
     fun move(cards: ArrayList<DB_Card>, collectionNo: Int) {
         val moveDialog = Dialog(activity, R.style.dia_view)
         val bindingMoveDialog = DiaRecBinding.inflate(
@@ -106,6 +118,10 @@ class CardActions(val activity: Activity) {
         move(arrayListOf(card), collectionNo)
     }
 
+    /**
+     * Lets the user choose what to include and prints the cards. An HTML document is built and
+     * rendered in a WebView, which is then passed to the print manager.
+     */
     fun print(cards: ArrayList<DB_Card>) {
         val printDialog = Dialog(activity, R.style.dia_view)
         val bindingPrintDialog = DiaPrintBinding.inflate(
@@ -124,6 +140,7 @@ class CardActions(val activity: Activity) {
         val dbHelperGet = DB_Helper_Get(activity)
         val stringTools = StringTools()
         val jobName: String
+        // For a single card, hide the options for content the card does not have
         if (cards.size == 1) {
             jobName = "rbv_flashcard_" + cards[0].uid
             if (cards[0].notes == null || cards[0].notes.isBlank()) {
@@ -168,6 +185,7 @@ class CardActions(val activity: Activity) {
                     return false
                 }
 
+                // Start printing once the HTML has been rendered
                 override fun onPageFinished(view: WebView, url: String) {
                     val adapter = webView.createPrintDocumentAdapter(jobName)
                     printManager.print(jobName, adapter, attributes)
@@ -178,6 +196,7 @@ class CardActions(val activity: Activity) {
                     R.string.print
                 ) + "</title><style>@page{margin:20mm 25mm;}@media(max-width:250mm),@media(max-height:200mm){@page{margin:7% 10%;}}div{inline-size:100%;overflow-wrap:break-word;}.main-title{margin-bottom:30px;}.title{text-align:center;color:#000007;}.border-top::before{margin-bottom:20px;margin-top:30px;display:block;content:' ';width:100%;height:1px;outline:2px solid #555;outline-offset:-1px;}.main-title.border-top::before{margin-top:100px;}.image-div{display:grid;gap:10px;grid-template-columns: 1fr 1fr 1fr;justify-content:center;}.image{width:100%;height:100%;object-fit:contain;}.media-div{text-align:center}.tag-div{display:inline-block;width:auto;margin:10px;padding:10px;border:2px solid black;border-radius:1em;}.tag-emoji{padding-right:0.5em;}</style></head>"
             var firstCard = true
+            // One section per card: title, front, back, and optionally notes, images, other media and tags
             for (card in cards) {
                 val cardFront = if (formatCards) {
                     stringTools.format(card.front)
@@ -230,6 +249,7 @@ class CardActions(val activity: Activity) {
                         htmlDocument += "<div dir=\"auto\" class=\"border-top\">"
                     }
                     htmlDocument += if (formatCardNotes) {
+                        // Notes are formatted as Markdown
                         val parser = Parser.builder().build()
                         val document = parser.parse(card.notes)
                         val renderer = HtmlRenderer.builder().build()

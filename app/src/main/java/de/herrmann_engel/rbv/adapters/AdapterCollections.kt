@@ -23,6 +23,12 @@ import de.herrmann_engel.rbv.db.DB_Collection_With_Meta
 import de.herrmann_engel.rbv.utils.StringTools
 import java.util.Locale
 
+/**
+ * Collection list of the start screen.
+ *
+ * The first item is a placeholder for "all packs". If it is the only item (no collections yet),
+ * a welcome message is shown instead.
+ */
 class AdapterCollections(
     private val collections: MutableList<DB_Collection_With_Meta>,
     private var uiFontSizeBig: Boolean
@@ -34,6 +40,7 @@ class AdapterCollections(
 
     private val stringTools = StringTools()
 
+    // Updates the list; all items are redrawn if the font size setting has changed
     fun updateSettingsAndContent(
         collectionListNew: List<DB_Collection_With_Meta>,
         uiFontSizeBig: Boolean
@@ -100,6 +107,7 @@ class AdapterCollections(
         viewHolder.binding.recCollectionsPreviewText.visibility = View.VISIBLE
         viewHolder.binding.recCollectionsNumberText.visibility = View.VISIBLE
         when (position) {
+            // No collections: welcome message, with icons replacing the "+" and "↓" characters
             0 if collections.size == 1 -> {
                 val welcomeText =
                     SpannableString(context.resources.getString(R.string.welcome_collection))
@@ -166,6 +174,7 @@ class AdapterCollections(
                 backgroundBehind.setStroke(0, Color.rgb(0, 0, 0))
             }
 
+            // "All packs" item
             0 -> {
                 viewHolder.binding.root.setOnClickListener {
                     val intent = Intent(
@@ -255,6 +264,7 @@ class AdapterCollections(
                 }
                 viewHolder.binding.recCollectionsPreviewText.text =
                     if (currentCollection.emoji.isNullOrBlank()) {
+                        // Without emoji, show the first character of the name (including combining marks)
                         val pattern = Regex("^(\\P{M}\\p{M}*+).*")
                         currentCollection.name.replace(pattern, "$1")
                     } else {

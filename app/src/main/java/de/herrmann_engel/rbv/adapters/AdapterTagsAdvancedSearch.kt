@@ -10,6 +10,9 @@ import de.herrmann_engel.rbv.db.DB_Tag
 import de.herrmann_engel.rbv.utils.ContextTools
 import de.herrmann_engel.rbv.utils.StringTools
 
+/**
+ * Tag list with checkboxes in the advanced search. Changes are reported to [AdvancedSearch].
+ */
 class AdapterTagsAdvancedSearch(
     private val tags: List<DB_Tag>,
     private val tagIdsCheckedInitially: List<Int>
@@ -26,6 +29,7 @@ class AdapterTagsAdvancedSearch(
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         val context = viewHolder.binding.root.context
+        // Not recyclable, so that checkbox listeners are not triggered for recycled views
         viewHolder.setIsRecyclable(false)
         viewHolder.binding.recSmallName.text = stringTools.shorten(tags[position].name)
         if (tags[position].emoji.isNullOrBlank()) {

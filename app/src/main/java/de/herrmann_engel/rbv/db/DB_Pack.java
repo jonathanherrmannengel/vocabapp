@@ -6,6 +6,9 @@ import androidx.room.PrimaryKey;
 
 import java.util.Objects;
 
+/**
+ * A pack belongs to a collection and contains cards.
+ */
 @Entity
 public class DB_Pack {
     @PrimaryKey(autoGenerate = true)
@@ -14,10 +17,13 @@ public class DB_Pack {
     public String name;
     @ColumnInfo(name = "desc")
     public String desc;
+    // Creation date (Unix time in seconds)
     @ColumnInfo(name = "date")
     public long date;
+    // Index into the pack color resource arrays (e.g. R.array.pack_color_main)
     @ColumnInfo(name = "colors")
     public int colors;
+    // uid of the collection the pack belongs to
     @ColumnInfo(name = "collection")
     public int collection;
     @ColumnInfo(name = "emoji")

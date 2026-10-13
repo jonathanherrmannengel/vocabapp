@@ -12,6 +12,10 @@ import de.herrmann_engel.rbv.db.DB_Media
 import de.herrmann_engel.rbv.utils.ContextTools
 
 
+/**
+ * List of the media files of a card by file name. Clicking a file shows it as image
+ * (if onlyImages is set) or opens it in another app.
+ */
 class AdapterMediaLinkCardAll(
     private val media: List<DB_Media>,
     private val cardNo: Int,

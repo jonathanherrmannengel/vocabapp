@@ -11,6 +11,9 @@ import de.herrmann_engel.rbv.db.DB_Pack_DAO;
 import de.herrmann_engel.rbv.db.DB_Tag_DAO;
 import de.herrmann_engel.rbv.db.DB_Tag_Link_Card_DAO;
 
+/**
+ * Bundles all DAOs of the app database. Base for the public DB_Helper_* classes.
+ */
 class DB_Helper {
 
     final DB_Collection_DAO collection_dao;

@@ -30,6 +30,10 @@ import kotlinx.coroutines.launch
 import java.io.File
 import java.util.Locale
 
+/**
+ * Pack list of the collection passed as "collection" extra, or of all collections if it is
+ * LIST_CARDS_GET_DB_COLLECTIONS_ALL. A single collection can be exported and shared from here.
+ */
 class ListPacks : PackActionsActivity(), AsyncExportFinish, AsyncExportProgress {
     private lateinit var binding: ActivityDefaultRecBinding
     private lateinit var dbHelperGet: DB_Helper_Get
@@ -41,6 +45,7 @@ class ListPacks : PackActionsActivity(), AsyncExportFinish, AsyncExportProgress 
         setContentView(binding.root)
         dbHelperGet = DB_Helper_Get(this)
         collectionNo = intent.extras!!.getInt("collection")
+        // Edge-to-edge: keep the content clear of the system bars
         ViewCompat.setOnApplyWindowInsetsListener(binding.recDefault) { v, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.updatePadding(insets.left, insets.top, insets.right, insets.bottom)
@@ -54,6 +59,7 @@ class ListPacks : PackActionsActivity(), AsyncExportFinish, AsyncExportProgress 
         val startNewPack = menu.findItem(R.id.start_new_pack)
         val packDetails = menu.findItem(R.id.pack_details)
         val export = menu.findItem(R.id.export_single)
+        // Collection-specific actions are only available for an existing single collection
         if (collectionNo == Globals.LIST_CARDS_GET_DB_COLLECTIONS_ALL || !dbHelperGet.existsCollection(
                 collectionNo
             )
@@ -74,6 +80,7 @@ class ListPacks : PackActionsActivity(), AsyncExportFinish, AsyncExportProgress 
                 this.startActivity(intent)
                 return@setOnMenuItemClickListener true
             }
+            // Export dialog for this collection (settings are never included)
             export.setOnMenuItemClickListener {
                 val startExportDialog = Dialog(this, R.style.dia_view)
                 val bindingStartExportDialog = DiaExportBinding.inflate(
@@ -141,6 +148,7 @@ class ListPacks : PackActionsActivity(), AsyncExportFinish, AsyncExportProgress 
             binding.backgroundImage.visibility = View.GONE
         }
         val uiFontSizeBig = settings.getBoolean("ui_font_size", false)
+        // Load the packs in the background; create the adapter on first load, update it afterwards
         lifecycleScope.launch(Dispatchers.IO) {
             val content = loadContent()
             runOnUiThread {
@@ -168,6 +176,10 @@ class ListPacks : PackActionsActivity(), AsyncExportFinish, AsyncExportProgress 
         }
     }
 
+    /**
+     * Loads the packs including the placeholder for "all cards" as first item. For long lists,
+     * the cards per pack are not counted to save time.
+     */
     private fun loadContent(): MutableList<DB_Pack_With_Meta> {
         val currentList: MutableList<DB_Pack_With_Meta> =
             if (collectionNo == Globals.LIST_CARDS_GET_DB_COLLECTIONS_ALL) {
@@ -193,6 +205,7 @@ class ListPacks : PackActionsActivity(), AsyncExportFinish, AsyncExportProgress 
         return currentList
     }
 
+    // Share the exported file
     override fun exportCardsResult(result: File?) {
         runOnUiThread {
             if (result == null) {

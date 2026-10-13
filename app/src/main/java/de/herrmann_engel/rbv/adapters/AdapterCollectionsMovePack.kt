@@ -15,6 +15,9 @@ import de.herrmann_engel.rbv.db.DB_Pack
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Update
 import de.herrmann_engel.rbv.utils.ContextTools
 
+/**
+ * Collection list in the "move pack" dialog. Clicking a collection moves the packs there.
+ */
 class AdapterCollectionsMovePack(
     private val collection: List<DB_Collection>,
     private val packs: List<DB_Pack>,
@@ -30,6 +33,7 @@ class AdapterCollectionsMovePack(
         )
         val settings =
             viewGroup.context.getSharedPreferences(Globals.SETTINGS_NAME, Context.MODE_PRIVATE)
+        // Larger font size setting
         if (settings.getBoolean("ui_font_size", false)) {
             binding.recName.setTextSize(
                 TypedValue.COMPLEX_UNIT_PX,
@@ -57,6 +61,7 @@ class AdapterCollectionsMovePack(
             val updateHelper =
                 DB_Helper_Update(context)
             val packIds = arrayListOf<Int>()
+            // Only packs not already in the target collection are moved and reported
             for (pack in packs) {
                 if (pack.collection != currentCollectionId) {
                     packIds.add(pack.uid)

@@ -24,6 +24,10 @@ import java.time.format.FormatStyle
 import java.util.Date
 import java.util.Locale
 
+/**
+ * Details of a pack (name, emoji, description, creation date) with options to edit,
+ * delete and move it.
+ */
 class ViewPack : PackActionsActivity() {
     private lateinit var binding: ActivityViewCollectionOrPackBinding
     private lateinit var dbHelperGet: DB_Helper_Get
@@ -37,6 +41,7 @@ class ViewPack : PackActionsActivity() {
         dbHelperGet = DB_Helper_Get(this)
         collectionNo = intent.extras!!.getInt("collection")
         packNo = intent.extras!!.getInt("pack")
+        // Edge-to-edge: keep the content clear of the system bars
         ViewCompat.setOnApplyWindowInsetsListener(binding.viewCollectionOrPackLayout) { v, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.updatePadding(insets.left, insets.top, insets.right, insets.bottom)
@@ -45,6 +50,7 @@ class ViewPack : PackActionsActivity() {
         enableEdgeToEdge()
     }
 
+    // Load the pack again on every resume, as it may have been edited
     public override fun onResume() {
         super.onResume()
         val settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE)
@@ -78,6 +84,7 @@ class ViewPack : PackActionsActivity() {
                 resources.getDimension(R.dimen.details_desc_size_big)
             )
         }
+        // Format the creation date (stored in seconds)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val instant = Instant.ofEpochSecond(pack.date)
             val dateTimeFormatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)
@@ -109,6 +116,7 @@ class ViewPack : PackActionsActivity() {
             PackActions(this).delete(pack)
             return@setOnMenuItemClickListener true
         }
+        // Moving is only offered when the pack was opened from within its collection
         if (collectionNo == Globals.LIST_CARDS_GET_DB_COLLECTIONS_ALL) {
             menu.findItem(R.id.menu_view_pack_move).isVisible = false
         } else {
@@ -126,6 +134,7 @@ class ViewPack : PackActionsActivity() {
         startActivity(intent)
     }
 
+    // Show the pack list of the new collection
     override fun movedPacks(packIds: ArrayList<Int>) {
         try {
             pack = dbHelperGet.getSinglePack(packNo)

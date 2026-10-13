@@ -1,5 +1,9 @@
 package de.herrmann_engel.rbv.oss
 
+/**
+ * Resolves a license identifier to a link to the license and the path of the license text
+ * in the app's assets.
+ */
 class OSSLicenses(licenseIdentifier: String, val project: OSSProject) {
     var licenseLink: String? = null
     var licenseFilePath: String? = null

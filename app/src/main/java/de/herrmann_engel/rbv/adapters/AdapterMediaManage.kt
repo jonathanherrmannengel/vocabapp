@@ -24,6 +24,10 @@ import de.herrmann_engel.rbv.utils.FormatCards
 import de.herrmann_engel.rbv.utils.SortCards
 
 
+/**
+ * List of all media entries. Clicking one shows the cards it is linked to; unused media
+ * can be deleted (database entry and, after confirmation, the file).
+ */
 class AdapterMediaManage(
     private val media: MutableList<DB_Media>
 ) : RecyclerView.Adapter<AdapterMediaManage.ViewHolder>() {
@@ -58,6 +62,7 @@ class AdapterMediaManage(
                     Globals.SORT_CARDS_ALPHABETICAL
                 )
                 val dialog = Dialog(context, R.style.dia_view)
+                // Media not linked to any card: offer to delete it
                 if (cards.isEmpty()) {
                     val bindingDialog: DiaConfirmBinding =
                         DiaConfirmBinding.inflate(activity.layoutInflater)

@@ -10,6 +10,11 @@ import de.herrmann_engel.rbv.db.DB_Pack;
 import de.herrmann_engel.rbv.db.DB_Tag;
 import de.herrmann_engel.rbv.db.DB_Tag_Link_Card;
 
+/**
+ * Inserts new entries into the database. All methods validate their input and throw an
+ * exception if the entry cannot be created (e.g. empty name, missing parent, duplicate).
+ * They return the uid of the new entry.
+ */
 public class DB_Helper_Create {
 
     private final DB_Helper dbHelper;
@@ -31,6 +36,7 @@ public class DB_Helper_Create {
         throw new Exception();
     }
 
+    // Creates a collection without color and emoji, dated now
     public long createCollection(String name, String desc) throws Exception {
         return createCollection(name, desc, 0, null, System.currentTimeMillis() / 1000L);
     }
@@ -51,6 +57,7 @@ public class DB_Helper_Create {
         throw new Exception();
     }
 
+    // Creates a pack without emoji, dated now, inheriting the color of its collection
     public long createPack(String name, String desc, int collection) throws Exception {
         DB_Helper_Get dbHelperGet = new DB_Helper_Get(dbHelper.context);
         int collectionColor = dbHelperGet.getSingleCollection(collection).colors;
@@ -74,6 +81,7 @@ public class DB_Helper_Create {
         throw new Exception();
     }
 
+    // Creates a card without progress or repetitions, dated now
     public long createCard(String front, String back, String notes, int pack) throws Exception {
         return createCard(front, back, notes, pack, 0, System.currentTimeMillis() / 1000L, 0, 0);
     }
@@ -127,6 +135,7 @@ public class DB_Helper_Create {
         throw new Exception();
     }
 
+    // Links a tag to a card by name, creating the tag first if it does not exist yet
     public long createTagLink(String tagName, int card) throws Exception {
         DB_Helper_Get dbHelperGet = new DB_Helper_Get(dbHelper.context);
         int tag;

@@ -13,6 +13,10 @@ import de.herrmann_engel.rbv.utils.ContextTools
 import de.herrmann_engel.rbv.utils.StringTools
 import java.util.Locale
 
+/**
+ * Pack list with checkboxes in the advanced search, showing the number of cards and the
+ * collection of each pack. Changes are reported to [AdvancedSearch].
+ */
 class AdapterPacksAdvancedSearch(
     private val packs: List<DB_Pack>,
     private val packIdsCheckedInitially: List<Int>
@@ -29,7 +33,9 @@ class AdapterPacksAdvancedSearch(
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         val context = viewHolder.binding.root.context
+        // Not recyclable, so that checkbox listeners are not triggered for recycled views
         viewHolder.setIsRecyclable(false)
+        // Placeholder item if there are no packs
         if (packs.isEmpty()) {
             viewHolder.binding.recSmallName.text =
                 context.resources.getString(R.string.welcome_pack)

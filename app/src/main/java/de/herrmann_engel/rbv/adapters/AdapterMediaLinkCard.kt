@@ -15,6 +15,11 @@ import de.herrmann_engel.rbv.db.utils.DB_Helper_Delete
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.utils.ContextTools
 
+/**
+ * List of the media files linked to a card (in the card's media settings). Missing files are
+ * marked. The delete button removes the link; if the media is then unused, its database entry
+ * is deleted too and the user is asked whether to delete the file.
+ */
 class AdapterMediaLinkCard(
     private val media: MutableList<DB_Media>,
     private val cardNo: Int,
@@ -37,6 +42,7 @@ class AdapterMediaLinkCard(
         viewHolder.binding.recFilesOpen.visibility = View.GONE
         viewHolder.binding.recFilesDelete.visibility = View.GONE
         viewHolder.binding.recFilesMissing.visibility = View.GONE
+        // Placeholder item if the card has no media
         if (media.isEmpty()) {
             viewHolder.binding.recFilesName.text = context.getString(R.string.no_media)
         } else {
@@ -77,6 +83,7 @@ class AdapterMediaLinkCard(
         return 1.coerceAtLeast(media.size)
     }
 
+    // Removes the link to the card; returns true if the media entry was deleted because it is no longer used
     private fun deleteItem(
         currentMedia: DB_Media,
         viewHolder: ViewHolder,

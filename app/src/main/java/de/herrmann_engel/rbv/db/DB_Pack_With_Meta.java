@@ -4,10 +4,14 @@ import androidx.room.Embedded;
 
 import java.util.Objects;
 
+/**
+ * A pack together with the name of its collection and the number of cards in it.
+ */
 public class DB_Pack_With_Meta {
 
     @Embedded
     public DB_Pack pack;
+    // Number of cards in the pack, -1 if not counted
     public int counter;
     public String collectionName;
 

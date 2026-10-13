@@ -41,11 +41,16 @@ import java.time.format.FormatStyle
 import java.util.Date
 import java.util.Locale
 
+/**
+ * Shows a single card with all its details (both sides, tags, notes, dates, progress, media)
+ * and lets the user change its progress manually. Expects "collection", "pack" and "card" extras.
+ */
 class ViewCard : CardActionsActivity() {
     private lateinit var binding: ActivityViewCardBinding
     private lateinit var dbHelperGet: DB_Helper_Get
     private lateinit var dbHelperUpdate: DB_Helper_Update
     private lateinit var card: DB_Card
+    // Current progress of the card
     private var known = 0
     private var collectionNo = 0
     private var packNo = 0
@@ -61,6 +66,7 @@ class ViewCard : CardActionsActivity() {
         packNo = intent.extras!!.getInt("pack")
         cardNo = intent.extras!!.getInt("card")
 
+        // Return to the card list, which then reloads this card as it may have changed
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 val intent = Intent(this@ViewCard, ListCards::class.java)
@@ -70,6 +76,7 @@ class ViewCard : CardActionsActivity() {
             }
         })
 
+        // Edge-to-edge: keep the content clear of the system bars
         ViewCompat.setOnApplyWindowInsetsListener(binding.viewCardLayout) { v, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.updatePadding(insets.left, insets.top, insets.right, insets.bottom)
@@ -78,6 +85,7 @@ class ViewCard : CardActionsActivity() {
         enableEdgeToEdge()
     }
 
+    // (Re)load the card on every resume, as it may have been edited
     override fun onResume() {
         super.onResume()
         val settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE)
@@ -92,6 +100,7 @@ class ViewCard : CardActionsActivity() {
             binding.cardFront.text = card.front
             binding.cardBack.text = card.back
         }
+        // Tags are drawn as colored pills
         val cardTags = dbHelperGet.getCardTags(card.uid)
         if (cardTags.isNotEmpty()) {
             binding.cardTags.visibility = View.VISIBLE
@@ -133,6 +142,7 @@ class ViewCard : CardActionsActivity() {
         val formatCardNotes = settings.getBoolean("format_card_notes", false)
         if (!card.notes.isNullOrBlank()) {
             binding.cardNotesContainer.visibility = View.VISIBLE
+            // Notes are rendered as Markdown; links are clickable in both modes
             if (formatCardNotes) {
                 binding.cardNotesDivider.visibility = View.VISIBLE
                 val markwon = Markwon.builder(this)
@@ -181,6 +191,7 @@ class ViewCard : CardActionsActivity() {
         )
         known = card.known
         updateCardKnown()
+        // Each change of the progress counts as a repetition
         binding.cardMinus.setOnClickListener {
             known = 0.coerceAtLeast(--known)
             card.known = known
@@ -206,6 +217,7 @@ class ViewCard : CardActionsActivity() {
         setMediaButtons()
     }
 
+    // Missing media file: open the card's media settings
     override fun notifyMissingAction(id: Int) {
         val intent = Intent(this, EditCardMedia::class.java)
         intent.putExtra("card", cardNo)
@@ -240,6 +252,7 @@ class ViewCard : CardActionsActivity() {
             CardActions(this).print(card)
             return@setOnMenuItemClickListener true
         }
+        // Moving is only offered when the card was opened from within its pack
         if (packNo >= 0) {
             menu.findItem(R.id.menu_view_card_move).setOnMenuItemClickListener {
                 CardActions(this).move(card, collectionNo)
@@ -251,6 +264,7 @@ class ViewCard : CardActionsActivity() {
         return true
     }
 
+    // Colors the screen like the card's pack
     private fun updateColors() {
         val colorsBackground = resources.obtainTypedArray(R.array.pack_color_background)
         val colorsBackgroundLight =
@@ -292,6 +306,7 @@ class ViewCard : CardActionsActivity() {
             }
     }
 
+    // Shows the current progress; the minus button is grayed out at 0
     private fun updateCardKnown() {
         binding.cardKnown.text = known.toString()
         binding.cardKnown.contentDescription =
@@ -304,6 +319,7 @@ class ViewCard : CardActionsActivity() {
         updateCardLastRepetition()
     }
 
+    // Show the card list of the new pack
     override fun movedCards(cardIds: ArrayList<Int>) {
         try {
             card = dbHelperGet.getSingleCard(cardNo)
@@ -327,6 +343,7 @@ class ViewCard : CardActionsActivity() {
         startActivity(intent)
     }
 
+    // Shows buttons for the card's images and other media only if there are any
     private fun setMediaButtons() {
         val imageList =
             dbHelperGet.getCardImageMedia(cardNo) as ArrayList<DB_Media>

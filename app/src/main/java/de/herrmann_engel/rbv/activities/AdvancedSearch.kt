@@ -21,7 +21,12 @@ import de.herrmann_engel.rbv.adapters.AdapterTagsAdvancedSearch
 import de.herrmann_engel.rbv.databinding.ActivityAdvancedSearchBinding
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 
+/**
+ * Advanced search form: filter cards by packs, tags, progress and date of last repetition.
+ * The results are shown in [ListCards].
+ */
 class AdvancedSearch : RBVActivity() {
+    // Ids of the selected packs and tags (only used if "select" is chosen instead of "all")
     private val packList = ArrayList<Int>()
     private val tagList = ArrayList<Int>()
     private lateinit var dbHelperGet: DB_Helper_Get
@@ -29,8 +34,10 @@ class AdvancedSearch : RBVActivity() {
     private var pack = LIST_CARDS_GET_DB_PACKS_ADVANCED_SEARCH_ALL
     private var tag = LIST_CARDS_GET_DB_TAGS_ADVANCED_SEARCH_ALL
     private var progressGreater = false
+    // -1 disables the filter
     private var progressNumber = -1
     private var repetitionOlder = false
+    // Number of days; -1 disables the filter
     private var repetitionNumber = -1
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -84,6 +91,7 @@ class AdvancedSearch : RBVActivity() {
                 repetitionNumber.toString()
             )
         }
+        // Empty fields disable the corresponding filter
         binding.advancedSearchGo.setOnClickListener {
             val progressValueInputTemp = binding.advancedSearchProgressValue.text.toString()
             if (progressValueInputTemp.isEmpty()) {
@@ -129,6 +137,7 @@ class AdvancedSearch : RBVActivity() {
                 )
             )
         }
+        // Edge-to-edge: keep the content clear of the system bars
         ViewCompat.setOnApplyWindowInsetsListener(binding.advancedSearchContainer) { v, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.updatePadding(insets.left, insets.top, insets.right, insets.bottom)
@@ -139,6 +148,7 @@ class AdvancedSearch : RBVActivity() {
 
     override fun onResume() {
         super.onResume()
+        // The tag filter is only shown if there are tags
         if (dbHelperGet.hasTags()) {
             binding.advancedSearchContainerTags.visibility = View.VISIBLE
             val tags = dbHelperGet.allTags
@@ -168,6 +178,7 @@ class AdvancedSearch : RBVActivity() {
         }
     }
 
+    // Called by the adapters when checkboxes change
     fun addToPackList(i: Int) {
         if (!packList.contains(i)) {
             packList.add(i)
