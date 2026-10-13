@@ -14,6 +14,9 @@ import de.herrmann_engel.rbv.db.DB_Media
 import de.herrmann_engel.rbv.utils.ContextTools
 
 
+/**
+ * Grid of image previews of a card. Clicking an image shows it fullscreen.
+ */
 class AdapterMediaLinkCardImages(
     private val media: List<DB_Media>,
     private val cardNo: Int,
@@ -30,6 +33,7 @@ class AdapterMediaLinkCardImages(
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         val context = viewHolder.binding.root.context
+        // Red background marks images that cannot be loaded; removed once the image is found
         viewHolder.binding.recImg.setBackgroundColor(
             ContextCompat.getColor(
                 context,

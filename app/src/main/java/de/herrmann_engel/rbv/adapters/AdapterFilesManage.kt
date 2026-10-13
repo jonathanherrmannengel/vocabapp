@@ -11,6 +11,10 @@ import de.herrmann_engel.rbv.databinding.RecViewFilesBinding
 import de.herrmann_engel.rbv.utils.ContextTools
 
 
+/**
+ * Lists files in the media folder that are not registered as media in the database,
+ * with buttons to open, share and delete them.
+ */
 class AdapterFilesManage(
     private val files: MutableList<DocumentFile>
 ) : RecyclerView.Adapter<AdapterFilesManage.ViewHolder>() {
@@ -28,6 +32,7 @@ class AdapterFilesManage(
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         val context = viewHolder.binding.root.context
         viewHolder.binding.recFilesMissing.visibility = View.GONE
+        // Placeholder item if there are no such files
         if (files.isEmpty()) {
             viewHolder.binding.recFilesName.text =
                 context.resources.getString(R.string.no_files_without_media)
@@ -48,6 +53,7 @@ class AdapterFilesManage(
                     currentFile.name!!,
                     context.resources.getString(R.string.delete_file_without_media_info)
                 )
+                // Remove the item if the file has actually been deleted
                 dialog.setOnDismissListener {
                     if (!(ContextTools().getActivity(context) as FileTools).existsMediaFile(
                             currentFile.name

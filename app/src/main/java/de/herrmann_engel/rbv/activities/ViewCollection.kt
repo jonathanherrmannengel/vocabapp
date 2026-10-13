@@ -26,6 +26,9 @@ import java.time.format.FormatStyle
 import java.util.Date
 import java.util.Locale
 
+/**
+ * Details of a collection (name, emoji, description, creation date) with options to edit and delete it.
+ */
 class ViewCollection : RBVActivity() {
     private lateinit var binding: ActivityViewCollectionOrPackBinding
     private lateinit var dbHelperGet: DB_Helper_Get
@@ -37,6 +40,7 @@ class ViewCollection : RBVActivity() {
         setContentView(binding.root)
         dbHelperGet = DB_Helper_Get(this)
         collectionNo = intent.extras!!.getInt("collection")
+        // Edge-to-edge: keep the content clear of the system bars
         ViewCompat.setOnApplyWindowInsetsListener(binding.viewCollectionOrPackLayout) { v, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.updatePadding(insets.left, insets.top, insets.right, insets.bottom)
@@ -60,6 +64,7 @@ class ViewCollection : RBVActivity() {
         return true
     }
 
+    // Load the collection again on every resume, as it may have been edited
     public override fun onResume() {
         super.onResume()
         val settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE)
@@ -93,6 +98,7 @@ class ViewCollection : RBVActivity() {
                 resources.getDimension(R.dimen.details_desc_size_big)
             )
         }
+        // Format the creation date (stored in seconds)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val instant = Instant.ofEpochSecond(collection.date)
             val dateTimeFormatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)
@@ -112,6 +118,11 @@ class ViewCollection : RBVActivity() {
         colorsBackground.recycle()
     }
 
+    /**
+     * Asks for confirmation and deletes the collection. If it contains packs, a second
+     * confirmation is required (forceDelete is set for the second dialog) and the packs
+     * are deleted with all their cards.
+     */
     private fun deleteCollection(forceDelete: Boolean) {
         val confirmDeleteDialog = Dialog(this, R.style.dia_view)
         val bindingConfirmDeleteDialog = DiaConfirmBinding.inflate(layoutInflater)

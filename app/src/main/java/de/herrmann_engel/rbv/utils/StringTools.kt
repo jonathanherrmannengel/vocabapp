@@ -9,6 +9,11 @@ import java.text.BreakIterator
 import java.util.Locale
 import java.util.regex.Pattern
 
+/**
+ * String helpers, mainly for the simple card formatting markup:
+ * `*italic*`, `**bold**`, `***bold italic***` and `_underline_`.
+ * Compiled patterns are cached in the instance.
+ */
 class StringTools {
     private var formatCardBoldItalicPattern: Pattern? = null
     private var formatCardBoldPattern: Pattern? = null
@@ -17,6 +22,7 @@ class StringTools {
     private var unformatCardPattern: Pattern? = null
     private var shortenDefaultPattern: Pattern? = null
     private var shortenTestPattern: Pattern? = null
+    // Maps the number of asterisks to a typeface
     private fun getTypeface(i: Int): Int {
         return when (i) {
             3 -> {
@@ -37,6 +43,8 @@ class StringTools {
         }
     }
 
+    // Matches text enclosed by exactly i asterisks. Groups: 2 = opening asterisks,
+    // 3 = enclosed text, 4 = closing asterisks
     private fun generateTypefacePattern(i: Int): Pattern {
         val regex = String.format(
             Locale.ROOT,
@@ -79,6 +87,7 @@ class StringTools {
         }
     }
 
+    // Matches text enclosed by underscores; same group layout as the typeface patterns
     private fun getUnderlinePattern(): Pattern {
         if (formatCardUnderlinePattern == null) {
             val regex = "(^|\\s|[(]|[*])(_)([^\\s_][^\\n]*?(?<![\\s_]))(_)"
@@ -88,9 +97,14 @@ class StringTools {
     }
 
 
+    /**
+     * Converts the markup into styled text and removes the markup characters.
+     */
     fun format(input: String): SpannableString {
         val output = SpannableStringBuilder(input)
         val modifiedInput = StringBuffer(input)
+        // Handle longer markers first so that *** is not taken for * or **. Every match removes the
+        // markers from both output and modifiedInput, so offset tracks the shift of later matches.
         for (i in 3 downTo 1) {
             var offset = 0
             val pattern = getTypefacePattern(i)
@@ -131,6 +145,10 @@ class StringTools {
         return SpannableString.valueOf(output)
     }
 
+    /**
+     * Removes the markup from the input. The inaccurate mode simply strips all * and _ characters,
+     * which is much faster for large lists.
+     */
     fun unformat(input: String, inaccurate: Boolean): String {
         if (inaccurate) {
             if (unformatCardPattern == null) {
@@ -151,6 +169,7 @@ class StringTools {
         }
     }
 
+    // Keeps the first maxLength - 1 characters; a character is a base char plus its combining marks
     private fun generateShortenPattern(maxLength: Int): Pattern {
         return Pattern.compile(
             String.format(
@@ -163,6 +182,7 @@ class StringTools {
         )
     }
 
+    // Returns true if the input has more than maxLength characters (counting combining marks as part of their base char)
     private fun shortenTest(input: String, maxLength: Int): Boolean {
         if (maxLength <= 0) {
             return false
@@ -178,12 +198,16 @@ class StringTools {
         return count > maxLength
     }
 
+    /**
+     * Shortens the input to maxLength characters (ending with "…") if it is longer.
+     */
     fun shorten(input: String, maxLength: Int): String {
         return if (shortenTest(input, maxLength)) {
             generateShortenPattern(maxLength).matcher(input).replaceAll("$1…")
         } else input
     }
 
+    // Shortens to the default length of 50 characters, using a cached pattern
     fun shorten(input: String): String {
         val maxLength = 50
         return if (shortenTest(input, maxLength)) {
@@ -194,6 +218,9 @@ class StringTools {
         } else input
     }
 
+    /**
+     * Returns the first grapheme of the input (e.g. a single emoji), or null if the input is empty.
+     */
     fun firstEmoji(input: String): String? {
         if (input.isEmpty()) {
             return null

@@ -16,6 +16,9 @@ import de.herrmann_engel.rbv.databinding.RecViewBinding
 import de.herrmann_engel.rbv.oss.OSSLicenses
 import de.herrmann_engel.rbv.utils.ContextTools
 
+/**
+ * List of the open source projects used by the app. Clicking one shows its details and license.
+ */
 class AdapterOSS(private val licenses: List<OSSLicenses>) :
     RecyclerView.Adapter<AdapterOSS.ViewHolder>() {
     class ViewHolder(val binding: RecViewBinding) : RecyclerView.ViewHolder(binding.root)
@@ -28,6 +31,7 @@ class AdapterOSS(private val licenses: List<OSSLicenses>) :
         )
         val settings =
             viewGroup.context.getSharedPreferences(Globals.SETTINGS_NAME, Context.MODE_PRIVATE)
+        // Larger font size setting
         if (settings.getBoolean("ui_font_size", false)) {
             binding.recName.setTextSize(
                 TypedValue.COMPLEX_UNIT_PX,

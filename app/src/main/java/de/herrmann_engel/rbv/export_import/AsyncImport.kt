@@ -9,6 +9,9 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+/**
+ * Starts an import in the background (IO dispatcher). The actual work is done by [AsyncImportWorker].
+ */
 class AsyncImport internal constructor(
     private val context: Context,
     private val listener: AsyncImportFinish,

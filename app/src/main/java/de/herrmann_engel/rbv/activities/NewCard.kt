@@ -18,6 +18,9 @@ import de.herrmann_engel.rbv.databinding.DiaConfirmBinding
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Create
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 
+/**
+ * Form to create a new card in the pack passed as "pack" extra. The form is colored like the pack.
+ */
 class NewCard : RBVActivity() {
     private lateinit var binding: ActivityNewCardBinding
     private var packNo = 0
@@ -50,6 +53,7 @@ class NewCard : RBVActivity() {
         binding.newCardNotesLayout.hint =
             String.format(getString(R.string.optional), getString(R.string.card_notes))
 
+        // Ask before discarding entered text
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 val front = binding.newCardFront.text.toString()
@@ -73,6 +77,7 @@ class NewCard : RBVActivity() {
             }
         })
 
+        // Edge-to-edge: keep the content clear of the system bars
         ViewCompat.setOnApplyWindowInsetsListener(binding.newCardLayout) { v, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.updatePadding(insets.left, insets.top, insets.right, insets.bottom)
@@ -90,6 +95,7 @@ class NewCard : RBVActivity() {
             try {
                 val dbHelperCreate = DB_Helper_Create(this)
                 val cardNo = dbHelperCreate.createCard(front, back, notes, packNo)
+                // Return to the existing card list, which adds the new card to its list
                 val intent = Intent(this, ListCards::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
                 intent.putExtra("cardAdded", cardNo.toInt())

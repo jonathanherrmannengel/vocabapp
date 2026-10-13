@@ -24,6 +24,10 @@ import de.herrmann_engel.rbv.db.utils.DB_Helper_Update
 import de.herrmann_engel.rbv.utils.ContextTools
 import de.herrmann_engel.rbv.utils.StringTools
 
+/**
+ * List of the tags of a card (in the card's tag settings). Tags can be removed from the card
+ * or edited (name, emoji, color); edits affect the tag on all cards.
+ */
 class AdapterTagLinkCard(
     private val tags: MutableList<DB_Tag>,
     private val cardNo: Int,
@@ -41,6 +45,7 @@ class AdapterTagLinkCard(
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         val context = viewHolder.binding.root.context
+        // Placeholder item if the card has no tags
         if (tags.isEmpty()) {
             viewHolder.binding.recTagsName.text = context.getString(R.string.no_tags)
             viewHolder.binding.recTagsDelete.visibility = View.GONE
@@ -107,6 +112,7 @@ class AdapterTagLinkCard(
                             emojiPopup.show()
                         }
                     }
+                    // Keep only the newly entered emoji, so the field always contains a single emoji
                     bindingEditDialog.editTagEmoji.addTextChangedListener(object : TextWatcher {
                         override fun beforeTextChanged(
                             s: CharSequence,
@@ -145,6 +151,7 @@ class AdapterTagLinkCard(
                             newTag.name = bindingEditDialog.editTagName.text.toString()
                             newTag.emoji =
                                 StringTools().firstEmoji(bindingEditDialog.editTagEmoji.text.toString())
+                            // Store the color as hex string without alpha (#RRGGBB)
                             newTag.color =
                                 color?.let { it1 -> "#" + Integer.toHexString(it1).substring(2) }
                             val dbHelperUpdate = DB_Helper_Update(context)

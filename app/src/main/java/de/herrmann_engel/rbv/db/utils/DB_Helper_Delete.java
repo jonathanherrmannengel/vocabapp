@@ -8,6 +8,9 @@ import de.herrmann_engel.rbv.db.DB_Card;
 import de.herrmann_engel.rbv.db.DB_Collection;
 import de.herrmann_engel.rbv.db.DB_Pack;
 
+/**
+ * Deletes entries from the database.
+ */
 public class DB_Helper_Delete {
 
     private final DB_Helper dbHelper;
@@ -16,6 +19,10 @@ public class DB_Helper_Delete {
         dbHelper = new DB_Helper(context);
     }
 
+    /**
+     * Deletes a collection. If it still contains packs, these are deleted as well if force is set,
+     * otherwise nothing is deleted and false is returned.
+     */
     public boolean deleteCollection(DB_Collection collection, boolean force) {
         DB_Helper_Get dbHelperGet = new DB_Helper_Get(dbHelper.context);
         List<DB_Pack> packs = dbHelperGet.getAllPacksByCollection(collection.uid);
@@ -29,6 +36,10 @@ public class DB_Helper_Delete {
         return true;
     }
 
+    /**
+     * Deletes a pack. If it still contains cards, these are deleted as well if force is set,
+     * otherwise nothing is deleted and false is returned.
+     */
     public boolean deletePack(DB_Pack pack, boolean force) {
         DB_Helper_Get dbHelperGet = new DB_Helper_Get(dbHelper.context);
         boolean containsCards = dbHelperGet.countCardsInPack(pack.uid) > 0;
@@ -41,6 +52,9 @@ public class DB_Helper_Delete {
         return true;
     }
 
+    /**
+     * Deletes a card and its media links. Media files no longer linked to any card are deleted too.
+     */
     public boolean deleteCard(DB_Card card) {
         DB_Helper_Get dbHelperGet = new DB_Helper_Get(dbHelper.context);
         List<Integer> fileIds = dbHelperGet.getAllMediaLinkFileIdsByCard(card.uid);
@@ -63,6 +77,7 @@ public class DB_Helper_Delete {
         dbHelper.media_link_card_dao.deleteMediaLinkCard(file, card);
     }
 
+    // Removes a tag from a card and deletes the tag if it is no longer used
     public void deleteTagLink(int tag, int card) {
         dbHelper.tag_link_card_dao.deleteTagLinkCard(tag, card);
         deleteDeadTags();

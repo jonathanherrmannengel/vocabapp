@@ -13,6 +13,14 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+/**
+ * Imports a CSV file, either in the format written by [AsyncExportWorker] or as a simple list
+ * of cards (front, back, optional notes per row).
+ *
+ * The uids in the file are translated to new uids via [AsyncImportUidConvert], so packs, cards
+ * and links end up assigned to the right (newly created or existing) entries. How existing
+ * entries are handled depends on mode (see the IMPORT_MODE_* constants in Globals).
+ */
 class AsyncImportWorker(
     val context: Context,
     private val listener: AsyncImportFinish,
@@ -30,6 +38,7 @@ class AsyncImportWorker(
         listener.importCardsResult(execute2())
     }
 
+    // Returns one of the IMPORT_ERROR_LEVEL_* constants; stays at "error" unless at least one entry was imported
     private fun execute2(): Int {
         try {
             var errorLevel = Globals.IMPORT_ERROR_LEVEL_ERROR
@@ -45,6 +54,8 @@ class AsyncImportWorker(
             val mediaUidConverter = AsyncImportUidConvert()
             val tagsUidConverter = AsyncImportUidConvert()
             var line: Array<String?>?
+            // Simple list: all cards go into a new pack (named after the current date) inside a dedicated
+            // collection, which is reused if it already exists. Both are stored under the old uid 0.
             if (mode == Globals.IMPORT_MODE_SIMPLE_LIST) {
                 val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ROOT)
                 val date = Date()
@@ -116,6 +127,7 @@ class AsyncImportWorker(
                         }
                     } else {
                         when {
+                            // Columns: uid, name, desc, date, colors (optional), emoji (optional)
                             line[0] == "collection" -> {
                                 if (errorLevel == Globals.IMPORT_ERROR_LEVEL_ERROR) {
                                     errorLevel = Globals.IMPORT_ERROR_LEVEL_OKAY
@@ -134,6 +146,8 @@ class AsyncImportWorker(
                                     emoji = StringTools().firstEmoji(emoji)
                                 }
                                 val sameNamed = helperGet.getAllCollectionsByName(name)
+                                // Create a new collection unless one with the same name exists; in integrate mode the
+                                // existing one is used instead, in skip mode its content is skipped
                                 if (sameNamed.isEmpty() || mode == Globals.IMPORT_MODE_DUPLICATES) {
                                     val collectionUidNew =
                                         helperCreate
@@ -151,7 +165,9 @@ class AsyncImportWorker(
                                 }
                             }
 
+                            // Columns: uid, name, desc, date, colors, collection (optional), emoji (optional)
                             line[0] == "packs" -> {
+                                // Files from old versions without collections: put the packs into a "_default" collection
                                 if (collectionUidConverter.getSize() == 0 &&
                                     mode != Globals.IMPORT_MODE_SKIP
                                 ) {
@@ -223,6 +239,7 @@ class AsyncImportWorker(
                                 }
                             }
 
+                            // Columns: uid, front, back, pack, known, date, notes, last repetition (optional), repetition count (optional)
                             line[0] == "cards" -> {
                                 val currentPack =
                                     packUidConverter.getNewValue(
@@ -254,6 +271,7 @@ class AsyncImportWorker(
                                                 back,
                                                 notes
                                             )
+                                        // Existing identical cards are skipped, or reused in integrate mode
                                         if (sameNamed == 0 || mode == Globals.IMPORT_MODE_DUPLICATES) {
                                             val cardUidNew = helperCreate.createCard(
                                                 front,
@@ -276,6 +294,8 @@ class AsyncImportWorker(
                                 }
                             }
 
+                            // Only the database entries are imported; the files themselves are expected in the media folder.
+                            // Existing entries for the same file name are reused.
                             line[0] == "media" && includeMedia -> {
                                 try {
                                     val mediaUidOld = Integer.parseInt((line[1] ?: "0"))
@@ -321,6 +341,7 @@ class AsyncImportWorker(
                                 }
                             }
 
+                            // Tags are identified by name; existing tags are reused
                             line[0] == "tags" -> {
                                 try {
                                     val tagUidOld = Integer.parseInt((line[1] ?: "0"))
@@ -366,6 +387,7 @@ class AsyncImportWorker(
                                 }
                             }
 
+                            // Columns: name, type ("int" or "bool"), value
                             line[0] == "app_setting" && includeSettings -> {
                                 val settings =
                                     context.getSharedPreferences(

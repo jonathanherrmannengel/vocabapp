@@ -3,6 +3,9 @@ package de.herrmann_engel.rbv.adapters.compare
 import androidx.recyclerview.widget.DiffUtil
 import de.herrmann_engel.rbv.db.DB_Pack_With_Meta
 
+/**
+ * DiffUtil callback for pack lists.
+ */
 class ListPackCompare(
     private val oldList: List<DB_Pack_With_Meta>,
     private val newList: List<DB_Pack_With_Meta>
@@ -16,9 +19,11 @@ class ListPackCompare(
     }
 
     override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+        // An empty list is displayed as a single placeholder item, so single items are always redrawn
         if (oldList.size == 1 || newList.size == 1) {
             return false
         }
+        // The first item ("all cards") is a placeholder without pack
         if (oldList[oldItemPosition].pack == null || newList[newItemPosition].pack == null) {
             return oldList[oldItemPosition].pack == newList[newItemPosition].pack
         }

@@ -10,6 +10,14 @@ import androidx.room.Update;
 
 import java.util.List;
 
+/**
+ * Data access for cards.
+ * <p>
+ * All "WithMeta" queries additionally select the color of the card's pack and a string of the
+ * card's tag emojis and names. The many query variants cover all combinations of the advanced
+ * search filters: packs, tags, progress (known greater/less or equal) and date of last repetition
+ * (newer/older than a date).
+ */
 @Dao
 public interface DB_Card_DAO {
 
@@ -139,9 +147,11 @@ public interface DB_Card_DAO {
     @Query("SELECT *, (SELECT colors FROM db_pack WHERE uid=db_card.pack) AS packColor, (SELECT (CASE WHEN group_concat(emoji,' ') IS NOT NULL THEN group_concat(emoji,' ') ELSE '' END || ' ' || group_concat(tag_name,' ')) FROM db_tag WHERE db_tag.uid IN (SELECT tagId FROM db_tag_link_card WHERE cardId=db_card.uid)) AS tagNames FROM db_card WHERE pack IN (:packIds) AND db_card.uid IN (SELECT cardId FROM db_tag_link_card WHERE tagId IN (:tagIds)) AND known<=:progress AND last_repetition<:date")
     List<DB_Card_With_Meta> getAllByPackAndTagsLessEqualOlderRepetitionWithMeta(List<Integer> packIds, List<Integer> tagIds, int progress, long date);
 
+    // Cards linked to the given media file
     @Query("SELECT db_card.*, (SELECT colors FROM db_pack WHERE uid=db_card.pack) AS packColor, (SELECT (CASE WHEN group_concat(emoji,' ') IS NOT NULL THEN group_concat(emoji,' ') ELSE '' END || ' ' || group_concat(tag_name,' ')) FROM db_tag WHERE db_tag.uid IN (SELECT tagId FROM db_tag_link_card WHERE cardId=db_card.uid)) AS tagNames FROM db_card INNER JOIN db_media_link_card ON db_card.uid = db_media_link_card.cardId WHERE db_media_link_card.fileId=:fileId")
     List<DB_Card_With_Meta> getAllByMedia(int fileId);
 
+    // Raw cursor used by the CSV export
     @Query("SELECT * FROM db_card")
     Cursor getAllExport();
 
@@ -151,6 +161,7 @@ public interface DB_Card_DAO {
     @Query("SELECT *, (SELECT colors FROM db_pack WHERE uid=db_card.pack) AS packColor, (SELECT (CASE WHEN group_concat(emoji,' ') IS NOT NULL THEN group_concat(emoji,' ') ELSE '' END || ' ' || group_concat(tag_name,' ')) FROM db_tag WHERE db_tag.uid IN (SELECT tagId FROM db_tag_link_card WHERE cardId=db_card.uid)) AS tagNames FROM db_card WHERE uid=:cardId LIMIT 1")
     DB_Card_With_Meta getOneWithMeta(int cardId);
 
+    // Used by the import to find already existing cards
     @Query("SELECT uid FROM db_card WHERE pack=:pid AND front=:front AND back=:back AND notes=:notes LIMIT 1")
     int getOneIdByPackAndFrontAndBackAndNotes(int pid, String front, String back, String notes);
 

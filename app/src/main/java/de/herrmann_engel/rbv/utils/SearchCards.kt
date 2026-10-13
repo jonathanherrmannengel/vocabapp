@@ -5,6 +5,9 @@ import de.herrmann_engel.rbv.db.DB_Card_With_Meta
 import java.util.Locale
 import java.util.regex.Pattern
 
+/**
+ * Filters card lists by a search query (case-insensitive) matching front, back, notes or tags.
+ */
 class SearchCards {
     private fun hasNoMatch(source: String?, query: String): Boolean {
         return if (source == null) {
@@ -17,12 +20,16 @@ class SearchCards {
         }
     }
 
+    // Faster variant for large lists: compares lowercased strings instead of using a regex
     private fun hasNoMatchInaccurate(source: String?, query: String): Boolean {
         return if (source == null) {
             true
         } else !source.lowercase(Locale.ROOT).contains(query)
     }
 
+    /**
+     * Removes all cards from the given list that do not match the query.
+     */
     fun searchCards(input: MutableList<DB_Card_With_Meta>, query: String) {
         if (input.size > Globals.MAX_SIZE_CARDS_LIST_ACCURATE) {
             val queryLower = query.lowercase(Locale.ROOT)

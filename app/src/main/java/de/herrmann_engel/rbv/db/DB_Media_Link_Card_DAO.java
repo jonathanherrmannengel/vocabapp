@@ -8,6 +8,9 @@ import androidx.room.Query;
 
 import java.util.List;
 
+/**
+ * Data access for the links between media files and cards.
+ */
 @Dao
 public interface DB_Media_Link_Card_DAO {
 
@@ -35,6 +38,7 @@ public interface DB_Media_Link_Card_DAO {
     @Query("DELETE FROM db_media_link_card WHERE fileId=:file")
     void deleteMediaLinksByMedia(int file);
 
+    // Removes links pointing to media files or cards that no longer exist
     @Query("DELETE FROM db_media_link_card WHERE NOT EXISTS (SELECT 1 FROM db_media WHERE db_media.uid=db_media_link_card.fileId) OR NOT EXISTS (SELECT 1 FROM db_card WHERE db_card.uid=db_media_link_card.cardId)")
     void deleteDeadMediaLinks();
 

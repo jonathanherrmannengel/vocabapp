@@ -14,6 +14,10 @@ import de.herrmann_engel.rbv.databinding.ActivityEditCardTagsBinding
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Create
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 
+/**
+ * Manages the tags of the card passed as "card" extra: add tags by name (creating them
+ * if needed), remove and edit them (see [AdapterTagLinkCard]).
+ */
 class EditCardTags : RBVActivity() {
     private lateinit var binding: ActivityEditCardTagsBinding
     private lateinit var dbHelperGet: DB_Helper_Get
@@ -34,6 +38,7 @@ class EditCardTags : RBVActivity() {
             binding.root.setBackgroundColor(colorBackground)
         }
         colorsBackground.recycle()
+        // Add the tag when the keyboard's done/next/enter key is pressed
         binding.editCardTagsAdd.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_NEXT || actionId == EditorInfo.IME_NULL) {
                 createNewTag()
@@ -44,6 +49,7 @@ class EditCardTags : RBVActivity() {
         binding.editCardTagsGo.setOnClickListener {
             createNewTag()
         }
+        // Edge-to-edge: keep the content clear of the system bars
         ViewCompat.setOnApplyWindowInsetsListener(binding.editCardTagsLayout) { v, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.updatePadding(insets.left, insets.top, insets.right, insets.bottom)

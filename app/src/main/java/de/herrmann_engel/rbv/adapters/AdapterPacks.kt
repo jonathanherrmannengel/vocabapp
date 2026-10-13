@@ -36,6 +36,12 @@ import de.herrmann_engel.rbv.utils.ContextTools
 import de.herrmann_engel.rbv.utils.StringTools
 import java.util.Locale
 
+/**
+ * Pack list of a collection (or of all collections if collection is LIST_CARDS_GET_DB_COLLECTIONS_ALL).
+ *
+ * The first item is a placeholder for "all cards". If it is the only item (no packs yet),
+ * a welcome message is shown instead.
+ */
 class AdapterPacks(
     private val packs: MutableList<DB_Pack_With_Meta>,
     private val uiFontSizeBig: Boolean,
@@ -45,6 +51,7 @@ class AdapterPacks(
         RecyclerView.ViewHolder(binding.root)
 
     private val stringTools = StringTools()
+    // Contextual action mode (started by long click) to select multiple packs and delete or move them
     private var contextualMenuMode: ActionMode? = null
     private val contextualMenuModePayload = "contextualMode"
     private var contextualMenuModeActivity: Activity? = null
@@ -56,6 +63,8 @@ class AdapterPacks(
             return true
         }
 
+        // Moving is only possible inside a collection; "select all" only for lists that are not too long.
+        // packs.size - 1 is the number of real packs (without the placeholder).
         override fun onPrepareActionMode(mode: ActionMode, menu: Menu): Boolean {
             menu.findItem(R.id.menu_list_cards_context_delete).isVisible =
                 contextualMenuModePackIdList.isNotEmpty()
@@ -124,6 +133,7 @@ class AdapterPacks(
         }
     }
 
+    // Replaces the list content, using DiffUtil to only update changed items
     fun updateContent(
         packListNew: List<DB_Pack_With_Meta>
     ) {
@@ -178,6 +188,7 @@ class AdapterPacks(
         viewHolder.binding.recCollectionsPreviewText.visibility = View.VISIBLE
         viewHolder.binding.recCollectionsNumberText.visibility = View.VISIBLE
         when (position) {
+            // No packs: welcome message (with an icon replacing the "+" if packs can be created here)
             0 if packs.size == 1 -> {
                 if (collection >= 0) {
                     val text =
@@ -228,6 +239,7 @@ class AdapterPacks(
                 backgroundBehind.setStroke(0, Color.rgb(0, 0, 0))
             }
 
+            // "All cards" item
             0 -> {
                 viewHolder.binding.root.setOnClickListener {
                     val intent = Intent(context, ListCards::class.java)
@@ -302,6 +314,7 @@ class AdapterPacks(
                 val currentPack = packs[position].pack
                 val extra = currentPack.uid
                 viewHolder.binding.root.setOnClickListener {
+                    // In selection mode a click toggles the selection, otherwise it opens the pack
                     if (contextualMenuMode != null) {
                         if (contextualMenuModePackIdList.contains(extra)) {
                             contextualMenuModePackIdList.remove(extra)
@@ -374,6 +387,7 @@ class AdapterPacks(
                 } else {
                     viewHolder.binding.recCollectionsNumberText.visibility = View.GONE
                 }
+                // Packs of all collections are listed: show the collection name as well
                 if (collection == LIST_CARDS_GET_DB_COLLECTIONS_ALL) {
                     viewHolder.binding.recCollectionsParent.visibility = View.VISIBLE
                     viewHolder.binding.recCollectionsParent.text = packs[position].collectionName
@@ -431,6 +445,7 @@ class AdapterPacks(
         return packs.size
     }
 
+    // Selects a pack; the menu is updated when the selection becomes non-empty or complete
     private fun contextualMenuModeSelectItem(id: Int) {
         contextualMenuModePackIdList.add(id)
         if (contextualMenuModePackIdList.size == 1 || contextualMenuModePackIdList.size == packs.size - 1) {
@@ -440,6 +455,7 @@ class AdapterPacks(
         contextualMenuModeSelectedTitle()
     }
 
+    // Redraws a pack to show its selection state
     private fun contextualMenuModeFormatPack(id: Int) {
         notifyItemChanged(packs.indexOfFirst { p -> p.pack?.uid == id }, contextualMenuModePayload)
     }

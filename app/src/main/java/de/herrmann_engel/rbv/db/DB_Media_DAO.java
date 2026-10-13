@@ -8,6 +8,9 @@ import androidx.room.Query;
 
 import java.util.List;
 
+/**
+ * Data access for media files.
+ */
 @Dao
 public interface DB_Media_DAO {
 
@@ -29,6 +32,7 @@ public interface DB_Media_DAO {
     @Query("SELECT EXISTS (SELECT 1 FROM db_media WHERE file=:file LIMIT 1)")
     boolean existsMedia(String file);
 
+    // Raw cursors used by the CSV export
     @Query("SELECT * FROM db_media")
     Cursor getAllExport();
 

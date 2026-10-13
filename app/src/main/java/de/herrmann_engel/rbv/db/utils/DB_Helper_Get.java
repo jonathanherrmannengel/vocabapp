@@ -13,6 +13,9 @@ import de.herrmann_engel.rbv.db.DB_Pack;
 import de.herrmann_engel.rbv.db.DB_Pack_With_Meta;
 import de.herrmann_engel.rbv.db.DB_Tag;
 
+/**
+ * Read access to the database.
+ */
 public class DB_Helper_Get {
 
     private final DB_Helper dbHelper;
@@ -184,7 +187,18 @@ public class DB_Helper_Get {
         return dbHelper.card_dao.getAllByCollectionWithMeta(collection);
     }
 
+    /**
+     * Returns the cards matching the advanced search filters.
+     *
+     * @param packs            packs to include, null for all packs
+     * @param tags             tags to include (a card needs at least one of them), null for no tag filter
+     * @param progressGreater  true: progress >= progressNumber, false: progress <= progressNumber
+     * @param progressNumber   progress threshold, negative to disable the progress filter
+     * @param repetitionOlder  true: last repetition older than repetitionNumber days, false: newer or equal
+     * @param repetitionNumber number of days, negative to disable the repetition filter
+     */
     public List<DB_Card_With_Meta> getAllCardsWithMetaFiltered(List<Integer> packs, List<Integer> tags, boolean progressGreater, int progressNumber, boolean repetitionOlder, int repetitionNumber) {
+        // Point in time repetitionNumber days ago (Unix time in seconds)
         long date = System.currentTimeMillis() / 1000L - repetitionNumber * 86400L;
         if (tags == null && packs == null) {
             if (repetitionNumber >= 0 && progressNumber >= 0) {
@@ -306,6 +320,7 @@ public class DB_Helper_Get {
         return dbHelper.media_dao.getAllByCard(cardId);
     }
 
+    // Only the media files of a card that can be displayed as images
     public List<DB_Media> getCardImageMedia(int cardId) {
         List<DB_Media> list = dbHelper.media_dao.getAllByCard(cardId);
         list.removeIf(l -> !isPhoto(l.mime));

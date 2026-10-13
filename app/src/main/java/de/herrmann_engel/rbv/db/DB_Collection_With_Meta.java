@@ -4,9 +4,13 @@ import androidx.room.Embedded;
 
 import java.util.Objects;
 
+/**
+ * A collection together with the number of packs in it.
+ */
 public class DB_Collection_With_Meta {
     @Embedded
     public DB_Collection collection;
+    // Number of packs in the collection, -1 if not counted
     public int counter;
 
     @Override

@@ -33,6 +33,9 @@ import de.herrmann_engel.rbv.db.utils.DB_Helper_Update
 import de.herrmann_engel.rbv.utils.StringTools
 import kotlin.math.roundToInt
 
+/**
+ * Form to edit the collection passed as "collection" extra: name, description, emoji and color.
+ */
 class EditCollection : RBVActivity() {
     private lateinit var binding: ActivityEditCollectionOrPackBinding
     private lateinit var collection: DB_Collection
@@ -43,6 +46,7 @@ class EditCollection : RBVActivity() {
         val dbHelperGet = DB_Helper_Get(this)
         binding.editCollectionOrPackDescLayout.hint =
             String.format(getString(R.string.optional), getString(R.string.collection_or_pack_desc))
+        // Emoji field: only emojis are allowed, entered via an emoji keyboard popup
         val emojiPopup = EmojiPopup(
             binding.root, binding.editCollectionOrPackEmoji,
             EmojiTheming(
@@ -79,6 +83,7 @@ class EditCollection : RBVActivity() {
         binding.editCollectionOrPackName.setText(collection.name)
         binding.editCollectionOrPackDesc.setText(collection.desc)
         binding.editCollectionOrPackEmoji.setText(collection.emoji)
+        // Keep only the newly entered emoji, so the field always contains a single emoji
         binding.editCollectionOrPackEmoji.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(
                 s: CharSequence,
@@ -103,6 +108,7 @@ class EditCollection : RBVActivity() {
             colorNames.length().coerceAtMost(colors.length())
                 .coerceAtMost(colorsBackground.length())
         var i = 0
+        // Color picker: one button per available color; the current color is applied to the form
         while (i < minimalLength) {
             val colorName = colorNames.getString(i)
             val color = colors.getColor(i, 0)
@@ -112,6 +118,7 @@ class EditCollection : RBVActivity() {
             }
             val colorView = ImageButton(this)
             colorView.setImageDrawable(color.toDrawable())
+            // 10dp in pixels
             val margin =
                 (10 * (resources.displayMetrics.densityDpi.toFloat() / DisplayMetrics.DENSITY_DEFAULT)).roundToInt()
             val lp = LinearLayout.LayoutParams(margin * 3, margin * 3)
@@ -133,6 +140,7 @@ class EditCollection : RBVActivity() {
         colorNames.recycle()
         colors.recycle()
         colorsBackground.recycle()
+        // Ask before discarding changes
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 val name = binding.editCollectionOrPackName.text.toString()
@@ -154,6 +162,7 @@ class EditCollection : RBVActivity() {
                 }
             }
         })
+        // Edge-to-edge: keep the content clear of the system bars
         ViewCompat.setOnApplyWindowInsetsListener(binding.editCollectionOrPackLayout) { v, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.updatePadding(insets.left, insets.top, insets.right, insets.bottom)
@@ -184,6 +193,7 @@ class EditCollection : RBVActivity() {
         return true
     }
 
+    // Colors the form like the selected color
     private fun setColors(main: Int, background: Int) {
         binding.editCollectionOrPackNameLayout.boxStrokeColor = main
         binding.editCollectionOrPackNameLayout.hintTextColor = ColorStateList.valueOf(main)

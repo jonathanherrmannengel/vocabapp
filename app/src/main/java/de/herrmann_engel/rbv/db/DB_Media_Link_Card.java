@@ -4,6 +4,9 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+/**
+ * Link table: assigns a media file to a card (many-to-many).
+ */
 @Entity
 public class DB_Media_Link_Card {
     @PrimaryKey(autoGenerate = true)

@@ -4,6 +4,9 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+/**
+ * A media file (e.g. an image) in the media folder chosen by the user, identified by its file name.
+ */
 @Entity
 public class DB_Media {
     @PrimaryKey(autoGenerate = true)

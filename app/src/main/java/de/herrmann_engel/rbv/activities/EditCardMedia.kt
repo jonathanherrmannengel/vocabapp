@@ -22,10 +22,17 @@ import de.herrmann_engel.rbv.db.DB_Media
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Create
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 
+/**
+ * Manages the media files of the card passed as "card" extra. New files are picked by the user
+ * and copied into the media folder, then linked to the card.
+ */
 class EditCardMedia : FileTools() {
     private lateinit var binding: ActivityEditCardMediaBinding
     private lateinit var dbHelperGet: DB_Helper_Get
     private var cardNo = 0
+    // Result of the file picker: copy the file into the media folder. If a file with the same name
+    // already exists there, the user can link the existing file or copy the new one anyway
+    // (the document provider then chooses a different name).
     private val openFile = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result: ActivityResult ->
@@ -99,6 +106,7 @@ class EditCardMedia : FileTools() {
             binding.root.setBackgroundColor(colorBackground)
         }
         colorsBackground.recycle()
+        // A media folder has to be selected before files can be added
         binding.addMediaButton.setOnClickListener {
             val folder = cardMediaFolder
             if (folder.isNullOrEmpty()) {
@@ -110,6 +118,7 @@ class EditCardMedia : FileTools() {
                 openFile.launch(intent)
             }
         }
+        // Edge-to-edge: keep the content clear of the system bars
         ViewCompat.setOnApplyWindowInsetsListener(binding.editCardMediaLayout) { v, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.updatePadding(insets.left, insets.top, insets.right, insets.bottom)
@@ -123,6 +132,7 @@ class EditCardMedia : FileTools() {
         setRecView()
     }
 
+    // Copies the picked file into the media folder and links it to the card
     private fun createMediaFile(
         outputDirectory: DocumentFile,
         mime: String,
@@ -149,6 +159,7 @@ class EditCardMedia : FileTools() {
         }
     }
 
+    // Creates the media entry for the file name (if it does not exist yet) and links it to the card
     private fun addMediaLink(outputFileName: String?, mime: String?) {
         try {
             val dbHelperCreate = DB_Helper_Create(this)

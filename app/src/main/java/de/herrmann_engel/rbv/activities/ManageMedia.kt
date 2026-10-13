@@ -16,6 +16,10 @@ import de.herrmann_engel.rbv.databinding.ActivityManageMediaBinding
 import de.herrmann_engel.rbv.db.DB_Media
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 
+/**
+ * Lists all media entries of the database (see [AdapterMediaManage]) and links to
+ * [ManageFiles] for files in the media folder that are not used as media.
+ */
 class ManageMedia : FileTools() {
     private lateinit var binding: ActivityManageMediaBinding
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,6 +40,7 @@ class ManageMedia : FileTools() {
             val intent = Intent(this, ManageFiles::class.java)
             startActivity(intent)
         }
+        // Edge-to-edge: keep the content clear of the system bars
         ViewCompat.setOnApplyWindowInsetsListener(binding.mediaContainer) { v, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.updatePadding(insets.left, insets.top, insets.right, insets.bottom)

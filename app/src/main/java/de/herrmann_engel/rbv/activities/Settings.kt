@@ -15,6 +15,10 @@ import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.databinding.ActivitySettingsBinding
 import de.herrmann_engel.rbv.databinding.DiaInfoBinding
 
+/**
+ * App settings. All changes are saved immediately to the settings preferences.
+ * Extends [FileTools] to update the .nomedia file when the gallery setting changes.
+ */
 class Settings : FileTools() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,6 +26,7 @@ class Settings : FileTools() {
         setContentView(binding.root)
         val settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE)
         val settingsEdit = settings.edit()
+        // Default sort order of card lists
         binding.settingsSort.clearCheck()
         when (settings.getInt("default_sort", Globals.SORT_CARDS_DEFAULT)) {
             Globals.SORT_CARDS_ALPHABETICAL -> {
@@ -69,6 +74,7 @@ class Settings : FileTools() {
             settingsEdit.putInt("default_sort", sortNew)
             settingsEdit.apply()
         }
+        // Side(s) of the cards shown in card lists
         binding.settingsFlashcardListSide.clearCheck()
         when (settings.getInt("flashcard_list_side", Globals.SORT_CARDS_DEFAULT)) {
             Globals.FLASHCARD_LIST_SIDE_BACK -> {
@@ -100,6 +106,7 @@ class Settings : FileTools() {
             settingsEdit.putInt("flashcard_list_side", sideNew)
             settingsEdit.apply()
         }
+        // Simple formatting markup on cards (see StringTools) and Markdown in notes
         val formatCards = settings.getBoolean("format_cards", false)
         binding.settingsFormatCards.isChecked = formatCards
         binding.settingsFormatCards.setOnCheckedChangeListener { _, c: Boolean ->
@@ -126,6 +133,7 @@ class Settings : FileTools() {
             settingsEdit.putBoolean("format_card_notes", c)
             settingsEdit.apply()
         }
+        // If set, an unknown card in query mode resets its progress to 0 instead of decreasing it by 1
         val queryModeResetProgress = settings.getBoolean("query_mode_reset_progress", false)
         binding.settingsQueryModeResetProgress.isChecked = queryModeResetProgress
         binding.settingsQueryModeResetProgress.setOnCheckedChangeListener { _, c: Boolean ->
@@ -145,6 +153,7 @@ class Settings : FileTools() {
             settingsEdit.putBoolean("ui_font_size", c)
             settingsEdit.apply()
         }
+        // Theme: day, night or follow system; applied immediately
         binding.settingsUiMode.clearCheck()
         when (settings.getInt("ui_mode", Globals.UI_MODE_DAY)) {
             Globals.UI_MODE_NIGHT -> {
@@ -182,6 +191,7 @@ class Settings : FileTools() {
                 }
             }
         }
+        // Show or hide the media folder in gallery apps
         val mediaInGallery = settings.getBoolean("media_in_gallery", true)
         binding.settingsMediaInGallery.isChecked = mediaInGallery
         binding.settingsMediaInGallery.setOnCheckedChangeListener { _, c: Boolean ->
@@ -190,6 +200,7 @@ class Settings : FileTools() {
             handleNoMediaFile()
         }
         setBgImage(settings.getBoolean("ui_bg_images", true), binding)
+        // Edge-to-edge: keep the content clear of the system bars
         ViewCompat.setOnApplyWindowInsetsListener(binding.settingsContainer) { v, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.updatePadding(insets.left, insets.top, insets.right, insets.bottom)

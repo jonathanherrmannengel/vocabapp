@@ -10,6 +10,9 @@ import androidx.room.Update;
 
 import java.util.List;
 
+/**
+ * Data access for packs. Lists are sorted by name (case-insensitive), newest first for equal names.
+ */
 @Dao
 public interface DB_Pack_DAO {
 
@@ -28,6 +31,7 @@ public interface DB_Pack_DAO {
     @Query("SELECT *, (SELECT COUNT(*) FROM db_card WHERE pack=db_pack.uid) AS counter, (SELECT name FROM db_collection WHERE uid=db_pack.collection) AS collectionName FROM db_pack ORDER BY name COLLATE NOCASE ASC, uid DESC")
     List<DB_Pack_With_Meta> getAllWithMeta();
 
+    // Variants without counter skip counting cards (faster); counter is -1
     @Query("SELECT *, -1 AS counter, (SELECT name FROM db_collection WHERE uid=db_pack.collection) AS collectionName FROM db_pack ORDER BY name COLLATE NOCASE ASC, uid DESC")
     List<DB_Pack_With_Meta> getAllWithMetaNoCounter();
 
@@ -43,6 +47,7 @@ public interface DB_Pack_DAO {
     @Query("SELECT *, -1 AS counter, (SELECT name FROM db_collection WHERE uid=db_pack.collection) AS collectionName FROM db_pack WHERE collection=:cid ORDER BY name COLLATE NOCASE ASC, uid DESC")
     List<DB_Pack_With_Meta> getAllByCollectionWithMetaNoCounter(int cid);
 
+    // Raw cursor used by the CSV export
     @Query("SELECT * FROM db_pack WHERE collection=:cid")
     Cursor getAllExportByCollection(int cid);
 

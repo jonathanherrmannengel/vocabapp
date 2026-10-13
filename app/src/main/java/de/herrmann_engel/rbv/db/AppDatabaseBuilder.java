@@ -8,7 +8,11 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import de.herrmann_engel.rbv.Globals;
 
+/**
+ * Builds the Room database including all schema migrations from older app versions.
+ */
 public class AppDatabaseBuilder {
+    // v2: pack colors, renamed card table
     private final Migration MIGRATION_1_2 = new Migration(1, 2) {
         @Override
         public void migrate(SupportSQLiteDatabase database) {
@@ -16,12 +20,14 @@ public class AppDatabaseBuilder {
             database.execSQL("ALTER TABLE db_cards RENAME TO db_card");
         }
     };
+    // v3: notes on cards
     private final Migration MIGRATION_2_3 = new Migration(2, 3) {
         @Override
         public void migrate(SupportSQLiteDatabase database) {
             database.execSQL("ALTER TABLE db_card ADD COLUMN notes TEXT");
         }
     };
+    // v4: collections; all existing packs are moved into a new default collection (uid 1)
     private final Migration MIGRATION_3_4 = new Migration(3, 4) {
         @Override
         public void migrate(SupportSQLiteDatabase database) {
@@ -32,6 +38,7 @@ public class AppDatabaseBuilder {
                     "INSERT INTO db_collection (name,`desc`,uid, date) VALUES ('default', 'default', 1, DATETIME())");
         }
     };
+    // v6: collection colors, pack and collection emojis
     private final Migration MIGRATION_4_6 = new Migration(4, 6) {
         @Override
         public void migrate(SupportSQLiteDatabase database) {
@@ -40,6 +47,7 @@ public class AppDatabaseBuilder {
             database.execSQL("ALTER TABLE db_collection ADD COLUMN emoji TEXT");
         }
     };
+    // v7: media files and their links to cards
     private final Migration MIGRATION_6_7 = new Migration(6, 7) {
         @Override
         public void migrate(SupportSQLiteDatabase database) {
@@ -47,12 +55,14 @@ public class AppDatabaseBuilder {
             database.execSQL("CREATE TABLE IF NOT EXISTS `db_media_link_card` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `fileId` INTEGER NOT NULL, `cardId` INTEGER NOT NULL)");
         }
     };
+    // v8: date of the last repetition of a card
     private final Migration MIGRATION_7_8 = new Migration(7, 8) {
         @Override
         public void migrate(SupportSQLiteDatabase database) {
             database.execSQL("ALTER TABLE db_card ADD COLUMN last_repetition INTEGER DEFAULT 0 NOT NULL");
         }
     };
+    // v9: tags and their links to cards
     private final Migration MIGRATION_8_9 = new Migration(8, 9) {
         @Override
         public void migrate(SupportSQLiteDatabase database) {
@@ -60,6 +70,7 @@ public class AppDatabaseBuilder {
             database.execSQL("CREATE TABLE IF NOT EXISTS `db_tag_link_card` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `tagId` INTEGER NOT NULL, `cardId` INTEGER NOT NULL)");
         }
     };
+    // v10: tag emojis and colors
     private final Migration MIGRATION_9_10 = new Migration(9, 10) {
         @Override
         public void migrate(SupportSQLiteDatabase database) {
@@ -67,6 +78,7 @@ public class AppDatabaseBuilder {
             database.execSQL("ALTER TABLE db_tag ADD COLUMN color TEXT");
         }
     };
+    // v11: number of repetitions of a card
     private final Migration MIGRATION_10_11 = new Migration(10, 11) {
         @Override
         public void migrate(SupportSQLiteDatabase database) {
@@ -78,6 +90,7 @@ public class AppDatabaseBuilder {
         return Room.databaseBuilder(
                         context,
                         AppDatabase.class, Globals.DB_NAME)
+                // Queries are executed synchronously throughout the app
                 .allowMainThreadQueries()
                 .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11)
                 .build();

@@ -6,6 +6,9 @@ import androidx.room.PrimaryKey;
 
 import java.util.Objects;
 
+/**
+ * A collection is the top level of the hierarchy and groups packs.
+ */
 @Entity
 public class DB_Collection {
     @PrimaryKey(autoGenerate = true)
@@ -14,8 +17,10 @@ public class DB_Collection {
     public String name;
     @ColumnInfo(name = "desc")
     public String desc;
+    // Creation date (Unix time in seconds)
     @ColumnInfo(name = "date")
     public long date;
+    // Index into the pack color resource arrays (e.g. R.array.pack_color_main)
     @ColumnInfo(name = "colors")
     public int colors;
     @ColumnInfo(name = "emoji")

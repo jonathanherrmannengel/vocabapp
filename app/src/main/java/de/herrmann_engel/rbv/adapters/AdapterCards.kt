@@ -35,6 +35,13 @@ import de.herrmann_engel.rbv.utils.ContextTools
 import de.herrmann_engel.rbv.utils.StringTools
 import java.util.Locale
 
+/**
+ * Card list. Depending on the settings, the front, the back (reverse) or both sides are shown.
+ * If the list is empty, a single welcome item is shown.
+ *
+ * packNo/collectionNo may be negative for lists across packs or collections (see the
+ * LIST_CARDS_GET_DB_* constants in Globals); then cards are colored by their pack.
+ */
 class AdapterCards(
     private val cards: MutableList<DB_Card_With_Meta>,
     private val uiFontSizeBig: Boolean,
@@ -46,6 +53,7 @@ class AdapterCards(
     class ViewHolder(val binding: RecViewCardBinding) : RecyclerView.ViewHolder(binding.root)
 
     private val stringTools = StringTools()
+    // Contextual action mode (started by long click) to select multiple cards and delete, move or print them
     private var contextualMenuMode: ActionMode? = null
     private val contextualMenuModePayload = "contextualMode"
     private var contextualMenuModeActivity: Activity? = null
@@ -57,6 +65,7 @@ class AdapterCards(
             return true
         }
 
+        // Moving is only possible inside a pack; printing and "select all" are limited to a maximum number of cards
         override fun onPrepareActionMode(mode: ActionMode, menu: Menu): Boolean {
             menu.findItem(R.id.menu_list_cards_context_delete).isVisible =
                 contextualMenuModeCardIdList.isNotEmpty()
@@ -140,6 +149,8 @@ class AdapterCards(
         }
     }
 
+    // Replaces the list content, using DiffUtil to only update changed items; all items are
+    // redrawn if the displayed side(s) changed
     fun updateContent(
         cardsListNew: List<DB_Card_With_Meta>,
         reverse: Boolean,
@@ -195,6 +206,7 @@ class AdapterCards(
         viewHolder.binding.recFront.visibility = VISIBLE
         viewHolder.binding.recBack.visibility = GONE
         viewHolder.binding.recMargin.visibility = GONE
+        // Welcome message (with an icon replacing the "+" if cards can be created here)
         if (cards.isEmpty()) {
             if (packNo >= 0) {
                 val text =
@@ -268,6 +280,7 @@ class AdapterCards(
         return 1.coerceAtLeast(cards.size)
     }
 
+    // Selects a card; the menu is updated when the visibility of its items may change
     private fun contextualMenuModeSelectItem(id: Int) {
         contextualMenuModeCardIdList.add(id)
         if (contextualMenuModeCardIdList.size == 1 || contextualMenuModeCardIdList.size == cards.size || contextualMenuModeCardIdList.size > MAX_SIZE_CARDS_CONTEXTUAL_MENU_PRINT) {
@@ -277,6 +290,7 @@ class AdapterCards(
         contextualMenuModeSelectedTitle()
     }
 
+    // Redraws a card to show its selection state
     private fun contextualMenuModeFormatCard(id: Int) {
         notifyItemChanged(cards.indexOfFirst { c -> c.card.uid == id }, contextualMenuModePayload)
     }
@@ -291,6 +305,10 @@ class AdapterCards(
         }
     }
 
+    /**
+     * Fills the text view of one side of a card (shortened, single line) and sets the click
+     * listeners. If only one side is shown, the progress is appended.
+     */
     private fun prepareCardSide(back: Boolean, card: DB_Card_With_Meta, viewHolder: ViewHolder) {
         val context = viewHolder.binding.root.context
         val recText = if (back) {
@@ -327,6 +345,7 @@ class AdapterCards(
         }
         val extra = card.card.uid
         recText.setOnClickListener {
+            // In selection mode a click toggles the selection, otherwise it opens the card
             if (contextualMenuMode != null) {
                 if (contextualMenuModeCardIdList.contains(extra)) {
                     contextualMenuModeCardIdList.remove(extra)

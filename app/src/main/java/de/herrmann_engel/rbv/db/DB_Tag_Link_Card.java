@@ -4,8 +4,10 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+/**
+ * Link table: assigns a tag to a card (many-to-many).
+ */
 @Entity
-
 public class DB_Tag_Link_Card {
     @PrimaryKey(autoGenerate = true)
     public int uid;

@@ -13,6 +13,10 @@ import androidx.core.graphics.ColorUtils
 import de.herrmann_engel.rbv.R
 import kotlin.math.roundToInt
 
+/**
+ * Draws text as a rounded tag ("pill") with the given background color, a border in a
+ * shade of that color and a foreground color with good contrast.
+ */
 class TagSpan(private val context: Context, private val backgroundColor: Int) : ReplacementSpan() {
     override fun draw(
         canvas: Canvas,
@@ -43,6 +47,7 @@ class TagSpan(private val context: Context, private val backgroundColor: Int) : 
             ) + PADDING - borderWidth,
             bottom.toFloat() - borderWidth
         )
+        // Border color: same hue as the background, scaled to a brightness that fits day/night mode
         val backgroundColorRed = Color.red(backgroundColor)
         val backgroundColorGreen = Color.green(backgroundColor)
         val backgroundColorBlue = Color.blue(backgroundColor)
@@ -74,6 +79,7 @@ class TagSpan(private val context: Context, private val backgroundColor: Int) : 
         canvas.drawRoundRect(rectBorder, rectBorder.height() / 2, rectBorder.height() / 2, paint)
         paint.color = backgroundColor
         canvas.drawRoundRect(rect, rect.height() / 2, rect.height() / 2, paint)
+        // Light text on dark backgrounds and vice versa
         paint.color = ContextCompat.getColor(
             context,
             if (ColorUtils.calculateLuminance(backgroundColor) < 0.5) {
