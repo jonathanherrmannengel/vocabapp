@@ -4,11 +4,12 @@ import androidx.recyclerview.widget.DiffUtil
 import de.herrmann_engel.rbv.db.DB_Pack_With_Meta
 
 /**
- * DiffUtil callback for pack lists.
+ * DiffUtil callback for pack lists. If updateAllContent is set, all items are rebound.
  */
 class ListPackCompare(
     private val oldList: List<DB_Pack_With_Meta>,
-    private val newList: List<DB_Pack_With_Meta>
+    private val newList: List<DB_Pack_With_Meta>,
+    private val updateAllContent: Boolean
 ) : DiffUtil.Callback() {
     override fun getOldListSize(): Int {
         return oldList.size
@@ -31,6 +32,9 @@ class ListPackCompare(
     }
 
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+        if (updateAllContent) {
+            return false
+        }
         return oldList[oldItemPosition] == newList[newItemPosition]
     }
 

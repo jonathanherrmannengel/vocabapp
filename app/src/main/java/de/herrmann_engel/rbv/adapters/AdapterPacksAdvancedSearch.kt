@@ -7,8 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.activities.AdvancedSearch
 import de.herrmann_engel.rbv.databinding.RecViewSmallBinding
-import de.herrmann_engel.rbv.db.DB_Pack
-import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
+import de.herrmann_engel.rbv.db.DB_Pack_With_Meta
 import de.herrmann_engel.rbv.utils.ContextTools
 import de.herrmann_engel.rbv.utils.StringTools
 import java.util.Locale
@@ -18,7 +17,7 @@ import java.util.Locale
  * collection of each pack. Changes are reported to [AdvancedSearch].
  */
 class AdapterPacksAdvancedSearch(
-    private val packs: List<DB_Pack>,
+    private val packs: List<DB_Pack_With_Meta>,
     private val packIdsCheckedInitially: List<Int>
 ) : RecyclerView.Adapter<AdapterPacksAdvancedSearch.ViewHolder>() {
     class ViewHolder(val binding: RecViewSmallBinding) : RecyclerView.ViewHolder(binding.root)
@@ -43,28 +42,22 @@ class AdapterPacksAdvancedSearch(
             viewHolder.binding.recSmallCheckbox.visibility = View.GONE
         } else {
             val colors = context.resources.obtainTypedArray(R.array.pack_color_list)
-            val color = packs[position].colors
+            val pack = packs[position].pack
+            val color = pack.colors
             if (color >= 0 && color < colors.length()) {
                 viewHolder.binding.recSmallName.setTextColor(colors.getColor(color, 0))
             }
             colors.recycle()
-            val dbHelperGet = DB_Helper_Get(context)
-            val size = dbHelperGet.countCardsInPack(packs[position].uid)
-            var checkBoxContentDescription = packs[position].name
+            val size = packs[position].counter
+            var checkBoxContentDescription = pack.name
             viewHolder.binding.recSmallName.text =
                 String.format(
                     Locale.ROOT,
                     "%s (%d)",
-                    stringTools.shorten(packs[position].name),
+                    stringTools.shorten(pack.name),
                     size
                 )
-            val collectionName =
-                stringTools
-                    .shorten(
-                        DB_Helper_Get(context)
-                            .getSingleCollection(packs[position].collection)
-                            .name
-                    )
+            val collectionName = stringTools.shorten(packs[position].collectionName ?: "")
             viewHolder.binding.recSmallDesc.visibility = View.VISIBLE
             viewHolder.binding.recSmallDesc.text = collectionName
             checkBoxContentDescription = String.format(
@@ -73,7 +66,7 @@ class AdapterPacksAdvancedSearch(
                 collectionName
             )
             viewHolder.binding.recSmallCheckbox.contentDescription = checkBoxContentDescription
-            val extra = packs[position].uid
+            val extra = pack.uid
             viewHolder.binding.recSmallCheckbox.isChecked = packIdsCheckedInitially.contains(extra)
             viewHolder.binding.recSmallCheckbox.setOnCheckedChangeListener { _, checked ->
                 if (checked) {

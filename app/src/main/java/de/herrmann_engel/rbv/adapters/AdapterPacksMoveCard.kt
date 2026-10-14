@@ -14,8 +14,7 @@ import de.herrmann_engel.rbv.activities.CardActionsActivity
 import de.herrmann_engel.rbv.databinding.RecViewBinding
 import de.herrmann_engel.rbv.db.AppDatabase
 import de.herrmann_engel.rbv.db.DB_Card
-import de.herrmann_engel.rbv.db.DB_Pack
-import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
+import de.herrmann_engel.rbv.db.DB_Pack_With_Meta
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Update
 import de.herrmann_engel.rbv.utils.ContextTools
 import de.herrmann_engel.rbv.utils.StringTools
@@ -24,7 +23,7 @@ import de.herrmann_engel.rbv.utils.StringTools
  * Pack list in the "move card" dialog. Clicking a pack moves the cards there.
  */
 class AdapterPacksMoveCard(
-    private val packs: List<DB_Pack>,
+    private val packs: List<DB_Pack_With_Meta>,
     private val collectionNo: Int,
     private val cards: List<DB_Card>,
     private val dialog: Dialog
@@ -58,24 +57,20 @@ class AdapterPacksMoveCard(
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         val context = viewHolder.binding.root.context
         val colors = context.resources.obtainTypedArray(R.array.pack_color_list)
-        val color = packs[position].colors
+        val pack = packs[position].pack
+        val color = pack.colors
         if (color >= 0 && color < colors.length()) {
             viewHolder.binding.recName.setTextColor(colors.getColor(color, 0))
         }
         colors.recycle()
-        viewHolder.binding.recName.text = packs[position].name
+        viewHolder.binding.recName.text = pack.name
         // Packs of all collections are listed: show the collection name as well
         if (collectionNo == LIST_CARDS_GET_DB_COLLECTIONS_ALL) {
-            val collectionName =
-                stringTools.shorten(
-                    DB_Helper_Get(context)
-                        .getSingleCollection(packs[position].collection)
-                        .name
-                )
+            val collectionName = stringTools.shorten(packs[position].collectionName ?: "")
             viewHolder.binding.recDesc.visibility = View.VISIBLE
             viewHolder.binding.recDesc.text = collectionName
         }
-        val currentPackId = packs[position].uid
+        val currentPackId = pack.uid
         viewHolder.binding.recName.setOnClickListener {
             val updateHelper =
                 DB_Helper_Update(context)

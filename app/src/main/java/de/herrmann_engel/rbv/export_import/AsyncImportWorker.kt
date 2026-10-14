@@ -31,8 +31,6 @@ import java.util.concurrent.Callable
  */
 class AsyncImportWorker(
     val context: Context,
-    private val listener: AsyncImportFinish,
-    private val listenerProgress: AsyncImportProgress,
     private val uri: Uri,
     private val mode: Int,
     private val includeSettings: Boolean,
@@ -56,7 +54,7 @@ class AsyncImportWorker(
     }
 
     fun execute() {
-        listener.importCardsResult(execute2())
+        ImportExportEvents.reportResult(ImportExportEvents.Result.ImportFinished(execute2()))
     }
 
     // Returns one of the IMPORT_ERROR_LEVEL_* constants; stays at "error" unless at least one entry was imported
@@ -427,7 +425,7 @@ class AsyncImportWorker(
                 val currentTime = System.currentTimeMillis()
                 if (progress % 1000 == 0 && currentTime - lastProgressSentTime > 1000) {
                     lastProgressSentTime = currentTime
-                    listenerProgress.importCardsProgress(
+                    ImportExportEvents.reportProgress(
                         String.format(
                             context.getString(R.string.import_export_lines_progress),
                             progress

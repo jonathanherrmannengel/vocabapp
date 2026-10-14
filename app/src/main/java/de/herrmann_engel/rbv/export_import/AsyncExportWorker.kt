@@ -23,8 +23,6 @@ import java.util.Locale
  */
 class AsyncExportWorker(
     val context: Context,
-    private val listener: AsyncExportFinish,
-    private val listenerProgress: AsyncExportProgress,
     private val singleCollection: Boolean,
     private val collectionNo: Int,
     private val includeSettings: Boolean,
@@ -34,7 +32,7 @@ class AsyncExportWorker(
     private var progress = 0
     private var lastProgressSentTime = 0L
     fun execute() {
-        listener.exportCardsResult(exportFile())
+        ImportExportEvents.reportResult(ImportExportEvents.Result.ExportFinished(exportFile()))
     }
 
     // Appends a single setting as an "app_setting" row (name, type, value)
@@ -82,7 +80,7 @@ class AsyncExportWorker(
                             // Report progress every 1000 rows, at most once per second
                             if (progress % 1000 == 0 && currentTime - lastProgressSentTime > 1000) {
                                 lastProgressSentTime = currentTime
-                                listenerProgress.exportCardsProgress(
+                                ImportExportEvents.reportProgress(
                                     String.format(
                                         context.getString(R.string.import_export_lines_progress),
                                         progress

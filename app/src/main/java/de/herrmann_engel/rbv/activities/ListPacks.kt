@@ -9,7 +9,6 @@ import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.content.FileProvider
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
@@ -23,18 +22,16 @@ import de.herrmann_engel.rbv.databinding.DiaExportBinding
 import de.herrmann_engel.rbv.db.DB_Pack_With_Meta
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.export_import.AsyncExport
-import de.herrmann_engel.rbv.export_import.AsyncExportFinish
-import de.herrmann_engel.rbv.export_import.AsyncExportProgress
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.io.File
+import kotlinx.coroutines.withContext
 import java.util.Locale
 
 /**
  * Pack list of the collection passed as "collection" extra, or of all collections if it is
  * LIST_CARDS_GET_DB_COLLECTIONS_ALL. A single collection can be exported and shared from here.
  */
-class ListPacks : PackActionsActivity(), AsyncExportFinish, AsyncExportProgress {
+class ListPacks : PackActionsActivity() {
     private lateinit var binding: ActivityDefaultRecBinding
     private lateinit var dbHelperGet: DB_Helper_Get
     private var adapter: AdapterPacks? = null
@@ -115,8 +112,6 @@ class ListPacks : PackActionsActivity(), AsyncExportFinish, AsyncExportProgress 
                 bindingStartExportDialog.diaExportStart.setOnClickListener {
                     AsyncExport(
                         this,
-                        this,
-                        this,
                         collectionNo,
                         bindingStartExportDialog.diaExportIncludeMedia.isChecked
                     ).execute()
@@ -147,21 +142,7 @@ class ListPacks : PackActionsActivity(), AsyncExportFinish, AsyncExportProgress 
         } else {
             binding.backgroundImage.visibility = View.GONE
         }
-        val uiFontSizeBig = settings.getBoolean("ui_font_size", false)
-        // Load the packs in the background; create the adapter on first load, update it afterwards
-        lifecycleScope.launch(Dispatchers.IO) {
-            val content = loadContent()
-            runOnUiThread {
-                adapter?.updateContent(content) ?: run {
-                    adapter = AdapterPacks(
-                        content, uiFontSizeBig, collectionNo
-                    )
-                    binding.recDefault.adapter = adapter
-                    binding.recDefault.layoutManager =
-                        LinearLayoutManager(this@ListPacks)
-                }
-            }
-        }
+        refreshContent()
         if (collectionNo >= 0) {
             val colorsBackground =
                 resources.obtainTypedArray(R.array.pack_color_background_list)
@@ -180,6 +161,24 @@ class ListPacks : PackActionsActivity(), AsyncExportFinish, AsyncExportProgress 
      * Loads the packs including the placeholder for "all cards" as first item. For long lists,
      * the cards per pack are not counted to save time.
      */
+    // Load the packs in the background; create the adapter on first load, update it (and the
+    // font size setting) afterwards
+    private fun refreshContent() {
+        val settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE)
+        val uiFontSizeBig = settings.getBoolean("ui_font_size", false)
+        lifecycleScope.launch {
+            val content = withContext(Dispatchers.IO) { loadContent() }
+            adapter?.updateSettingsAndContent(content, uiFontSizeBig) ?: run {
+                adapter = AdapterPacks(
+                    content, uiFontSizeBig, collectionNo
+                )
+                binding.recDefault.adapter = adapter
+                binding.recDefault.layoutManager =
+                    LinearLayoutManager(this@ListPacks)
+            }
+        }
+    }
+
     private fun loadContent(): MutableList<DB_Pack_With_Meta> {
         val currentList: MutableList<DB_Pack_With_Meta> =
             if (collectionNo == Globals.LIST_CARDS_GET_DB_COLLECTIONS_ALL) {
@@ -205,42 +204,16 @@ class ListPacks : PackActionsActivity(), AsyncExportFinish, AsyncExportProgress 
         return currentList
     }
 
-    // Share the exported file
-    override fun exportCardsResult(result: File?) {
-        runOnUiThread {
-            if (result == null) {
-                Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show()
-            } else {
-                val share = Intent(Intent.ACTION_SEND)
-                share.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                share.type = Globals.EXPORT_FILE_TYPE
-                share.putExtra(
-                    Intent.EXTRA_STREAM, FileProvider.getUriForFile(
-                        this,
-                        "$packageName.fileprovider", result
-                    )
-                )
-                startActivity(
-                    Intent.createChooser(
-                        share,
-                        getString(R.string.export_cards)
-                    )
-                )
-            }
-        }
+    // Reload the list after an import, which may have added packs or changed the font size setting
+    override fun onImportFinished() {
+        refreshContent()
     }
-
-    override fun exportCardsProgress(progress: String) {
-        runOnUiThread { Toast.makeText(this, progress, Toast.LENGTH_SHORT).show() }
-    }
-
 
     override fun deletedPacks(packIds: ArrayList<Int>) {
-        adapter?.updateContent(loadContent())
-
+        refreshContent()
     }
 
     override fun movedPacks(packIds: ArrayList<Int>) {
-        adapter?.updateContent(loadContent())
+        refreshContent()
     }
 }

@@ -56,6 +56,7 @@ import io.noties.markwon.Markwon
 import io.noties.markwon.linkify.LinkifyPlugin
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import me.saket.bettermovementmethod.BetterLinkMovementMethod
 import kotlin.math.abs
 import kotlin.math.roundToInt
@@ -271,109 +272,119 @@ class ListCards : CardActionsActivity() {
             colorsBackground.recycle()
         }
 
-        lifecycleScope.launch(Dispatchers.IO) {
+        lifecycleScope.launch {
             // Get cards
             // Cards are only loaded once; later changes are applied via onNewIntent and the callbacks
             if (cardsList == null) {
-                cardsList =
-                    if (collectionNo == LIST_CARDS_GET_DB_COLLECTIONS_ALL && packNo == LIST_CARDS_GET_DB_PACKS_ALL) {
-                        dbHelperGet.allCardsWithMeta
-                    } else if (packNo == LIST_CARDS_GET_DB_PACKS_ALL) {
-                        dbHelperGet.getAllCardsByCollectionWithMeta(collectionNo)
-                    } else if (packNo == LIST_CARDS_GET_DB_PACKS_ADVANCED_SEARCH_LIST) {
-                        dbHelperGet.getAllCardsWithMetaFiltered(
-                            packNos,
-                            if (tagNo == LIST_CARDS_GET_DB_TAGS_ADVANCED_SEARCH_ALL) {
-                                null
-                            } else {
-                                tagNos
-                            },
-                            progressGreater,
-                            progressNumber,
-                            repetitionOlder,
-                            repetitionNumber
-                        )
-                    } else if (packNo == LIST_CARDS_GET_DB_PACKS_ADVANCED_SEARCH_ALL) {
-                        dbHelperGet.getAllCardsWithMetaFiltered(
-                            null,
-                            if (tagNo == LIST_CARDS_GET_DB_TAGS_ADVANCED_SEARCH_ALL) {
-                                null
-                            } else {
-                                tagNos
-                            },
-                            progressGreater,
-                            progressNumber,
-                            repetitionOlder,
-                            repetitionNumber
-                        )
-                    } else {
-                        dbHelperGet.getAllCardsByPackWithMeta(packNo)
-                    }
-                if (settings.getBoolean("format_cards", false)) {
-                    FormatCards().formatCards(cardsList!!)
+                // Loaded into a local list in the background; cardsList itself is only accessed
+                // on the main thread
+                val sort = listSort
+                val loadedCards = withContext(Dispatchers.IO) { loadCards(sort) }
+                if (cardsList == null) {
+                    cardsList = loadedCards
                 }
-                sortList()
             }
 
-            runOnUiThread {
-                // Warning: Big lists
-                // Show the warning about inaccurate formatting/search only once per mode (stored in the config)
-                if ((cardsList?.size ?: 0) > Globals.MAX_SIZE_CARDS_LIST_ACCURATE) {
-                    val config = getSharedPreferences(Globals.CONFIG_NAME, MODE_PRIVATE)
-                    val formatCardsActivated = settings.getBoolean("format_cards", false)
-                    val warnInaccurateFormat =
-                        formatCardsActivated && config.getBoolean("inaccurate_warning_format", true)
-                    val warnInaccurateNoFormat =
-                        !formatCardsActivated && config.getBoolean(
-                            "inaccurate_warning_no_format",
-                            true
+            // Warning: Big lists
+            // Show the warning about inaccurate formatting/search only once per mode (stored in the config)
+            if ((cardsList?.size ?: 0) > Globals.MAX_SIZE_CARDS_LIST_ACCURATE) {
+                val config = getSharedPreferences(Globals.CONFIG_NAME, MODE_PRIVATE)
+                val formatCardsActivated = settings.getBoolean("format_cards", false)
+                val warnInaccurateFormat =
+                    formatCardsActivated && config.getBoolean("inaccurate_warning_format", true)
+                val warnInaccurateNoFormat =
+                    !formatCardsActivated && config.getBoolean(
+                        "inaccurate_warning_no_format",
+                        true
+                    )
+                if (warnInaccurateFormat || warnInaccurateNoFormat) {
+                    config.edit {
+                        val infoDialog = Dialog(this@ListCards, R.style.dia_view)
+                        val bindingInfoDialog = DiaInfoBinding.inflate(
+                            layoutInflater
                         )
-                    if (warnInaccurateFormat || warnInaccurateNoFormat) {
-                        config.edit {
-                            val infoDialog = Dialog(this@ListCards, R.style.dia_view)
-                            val bindingInfoDialog = DiaInfoBinding.inflate(
-                                layoutInflater
+                        infoDialog.setContentView(bindingInfoDialog.root)
+                        infoDialog.setTitle(resources.getString(R.string.info))
+                        infoDialog.window!!.setLayout(
+                            WindowManager.LayoutParams.MATCH_PARENT,
+                            WindowManager.LayoutParams.MATCH_PARENT
+                        )
+                        val warnings: MutableList<String> = ArrayList()
+                        warnings.add(
+                            String.format(
+                                resources.getString(R.string.warn_inaccurate),
+                                Globals.MAX_SIZE_CARDS_LIST_ACCURATE
                             )
-                            infoDialog.setContentView(bindingInfoDialog.root)
-                            infoDialog.setTitle(resources.getString(R.string.info))
-                            infoDialog.window!!.setLayout(
-                                WindowManager.LayoutParams.MATCH_PARENT,
-                                WindowManager.LayoutParams.MATCH_PARENT
-                            )
-                            val warnings: MutableList<String> = ArrayList()
-                            warnings.add(
-                                String.format(
-                                    resources.getString(R.string.warn_inaccurate),
-                                    Globals.MAX_SIZE_CARDS_LIST_ACCURATE
-                                )
-                            )
-                            if (warnInaccurateFormat) {
-                                putBoolean("inaccurate_warning_format", false)
-                                warnings.add(resources.getString(R.string.warn_inaccurate_list))
-                            }
-                            if (warnInaccurateNoFormat) {
-                                putBoolean("inaccurate_warning_no_format", false)
-                            }
-                            warnings.add(resources.getString(R.string.warn_inaccurate_search))
-                            warnings.add(resources.getString(R.string.warn_inaccurate_note))
-                            bindingInfoDialog.diaInfoText.text = java.lang.String.join(
-                                System.lineSeparator().plus(System.lineSeparator()),
-                                warnings
-                            )
-                            infoDialog.show()
+                        )
+                        if (warnInaccurateFormat) {
+                            putBoolean("inaccurate_warning_format", false)
+                            warnings.add(resources.getString(R.string.warn_inaccurate_list))
                         }
+                        if (warnInaccurateNoFormat) {
+                            putBoolean("inaccurate_warning_no_format", false)
+                        }
+                        warnings.add(resources.getString(R.string.warn_inaccurate_search))
+                        warnings.add(resources.getString(R.string.warn_inaccurate_note))
+                        bindingInfoDialog.diaInfoText.text = java.lang.String.join(
+                            System.lineSeparator().plus(System.lineSeparator()),
+                            warnings
+                        )
+                        infoDialog.show()
                     }
                 }
+            }
 
-                // Display content
-                // Keep the query mode open after returning, e.g. from editing a card
-                if (queryModeDialog.isShowing) {
-                    nextQuery(true)
-                } else {
-                    updateContent()
-                }
+            // Display content
+            // Keep the query mode open after returning, e.g. from editing a card
+            if (queryModeDialog.isShowing) {
+                nextQuery(true)
+            } else {
+                updateContent()
             }
         }
+    }
+
+    // Loads, formats and sorts the cards of this list
+    private fun loadCards(sort: Int): MutableList<DB_Card_With_Meta> {
+        val cards =
+            if (collectionNo == LIST_CARDS_GET_DB_COLLECTIONS_ALL && packNo == LIST_CARDS_GET_DB_PACKS_ALL) {
+                dbHelperGet.allCardsWithMeta
+            } else if (packNo == LIST_CARDS_GET_DB_PACKS_ALL) {
+                dbHelperGet.getAllCardsByCollectionWithMeta(collectionNo)
+            } else if (packNo == LIST_CARDS_GET_DB_PACKS_ADVANCED_SEARCH_LIST) {
+                dbHelperGet.getAllCardsWithMetaFiltered(
+                    packNos,
+                    if (tagNo == LIST_CARDS_GET_DB_TAGS_ADVANCED_SEARCH_ALL) {
+                        null
+                    } else {
+                        tagNos
+                    },
+                    progressGreater,
+                    progressNumber,
+                    repetitionOlder,
+                    repetitionNumber
+                )
+            } else if (packNo == LIST_CARDS_GET_DB_PACKS_ADVANCED_SEARCH_ALL) {
+                dbHelperGet.getAllCardsWithMetaFiltered(
+                    null,
+                    if (tagNo == LIST_CARDS_GET_DB_TAGS_ADVANCED_SEARCH_ALL) {
+                        null
+                    } else {
+                        tagNos
+                    },
+                    progressGreater,
+                    progressNumber,
+                    repetitionOlder,
+                    repetitionNumber
+                )
+            } else {
+                dbHelperGet.getAllCardsByPackWithMeta(packNo)
+            }
+        if (settings.getBoolean("format_cards", false)) {
+            FormatCards().formatCards(cards)
+        }
+        SortCards().sortCards(cards, sort)
+        return cards
     }
 
     @SuppressLint("SetTextI18n")
@@ -1144,7 +1155,12 @@ class ListCards : CardActionsActivity() {
                 binding.recDefault.layoutManager = LinearLayoutManager(this)
                 binding.recDefault.scrollToPosition(0)
             } else {
-                adapter!!.updateContent(tempCardList, frontBackReverse, showFrontAndBack)
+                adapter!!.updateContent(
+                    tempCardList,
+                    frontBackReverse,
+                    showFrontAndBack,
+                    settings.getBoolean("ui_font_size", false)
+                )
             }
             invalidateOptionsMenu()
         } ?: Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show()
@@ -1152,6 +1168,11 @@ class ListCards : CardActionsActivity() {
 
     private fun updateContent() {
         updateContent(false)
+    }
+
+    // An import may have changed the font size setting: redraw the list (the cards are not reloaded)
+    override fun onImportFinished() {
+        updateContent()
     }
 
     private fun deleteCardFromList(cardId: Int) {

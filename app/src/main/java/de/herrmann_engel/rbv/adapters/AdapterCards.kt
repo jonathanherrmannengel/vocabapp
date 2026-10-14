@@ -44,7 +44,7 @@ import java.util.Locale
  */
 class AdapterCards(
     private val cards: MutableList<DB_Card_With_Meta>,
-    private val uiFontSizeBig: Boolean,
+    private var uiFontSizeBig: Boolean,
     private var reverse: Boolean,
     private var showBothSides: Boolean,
     private val packNo: Int,
@@ -150,22 +150,24 @@ class AdapterCards(
     }
 
     // Replaces the list content, using DiffUtil to only update changed items; all items are
-    // redrawn if the displayed side(s) changed
+    // redrawn if the displayed side(s) or the font size setting changed
     fun updateContent(
         cardsListNew: List<DB_Card_With_Meta>,
         reverse: Boolean,
-        showBothSides: Boolean
+        showBothSides: Boolean,
+        uiFontSizeBig: Boolean
     ) {
         val diffResult =
             DiffUtil.calculateDiff(
                 ListCardCompare(
                     cards,
                     cardsListNew,
-                    this.reverse != reverse || this.showBothSides != showBothSides
+                    this.reverse != reverse || this.showBothSides != showBothSides || this.uiFontSizeBig != uiFontSizeBig
                 )
             )
         this.reverse = reverse
         this.showBothSides = showBothSides
+        this.uiFontSizeBig = uiFontSizeBig
         cards.clear()
         cards.addAll(cardsListNew)
         diffResult.dispatchUpdatesTo(this)
@@ -188,6 +190,15 @@ class AdapterCards(
             viewHolder.binding.recBack.setTextSize(
                 TypedValue.COMPLEX_UNIT_PX,
                 context.resources.getDimension(R.dimen.rec_view_font_size_big)
+            )
+        } else {
+            viewHolder.binding.recFront.setTextSize(
+                TypedValue.COMPLEX_UNIT_PX,
+                context.resources.getDimension(R.dimen.rec_view_font_size_default)
+            )
+            viewHolder.binding.recBack.setTextSize(
+                TypedValue.COMPLEX_UNIT_PX,
+                context.resources.getDimension(R.dimen.rec_view_font_size_default)
             )
         }
         viewHolder.binding.recFront.setTextColor(

@@ -25,7 +25,7 @@ import de.herrmann_engel.rbv.databinding.DiaRecBinding
 import de.herrmann_engel.rbv.db.AppDatabase
 import de.herrmann_engel.rbv.db.DB_Card
 import de.herrmann_engel.rbv.db.DB_Media
-import de.herrmann_engel.rbv.db.DB_Pack
+import de.herrmann_engel.rbv.db.DB_Pack_With_Meta
 import de.herrmann_engel.rbv.db.DB_Tag
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Delete
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
@@ -113,10 +113,11 @@ class CardActions(val activity: Activity) {
             WindowManager.LayoutParams.MATCH_PARENT
         )
         val dbHelperGet = DB_Helper_Get(activity)
-        val packs: List<DB_Pack> = if (collectionNo == Globals.LIST_CARDS_GET_DB_COLLECTIONS_ALL) {
-            dbHelperGet.allPacks
+        // Includes the collection names, which are shown for packs of all collections
+        val packs: List<DB_Pack_With_Meta> = if (collectionNo == Globals.LIST_CARDS_GET_DB_COLLECTIONS_ALL) {
+            dbHelperGet.allPacksWithMetaNoCounter
         } else {
-            dbHelperGet.getAllPacksByCollection(collectionNo)
+            dbHelperGet.getAllPacksWithMetaNoCounterByCollection(collectionNo)
         }
         val adapter = AdapterPacksMoveCard(packs, collectionNo, cards, moveDialog)
         bindingMoveDialog.diaRec.adapter = adapter

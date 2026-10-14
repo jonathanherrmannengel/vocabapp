@@ -10,9 +10,7 @@ import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.content.FileProvider
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
@@ -31,23 +29,17 @@ import de.herrmann_engel.rbv.db.DB_Collection_With_Meta
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Delete
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.export_import.AsyncExport
-import de.herrmann_engel.rbv.export_import.AsyncExportFinish
-import de.herrmann_engel.rbv.export_import.AsyncExportProgress
 import de.herrmann_engel.rbv.export_import.AsyncImport
-import de.herrmann_engel.rbv.export_import.AsyncImportFinish
-import de.herrmann_engel.rbv.export_import.AsyncImportProgress
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
-import java.io.File
+import kotlinx.coroutines.withContext
 import java.util.Locale
 
 /**
  * Start screen: list of all collections. The menu offers creating collections, import and
  * export of all data, advanced search, media management, settings and app information.
  */
-class ListCollections : FileTools(), AsyncImportFinish, AsyncImportProgress, AsyncExportFinish,
-    AsyncExportProgress {
+class ListCollections : FileTools() {
     private lateinit var binding: ActivityDefaultRecBinding
     private lateinit var dbHelperGet: DB_Helper_Get
     private var adapter: AdapterCollections? = null
@@ -61,8 +53,6 @@ class ListCollections : FileTools(), AsyncImportFinish, AsyncImportProgress, Asy
     ) { result: ActivityResult ->
         if (result.resultCode == RESULT_OK) {
             AsyncImport(
-                this,
-                this,
                 this,
                 result.data?.data!!,
                 importMode,
@@ -87,7 +77,7 @@ class ListCollections : FileTools(), AsyncImportFinish, AsyncImportProgress, Asy
                 uri!!,
                 Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
             )
-            AsyncExport(this, this, this, exportIncludeSettings, exportIncludeMedia, uri).execute()
+            AsyncExport(this, exportIncludeSettings, exportIncludeMedia, uri).execute()
             Toast.makeText(this, R.string.wait, Toast.LENGTH_LONG).show()
         } else {
             Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show()
@@ -108,7 +98,7 @@ class ListCollections : FileTools(), AsyncImportFinish, AsyncImportProgress, Asy
         }
         enableEdgeToEdge()
         // Housekeeping in the background on app start
-        MainScope().launch(Dispatchers.Default) {
+        lifecycleScope.launch(Dispatchers.IO) {
             cleanUp()
         }
     }
@@ -342,81 +332,21 @@ class ListCollections : FileTools(), AsyncImportFinish, AsyncImportProgress, Asy
         val settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE)
         val uiFontSizeBig = settings.getBoolean("ui_font_size", false)
 
-        lifecycleScope.launch(Dispatchers.IO) {
-            val content = loadContent()
-            runOnUiThread {
-                adapter?.updateSettingsAndContent(content, uiFontSizeBig) ?: run {
-                    adapter =
-                        AdapterCollections(content, uiFontSizeBig)
-                    binding.recDefault.adapter = adapter
-                    binding.recDefault.layoutManager =
-                        LinearLayoutManager(this@ListCollections)
-                }
+        lifecycleScope.launch {
+            val content = withContext(Dispatchers.IO) { loadContent() }
+            adapter?.updateSettingsAndContent(content, uiFontSizeBig) ?: run {
+                adapter =
+                    AdapterCollections(content, uiFontSizeBig)
+                binding.recDefault.adapter = adapter
+                binding.recDefault.layoutManager =
+                    LinearLayoutManager(this@ListCollections)
             }
         }
     }
 
-    override fun importCardsResult(result: Int) {
-        runOnUiThread {
-            if (result < Globals.IMPORT_ERROR_LEVEL_ERROR) {
-                if (result == Globals.IMPORT_ERROR_LEVEL_OKAY) {
-                    Toast.makeText(this, R.string.success, Toast.LENGTH_SHORT).show()
-                } else {
-                    Toast.makeText(this, R.string.import_warn, Toast.LENGTH_LONG).show()
-                }
-                updateSettingsAndContent()
-                val settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE)
-                // Apply the theme setting, which may have been changed by the import
-                when (settings.getInt("ui_mode", Globals.UI_MODE_DAY)) {
-                    Globals.UI_MODE_NIGHT -> {
-                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-                    }
-
-                    Globals.UI_MODE_DAY -> {
-                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-                    }
-
-                    else -> {
-                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
-                    }
-                }
-            } else {
-                Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show()
-            }
-        }
-    }
-
-    override fun importCardsProgress(progress: String) {
-        runOnUiThread { Toast.makeText(this, progress, Toast.LENGTH_SHORT).show() }
-    }
-
-    // The exported file has already been saved to the chosen location; additionally offer to share it
-    override fun exportCardsResult(result: File?) {
-        runOnUiThread {
-            if (result == null) {
-                Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show()
-            } else {
-                val share = Intent(Intent.ACTION_SEND)
-                share.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                share.type = Globals.EXPORT_FILE_TYPE
-                share.putExtra(
-                    Intent.EXTRA_STREAM, FileProvider.getUriForFile(
-                        this,
-                        "$packageName.fileprovider", result
-                    )
-                )
-                startActivity(
-                    Intent.createChooser(
-                        share,
-                        getString(R.string.export_cards)
-                    )
-                )
-            }
-        }
-    }
-
-    override fun exportCardsProgress(progress: String) {
-        runOnUiThread { Toast.makeText(this, progress, Toast.LENGTH_SHORT).show() }
+    // Reload the list after an import (started here or elsewhere)
+    override fun onImportFinished() {
+        updateSettingsAndContent()
     }
 
     override fun notifyFolderSet() {}

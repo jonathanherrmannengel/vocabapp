@@ -8,6 +8,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.Globals.LIST_CARDS_GET_DB_COLLECTIONS_ALL
@@ -20,6 +21,9 @@ import de.herrmann_engel.rbv.adapters.AdapterPacksAdvancedSearch
 import de.herrmann_engel.rbv.adapters.AdapterTagsAdvancedSearch
 import de.herrmann_engel.rbv.databinding.ActivityAdvancedSearchBinding
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * Advanced search form: filter cards by packs, tags, progress and date of last repetition.
@@ -46,9 +50,11 @@ class AdvancedSearch : RBVActivity() {
         )
         setContentView(binding.root)
         dbHelperGet = DB_Helper_Get(this)
-        val packs = dbHelperGet.allPacks
-        val adapter = AdapterPacksAdvancedSearch(packs, packList)
-        binding.recAdvancedSearch.adapter = adapter
+        // Packs including card counts and collection names, loaded in the background
+        lifecycleScope.launch {
+            val packs = withContext(Dispatchers.IO) { dbHelperGet.allPacksWithMeta }
+            binding.recAdvancedSearch.adapter = AdapterPacksAdvancedSearch(packs, packList)
+        }
         binding.recAdvancedSearch.layoutManager = LinearLayoutManager(this)
         if (pack == LIST_CARDS_GET_DB_PACKS_ADVANCED_SEARCH_ALL) {
             binding.recAdvancedSearch.visibility = View.GONE

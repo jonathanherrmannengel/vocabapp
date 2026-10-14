@@ -44,7 +44,7 @@ import java.util.Locale
  */
 class AdapterPacks(
     private val packs: MutableList<DB_Pack_With_Meta>,
-    private val uiFontSizeBig: Boolean,
+    private var uiFontSizeBig: Boolean,
     private val collection: Int
 ) : RecyclerView.Adapter<AdapterPacks.ViewHolder>() {
     class ViewHolder(val binding: RecViewCollectionOrPackBinding) :
@@ -133,15 +133,27 @@ class AdapterPacks(
         }
     }
 
+    // Updates the list; all items are redrawn if the font size setting has changed
+    fun updateSettingsAndContent(
+        packListNew: List<DB_Pack_With_Meta>,
+        uiFontSizeBig: Boolean
+    ) {
+        val updateAllContent = this.uiFontSizeBig != uiFontSizeBig
+        this.uiFontSizeBig = uiFontSizeBig
+        updateContent(packListNew, updateAllContent)
+    }
+
     // Replaces the list content, using DiffUtil to only update changed items
-    fun updateContent(
-        packListNew: List<DB_Pack_With_Meta>
+    private fun updateContent(
+        packListNew: List<DB_Pack_With_Meta>,
+        updateAllContent: Boolean
     ) {
         val diffResult =
             DiffUtil.calculateDiff(
                 ListPackCompare(
                     packs,
-                    packListNew
+                    packListNew,
+                    updateAllContent
                 )
             )
         packs.clear()
@@ -172,6 +184,19 @@ class AdapterPacks(
             viewHolder.binding.recCollectionsParent.setTextSize(
                 TypedValue.COMPLEX_UNIT_PX,
                 context.resources.getDimension(R.dimen.rec_view_font_size_above_big)
+            )
+        } else {
+            viewHolder.binding.recCollectionsName.setTextSize(
+                TypedValue.COMPLEX_UNIT_PX,
+                context.resources.getDimension(R.dimen.rec_view_font_size_default)
+            )
+            viewHolder.binding.recCollectionsDesc.setTextSize(
+                TypedValue.COMPLEX_UNIT_PX,
+                context.resources.getDimension(R.dimen.rec_view_font_size_below_default)
+            )
+            viewHolder.binding.recCollectionsParent.setTextSize(
+                TypedValue.COMPLEX_UNIT_PX,
+                context.resources.getDimension(R.dimen.rec_view_font_size_above_default)
             )
         }
         viewHolder.binding.recCollectionsPreviewText.contentDescription = null

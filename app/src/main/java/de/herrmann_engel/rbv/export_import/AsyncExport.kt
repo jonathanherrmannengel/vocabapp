@@ -1,21 +1,16 @@
-@file:JvmName("AsyncImport")
-
 package de.herrmann_engel.rbv.export_import
 
 import android.content.Context
 import android.net.Uri
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
+import de.herrmann_engel.rbv.RBVApplication
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 /**
- * Starts an export in the background (IO dispatcher). The actual work is done by [AsyncExportWorker].
+ * Starts an export in the background (application scope, IO dispatcher). The actual work is
+ * done by [AsyncExportWorker]; progress and result are reported via [ImportExportEvents].
  */
 class AsyncExport {
     private val context: Context
-    private val listener: AsyncExportFinish
-    private val listenerProgress: AsyncExportProgress
     private val singleCollection: Boolean
     private var collectionNo = 0
     private var includeSettings = false
@@ -25,16 +20,12 @@ class AsyncExport {
     // Exports everything to the given file
     constructor(
         context: Context,
-        listener: AsyncExportFinish,
-        listenerProgress: AsyncExportProgress,
         includeSettings: Boolean,
         includeMedia: Boolean,
         exportFileUri: Uri
     ) {
         singleCollection = false
-        this.context = context
-        this.listener = listener
-        this.listenerProgress = listenerProgress
+        this.context = context.applicationContext
         this.includeSettings = includeSettings
         this.includeMedia = includeMedia
         this.exportFileUri = exportFileUri
@@ -43,34 +34,26 @@ class AsyncExport {
     // Exports a single collection (e.g. for sharing it)
     constructor(
         context: Context,
-        listener: AsyncExportFinish,
-        listenerProgress: AsyncExportProgress,
         collectionNo: Int,
         includeMedia: Boolean
     ) {
         singleCollection = true
-        this.context = context
-        this.listener = listener
-        this.listenerProgress = listenerProgress
+        this.context = context.applicationContext
         this.collectionNo = collectionNo
         this.includeMedia = includeMedia
         exportFileUri = null
     }
 
     fun execute() {
-        GlobalScope.launch {
-            withContext(Dispatchers.IO) {
-                AsyncExportWorker(
-                    context,
-                    listener,
-                    listenerProgress,
-                    singleCollection,
-                    collectionNo,
-                    includeSettings,
-                    includeMedia,
-                    exportFileUri
-                ).execute()
-            }
+        (context as RBVApplication).applicationScope.launch {
+            AsyncExportWorker(
+                context,
+                singleCollection,
+                collectionNo,
+                includeSettings,
+                includeMedia,
+                exportFileUri
+            ).execute()
         }
     }
 }
