@@ -423,7 +423,7 @@ class AsyncImportWorker(
                 }
                 progress++
                 val currentTime = System.currentTimeMillis()
-                if (progress % 1000 == 0 && currentTime - lastProgressSentTime > 1000) {
+                if (progress % 1000 == 0 && currentTime - lastProgressSentTime > 3000) {
                     lastProgressSentTime = currentTime
                     ImportExportEvents.reportProgress(
                         String.format(

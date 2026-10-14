@@ -77,8 +77,8 @@ class AsyncExportWorker(
                             cursor.moveToNext()
                             progress++
                             val currentTime = System.currentTimeMillis()
-                            // Report progress every 1000 rows, at most once per second
-                            if (progress % 1000 == 0 && currentTime - lastProgressSentTime > 1000) {
+                            // Report progress every 1000 rows, at most once per three seconds
+                            if (progress % 1000 == 0 && currentTime - lastProgressSentTime > 3000) {
                                 lastProgressSentTime = currentTime
                                 ImportExportEvents.reportProgress(
                                     String.format(
