@@ -2,6 +2,8 @@ package de.herrmann_engel.rbv.db;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.ForeignKey;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
 import java.util.Objects;
@@ -9,7 +11,10 @@ import java.util.Objects;
 /**
  * A single flashcard with a front and a back side, belonging to a pack.
  */
-@Entity
+@Entity(
+        foreignKeys = @ForeignKey(entity = DB_Pack.class, parentColumns = "uid", childColumns = "pack", onDelete = ForeignKey.CASCADE),
+        indices = @Index("pack")
+)
 public class DB_Card {
     @PrimaryKey(autoGenerate = true)
     public int uid;

@@ -2,6 +2,8 @@ package de.herrmann_engel.rbv.db;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.ForeignKey;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
 import java.util.Objects;
@@ -9,7 +11,10 @@ import java.util.Objects;
 /**
  * A pack belongs to a collection and contains cards.
  */
-@Entity
+@Entity(
+        foreignKeys = @ForeignKey(entity = DB_Collection.class, parentColumns = "uid", childColumns = "collection", onDelete = ForeignKey.CASCADE),
+        indices = @Index("collection")
+)
 public class DB_Pack {
     @PrimaryKey(autoGenerate = true)
     public int uid;

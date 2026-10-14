@@ -2,7 +2,6 @@ package de.herrmann_engel.rbv.db.utils;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.database.MatrixCursor;
 
 import java.util.List;
 
@@ -29,28 +28,8 @@ public class DB_Helper_Export {
         return dbHelper.pack_dao.getAllExportByCollection(collection);
     }
 
-    /**
-     * Returns all cards of the packs in the given collection. The rows are copied as strings
-     * into a new cursor.
-     */
     public Cursor getAllCardsByCollection(int collection) {
-        List<Integer> packIDs = dbHelper.pack_dao.getAllIdsByCollection(collection);
-        Cursor cardsCursor = dbHelper.card_dao.getAllExport();
-        String[] names = cardsCursor.getColumnNames();
-        MatrixCursor cursor = new MatrixCursor(names);
-        if (cardsCursor.moveToFirst()) {
-            do {
-                // Column 3 is the pack of the card
-                if (packIDs.contains(cardsCursor.getInt(3))) {
-                    Object[] row = new Object[names.length];
-                    for (int i = 0; i < names.length; i++) {
-                        row[i] = cardsCursor.getString(i);
-                    }
-                    cursor.addRow(row);
-                }
-            } while (cardsCursor.moveToNext());
-        }
-        return cursor;
+        return dbHelper.card_dao.getAllExportByCollection(collection);
     }
 
     public Cursor getAllMedia() {

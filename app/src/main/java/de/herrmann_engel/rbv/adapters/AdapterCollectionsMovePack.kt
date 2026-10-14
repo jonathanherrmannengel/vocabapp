@@ -10,6 +10,7 @@ import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.activities.PackActionsActivity
 import de.herrmann_engel.rbv.databinding.RecViewBinding
+import de.herrmann_engel.rbv.db.AppDatabase
 import de.herrmann_engel.rbv.db.DB_Collection
 import de.herrmann_engel.rbv.db.DB_Pack
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Update
@@ -62,13 +63,16 @@ class AdapterCollectionsMovePack(
                 DB_Helper_Update(context)
             val packIds = arrayListOf<Int>()
             // Only packs not already in the target collection are moved and reported
-            for (pack in packs) {
-                if (pack.collection != currentCollectionId) {
-                    packIds.add(pack.uid)
-                    pack.collection = currentCollectionId
-                    updateHelper.updatePack(pack)
+            // All packs are moved or none
+            AppDatabase.getInstance(context).runInTransaction(Runnable {
+                for (pack in packs) {
+                    if (pack.collection != currentCollectionId) {
+                        packIds.add(pack.uid)
+                        pack.collection = currentCollectionId
+                        updateHelper.updatePack(pack)
+                    }
                 }
-            }
+            })
             (ContextTools().getActivity(context) as PackActionsActivity).movedPacks(packIds)
             dialog.dismiss()
         }

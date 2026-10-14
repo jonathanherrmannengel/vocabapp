@@ -24,10 +24,12 @@ class DB_Helper {
     final DB_Tag_DAO tag_dao;
     final DB_Tag_Link_Card_DAO tag_link_card_dao;
     final Context context;
+    final AppDatabase database;
 
     DB_Helper(Context context) {
         this.context = context;
         AppDatabase db = AppDatabase.getInstance(context);
+        database = db;
         collection_dao = db.collectionDAO();
         pack_dao = db.packDAO();
         card_dao = db.cardDAO();

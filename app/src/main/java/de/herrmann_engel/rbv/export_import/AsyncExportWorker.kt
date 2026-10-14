@@ -10,8 +10,6 @@ import de.herrmann_engel.rbv.db.utils.DB_Helper_Export
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileWriter
-import java.io.InputStream
-import java.io.OutputStream
 import java.util.Locale
 
 /**
@@ -42,15 +40,15 @@ class AsyncExportWorker(
     // Appends a single setting as an "app_setting" row (name, type, value)
     private fun exportSetting(name: String, filename: String, type: String, value: String) {
         val file = File(context.cacheDir, filename)
-        val csvWrite = CSVWriter(FileWriter(file, true))
-        val row = arrayOf("app_setting", name, type, value)
-        csvWrite.writeNext(row)
-        csvWrite.close()
+        CSVWriter(FileWriter(file, true)).use { csvWrite ->
+            val row = arrayOf("app_setting", name, type, value)
+            csvWrite.writeNext(row)
+        }
     }
 
     /**
      * Writes all rows of the cursor to the file, prefixed by name. Writes the schema row first
-     * if isFirst is set. Returns false on errors.
+     * if isFirst is set. Closes the cursor. Returns false on errors.
      */
     private fun exportCSV(
         name: String,
@@ -61,38 +59,40 @@ class AsyncExportWorker(
     ): Boolean {
         try {
             val file = File(context.cacheDir, filename)
-            val csvWrite = CSVWriter(FileWriter(file, append))
-            val columns = cursor.columnNames
-            if (isFirst) {
-                val schema = arrayOfNulls<String>(columns.size + 1)
-                schema[0] = name + "_schema"
-                System.arraycopy(columns, 0, schema, 1, columns.size)
-                csvWrite.writeNext(schema)
-            }
-            if (cursor.moveToFirst()) {
-                while (!cursor.isAfterLast) {
-                    val row = arrayOfNulls<String>(columns.size + 1)
-                    row[0] = name
-                    for (i in columns.indices) {
-                        row[i + 1] = cursor.getString(cursor.getColumnIndexOrThrow(columns[i]))
+            cursor.use {
+                CSVWriter(FileWriter(file, append)).use { csvWrite ->
+                    val columns = cursor.columnNames
+                    if (isFirst) {
+                        val schema = arrayOfNulls<String>(columns.size + 1)
+                        schema[0] = name + "_schema"
+                        System.arraycopy(columns, 0, schema, 1, columns.size)
+                        csvWrite.writeNext(schema)
                     }
-                    csvWrite.writeNext(row)
-                    cursor.moveToNext()
-                    progress++
-                    val currentTime = System.currentTimeMillis()
-                    // Report progress every 1000 rows, at most once per second
-                    if (progress % 1000 == 0 && currentTime - lastProgressSentTime > 1000) {
-                        lastProgressSentTime = currentTime
-                        listenerProgress.exportCardsProgress(
-                            String.format(
-                                context.getString(R.string.import_export_lines_progress),
-                                progress
-                            )
-                        )
+                    if (cursor.moveToFirst()) {
+                        while (!cursor.isAfterLast) {
+                            val row = arrayOfNulls<String>(columns.size + 1)
+                            row[0] = name
+                            for (i in columns.indices) {
+                                row[i + 1] = cursor.getString(cursor.getColumnIndexOrThrow(columns[i]))
+                            }
+                            csvWrite.writeNext(row)
+                            cursor.moveToNext()
+                            progress++
+                            val currentTime = System.currentTimeMillis()
+                            // Report progress every 1000 rows, at most once per second
+                            if (progress % 1000 == 0 && currentTime - lastProgressSentTime > 1000) {
+                                lastProgressSentTime = currentTime
+                                listenerProgress.exportCardsProgress(
+                                    String.format(
+                                        context.getString(R.string.import_export_lines_progress),
+                                        progress
+                                    )
+                                )
+                            }
+                        }
                     }
                 }
             }
-            csvWrite.close()
         } catch (e: Exception) {
             e.printStackTrace()
             return false
@@ -265,21 +265,14 @@ class AsyncExportWorker(
                     )
                 }
             }
-            // Copy the file to the location chosen by the user
+            // Copy the file to the location chosen by the user; the export fails if this fails
             if (exportFileUri != null) {
-                try {
-                    val inputStream: InputStream = FileInputStream(file)
-                    val outputStream: OutputStream? =
-                        context.contentResolver.openOutputStream(exportFileUri)
-                    val buffer = ByteArray(1024)
-                    var length: Int
-                    while (inputStream.read(buffer).also { length = it } > 0) {
-                        outputStream?.write(buffer, 0, length)
+                val outputStream = context.contentResolver.openOutputStream(exportFileUri)
+                    ?: return null
+                outputStream.use { output ->
+                    FileInputStream(file).use { input ->
+                        input.copyTo(output)
                     }
-                    inputStream.close()
-                    outputStream?.close()
-                } catch (e: Exception) {
-                    e.printStackTrace()
                 }
             }
             return file

@@ -9,7 +9,7 @@ import androidx.room.RoomDatabase;
  * Room database of the app. Holds collections, packs, cards, media files, tags and the
  * link tables connecting media files and tags to cards.
  */
-@Database(entities = {DB_Pack.class, DB_Card.class, DB_Collection.class, DB_Media.class, DB_Media_Link_Card.class, DB_Tag.class, DB_Tag_Link_Card.class}, version = 11)
+@Database(entities = {DB_Pack.class, DB_Card.class, DB_Collection.class, DB_Media.class, DB_Media_Link_Card.class, DB_Tag.class, DB_Tag_Link_Card.class}, version = 12)
 public abstract class AppDatabase extends RoomDatabase {
     private static AppDatabase appDatabase;
 

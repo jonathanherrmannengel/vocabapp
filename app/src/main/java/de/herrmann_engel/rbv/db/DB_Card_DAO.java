@@ -152,8 +152,8 @@ public interface DB_Card_DAO {
     List<DB_Card_With_Meta> getAllByMedia(int fileId);
 
     // Raw cursor used by the CSV export
-    @Query("SELECT * FROM db_card")
-    Cursor getAllExport();
+    @Query("SELECT * FROM db_card WHERE pack IN (SELECT uid FROM db_pack WHERE collection=:collection)")
+    Cursor getAllExportByCollection(int collection);
 
     @Query("SELECT * FROM db_card WHERE uid=:cardId LIMIT 1")
     DB_Card getOne(int cardId);
@@ -164,9 +164,6 @@ public interface DB_Card_DAO {
     // Used by the import to find already existing cards
     @Query("SELECT uid FROM db_card WHERE pack=:pid AND front=:front AND back=:back AND notes=:notes LIMIT 1")
     int getOneIdByPackAndFrontAndBackAndNotes(int pid, String front, String back, String notes);
-
-    @Query("DELETE FROM db_card WHERE pack=:pid")
-    void deleteAllByPack(int pid);
 
     @Update
     void update(DB_Card card);

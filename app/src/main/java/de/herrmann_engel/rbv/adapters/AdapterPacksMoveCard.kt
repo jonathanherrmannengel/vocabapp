@@ -12,6 +12,7 @@ import de.herrmann_engel.rbv.Globals.LIST_CARDS_GET_DB_COLLECTIONS_ALL
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.activities.CardActionsActivity
 import de.herrmann_engel.rbv.databinding.RecViewBinding
+import de.herrmann_engel.rbv.db.AppDatabase
 import de.herrmann_engel.rbv.db.DB_Card
 import de.herrmann_engel.rbv.db.DB_Pack
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
@@ -80,13 +81,16 @@ class AdapterPacksMoveCard(
                 DB_Helper_Update(context)
             val cardIds = arrayListOf<Int>()
             // Only cards not already in the target pack are moved and reported
-            for (card in cards) {
-                if (card.pack != currentPackId) {
-                    cardIds.add(card.uid)
-                    card.pack = currentPackId
-                    updateHelper.updateCard(card)
+            // All cards are moved or none
+            AppDatabase.getInstance(context).runInTransaction(Runnable {
+                for (card in cards) {
+                    if (card.pack != currentPackId) {
+                        cardIds.add(card.uid)
+                        card.pack = currentPackId
+                        updateHelper.updateCard(card)
+                    }
                 }
-            }
+            })
             (ContextTools().getActivity(context) as CardActionsActivity).movedCards(cardIds)
             dialog.dismiss()
         }

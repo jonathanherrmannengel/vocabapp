@@ -20,6 +20,9 @@ public interface DB_Media_Link_Card_DAO {
     @Query("SELECT fileId FROM db_media_link_card WHERE cardId=:card")
     List<Integer> getAllMediaIdsByCard(int card);
 
+    @Query("SELECT DISTINCT fileId FROM db_media_link_card WHERE cardId IN (SELECT uid FROM db_card WHERE pack=:pack)")
+    List<Integer> getAllMediaIdsByPack(int pack);
+
     @Query("SELECT EXISTS (SELECT 1 FROM db_media_link_card WHERE fileId=:file AND cardId=:card LIMIT 1)")
     boolean existsMediaLinkCard(int file, int card);
 
@@ -31,12 +34,6 @@ public interface DB_Media_Link_Card_DAO {
 
     @Query("DELETE FROM db_media_link_card WHERE fileId=:file AND cardId=:card")
     void deleteMediaLinkCard(int file, int card);
-
-    @Query("DELETE FROM db_media_link_card WHERE cardId=:card")
-    void deleteMediaLinksByCard(int card);
-
-    @Query("DELETE FROM db_media_link_card WHERE fileId=:file")
-    void deleteMediaLinksByMedia(int file);
 
     // Removes links pointing to media files or cards that no longer exist
     @Query("DELETE FROM db_media_link_card WHERE NOT EXISTS (SELECT 1 FROM db_media WHERE db_media.uid=db_media_link_card.fileId) OR NOT EXISTS (SELECT 1 FROM db_card WHERE db_card.uid=db_media_link_card.cardId)")

@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.Dialog
 import android.print.PrintAttributes
 import android.print.PrintManager
+import android.text.TextUtils
 import android.view.View
 import android.view.WindowManager
 import android.webkit.WebResourceRequest
@@ -21,6 +22,7 @@ import de.herrmann_engel.rbv.adapters.AdapterPacksMoveCard
 import de.herrmann_engel.rbv.databinding.DiaConfirmBinding
 import de.herrmann_engel.rbv.databinding.DiaPrintBinding
 import de.herrmann_engel.rbv.databinding.DiaRecBinding
+import de.herrmann_engel.rbv.db.AppDatabase
 import de.herrmann_engel.rbv.db.DB_Card
 import de.herrmann_engel.rbv.db.DB_Media
 import de.herrmann_engel.rbv.db.DB_Pack
@@ -37,6 +39,11 @@ import java.util.Locale
  * The activity has to be a [CardActionsActivity].
  */
 class CardActions(val activity: Activity) {
+
+    // User data has to be escaped before it is inserted into the print HTML
+    private fun escapeHtml(text: String?): String {
+        return TextUtils.htmlEncode(text ?: "")
+    }
 
     /**
      * Asks for confirmation and deletes the cards. Deleting multiple cards requires a second
@@ -65,10 +72,13 @@ class CardActions(val activity: Activity) {
             if (cards.size <= 1 || forceDelete) {
                 val dbHelperDelete = DB_Helper_Delete(activity)
                 val cardIds = arrayListOf<Int>()
-                for (card in cards) {
-                    cardIds.add(card.uid)
-                    dbHelperDelete.deleteCard(card)
-                }
+                // All cards are deleted or none
+                AppDatabase.getInstance(activity).runInTransaction(Runnable {
+                    for (card in cards) {
+                        cardIds.add(card.uid)
+                        dbHelperDelete.deleteCard(card)
+                    }
+                })
                 (activity as CardActionsActivity).deletedCards(cardIds)
             } else {
                 delete(cards, true)
@@ -192,9 +202,7 @@ class CardActions(val activity: Activity) {
                 }
             }
             var htmlDocument =
-                "<!doctype html><html><head><meta charset=\"utf-8\"><title>" + activity.getString(
-                    R.string.print
-                ) + "</title><style>@page{margin:20mm 25mm;}@media(max-width:250mm),@media(max-height:200mm){@page{margin:7% 10%;}}div{inline-size:100%;overflow-wrap:break-word;}.main-title{margin-bottom:30px;}.title{text-align:center;color:#000007;}.border-top::before{margin-bottom:20px;margin-top:30px;display:block;content:' ';width:100%;height:1px;outline:2px solid #555;outline-offset:-1px;}.main-title.border-top::before{margin-top:100px;}.image-div{display:grid;gap:10px;grid-template-columns: 1fr 1fr 1fr;justify-content:center;}.image{width:100%;height:100%;object-fit:contain;}.media-div{text-align:center}.tag-div{display:inline-block;width:auto;margin:10px;padding:10px;border:2px solid black;border-radius:1em;}.tag-emoji{padding-right:0.5em;}</style></head>"
+                "<!doctype html><html><head><meta charset=\"utf-8\"><title>" + escapeHtml(activity.getString(R.string.print)) + "</title><style>@page{margin:20mm 25mm;}@media(max-width:250mm),@media(max-height:200mm){@page{margin:7% 10%;}}div{inline-size:100%;overflow-wrap:break-word;}.main-title{margin-bottom:30px;}.title{text-align:center;color:#000007;}.border-top::before{margin-bottom:20px;margin-top:30px;display:block;content:' ';width:100%;height:1px;outline:2px solid #555;outline-offset:-1px;}.main-title.border-top::before{margin-top:100px;}.image-div{display:grid;gap:10px;grid-template-columns: 1fr 1fr 1fr;justify-content:center;}.image{width:100%;height:100%;object-fit:contain;}.media-div{text-align:center}.tag-div{display:inline-block;width:auto;margin:10px;padding:10px;border:2px solid black;border-radius:1em;}.tag-emoji{padding-right:0.5em;}</style></head>"
             var firstCard = true
             // One section per card: title, front, back, and optionally notes, images, other media and tags
             for (card in cards) {
@@ -204,7 +212,7 @@ class CardActions(val activity: Activity) {
                     card.front.toSpanned()
                 }
                 val maxTitleLength = 30
-                var title = stringTools.shorten(cardFront.toString(), maxTitleLength)
+                var title = escapeHtml(stringTools.shorten(cardFront.toString(), maxTitleLength))
                 if (bindingPrintDialog.diaPrintIncludeProgress.isChecked) {
                     title += " (" + card.known + ")"
                 }
@@ -216,18 +224,14 @@ class CardActions(val activity: Activity) {
                 htmlDocument += "<h1 class=\"$titleClass\" dir=\"auto\">$title</h1>"
                 htmlDocument += "<article>"
                 if (bindingPrintDialog.diaPrintIncludeHeadings.isChecked) {
-                    htmlDocument += "<h2 class=\"title\" dir=\"auto\">" + activity.getString(
-                        R.string.card_front
-                    ) + "</h2>"
+                    htmlDocument += "<h2 class=\"title\" dir=\"auto\">" + escapeHtml(activity.getString(R.string.card_front)) + "</h2>"
                 }
                 htmlDocument += "<div>"
                 htmlDocument += cardFront.toHtml()
                 htmlDocument += "</div></article>"
                 htmlDocument += "<article>"
                 if (bindingPrintDialog.diaPrintIncludeHeadings.isChecked) {
-                    htmlDocument += "<h2 class=\"title border-top\" dir=\"auto\">" + activity.getString(
-                        R.string.card_back
-                    ) + "</h2>"
+                    htmlDocument += "<h2 class=\"title border-top\" dir=\"auto\">" + escapeHtml(activity.getString(R.string.card_back)) + "</h2>"
                     htmlDocument += "<div>"
                 } else {
                     htmlDocument += "<div class=\"border-top\">"
@@ -241,9 +245,7 @@ class CardActions(val activity: Activity) {
                 if (card.notes != null && card.notes.isNotBlank() && bindingPrintDialog.diaPrintIncludeNotes.isChecked) {
                     htmlDocument += "<article>"
                     if (bindingPrintDialog.diaPrintIncludeHeadings.isChecked) {
-                        htmlDocument += "<h2 class=\"title border-top\" dir=\"auto\">" + activity.getString(
-                            R.string.card_notes
-                        ) + "</h2>"
+                        htmlDocument += "<h2 class=\"title border-top\" dir=\"auto\">" + escapeHtml(activity.getString(R.string.card_notes)) + "</h2>"
                         htmlDocument += "<div dir=\"auto\">"
                     } else {
                         htmlDocument += "<div dir=\"auto\" class=\"border-top\">"
@@ -252,7 +254,8 @@ class CardActions(val activity: Activity) {
                         // Notes are formatted as Markdown
                         val parser = Parser.builder().build()
                         val document = parser.parse(card.notes)
-                        val renderer = HtmlRenderer.builder().build()
+                        // Raw HTML in notes is printed as text instead of being interpreted
+                        val renderer = HtmlRenderer.builder().escapeHtml(true).build()
                         renderer.render(document)
                     } else {
                         card.notes.toSpanned().toHtml()
@@ -265,9 +268,7 @@ class CardActions(val activity: Activity) {
                 if (imageList.isNotEmpty() && bindingPrintDialog.diaPrintIncludeImages.isChecked) {
                     htmlDocument += "<article>"
                     if (bindingPrintDialog.diaPrintIncludeHeadings.isChecked) {
-                        htmlDocument += "<h2 class=\"title border-top\" dir=\"auto\">" + activity.getString(
-                            R.string.image_media
-                        ) + "</h2>"
+                        htmlDocument += "<h2 class=\"title border-top\" dir=\"auto\">" + escapeHtml(activity.getString(R.string.image_media)) + "</h2>"
                         htmlDocument += "<div>"
                     } else {
                         htmlDocument += "<div class=\"border-top\">"
@@ -297,7 +298,7 @@ class CardActions(val activity: Activity) {
                             val uri =
                                 (activity as CardActionsActivity).getImageUri(item.uid)
                             if (uri != null) {
-                                htmlDocument += "<div><img class=\"image\" alt=\"" + item.file + "\" src=\"" + uri + "\"></div>"
+                                htmlDocument += "<div><img class=\"image\" alt=\"" + escapeHtml(item.file) + "\" src=\"" + escapeHtml(uri.toString()) + "\"></div>"
                             }
                         }
                         htmlDocument += "</div>"
@@ -309,15 +310,13 @@ class CardActions(val activity: Activity) {
                 if (mediaList.isNotEmpty() && bindingPrintDialog.diaPrintIncludeMedia.isChecked) {
                     htmlDocument += "<article>"
                     if (bindingPrintDialog.diaPrintIncludeHeadings.isChecked) {
-                        htmlDocument += "<h2 class=\"title border-top\" dir=\"auto\">" + activity.getString(
-                            R.string.all_media
-                        ) + "</h2>"
+                        htmlDocument += "<h2 class=\"title border-top\" dir=\"auto\">" + escapeHtml(activity.getString(R.string.all_media)) + "</h2>"
                         htmlDocument += "<div>"
                     } else {
                         htmlDocument += "<div class=\"border-top\">"
                     }
                     for (item in mediaList) {
-                        htmlDocument += "<div class=\"media-div\">" + item.file + "</div>"
+                        htmlDocument += "<div class=\"media-div\">" + escapeHtml(item.file) + "</div>"
                     }
                     htmlDocument += "</div></article>"
                 }
@@ -326,23 +325,22 @@ class CardActions(val activity: Activity) {
                 if (tagList.isNotEmpty() && bindingPrintDialog.diaPrintIncludeTags.isChecked) {
                     htmlDocument += "<article>"
                     if (bindingPrintDialog.diaPrintIncludeHeadings.isChecked) {
-                        htmlDocument += "<h2 class=\"title border-top\" dir=\"auto\">" + activity.getString(
-                            R.string.tags
-                        ) + "</h2>"
+                        htmlDocument += "<h2 class=\"title border-top\" dir=\"auto\">" + escapeHtml(activity.getString(R.string.tags)) + "</h2>"
                         htmlDocument += "<div>"
                     } else {
                         htmlDocument += "<div class=\"border-top\">"
                     }
                     for (tag in tagList) {
                         htmlDocument += "<div class=\"tag-div\""
-                        if (!tag.color.isNullOrBlank()) {
+                        // Only accept hex colors (as stored by the tag editor) in the style attribute
+                        if (tag.color?.matches(Regex("#[0-9a-fA-F]{3,8}")) == true) {
                             htmlDocument += " style=\"border-color:" + tag.color + ";\""
                         }
                         htmlDocument += ">"
                         if (!tag.emoji.isNullOrBlank()) {
-                            htmlDocument += "<span class=\"tag-emoji\">" + tag.emoji + "</span>"
+                            htmlDocument += "<span class=\"tag-emoji\">" + escapeHtml(tag.emoji) + "</span>"
                         }
-                        htmlDocument += "<span>" + tag.name + "</span></div>"
+                        htmlDocument += "<span>" + escapeHtml(tag.name) + "</span></div>"
                     }
                     htmlDocument += "</div></article>"
                 }

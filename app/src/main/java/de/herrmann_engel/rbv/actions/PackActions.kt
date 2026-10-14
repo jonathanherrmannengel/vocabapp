@@ -10,6 +10,7 @@ import de.herrmann_engel.rbv.activities.PackActionsActivity
 import de.herrmann_engel.rbv.adapters.AdapterCollectionsMovePack
 import de.herrmann_engel.rbv.databinding.DiaConfirmBinding
 import de.herrmann_engel.rbv.databinding.DiaRecBinding
+import de.herrmann_engel.rbv.db.AppDatabase
 import de.herrmann_engel.rbv.db.DB_Pack
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Delete
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
@@ -60,10 +61,13 @@ class PackActions(val activity: Activity) {
             if ((packs.size <= 1 && dbHelperGet.countCardsInPack(packs[0].uid) == 0) || forceDelete) {
                 val dbHelperDelete = DB_Helper_Delete(activity)
                 val packIds = arrayListOf<Int>()
-                for (pack in packs) {
-                    packIds.add(pack.uid)
-                    dbHelperDelete.deletePack(pack, forceDelete)
-                }
+                // All packs are deleted or none
+                AppDatabase.getInstance(activity).runInTransaction(Runnable {
+                    for (pack in packs) {
+                        packIds.add(pack.uid)
+                        dbHelperDelete.deletePack(pack, forceDelete)
+                    }
+                })
                 (activity as PackActionsActivity).deletedPacks(packIds)
             } else {
                 delete(packs, true)
