@@ -1,19 +1,17 @@
 package de.herrmann_engel.rbv.adapters
 
 import android.content.Context
-import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.documentfile.provider.DocumentFile
 import androidx.recyclerview.widget.RecyclerView
 import de.herrmann_engel.rbv.R
-import de.herrmann_engel.rbv.activities.FileTools
 import de.herrmann_engel.rbv.databinding.RecViewFilesBinding
 import de.herrmann_engel.rbv.db.DB_Media
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Delete
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
-import de.herrmann_engel.rbv.utils.ContextTools
+import de.herrmann_engel.rbv.utils.MediaFiles
 
 /**
  * List of the media files linked to a card (in the card's media settings). Missing files are
@@ -23,7 +21,8 @@ import de.herrmann_engel.rbv.utils.ContextTools
 class AdapterMediaLinkCard(
     private val media: MutableList<DB_Media>,
     private val cardNo: Int,
-    private val folder: String?
+    private val outputDirectory: DocumentFile?,
+    private val mediaFiles: MediaFiles
 ) : RecyclerView.Adapter<AdapterMediaLinkCard.ViewHolder>() {
     class ViewHolder(val binding: RecViewFilesBinding) : RecyclerView.ViewHolder(binding.root)
 
@@ -51,19 +50,19 @@ class AdapterMediaLinkCard(
             val fileId = currentMedia.uid
             val fileName = currentMedia.file
             viewHolder.binding.recFilesName.text = fileName
-            val outputDirectory = DocumentFile.fromTreeUri(context, Uri.parse(folder))
+            // Without a media folder, all files count as missing
             if (outputDirectory?.findFile(fileName) != null) {
                 viewHolder.binding.recFilesShare.visibility = View.VISIBLE
                 viewHolder.binding.recFilesShare.setOnClickListener {
-                    (ContextTools().getActivity(context) as FileTools).shareFile(fileId)
+                    mediaFiles.shareFile(fileId)
                 }
                 viewHolder.binding.recFilesOpen.visibility = View.VISIBLE
                 viewHolder.binding.recFilesOpen.setOnClickListener {
-                    (ContextTools().getActivity(context) as FileTools).openFile(fileId)
+                    mediaFiles.openFile(fileId)
                 }
                 viewHolder.binding.recFilesDelete.setOnClickListener {
                     if (deleteItem(currentMedia, viewHolder, context)) {
-                        (ContextTools().getActivity(context) as FileTools).showDeleteDialog(
+                        mediaFiles.showDeleteDialog(
                             fileName
                         )
                     }

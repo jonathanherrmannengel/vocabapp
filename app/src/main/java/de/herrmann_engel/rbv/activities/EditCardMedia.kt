@@ -38,11 +38,7 @@ class EditCardMedia : FileTools() {
     ) { result: ActivityResult ->
         if (result.resultCode == RESULT_OK) {
             try {
-                val outputDirectory = DocumentFile.fromTreeUri(
-                    this, Uri.parse(
-                        cardMediaFolder
-                    )
-                )
+                val outputDirectory = mediaFolder
                 if (outputDirectory == null || !outputDirectory.isDirectory) {
                     showSelectDialog(resources.getString(R.string.select_folder_help_reselect))
                 } else {
@@ -183,7 +179,7 @@ class EditCardMedia : FileTools() {
 
     private fun setRecView() {
         val mediaList = dbHelperGet.getCardMedia(cardNo) as ArrayList<DB_Media>
-        val adapter = AdapterMediaLinkCard(mediaList, cardNo, cardMediaFolder)
+        val adapter = AdapterMediaLinkCard(mediaList, cardNo, mediaFolder, this)
         binding.recCardMedia.adapter = adapter
         binding.recCardMedia.layoutManager = LinearLayoutManager(this)
     }

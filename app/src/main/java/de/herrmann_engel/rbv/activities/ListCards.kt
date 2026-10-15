@@ -37,6 +37,7 @@ import de.herrmann_engel.rbv.Globals.LIST_CARDS_GET_DB_PACKS_ADVANCED_SEARCH_LIS
 import de.herrmann_engel.rbv.Globals.LIST_CARDS_GET_DB_PACKS_ALL
 import de.herrmann_engel.rbv.Globals.LIST_CARDS_GET_DB_TAGS_ADVANCED_SEARCH_ALL
 import de.herrmann_engel.rbv.R
+import de.herrmann_engel.rbv.actions.CardActions
 import de.herrmann_engel.rbv.adapters.AdapterCards
 import de.herrmann_engel.rbv.databinding.ActivityDefaultRecBinding
 import de.herrmann_engel.rbv.databinding.DiaInfoBinding
@@ -70,7 +71,7 @@ import kotlin.math.roundToInt
  * and the query mode: a dialog asking the cards one after another, where the user rates each
  * card as known or not known (by buttons or swipes).
  */
-class ListCards : CardActionsActivity() {
+class ListCards : FileTools(), CardActions.Listener {
     private lateinit var binding: ActivityDefaultRecBinding
     private lateinit var dbHelperGet: DB_Helper_Get
     private lateinit var dbHelperUpdate: DB_Helper_Update
@@ -1149,7 +1150,8 @@ class ListCards : CardActionsActivity() {
                     frontBackReverse,
                     showFrontAndBack,
                     packNo,
-                    collectionNo
+                    collectionNo,
+                    CardActions(this, this, this)
                 )
                 binding.recDefault.adapter = adapter
                 binding.recDefault.layoutManager = LinearLayoutManager(this)

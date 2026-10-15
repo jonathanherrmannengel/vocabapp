@@ -45,7 +45,8 @@ import java.util.Locale
 class AdapterPacks(
     private val packs: MutableList<DB_Pack_With_Meta>,
     private var uiFontSizeBig: Boolean,
-    private val collection: Int
+    private val collection: Int,
+    private val packActions: PackActions
 ) : RecyclerView.Adapter<AdapterPacks.ViewHolder>() {
     class ViewHolder(val binding: RecViewCollectionOrPackBinding) :
         RecyclerView.ViewHolder(binding.root)
@@ -84,11 +85,7 @@ class AdapterPacks(
                         packs.find { p -> p.pack?.uid == id }
                             ?.let { contextualMenuModePackList.add(it.pack) }
                     }
-                    contextualMenuModeActivity?.let {
-                        PackActions(it).delete(
-                            contextualMenuModePackList
-                        )
-                    }
+                    packActions.delete(contextualMenuModePackList)
                     mode.finish()
                     true
                 }
@@ -99,11 +96,7 @@ class AdapterPacks(
                         packs.find { p -> p.pack?.uid == id }
                             ?.let { contextualMenuModePackList.add(it.pack) }
                     }
-                    contextualMenuModeActivity?.let {
-                        PackActions(it).move(
-                            contextualMenuModePackList
-                        )
-                    }
+                    packActions.move(contextualMenuModePackList)
                     mode.finish()
                     true
                 }

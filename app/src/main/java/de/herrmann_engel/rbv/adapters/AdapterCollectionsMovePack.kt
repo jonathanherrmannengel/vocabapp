@@ -8,21 +8,21 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.R
-import de.herrmann_engel.rbv.activities.PackActionsActivity
 import de.herrmann_engel.rbv.databinding.RecViewBinding
 import de.herrmann_engel.rbv.db.AppDatabase
 import de.herrmann_engel.rbv.db.DB_Collection
 import de.herrmann_engel.rbv.db.DB_Pack
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Update
-import de.herrmann_engel.rbv.utils.ContextTools
 
 /**
- * Collection list in the "move pack" dialog. Clicking a collection moves the packs there.
+ * Collection list in the "move pack" dialog. Clicking a collection moves the packs there and
+ * reports the ids of the moved packs to onMoved.
  */
 class AdapterCollectionsMovePack(
     private val collection: List<DB_Collection>,
     private val packs: List<DB_Pack>,
-    private val dialog: Dialog
+    private val dialog: Dialog,
+    private val onMoved: (ArrayList<Int>) -> Unit
 ) : RecyclerView.Adapter<AdapterCollectionsMovePack.ViewHolder>() {
     class ViewHolder(val binding: RecViewBinding) : RecyclerView.ViewHolder(binding.root)
 
@@ -73,7 +73,7 @@ class AdapterCollectionsMovePack(
                     }
                 }
             })
-            (ContextTools().getActivity(context) as PackActionsActivity).movedPacks(packIds)
+            onMoved(packIds)
             dialog.dismiss()
         }
     }

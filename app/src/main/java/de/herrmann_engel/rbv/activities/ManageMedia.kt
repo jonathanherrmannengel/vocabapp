@@ -63,7 +63,7 @@ class ManageMedia : FileTools() {
     private fun setRecView() {
         val dbHelperGet = DB_Helper_Get(this)
         val mediaList = dbHelperGet.allMedia as ArrayList<DB_Media>
-        val adapter = AdapterMediaManage(mediaList)
+        val adapter = AdapterMediaManage(mediaList, this)
         binding.recMediaManage.adapter = adapter
         binding.recMediaManage.layoutManager = LinearLayoutManager(this)
     }

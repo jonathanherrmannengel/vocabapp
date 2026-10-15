@@ -45,7 +45,7 @@ import java.util.Locale
  * Shows a single card with all its details (both sides, tags, notes, dates, progress, media)
  * and lets the user change its progress manually. Expects "collection", "pack" and "card" extras.
  */
-class ViewCard : CardActionsActivity() {
+class ViewCard : FileTools(), CardActions.Listener {
     private lateinit var binding: ActivityViewCardBinding
     private lateinit var dbHelperGet: DB_Helper_Get
     private lateinit var dbHelperUpdate: DB_Helper_Update
@@ -233,7 +233,7 @@ class ViewCard : CardActionsActivity() {
             return@setOnMenuItemClickListener true
         }
         menu.findItem(R.id.menu_view_card_delete).setOnMenuItemClickListener {
-            CardActions(this).delete(card)
+            CardActions(this, this, this).delete(card)
             return@setOnMenuItemClickListener true
         }
         menu.findItem(R.id.menu_view_card_edit_media).setOnMenuItemClickListener {
@@ -249,13 +249,13 @@ class ViewCard : CardActionsActivity() {
             return@setOnMenuItemClickListener true
         }
         menu.findItem(R.id.menu_view_card_print).setOnMenuItemClickListener {
-            CardActions(this).print(card)
+            CardActions(this, this, this).print(card)
             return@setOnMenuItemClickListener true
         }
         // Moving is only offered when the card was opened from within its pack
         if (packNo >= 0) {
             menu.findItem(R.id.menu_view_card_move).setOnMenuItemClickListener {
-                CardActions(this).move(card, collectionNo)
+                CardActions(this, this, this).move(card, collectionNo)
                 return@setOnMenuItemClickListener true
             }
         } else {

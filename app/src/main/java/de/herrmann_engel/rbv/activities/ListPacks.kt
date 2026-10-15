@@ -16,6 +16,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.R
+import de.herrmann_engel.rbv.actions.PackActions
 import de.herrmann_engel.rbv.adapters.AdapterPacks
 import de.herrmann_engel.rbv.databinding.ActivityDefaultRecBinding
 import de.herrmann_engel.rbv.databinding.DiaExportBinding
@@ -31,7 +32,7 @@ import java.util.Locale
  * Pack list of the collection passed as "collection" extra, or of all collections if it is
  * LIST_CARDS_GET_DB_COLLECTIONS_ALL. A single collection can be exported and shared from here.
  */
-class ListPacks : PackActionsActivity() {
+class ListPacks : RBVActivity(), PackActions.Listener {
     private lateinit var binding: ActivityDefaultRecBinding
     private lateinit var dbHelperGet: DB_Helper_Get
     private var adapter: AdapterPacks? = null
@@ -170,7 +171,7 @@ class ListPacks : PackActionsActivity() {
             val content = withContext(Dispatchers.IO) { loadContent() }
             adapter?.updateSettingsAndContent(content, uiFontSizeBig) ?: run {
                 adapter = AdapterPacks(
-                    content, uiFontSizeBig, collectionNo
+                    content, uiFontSizeBig, collectionNo, PackActions(this@ListPacks, this@ListPacks)
                 )
                 binding.recDefault.adapter = adapter
                 binding.recDefault.layoutManager =

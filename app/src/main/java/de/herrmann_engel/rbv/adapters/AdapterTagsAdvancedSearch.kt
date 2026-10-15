@@ -4,18 +4,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import de.herrmann_engel.rbv.activities.AdvancedSearch
 import de.herrmann_engel.rbv.databinding.RecViewSmallBinding
 import de.herrmann_engel.rbv.db.DB_Tag
-import de.herrmann_engel.rbv.utils.ContextTools
 import de.herrmann_engel.rbv.utils.StringTools
 
 /**
- * Tag list with checkboxes in the advanced search. Changes are reported to [AdvancedSearch].
+ * Tag list with checkboxes in the advanced search. Changes are reported to onCheckedChange.
  */
 class AdapterTagsAdvancedSearch(
     private val tags: List<DB_Tag>,
-    private val tagIdsCheckedInitially: List<Int>
+    private val tagIdsCheckedInitially: List<Int>,
+    private val onCheckedChange: (tagId: Int, checked: Boolean) -> Unit
 ) : RecyclerView.Adapter<AdapterTagsAdvancedSearch.ViewHolder>() {
     class ViewHolder(val binding: RecViewSmallBinding) : RecyclerView.ViewHolder(binding.root)
 
@@ -42,11 +41,7 @@ class AdapterTagsAdvancedSearch(
         val extra = tags[position].uid
         viewHolder.binding.recSmallCheckbox.isChecked = tagIdsCheckedInitially.contains(extra)
         viewHolder.binding.recSmallCheckbox.setOnCheckedChangeListener { _, checked ->
-            if (checked) {
-                (ContextTools().getActivity(context) as AdvancedSearch).addToTagList(extra)
-            } else {
-                (ContextTools().getActivity(context) as AdvancedSearch).removeFromTagList(extra)
-            }
+            onCheckedChange(extra, checked)
         }
     }
 

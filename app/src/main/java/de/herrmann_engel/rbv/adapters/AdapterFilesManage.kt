@@ -6,9 +6,8 @@ import android.view.ViewGroup
 import androidx.documentfile.provider.DocumentFile
 import androidx.recyclerview.widget.RecyclerView
 import de.herrmann_engel.rbv.R
-import de.herrmann_engel.rbv.activities.FileTools
 import de.herrmann_engel.rbv.databinding.RecViewFilesBinding
-import de.herrmann_engel.rbv.utils.ContextTools
+import de.herrmann_engel.rbv.utils.MediaFiles
 
 
 /**
@@ -16,7 +15,8 @@ import de.herrmann_engel.rbv.utils.ContextTools
  * with buttons to open, share and delete them.
  */
 class AdapterFilesManage(
-    private val files: MutableList<DocumentFile>
+    private val files: MutableList<DocumentFile>,
+    private val mediaFiles: MediaFiles
 ) : RecyclerView.Adapter<AdapterFilesManage.ViewHolder>() {
     class ViewHolder(val binding: RecViewFilesBinding) : RecyclerView.ViewHolder(binding.root)
 
@@ -43,19 +43,19 @@ class AdapterFilesManage(
             val currentFile = files[position]
             viewHolder.binding.recFilesName.text = currentFile.name
             viewHolder.binding.recFilesShare.setOnClickListener {
-                (ContextTools().getActivity(context) as FileTools).shareFile(currentFile.name!!)
+                mediaFiles.shareFile(currentFile.name!!)
             }
             viewHolder.binding.recFilesOpen.setOnClickListener {
-                (ContextTools().getActivity(context) as FileTools).openFile(currentFile.name!!)
+                mediaFiles.openFile(currentFile.name!!)
             }
             viewHolder.binding.recFilesDelete.setOnClickListener {
-                val dialog = (ContextTools().getActivity(context) as FileTools).showDeleteDialog(
+                val dialog = mediaFiles.showDeleteDialog(
                     currentFile.name!!,
                     context.resources.getString(R.string.delete_file_without_media_info)
                 )
                 // Remove the item if the file has actually been deleted
                 dialog.setOnDismissListener {
-                    if (!(ContextTools().getActivity(context) as FileTools).existsMediaFile(
+                    if (!mediaFiles.existsMediaFile(
                             currentFile.name
                         )
                     ) {

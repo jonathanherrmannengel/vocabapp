@@ -6,7 +6,6 @@ import android.view.View
 import android.view.WindowManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import de.herrmann_engel.rbv.R
-import de.herrmann_engel.rbv.activities.PackActionsActivity
 import de.herrmann_engel.rbv.adapters.AdapterCollectionsMovePack
 import de.herrmann_engel.rbv.databinding.DiaConfirmBinding
 import de.herrmann_engel.rbv.databinding.DiaRecBinding
@@ -17,9 +16,13 @@ import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 
 /**
  * Dialogs for actions on one or more packs: delete and move to another collection.
- * The activity has to be a [PackActionsActivity].
+ * The listener is notified after packs have been deleted or moved.
  */
-class PackActions(val activity: Activity) {
+class PackActions(val activity: Activity, private val listener: Listener) {
+    interface Listener {
+        fun deletedPacks(packIds: ArrayList<Int>)
+        fun movedPacks(packIds: ArrayList<Int>)
+    }
 
     /**
      * Asks for confirmation and deletes the packs. If multiple packs or a pack containing cards
@@ -68,7 +71,7 @@ class PackActions(val activity: Activity) {
                         dbHelperDelete.deletePack(pack, forceDelete)
                     }
                 })
-                (activity as PackActionsActivity).deletedPacks(packIds)
+                listener.deletedPacks(packIds)
             } else {
                 delete(packs, true)
             }
@@ -100,7 +103,7 @@ class PackActions(val activity: Activity) {
         )
         val dbHelperGet = DB_Helper_Get(activity)
         val collections = dbHelperGet.allCollections
-        val adapter = AdapterCollectionsMovePack(collections, packs, moveDialog)
+        val adapter = AdapterCollectionsMovePack(collections, packs, moveDialog, listener::movedPacks)
         bindingMoveDialog.diaRec.adapter = adapter
         bindingMoveDialog.diaRec.layoutManager = LinearLayoutManager(activity)
         moveDialog.show()

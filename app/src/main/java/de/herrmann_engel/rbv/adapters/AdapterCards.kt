@@ -48,7 +48,8 @@ class AdapterCards(
     private var reverse: Boolean,
     private var showBothSides: Boolean,
     private val packNo: Int,
-    private val collectionNo: Int
+    private val collectionNo: Int,
+    private val cardActions: CardActions
 ) : RecyclerView.Adapter<AdapterCards.ViewHolder>() {
     class ViewHolder(val binding: RecViewCardBinding) : RecyclerView.ViewHolder(binding.root)
 
@@ -86,11 +87,7 @@ class AdapterCards(
                         cards.find { c -> c.card.uid == id }
                             ?.let { contextualMenuModeCardList.add(it.card) }
                     }
-                    contextualMenuModeActivity?.let {
-                        CardActions(it).delete(
-                            contextualMenuModeCardList
-                        )
-                    }
+                    cardActions.delete(contextualMenuModeCardList)
                     mode.finish()
                     true
                 }
@@ -101,12 +98,7 @@ class AdapterCards(
                         cards.find { c -> c.card.uid == id }
                             ?.let { contextualMenuModeCardList.add(it.card) }
                     }
-                    contextualMenuModeActivity?.let {
-                        CardActions(it).move(
-                            contextualMenuModeCardList,
-                            collectionNo
-                        )
-                    }
+                    cardActions.move(contextualMenuModeCardList, collectionNo)
                     mode.finish()
                     true
                 }
@@ -117,11 +109,7 @@ class AdapterCards(
                         cards.find { c -> c.card.uid == id }
                             ?.let { contextualMenuModeCardList.add(it.card) }
                     }
-                    contextualMenuModeActivity?.let {
-                        CardActions(it).print(
-                            contextualMenuModeCardList
-                        )
-                    }
+                    cardActions.print(contextualMenuModeCardList)
                     mode.finish()
                     true
                 }

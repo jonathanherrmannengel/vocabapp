@@ -5,20 +5,19 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import de.herrmann_engel.rbv.R
-import de.herrmann_engel.rbv.activities.AdvancedSearch
 import de.herrmann_engel.rbv.databinding.RecViewSmallBinding
 import de.herrmann_engel.rbv.db.DB_Pack_With_Meta
-import de.herrmann_engel.rbv.utils.ContextTools
 import de.herrmann_engel.rbv.utils.StringTools
 import java.util.Locale
 
 /**
  * Pack list with checkboxes in the advanced search, showing the number of cards and the
- * collection of each pack. Changes are reported to [AdvancedSearch].
+ * collection of each pack. Changes are reported to onCheckedChange.
  */
 class AdapterPacksAdvancedSearch(
     private val packs: List<DB_Pack_With_Meta>,
-    private val packIdsCheckedInitially: List<Int>
+    private val packIdsCheckedInitially: List<Int>,
+    private val onCheckedChange: (packId: Int, checked: Boolean) -> Unit
 ) : RecyclerView.Adapter<AdapterPacksAdvancedSearch.ViewHolder>() {
     class ViewHolder(val binding: RecViewSmallBinding) : RecyclerView.ViewHolder(binding.root)
 
@@ -69,11 +68,7 @@ class AdapterPacksAdvancedSearch(
             val extra = pack.uid
             viewHolder.binding.recSmallCheckbox.isChecked = packIdsCheckedInitially.contains(extra)
             viewHolder.binding.recSmallCheckbox.setOnCheckedChangeListener { _, checked ->
-                if (checked) {
-                    (ContextTools().getActivity(context) as AdvancedSearch).addToPackList(extra)
-                } else {
-                    (ContextTools().getActivity(context) as AdvancedSearch).removeFromPackList(extra)
-                }
+                onCheckedChange(extra, checked)
             }
         }
     }

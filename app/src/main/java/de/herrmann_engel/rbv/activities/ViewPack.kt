@@ -28,7 +28,7 @@ import java.util.Locale
  * Details of a pack (name, emoji, description, creation date) with options to edit,
  * delete and move it.
  */
-class ViewPack : PackActionsActivity() {
+class ViewPack : RBVActivity(), PackActions.Listener {
     private lateinit var binding: ActivityViewCollectionOrPackBinding
     private lateinit var dbHelperGet: DB_Helper_Get
     private lateinit var pack: DB_Pack
@@ -113,7 +113,7 @@ class ViewPack : PackActionsActivity() {
             return@setOnMenuItemClickListener true
         }
         menu.findItem(R.id.menu_view_pack_delete).setOnMenuItemClickListener {
-            PackActions(this).delete(pack)
+            PackActions(this, this).delete(pack)
             return@setOnMenuItemClickListener true
         }
         // Moving is only offered when the pack was opened from within its collection
@@ -121,7 +121,7 @@ class ViewPack : PackActionsActivity() {
             menu.findItem(R.id.menu_view_pack_move).isVisible = false
         } else {
             menu.findItem(R.id.menu_view_pack_move).setOnMenuItemClickListener {
-                PackActions(this).move(pack)
+                PackActions(this, this).move(pack)
                 return@setOnMenuItemClickListener true
             }
         }

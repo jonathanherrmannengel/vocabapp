@@ -53,7 +53,9 @@ class AdvancedSearch : RBVActivity() {
         // Packs including card counts and collection names, loaded in the background
         lifecycleScope.launch {
             val packs = withContext(Dispatchers.IO) { dbHelperGet.allPacksWithMeta }
-            binding.recAdvancedSearch.adapter = AdapterPacksAdvancedSearch(packs, packList)
+            binding.recAdvancedSearch.adapter = AdapterPacksAdvancedSearch(packs, packList) { packId, checked ->
+                if (checked) addToPackList(packId) else removeFromPackList(packId)
+            }
         }
         binding.recAdvancedSearch.layoutManager = LinearLayoutManager(this)
         if (pack == LIST_CARDS_GET_DB_PACKS_ADVANCED_SEARCH_ALL) {
@@ -158,7 +160,9 @@ class AdvancedSearch : RBVActivity() {
         if (dbHelperGet.hasTags()) {
             binding.advancedSearchContainerTags.visibility = View.VISIBLE
             val tags = dbHelperGet.allTags
-            val adapterTags = AdapterTagsAdvancedSearch(tags, tagList)
+            val adapterTags = AdapterTagsAdvancedSearch(tags, tagList) { tagId, checked ->
+                if (checked) addToTagList(tagId) else removeFromTagList(tagId)
+            }
             binding.recAdvancedSearchTags.adapter = adapterTags
             binding.recAdvancedSearchTags.layoutManager = LinearLayoutManager(this)
             if (tag == LIST_CARDS_GET_DB_TAGS_ADVANCED_SEARCH_ALL) {
@@ -185,25 +189,25 @@ class AdvancedSearch : RBVActivity() {
     }
 
     // Called by the adapters when checkboxes change
-    fun addToPackList(i: Int) {
+    private fun addToPackList(i: Int) {
         if (!packList.contains(i)) {
             packList.add(i)
         }
     }
 
-    fun removeFromPackList(i: Int) {
+    private fun removeFromPackList(i: Int) {
         if (packList.contains(i)) {
             packList.remove(Integer.valueOf(i))
         }
     }
 
-    fun addToTagList(i: Int) {
+    private fun addToTagList(i: Int) {
         if (!tagList.contains(i)) {
             tagList.add(i)
         }
     }
 
-    fun removeFromTagList(i: Int) {
+    private fun removeFromTagList(i: Int) {
         if (tagList.contains(i)) {
             tagList.remove(Integer.valueOf(i))
         }

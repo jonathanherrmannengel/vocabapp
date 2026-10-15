@@ -10,23 +10,23 @@ import androidx.recyclerview.widget.RecyclerView
 import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.Globals.LIST_CARDS_GET_DB_COLLECTIONS_ALL
 import de.herrmann_engel.rbv.R
-import de.herrmann_engel.rbv.activities.CardActionsActivity
 import de.herrmann_engel.rbv.databinding.RecViewBinding
 import de.herrmann_engel.rbv.db.AppDatabase
 import de.herrmann_engel.rbv.db.DB_Card
 import de.herrmann_engel.rbv.db.DB_Pack_With_Meta
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Update
-import de.herrmann_engel.rbv.utils.ContextTools
 import de.herrmann_engel.rbv.utils.StringTools
 
 /**
- * Pack list in the "move card" dialog. Clicking a pack moves the cards there.
+ * Pack list in the "move card" dialog. Clicking a pack moves the cards there and reports the
+ * ids of the moved cards to onMoved.
  */
 class AdapterPacksMoveCard(
     private val packs: List<DB_Pack_With_Meta>,
     private val collectionNo: Int,
     private val cards: List<DB_Card>,
-    private val dialog: Dialog
+    private val dialog: Dialog,
+    private val onMoved: (ArrayList<Int>) -> Unit
 ) : RecyclerView.Adapter<AdapterPacksMoveCard.ViewHolder>() {
     class ViewHolder(val binding: RecViewBinding) : RecyclerView.ViewHolder(binding.root)
 
@@ -86,7 +86,7 @@ class AdapterPacksMoveCard(
                     }
                 }
             })
-            (ContextTools().getActivity(context) as CardActionsActivity).movedCards(cardIds)
+            onMoved(cardIds)
             dialog.dismiss()
         }
     }

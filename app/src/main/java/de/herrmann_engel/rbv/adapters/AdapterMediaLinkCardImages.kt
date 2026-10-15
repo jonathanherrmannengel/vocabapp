@@ -8,10 +8,9 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import coil3.load
 import de.herrmann_engel.rbv.R
-import de.herrmann_engel.rbv.activities.FileTools
 import de.herrmann_engel.rbv.databinding.RecViewImageBinding
 import de.herrmann_engel.rbv.db.DB_Media
-import de.herrmann_engel.rbv.utils.ContextTools
+import de.herrmann_engel.rbv.utils.MediaFiles
 
 
 /**
@@ -20,7 +19,8 @@ import de.herrmann_engel.rbv.utils.ContextTools
 class AdapterMediaLinkCardImages(
     private val media: List<DB_Media>,
     private val cardNo: Int,
-    private val dialog: Dialog
+    private val dialog: Dialog,
+    private val mediaFiles: MediaFiles
 ) : RecyclerView.Adapter<AdapterMediaLinkCardImages.ViewHolder>() {
     class ViewHolder(val binding: RecViewImageBinding) : RecyclerView.ViewHolder(binding.root)
 
@@ -42,13 +42,13 @@ class AdapterMediaLinkCardImages(
         )
         val currentMediaLink = media[position]
         val fileId = currentMediaLink.uid
-        val uri = (ContextTools().getActivity(context) as FileTools).getImageUri(fileId)
+        val uri = mediaFiles.getImageUri(fileId)
         if (uri != null) {
             viewHolder.binding.recImg.load(uri)
             viewHolder.binding.recImg.setBackgroundColor(Color.TRANSPARENT)
         }
         viewHolder.binding.recImg.setOnClickListener {
-            (ContextTools().getActivity(context) as FileTools).showImageDialog(
+            mediaFiles.showImageDialog(
                 fileId,
                 cardNo,
                 dialog

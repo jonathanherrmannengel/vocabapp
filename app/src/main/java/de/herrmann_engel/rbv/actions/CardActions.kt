@@ -17,7 +17,6 @@ import androidx.core.text.toSpanned
 import androidx.recyclerview.widget.LinearLayoutManager
 import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.R
-import de.herrmann_engel.rbv.activities.CardActionsActivity
 import de.herrmann_engel.rbv.adapters.AdapterPacksMoveCard
 import de.herrmann_engel.rbv.databinding.DiaConfirmBinding
 import de.herrmann_engel.rbv.databinding.DiaPrintBinding
@@ -29,6 +28,7 @@ import de.herrmann_engel.rbv.db.DB_Pack_With_Meta
 import de.herrmann_engel.rbv.db.DB_Tag
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Delete
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
+import de.herrmann_engel.rbv.utils.MediaFiles
 import de.herrmann_engel.rbv.utils.StringTools
 import org.commonmark.parser.Parser
 import org.commonmark.renderer.html.HtmlRenderer
@@ -36,9 +36,18 @@ import java.util.Locale
 
 /**
  * Dialogs for actions on one or more cards: delete, move to another pack and print.
- * The activity has to be a [CardActionsActivity].
+ * The listener is notified after cards have been deleted or moved; mediaFiles provides the
+ * images for printing.
  */
-class CardActions(val activity: Activity) {
+class CardActions(
+    val activity: Activity,
+    private val listener: Listener,
+    private val mediaFiles: MediaFiles
+) {
+    interface Listener {
+        fun deletedCards(cardIds: ArrayList<Int>)
+        fun movedCards(cardIds: ArrayList<Int>)
+    }
 
     // User data has to be escaped before it is inserted into the print HTML
     private fun escapeHtml(text: String?): String {
@@ -79,7 +88,7 @@ class CardActions(val activity: Activity) {
                         dbHelperDelete.deleteCard(card)
                     }
                 })
-                (activity as CardActionsActivity).deletedCards(cardIds)
+                listener.deletedCards(cardIds)
             } else {
                 delete(cards, true)
             }
@@ -119,7 +128,7 @@ class CardActions(val activity: Activity) {
         } else {
             dbHelperGet.getAllPacksWithMetaNoCounterByCollection(collectionNo)
         }
-        val adapter = AdapterPacksMoveCard(packs, collectionNo, cards, moveDialog)
+        val adapter = AdapterPacksMoveCard(packs, collectionNo, cards, moveDialog, listener::movedCards)
         bindingMoveDialog.diaRec.adapter = adapter
         bindingMoveDialog.diaRec.layoutManager = LinearLayoutManager(activity)
         moveDialog.show()
@@ -297,7 +306,7 @@ class CardActions(val activity: Activity) {
                         }
                         for (item in imageList) {
                             val uri =
-                                (activity as CardActionsActivity).getImageUri(item.uid)
+                                mediaFiles.getImageUri(item.uid)
                             if (uri != null) {
                                 htmlDocument += "<div><img class=\"image\" alt=\"" + escapeHtml(item.file) + "\" src=\"" + escapeHtml(uri.toString()) + "\"></div>"
                             }

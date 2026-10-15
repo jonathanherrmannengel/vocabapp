@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.R
-import de.herrmann_engel.rbv.activities.FileTools
 import de.herrmann_engel.rbv.databinding.DiaConfirmBinding
 import de.herrmann_engel.rbv.databinding.DiaRecBinding
 import de.herrmann_engel.rbv.databinding.RecViewBinding
@@ -22,6 +21,7 @@ import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.utils.ContextTools
 import de.herrmann_engel.rbv.utils.FormatCards
 import de.herrmann_engel.rbv.utils.SortCards
+import de.herrmann_engel.rbv.utils.MediaFiles
 
 
 /**
@@ -29,7 +29,8 @@ import de.herrmann_engel.rbv.utils.SortCards
  * can be deleted (database entry and, after confirmation, the file).
  */
 class AdapterMediaManage(
-    private val media: MutableList<DB_Media>
+    private val media: MutableList<DB_Media>,
+    private val mediaFiles: MediaFiles
 ) : RecyclerView.Adapter<AdapterMediaManage.ViewHolder>() {
     class ViewHolder(val binding: RecViewBinding) : RecyclerView.ViewHolder(binding.root)
 
@@ -82,11 +83,11 @@ class AdapterMediaManage(
                         notifyItemRemoved(position)
                         notifyItemRangeChanged(position, media.size)
                         dialog.dismiss()
-                        if ((ContextTools().getActivity(context) as FileTools).existsMediaFile(
+                        if (mediaFiles.existsMediaFile(
                                 fileName
                             )
                         ) {
-                            (ContextTools().getActivity(context) as FileTools).showDeleteDialog(
+                            mediaFiles.showDeleteDialog(
                                 fileName
                             )
                         }

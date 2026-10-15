@@ -65,7 +65,7 @@ class ManageFiles : FileTools() {
                     filesWithoutMedia.add(file)
                 }
             }
-            val adapter = AdapterFilesManage(filesWithoutMedia)
+            val adapter = AdapterFilesManage(filesWithoutMedia, this)
             binding.recFilesManage.adapter = adapter
             binding.recFilesManage.layoutManager = LinearLayoutManager(this)
         }
