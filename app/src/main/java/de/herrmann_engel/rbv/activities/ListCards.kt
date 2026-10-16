@@ -1,20 +1,10 @@
 package de.herrmann_engel.rbv.activities
 
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
-import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Intent
 import android.content.SharedPreferences
-import android.graphics.drawable.GradientDrawable
-import android.graphics.drawable.LayerDrawable
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.text.SpannableString
-import android.text.util.Linkify
-import android.util.TypedValue
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -39,29 +29,19 @@ import de.herrmann_engel.rbv.Globals.LIST_CARDS_GET_DB_TAGS_ADVANCED_SEARCH_ALL
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.actions.CardActions
 import de.herrmann_engel.rbv.adapters.AdapterCards
+import de.herrmann_engel.rbv.cardlist.ListStatsDialog
+import de.herrmann_engel.rbv.cardlist.QueryMode
 import de.herrmann_engel.rbv.databinding.ActivityDefaultRecBinding
 import de.herrmann_engel.rbv.databinding.DiaInfoBinding
-import de.herrmann_engel.rbv.databinding.DiaListStatsBinding
-import de.herrmann_engel.rbv.databinding.DiaQueryBinding
-import de.herrmann_engel.rbv.db.DB_Card
 import de.herrmann_engel.rbv.db.DB_Card_With_Meta
-import de.herrmann_engel.rbv.db.DB_Media
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
-import de.herrmann_engel.rbv.db.utils.DB_Helper_Update
 import de.herrmann_engel.rbv.media.MediaFileManager
-import de.herrmann_engel.rbv.ui.SwipeEvents
 import de.herrmann_engel.rbv.utils.FormatCards
 import de.herrmann_engel.rbv.utils.SearchCards
 import de.herrmann_engel.rbv.utils.SortCards
-import de.herrmann_engel.rbv.utils.StringTools
-import io.noties.markwon.Markwon
-import io.noties.markwon.linkify.LinkifyPlugin
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import me.saket.bettermovementmethod.BetterLinkMovementMethod
-import kotlin.math.abs
-import kotlin.math.roundToInt
 
 /**
  * Card list of a pack, a collection, all cards or the results of an advanced search
@@ -69,8 +49,7 @@ import kotlin.math.roundToInt
  * constants in Globals).
  *
  * Besides the list (sortable, searchable, showing front/back/both sides) it offers statistics
- * and the query mode: a dialog asking the cards one after another, where the user rates each
- * card as known or not known (by buttons or swipes).
+ * (see [ListStatsDialog]) and the query mode (see [QueryMode]).
  */
 class ListCards : RBVActivity(), CardActions.Listener {
     private val mediaFileManager = MediaFileManager(
@@ -79,10 +58,8 @@ class ListCards : RBVActivity(), CardActions.Listener {
     )
     private lateinit var binding: ActivityDefaultRecBinding
     private lateinit var dbHelperGet: DB_Helper_Get
-    private lateinit var dbHelperUpdate: DB_Helper_Update
     private lateinit var settings: SharedPreferences
-    private lateinit var queryModeDialog: Dialog
-    private lateinit var bindingQueryModeDialog: DiaQueryBinding
+    private lateinit var queryMode: QueryMode
     private lateinit var showCardSideMenuItem: MenuItem
     private lateinit var changeListSortMenuItem: MenuItem
     private lateinit var showQueryModeMenuItem: MenuItem
@@ -107,15 +84,12 @@ class ListCards : RBVActivity(), CardActions.Listener {
     private var showFrontAndBack = false
     private var listSort = Globals.SORT_CARDS_DEFAULT
     private var searchQuery: String? = null
-    // Position of the current card in query mode
-    private var cardPosition = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityDefaultRecBinding.inflate(layoutInflater)
         setContentView(binding.root)
         dbHelperGet = DB_Helper_Get(this)
-        dbHelperUpdate = DB_Helper_Update(this)
         settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE)
         listSort = settings.getInt("default_sort", Globals.SORT_CARDS_DEFAULT)
         // Initial side(s) to show, can be changed via the menu
@@ -153,10 +127,21 @@ class ListCards : RBVActivity(), CardActions.Listener {
                 )
             )
         }
-        // The query mode dialog is created once and reused
-        queryModeDialog = Dialog(this, R.style.dia_view)
-        bindingQueryModeDialog = DiaQueryBinding.inflate(
-            layoutInflater
+        // After the query mode, the list scrolls to the last queried card
+        queryMode = QueryMode(
+            this,
+            mediaFileManager,
+            onCardChanged = { adapter?.notifyItemChanged(it) },
+            onClosed = { lastPosition ->
+                updateContent()
+                if (lastPosition < 0 || lastPosition >= cardsListFiltered!!.size) {
+                    binding.recDefault.scrollToPosition(0)
+                } else {
+                    binding.recDefault.smoothScrollToPosition(
+                        lastPosition.coerceAtMost(binding.recDefault.adapter!!.itemCount - 1)
+                    )
+                }
+            }
         )
         // Edge-to-edge: keep the content clear of the system bars
         ViewCompat.setOnApplyWindowInsetsListener(binding.recDefault) { v, windowInsets ->
@@ -341,8 +326,8 @@ class ListCards : RBVActivity(), CardActions.Listener {
 
             // Display content
             // Keep the query mode open after returning, e.g. from editing a card
-            if (queryModeDialog.isShowing) {
-                nextQuery(true)
+            if (queryMode.isShowing) {
+                queryMode.update(cardsListFiltered!!)
             } else {
                 updateContent()
             }
@@ -467,201 +452,19 @@ class ListCards : RBVActivity(), CardActions.Listener {
             updateContent(true)
             false
         }
-        // Query mode starts at the first visible card; afterwards the list scrolls to the last queried card
+        // Query mode starts at the first visible card
         showQueryModeMenuItem = menu.findItem(R.id.start_query)
         showQueryModeMenuItem.setOnMenuItemClickListener {
-            queryModeDialog.setContentView(bindingQueryModeDialog.root)
-            queryModeDialog.window!!.setLayout(
-                WindowManager.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.MATCH_PARENT
-            )
-            cardPosition =
+            val startPosition =
                 (binding.recDefault.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
                     .coerceAtMost(cardsListFiltered!!.size - 1)
                     .coerceAtMost(binding.recDefault.adapter!!.itemCount - 1)
-            nextQuery()
-            queryModeDialog.setOnDismissListener { _ ->
-                updateContent()
-                if (cardPosition < 0 || cardPosition >= cardsListFiltered!!.size) {
-                    binding.recDefault.scrollToPosition(0)
-                } else {
-                    binding.recDefault.smoothScrollToPosition(
-                        cardPosition.coerceAtMost(binding.recDefault.adapter!!.itemCount - 1)
-                    )
-                }
-            }
-            queryModeDialog.show()
+            queryMode.start(cardsListFiltered!!, startPosition, frontBackReverse)
             false
         }
-        // Statistics of the displayed cards: total and progress (sum, max, min, average) and
-        // a table of the number and share of cards per progress value (0 to 4, 5 or more)
         showListStatsMenuItem = menu.findItem(R.id.show_list_stats)
         showListStatsMenuItem.setOnMenuItemClickListener {
-            val listStatsDialog = Dialog(this, R.style.dia_view)
-            val bindingListStatsDialog = DiaListStatsBinding.inflate(
-                layoutInflater
-            )
-            listStatsDialog.setContentView(bindingListStatsDialog.root)
-            listStatsDialog.setTitle(resources.getString(R.string.list_stats))
-            listStatsDialog.window!!.setLayout(
-                WindowManager.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.MATCH_PARENT
-            )
-            bindingListStatsDialog.listStatCardsTotal.text =
-                String.format(
-                    getString(R.string.list_stat_cards_total),
-                    cardsListFiltered!!.size
-                )
-            val statTotalProgress =
-                cardsListFiltered!!.stream().mapToInt { c: DB_Card_With_Meta? -> c!!.card.known }
-                    .sum()
-            bindingListStatsDialog.listStatProgressTotal.text =
-                String.format(
-                    getString(R.string.list_stat_progress_total),
-                    statTotalProgress
-                )
-            val statMaxProgress =
-                cardsListFiltered!!.stream().mapToInt { c: DB_Card_With_Meta? -> c!!.card.known }
-                    .max().orElse(0)
-            bindingListStatsDialog.listStatProgressMax.text =
-                String.format(
-                    getString(R.string.list_stat_progress_max),
-                    statMaxProgress
-                )
-            val statMinProgress =
-                cardsListFiltered!!.stream().mapToInt { c: DB_Card_With_Meta? -> c!!.card.known }
-                    .min().orElse(0)
-            bindingListStatsDialog.listStatProgressMin.text =
-                String.format(
-                    getString(R.string.list_stat_progress_min),
-                    statMinProgress
-                )
-            var statAvgProgress =
-                cardsListFiltered!!.stream().mapToInt { c: DB_Card_With_Meta? -> c!!.card.known }
-                    .average().orElse(0.0)
-            statAvgProgress = (statAvgProgress * 100.0).roundToInt() / 100.0
-            bindingListStatsDialog.listStatProgressAvg.text =
-                String.format(
-                    getString(R.string.list_stat_progress_avg),
-                    statAvgProgress
-                )
-            val statProgressTableIs0 =
-                cardsListFiltered!!.stream().filter { c: DB_Card_With_Meta? -> c!!.card.known == 0 }
-                    .count().toInt()
-            val statProgressTableIs1 =
-                cardsListFiltered!!.stream().filter { c: DB_Card_With_Meta? -> c!!.card.known == 1 }
-                    .count().toInt()
-            val statProgressTableIs2 =
-                cardsListFiltered!!.stream().filter { c: DB_Card_With_Meta? -> c!!.card.known == 2 }
-                    .count().toInt()
-            val statProgressTableIs3 =
-                cardsListFiltered!!.stream().filter { c: DB_Card_With_Meta? -> c!!.card.known == 3 }
-                    .count().toInt()
-            val statProgressTableIs4 =
-                cardsListFiltered!!.stream().filter { c: DB_Card_With_Meta? -> c!!.card.known == 4 }
-                    .count().toInt()
-            val statProgressTableIs5OrMore =
-                cardsListFiltered!!.stream().filter { c: DB_Card_With_Meta? -> c!!.card.known >= 5 }
-                    .count().toInt()
-            var percentCurrent =
-                (statProgressTableIs0 / cardsListFiltered!!.size.toFloat() * 100).roundToInt()
-            bindingListStatsDialog.listStatProgressCounterNumber0.text =
-                resources.getQuantityString(
-                    R.plurals.list_stat_progress_counter_number,
-                    statProgressTableIs0,
-                    statProgressTableIs0
-                )
-            bindingListStatsDialog.listStatProgressCounterPercent0.text =
-                String.format(
-                    getString(R.string.list_stat_progress_counter_percent),
-                    percentCurrent,
-                )
-            percentCurrent =
-                (statProgressTableIs1 / cardsListFiltered!!.size.toFloat() * 100).roundToInt()
-            bindingListStatsDialog.listStatProgressCounterKnown1.text =
-                String.format(
-                    getString(R.string.list_stat_progress_counter_known),
-                    1,
-                )
-            bindingListStatsDialog.listStatProgressCounterNumber1.text =
-                resources.getQuantityString(
-                    R.plurals.list_stat_progress_counter_number,
-                    statProgressTableIs1,
-                    statProgressTableIs1
-                )
-            bindingListStatsDialog.listStatProgressCounterPercent1.text =
-                String.format(
-                    getString(R.string.list_stat_progress_counter_percent),
-                    percentCurrent,
-                )
-            percentCurrent =
-                (statProgressTableIs2 / cardsListFiltered!!.size.toFloat() * 100).roundToInt()
-            bindingListStatsDialog.listStatProgressCounterKnown2.text =
-                String.format(
-                    getString(R.string.list_stat_progress_counter_known),
-                    2,
-                )
-            bindingListStatsDialog.listStatProgressCounterNumber2.text =
-                resources.getQuantityString(
-                    R.plurals.list_stat_progress_counter_number,
-                    statProgressTableIs2,
-                    statProgressTableIs2
-                )
-            bindingListStatsDialog.listStatProgressCounterPercent2.text =
-                String.format(
-                    getString(R.string.list_stat_progress_counter_percent),
-                    percentCurrent,
-                )
-            percentCurrent =
-                (statProgressTableIs3 / cardsListFiltered!!.size.toFloat() * 100).roundToInt()
-            bindingListStatsDialog.listStatProgressCounterKnown3.text =
-                String.format(
-                    getString(R.string.list_stat_progress_counter_known),
-                    3,
-                )
-            bindingListStatsDialog.listStatProgressCounterNumber3.text =
-                resources.getQuantityString(
-                    R.plurals.list_stat_progress_counter_number,
-                    statProgressTableIs3,
-                    statProgressTableIs3
-                )
-            bindingListStatsDialog.listStatProgressCounterPercent3.text =
-                String.format(
-                    getString(R.string.list_stat_progress_counter_percent),
-                    percentCurrent,
-                )
-            percentCurrent =
-                (statProgressTableIs4 / cardsListFiltered!!.size.toFloat() * 100).roundToInt()
-            bindingListStatsDialog.listStatProgressCounterKnown4.text =
-                String.format(
-                    getString(R.string.list_stat_progress_counter_known),
-                    4,
-                )
-            bindingListStatsDialog.listStatProgressCounterNumber4.text =
-                resources.getQuantityString(
-                    R.plurals.list_stat_progress_counter_number,
-                    statProgressTableIs4,
-                    statProgressTableIs4
-                )
-            bindingListStatsDialog.listStatProgressCounterPercent4.text =
-                String.format(
-                    getString(R.string.list_stat_progress_counter_percent),
-                    percentCurrent,
-                )
-            percentCurrent =
-                (statProgressTableIs5OrMore / cardsListFiltered!!.size.toFloat() * 100).roundToInt()
-            bindingListStatsDialog.listStatProgressCounterNumber5.text =
-                resources.getQuantityString(
-                    R.plurals.list_stat_progress_counter_number,
-                    statProgressTableIs5OrMore,
-                    statProgressTableIs5OrMore
-                )
-            bindingListStatsDialog.listStatProgressCounterPercent5.text =
-                String.format(
-                    getString(R.string.list_stat_progress_counter_percent),
-                    percentCurrent,
-                )
-            listStatsDialog.show()
+            ListStatsDialog(this).show(cardsListFiltered!!)
             false
         }
         // Search on submit; the "search off" item resets the search
@@ -705,423 +508,6 @@ class ListCards : RBVActivity(), CardActions.Listener {
     private fun sortList() {
         cardsList?.let {
             SortCards().sortCards(it, listSort)
-        }
-    }
-
-    // Goes to the next/previous card in query mode; closes the dialog at the end of the list
-    private fun queryModeNextAction() {
-        cardPosition++
-        if (cardPosition >= cardsListFiltered!!.size) {
-            queryModeDialog.dismiss()
-        } else {
-            nextQuery()
-        }
-    }
-
-    private fun queryModePreviousAction() {
-        cardPosition--
-        if (cardPosition < 0) {
-            queryModeDialog.dismiss()
-        } else {
-            nextQuery()
-        }
-    }
-
-    // Saves the new progress as a repetition of the card
-    private fun queryModeCardKnownChanged(card: DB_Card, known: Int) {
-        card.known = known
-        card.lastRepetition = System.currentTimeMillis() / 1000L
-        card.countRepetitions++
-        dbHelperUpdate.updateCard(card)
-        adapter!!.notifyItemChanged(cardPosition)
-    }
-
-    private fun queryModePlusAction(card: DB_Card) {
-        val known = card.known + 1
-        queryModeCardKnownChanged(card, known)
-        queryModeNextAction()
-    }
-
-    // Card not known: decrease the progress by 1 or reset it to 0, depending on the settings
-    private fun queryModeMinusAction(card: DB_Card) {
-        val known = if (settings.getBoolean("query_mode_reset_progress", false)) {
-            0
-        } else {
-            0.coerceAtLeast(card.known - 1)
-        }
-        queryModeCardKnownChanged(card, known)
-        queryModeNextAction()
-    }
-
-    private fun nextQuery() {
-        nextQuery(false)
-    }
-
-    /**
-     * Shows the card at cardPosition in the query mode dialog. First only one side is shown;
-     * after revealing the other side, the card can be rated.
-     *
-     * Swipe gestures: left/right go to the next/previous card, up/down (only after revealing)
-     * rate the card as known/not known. While swiping, a colored bar grows from the edge; a
-     * completed swipe fills the screen with it shortly before the action is executed.
-     *
-     * @param onlyUpdate only update texts and actions, keep the current state (e.g. revealed side)
-     */
-    @SuppressLint("ClickableViewAccessibility")
-    private fun nextQuery(onlyUpdate: Boolean) {
-        val cardWithMeta = cardsListFiltered!![cardPosition]
-        val card = cardWithMeta.card
-
-        val front: SpannableString
-        val back: SpannableString
-        val formatString = StringTools()
-        if (settings.getBoolean("format_cards", false)) {
-            front =
-                if (frontBackReverse) {
-                    formatString.format(card.back)
-                } else {
-                    formatString.format(card.front)
-                }
-            back =
-                if (frontBackReverse) {
-                    formatString.format(card.front)
-                } else {
-                    formatString.format(card.back)
-                }
-        } else {
-            val frontString = if (frontBackReverse) card.back else card.front
-            val backString = if (frontBackReverse) card.front else card.back
-            front = SpannableString(frontString)
-            back = SpannableString(backString)
-        }
-        bindingQueryModeDialog.queryShow.text = front
-        bindingQueryModeDialog.queryHide.text = back
-        if (settings.getBoolean("ui_font_size", false)) {
-            bindingQueryModeDialog.queryShow.setTextSize(
-                TypedValue.COMPLEX_UNIT_PX,
-                resources.getDimension(R.dimen.card_front_size_big)
-            )
-            bindingQueryModeDialog.queryHide.setTextSize(
-                TypedValue.COMPLEX_UNIT_PX,
-                resources.getDimension(R.dimen.card_front_size_big)
-            )
-        }
-
-        if (card.notes.isNullOrBlank()) {
-            bindingQueryModeDialog.queryButtonNotes.visibility = View.GONE
-        } else {
-            bindingQueryModeDialog.queryButtonNotes.visibility = View.VISIBLE
-            bindingQueryModeDialog.queryButtonNotes.setOnClickListener {
-                val infoDialog = Dialog(this, R.style.dia_view)
-                val bindingInfoDialog = DiaInfoBinding.inflate(
-                    layoutInflater
-                )
-                infoDialog.setContentView(bindingInfoDialog.root)
-                infoDialog.setTitle(resources.getString(R.string.query_notes_title))
-                infoDialog.window!!.setLayout(
-                    WindowManager.LayoutParams.MATCH_PARENT,
-                    WindowManager.LayoutParams.MATCH_PARENT
-                )
-                bindingInfoDialog.diaInfoText.setTextIsSelectable(true)
-                if (settings.getBoolean("format_card_notes", false)) {
-                    val markwon = Markwon.builder(this)
-                        .usePlugin(
-                            LinkifyPlugin.create(
-                                Linkify.WEB_URLS
-                            )
-                        )
-                        .build()
-                    bindingInfoDialog.diaInfoText.movementMethod =
-                        BetterLinkMovementMethod.getInstance()
-                    bindingInfoDialog.diaInfoText.textAlignment = View.TEXT_ALIGNMENT_TEXT_START
-                    markwon.setMarkdown(bindingInfoDialog.diaInfoText, card.notes)
-                } else {
-                    bindingInfoDialog.diaInfoText.autoLinkMask = Linkify.WEB_URLS
-                    bindingInfoDialog.diaInfoText.text = card.notes
-                }
-                infoDialog.show()
-            }
-        }
-
-        val rootBackground = bindingQueryModeDialog.root.background as LayerDrawable
-        val rootBackgroundLeft =
-            rootBackground.findDrawableByLayerId(R.id.dia_query_root_background_left) as GradientDrawable
-        val rootBackgroundTop =
-            rootBackground.findDrawableByLayerId(R.id.dia_query_root_background_top) as GradientDrawable
-        val rootBackgroundBottom =
-            rootBackground.findDrawableByLayerId(R.id.dia_query_root_background_bottom) as GradientDrawable
-        // The colored edges of the dialog hint at the available swipe directions
-        rootBackgroundLeft.alpha = if (cardPosition > 0) 255 else 0
-        bindingQueryModeDialog.root.setOnTouchListener(object : SwipeEvents() {
-            val ANIM_GROW_TIME = 150
-            val ANIM_DISPlAY_TIME = 300
-            // Blocks further gestures while an animation is running
-            var allowTouchEvent = true
-            override fun onMoveX(distance: Float) {
-                if (allowTouchEvent) {
-                    if (distance < 0) {
-                        bindingQueryModeDialog.querySwipeNext.layoutParams.width =
-                            (2 * abs(distance)).toInt()
-                        bindingQueryModeDialog.querySwipeNext.requestLayout()
-                    } else if (cardPosition > 0) {
-                        bindingQueryModeDialog.querySwipePrevious.layoutParams.width =
-                            (2 * abs(distance)).toInt()
-                        bindingQueryModeDialog.querySwipePrevious.requestLayout()
-                    }
-                }
-            }
-
-            override fun onMoveY(distance: Float) {
-                if (allowTouchEvent && bindingQueryModeDialog.queryHide.isVisible) {
-                    if (distance < 0) {
-                        bindingQueryModeDialog.querySwipePlus.layoutParams.height =
-                            (2 * abs(distance)).toInt()
-                        bindingQueryModeDialog.querySwipePlus.requestLayout()
-                    } else {
-                        bindingQueryModeDialog.querySwipeMinus.layoutParams.height =
-                            (2 * abs(distance)).toInt()
-                        bindingQueryModeDialog.querySwipeMinus.requestLayout()
-                    }
-                }
-            }
-
-            override fun onMoveCancel() {
-                super.onMoveCancel()
-                if (allowTouchEvent) {
-                    bindingQueryModeDialog.querySwipeNext.layoutParams.width = 0
-                    bindingQueryModeDialog.querySwipeNext.requestLayout()
-                    bindingQueryModeDialog.querySwipePrevious.layoutParams.width = 0
-                    bindingQueryModeDialog.querySwipePrevious.requestLayout()
-                    bindingQueryModeDialog.querySwipeMinus.layoutParams.height = 0
-                    bindingQueryModeDialog.querySwipeMinus.requestLayout()
-                    bindingQueryModeDialog.querySwipePlus.layoutParams.height = 0
-                    bindingQueryModeDialog.querySwipePlus.requestLayout()
-                }
-            }
-
-            override fun onSwipeLeft() {
-                if (allowTouchEvent) {
-                    allowTouchEvent = false
-                    val growAnimator = ValueAnimator.ofInt(
-                        bindingQueryModeDialog.querySwipeNext.width,
-                        bindingQueryModeDialog.root.width
-                    )
-                    growAnimator.duration = ANIM_GROW_TIME.toLong()
-                    growAnimator.addUpdateListener { animation: ValueAnimator ->
-                        bindingQueryModeDialog.querySwipeNext.layoutParams.width =
-                            animation.animatedValue as Int
-                        bindingQueryModeDialog.querySwipeNext.requestLayout()
-                    }
-                    growAnimator.addListener(object : AnimatorListenerAdapter() {
-                        override fun onAnimationEnd(animation: Animator) {
-                            Handler(Looper.getMainLooper()).postDelayed(
-                                {
-                                    queryModeNextAction()
-                                    allowTouchEvent = true
-                                    onMoveCancel()
-                                },
-                                ANIM_DISPlAY_TIME.toLong()
-                            )
-                        }
-                    })
-                    growAnimator.start()
-                } else {
-                    onMoveCancel()
-                }
-            }
-
-            override fun onSwipeRight() {
-                if (allowTouchEvent && cardPosition > 0) {
-                    allowTouchEvent = false
-                    val growAnimator = ValueAnimator.ofInt(
-                        bindingQueryModeDialog.querySwipePrevious.width,
-                        bindingQueryModeDialog.root.width
-                    )
-                    growAnimator.duration = ANIM_GROW_TIME.toLong()
-                    growAnimator.addUpdateListener { animation: ValueAnimator ->
-                        bindingQueryModeDialog.querySwipePrevious.layoutParams.width =
-                            animation.animatedValue as Int
-                        bindingQueryModeDialog.querySwipePrevious.requestLayout()
-                    }
-                    growAnimator.addListener(object : AnimatorListenerAdapter() {
-                        override fun onAnimationEnd(animation: Animator) {
-                            Handler(Looper.getMainLooper()).postDelayed(
-                                {
-                                    queryModePreviousAction()
-                                    allowTouchEvent = true
-                                    onMoveCancel()
-                                },
-                                ANIM_DISPlAY_TIME.toLong()
-                            )
-                        }
-                    })
-                    growAnimator.start()
-                } else {
-                    onMoveCancel()
-                }
-            }
-
-            override fun onSwipeTop() {
-                if (allowTouchEvent && bindingQueryModeDialog.queryHide.isVisible) {
-                    allowTouchEvent = false
-                    val growAnimator = ValueAnimator.ofInt(
-                        bindingQueryModeDialog.querySwipePlus.height,
-                        bindingQueryModeDialog.root.height
-                    )
-                    growAnimator.duration = ANIM_GROW_TIME.toLong()
-                    growAnimator.addUpdateListener { animation: ValueAnimator ->
-                        bindingQueryModeDialog.querySwipePlus.layoutParams.height =
-                            animation.animatedValue as Int
-                        bindingQueryModeDialog.querySwipePlus.requestLayout()
-                    }
-                    growAnimator.addListener(object : AnimatorListenerAdapter() {
-                        override fun onAnimationEnd(animation: Animator) {
-                            Handler(Looper.getMainLooper()).postDelayed(
-                                {
-                                    queryModePlusAction(card)
-                                    allowTouchEvent = true
-                                    onMoveCancel()
-                                },
-                                ANIM_DISPlAY_TIME.toLong()
-                            )
-                        }
-                    })
-                    growAnimator.start()
-                } else {
-                    onMoveCancel()
-                }
-            }
-
-            override fun onSwipeBottom() {
-                if (allowTouchEvent && bindingQueryModeDialog.queryHide.isVisible) {
-                    allowTouchEvent = false
-                    val growAnimator = ValueAnimator.ofInt(
-                        bindingQueryModeDialog.querySwipeMinus.height,
-                        bindingQueryModeDialog.root.height
-                    )
-                    growAnimator.duration = ANIM_GROW_TIME.toLong()
-                    growAnimator.addUpdateListener { animation: ValueAnimator ->
-                        bindingQueryModeDialog.querySwipeMinus.layoutParams.height =
-                            animation.animatedValue as Int
-                        bindingQueryModeDialog.querySwipeMinus.requestLayout()
-                    }
-                    growAnimator.addListener(object : AnimatorListenerAdapter() {
-                        override fun onAnimationEnd(animation: Animator) {
-                            Handler(Looper.getMainLooper()).postDelayed(
-                                {
-                                    queryModeMinusAction(card)
-                                    allowTouchEvent = true
-                                    onMoveCancel()
-                                },
-                                ANIM_DISPlAY_TIME.toLong()
-                            )
-                        }
-                    })
-                    growAnimator.start()
-                } else {
-                    onMoveCancel()
-                }
-            }
-        })
-        bindingQueryModeDialog.queryPlus.setOnClickListener {
-            queryModePlusAction(card)
-        }
-        bindingQueryModeDialog.queryMinus.setOnClickListener {
-            queryModeMinusAction(card)
-        }
-
-        // Reset the dialog for a new card: title, colors, media buttons, hidden back side
-        if (!onlyUpdate) {
-            queryModeDialog.setTitle(
-                String.format(
-                    resources.getString(R.string.query_mode_title),
-                    resources.getString(R.string.query_mode),
-                    cardPosition + 1,
-                    cardsListFiltered!!.size
-                )
-            )
-
-            val colorsBackgroundQuery =
-                resources.obtainTypedArray(R.array.pack_color_background_query)
-            val colorsBackgroundHighlight = resources
-                .obtainTypedArray(R.array.pack_color_background_highlight)
-            val minimalLength =
-                colorsBackgroundQuery.length().coerceAtMost(colorsBackgroundHighlight.length())
-            val packColors = cardWithMeta.packColor
-            if (packColors in 0..<minimalLength) {
-                val colorBackgroundQuery = colorsBackgroundQuery.getColor(packColors, 0)
-                val colorBackgroundHighlight =
-                    colorsBackgroundHighlight.getColor(packColors, 0)
-                val rootBackgroundMain =
-                    rootBackground.findDrawableByLayerId(R.id.dia_query_root_background_main) as GradientDrawable
-                rootBackgroundMain.setColor(colorBackgroundQuery)
-                bindingQueryModeDialog.queryHide.setBackgroundColor(colorBackgroundHighlight)
-            }
-            colorsBackgroundQuery.recycle()
-            colorsBackgroundHighlight.recycle()
-
-            val imageList =
-                dbHelperGet.getCardImageMedia(card.uid) as ArrayList<DB_Media>
-            if (imageList.isEmpty()) {
-                bindingQueryModeDialog.queryButtonMediaImage.visibility = View.GONE
-            } else {
-                bindingQueryModeDialog.queryButtonMediaImage.visibility = View.VISIBLE
-                bindingQueryModeDialog.queryButtonMediaImage.setOnClickListener {
-                    mediaFileManager.showImageListDialog(
-                        imageList,
-                        card.uid
-                    )
-                }
-            }
-            val mediaList =
-                dbHelperGet.getCardMedia(card.uid) as ArrayList<DB_Media>
-            if (mediaList.isEmpty()) {
-                bindingQueryModeDialog.queryButtonMediaOther.visibility = View.GONE
-            } else {
-                bindingQueryModeDialog.queryButtonMediaOther.visibility = View.VISIBLE
-                bindingQueryModeDialog.queryButtonMediaOther.setOnClickListener {
-                    mediaFileManager.showMediaListDialog(
-                        mediaList,
-                        card.uid
-                    )
-                }
-            }
-
-            rootBackgroundTop.alpha = 0
-            rootBackgroundBottom.alpha = 0
-
-            bindingQueryModeDialog.queryPlus.visibility = View.GONE
-            bindingQueryModeDialog.queryMinus.visibility = View.GONE
-            bindingQueryModeDialog.querySkip.setOnClickListener {
-                queryModeNextAction()
-            }
-            if (cardPosition == 0) {
-                bindingQueryModeDialog.queryBack.visibility = View.INVISIBLE
-            } else {
-                bindingQueryModeDialog.queryBack.visibility = View.VISIBLE
-                bindingQueryModeDialog.queryBack.setOnClickListener {
-                    queryModePreviousAction()
-                }
-            }
-            bindingQueryModeDialog.queryHide.visibility = View.GONE
-            bindingQueryModeDialog.queryButtonEdit.visibility = View.GONE
-            bindingQueryModeDialog.queryButtonHide.visibility = View.VISIBLE
-            // Reveal the other side and enable rating the card
-            bindingQueryModeDialog.queryButtonHide.setOnClickListener {
-                bindingQueryModeDialog.queryButtonHide.visibility = View.GONE
-                bindingQueryModeDialog.queryHide.visibility = View.VISIBLE
-                bindingQueryModeDialog.queryPlus.visibility = View.VISIBLE
-                bindingQueryModeDialog.queryMinus.visibility = View.VISIBLE
-                rootBackgroundTop.alpha = 255
-                rootBackgroundBottom.alpha = 255
-                bindingQueryModeDialog.queryButtonEdit.visibility = View.VISIBLE
-                bindingQueryModeDialog.queryButtonEdit.setOnClickListener {
-                    val intent = Intent(this, EditCard::class.java)
-                    intent.putExtra("card", card.uid)
-                    intent.putExtra("backToList", true)
-                    this.startActivity(intent)
-                }
-            }
         }
     }
 
