@@ -14,11 +14,13 @@ import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.adapters.AdapterFilesManage
 import de.herrmann_engel.rbv.databinding.ActivityManageFilesBinding
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
+import de.herrmann_engel.rbv.media.MediaFileManager
 
 /**
  * Lists files in the media folder that are not registered as media in the database.
  */
-class ManageFiles : FileTools() {
+class ManageFiles : RBVActivity() {
+    private val mediaFileManager = MediaFileManager(this, onFolderSet = { setRecView() })
     private lateinit var binding: ActivityManageFilesBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,14 +50,8 @@ class ManageFiles : FileTools() {
         setRecView()
     }
 
-    override fun notifyFolderSet() {
-        setRecView()
-    }
-
-    override fun notifyMissingAction(id: Int) {}
-
     private fun setRecView() {
-        val files = listFiles()
+        val files = mediaFileManager.listFiles()
         if (files != null) {
             val filesWithoutMedia = ArrayList<DocumentFile>()
             val dbHelperGet = DB_Helper_Get(this)
@@ -65,7 +61,7 @@ class ManageFiles : FileTools() {
                     filesWithoutMedia.add(file)
                 }
             }
-            val adapter = AdapterFilesManage(filesWithoutMedia, this)
+            val adapter = AdapterFilesManage(filesWithoutMedia, mediaFileManager)
             binding.recFilesManage.adapter = adapter
             binding.recFilesManage.layoutManager = LinearLayoutManager(this)
         }

@@ -7,7 +7,7 @@ import androidx.documentfile.provider.DocumentFile
 import androidx.recyclerview.widget.RecyclerView
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.databinding.RecViewFilesBinding
-import de.herrmann_engel.rbv.utils.MediaFiles
+import de.herrmann_engel.rbv.media.MediaFiles
 
 
 /**

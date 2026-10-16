@@ -29,6 +29,7 @@ import de.herrmann_engel.rbv.db.DB_Card
 import de.herrmann_engel.rbv.db.DB_Media
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Update
+import de.herrmann_engel.rbv.media.MediaFileManager
 import de.herrmann_engel.rbv.ui.TagSpan
 import de.herrmann_engel.rbv.utils.StringTools
 import io.noties.markwon.Markwon
@@ -45,7 +46,12 @@ import java.util.Locale
  * Shows a single card with all its details (both sides, tags, notes, dates, progress, media)
  * and lets the user change its progress manually. Expects "collection", "pack" and "card" extras.
  */
-class ViewCard : FileTools(), CardActions.Listener {
+class ViewCard : RBVActivity(), CardActions.Listener {
+    private val mediaFileManager = MediaFileManager(
+        this,
+        onFolderSet = { setMediaButtons() },
+        onMissingFileAction = { openCardMedia(it) }
+    )
     private lateinit var binding: ActivityViewCardBinding
     private lateinit var dbHelperGet: DB_Helper_Get
     private lateinit var dbHelperUpdate: DB_Helper_Update
@@ -213,12 +219,8 @@ class ViewCard : FileTools(), CardActions.Listener {
         setMediaButtons()
     }
 
-    override fun notifyFolderSet() {
-        setMediaButtons()
-    }
-
     // Missing media file: open the card's media settings
-    override fun notifyMissingAction(id: Int) {
+    private fun openCardMedia(id: Int) {
         val intent = Intent(this, EditCardMedia::class.java)
         intent.putExtra("card", cardNo)
         startActivity(intent)
@@ -233,7 +235,7 @@ class ViewCard : FileTools(), CardActions.Listener {
             return@setOnMenuItemClickListener true
         }
         menu.findItem(R.id.menu_view_card_delete).setOnMenuItemClickListener {
-            CardActions(this, this, this).delete(card)
+            CardActions(this, this, mediaFileManager).delete(card)
             return@setOnMenuItemClickListener true
         }
         menu.findItem(R.id.menu_view_card_edit_media).setOnMenuItemClickListener {
@@ -249,13 +251,13 @@ class ViewCard : FileTools(), CardActions.Listener {
             return@setOnMenuItemClickListener true
         }
         menu.findItem(R.id.menu_view_card_print).setOnMenuItemClickListener {
-            CardActions(this, this, this).print(card)
+            CardActions(this, this, mediaFileManager).print(card)
             return@setOnMenuItemClickListener true
         }
         // Moving is only offered when the card was opened from within its pack
         if (packNo >= 0) {
             menu.findItem(R.id.menu_view_card_move).setOnMenuItemClickListener {
-                CardActions(this, this, this).move(card, collectionNo)
+                CardActions(this, this, mediaFileManager).move(card, collectionNo)
                 return@setOnMenuItemClickListener true
             }
         } else {
@@ -353,7 +355,7 @@ class ViewCard : FileTools(), CardActions.Listener {
             binding.viewCardImages.visibility = View.VISIBLE
         }
         binding.viewCardImages.setOnClickListener {
-            showImageListDialog(
+            mediaFileManager.showImageListDialog(
                 imageList,
                 cardNo
             )
@@ -365,7 +367,7 @@ class ViewCard : FileTools(), CardActions.Listener {
             binding.viewCardMedia.visibility = View.VISIBLE
         }
         binding.viewCardMedia.setOnClickListener {
-            showMediaListDialog(
+            mediaFileManager.showMediaListDialog(
                 mediaList,
                 cardNo
             )

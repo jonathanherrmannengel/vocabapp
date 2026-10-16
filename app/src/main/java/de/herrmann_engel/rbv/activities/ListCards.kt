@@ -48,6 +48,7 @@ import de.herrmann_engel.rbv.db.DB_Card_With_Meta
 import de.herrmann_engel.rbv.db.DB_Media
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Update
+import de.herrmann_engel.rbv.media.MediaFileManager
 import de.herrmann_engel.rbv.ui.SwipeEvents
 import de.herrmann_engel.rbv.utils.FormatCards
 import de.herrmann_engel.rbv.utils.SearchCards
@@ -71,7 +72,11 @@ import kotlin.math.roundToInt
  * and the query mode: a dialog asking the cards one after another, where the user rates each
  * card as known or not known (by buttons or swipes).
  */
-class ListCards : FileTools(), CardActions.Listener {
+class ListCards : RBVActivity(), CardActions.Listener {
+    private val mediaFileManager = MediaFileManager(
+        this,
+        onMissingFileAction = { openCardMedia(it) }
+    )
     private lateinit var binding: ActivityDefaultRecBinding
     private lateinit var dbHelperGet: DB_Helper_Get
     private lateinit var dbHelperUpdate: DB_Helper_Update
@@ -222,9 +227,8 @@ class ListCards : FileTools(), CardActions.Listener {
         }
     }
 
-    override fun notifyFolderSet() {}
     // Missing media file: open the card's media settings
-    override fun notifyMissingAction(id: Int) {
+    private fun openCardMedia(id: Int) {
         try {
             val intent = Intent(this, EditCardMedia::class.java)
             intent.putExtra("card", id)
@@ -1063,7 +1067,7 @@ class ListCards : FileTools(), CardActions.Listener {
             } else {
                 bindingQueryModeDialog.queryButtonMediaImage.visibility = View.VISIBLE
                 bindingQueryModeDialog.queryButtonMediaImage.setOnClickListener {
-                    showImageListDialog(
+                    mediaFileManager.showImageListDialog(
                         imageList,
                         card.uid
                     )
@@ -1076,7 +1080,7 @@ class ListCards : FileTools(), CardActions.Listener {
             } else {
                 bindingQueryModeDialog.queryButtonMediaOther.visibility = View.VISIBLE
                 bindingQueryModeDialog.queryButtonMediaOther.setOnClickListener {
-                    showMediaListDialog(
+                    mediaFileManager.showMediaListDialog(
                         mediaList,
                         card.uid
                     )
@@ -1151,7 +1155,7 @@ class ListCards : FileTools(), CardActions.Listener {
                     showFrontAndBack,
                     packNo,
                     collectionNo,
-                    CardActions(this, this, this)
+                    CardActions(this, this, mediaFileManager)
                 )
                 binding.recDefault.adapter = adapter
                 binding.recDefault.layoutManager = LinearLayoutManager(this)

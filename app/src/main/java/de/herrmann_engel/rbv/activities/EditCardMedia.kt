@@ -21,12 +21,14 @@ import de.herrmann_engel.rbv.databinding.DiaFileExistsBinding
 import de.herrmann_engel.rbv.db.DB_Media
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Create
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
+import de.herrmann_engel.rbv.media.MediaFileManager
 
 /**
  * Manages the media files of the card passed as "card" extra. New files are picked by the user
  * and copied into the media folder, then linked to the card.
  */
-class EditCardMedia : FileTools() {
+class EditCardMedia : RBVActivity() {
+    private val mediaFileManager = MediaFileManager(this, onFolderSet = { setRecView() })
     private lateinit var binding: ActivityEditCardMediaBinding
     private lateinit var dbHelperGet: DB_Helper_Get
     private var cardNo = 0
@@ -38,9 +40,9 @@ class EditCardMedia : FileTools() {
     ) { result: ActivityResult ->
         if (result.resultCode == RESULT_OK) {
             try {
-                val outputDirectory = mediaFolder
+                val outputDirectory = mediaFileManager.mediaFolder
                 if (outputDirectory == null || !outputDirectory.isDirectory) {
-                    showSelectDialog(resources.getString(R.string.select_folder_help_reselect))
+                    mediaFileManager.showSelectDialog(resources.getString(R.string.select_folder_help_reselect))
                 } else {
                     val data = result.data
                     val fileUri = data?.data
@@ -104,9 +106,8 @@ class EditCardMedia : FileTools() {
         colorsBackground.recycle()
         // A media folder has to be selected before files can be added
         binding.addMediaButton.setOnClickListener {
-            val folder = cardMediaFolder
-            if (folder.isNullOrEmpty()) {
-                showSelectDialog(resources.getString(R.string.select_folder_help))
+            if (!mediaFileManager.isFolderSelected) {
+                mediaFileManager.showSelectDialog(resources.getString(R.string.select_folder_help))
             } else {
                 val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
                 intent.addCategory(Intent.CATEGORY_OPENABLE)
@@ -179,14 +180,9 @@ class EditCardMedia : FileTools() {
 
     private fun setRecView() {
         val mediaList = dbHelperGet.getCardMedia(cardNo) as ArrayList<DB_Media>
-        val adapter = AdapterMediaLinkCard(mediaList, cardNo, mediaFolder, this)
+        val adapter = AdapterMediaLinkCard(mediaList, cardNo, mediaFileManager.mediaFolder, mediaFileManager)
         binding.recCardMedia.adapter = adapter
         binding.recCardMedia.layoutManager = LinearLayoutManager(this)
     }
 
-    public override fun notifyFolderSet() {
-        setRecView()
-    }
-
-    override fun notifyMissingAction(id: Int) {}
 }

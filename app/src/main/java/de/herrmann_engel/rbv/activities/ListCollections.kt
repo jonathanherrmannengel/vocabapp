@@ -30,6 +30,7 @@ import de.herrmann_engel.rbv.db.utils.DB_Helper_Delete
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.export_import.AsyncExport
 import de.herrmann_engel.rbv.export_import.AsyncImport
+import de.herrmann_engel.rbv.media.MediaFileManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -39,7 +40,8 @@ import java.util.Locale
  * Start screen: list of all collections. The menu offers creating collections, import and
  * export of all data, advanced search, media management, settings and app information.
  */
-class ListCollections : FileTools() {
+class ListCollections : RBVActivity() {
+    private val mediaFileManager = MediaFileManager(this)
     private lateinit var binding: ActivityDefaultRecBinding
     private lateinit var dbHelperGet: DB_Helper_Get
     private var adapter: AdapterCollections? = null
@@ -97,6 +99,8 @@ class ListCollections : FileTools() {
             WindowInsetsCompat.CONSUMED
         }
         enableEdgeToEdge()
+        // Ask for the media folder if media entries exist but the folder is missing or inaccessible
+        mediaFileManager.askForFolderIfNeeded()
         // Housekeeping in the background on app start
         lifecycleScope.launch(Dispatchers.IO) {
             cleanUp()
@@ -295,7 +299,7 @@ class ListCollections : FileTools() {
      * files (e.g. old exports) older than one day.
      */
     private fun cleanUp() {
-        handleNoMediaFile()
+        mediaFileManager.handleNoMediaFile()
         val dbHelperDelete = DB_Helper_Delete(this@ListCollections)
         dbHelperDelete.deleteDeadMediaLinks()
         dbHelperDelete.deleteDeadTags()
@@ -349,8 +353,6 @@ class ListCollections : FileTools() {
         updateSettingsAndContent()
     }
 
-    override fun notifyFolderSet() {}
-    override fun notifyMissingAction(id: Int) {}
 
     // Lets the user pick the file to import
     private fun startImport() {

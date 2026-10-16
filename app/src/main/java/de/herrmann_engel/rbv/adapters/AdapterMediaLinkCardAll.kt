@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import de.herrmann_engel.rbv.databinding.RecViewBinding
 import de.herrmann_engel.rbv.db.DB_Media
-import de.herrmann_engel.rbv.utils.MediaFiles
+import de.herrmann_engel.rbv.media.MediaFiles
 
 
 /**

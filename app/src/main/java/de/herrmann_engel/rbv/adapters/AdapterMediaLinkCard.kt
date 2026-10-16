@@ -11,7 +11,7 @@ import de.herrmann_engel.rbv.databinding.RecViewFilesBinding
 import de.herrmann_engel.rbv.db.DB_Media
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Delete
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
-import de.herrmann_engel.rbv.utils.MediaFiles
+import de.herrmann_engel.rbv.media.MediaFiles
 
 /**
  * List of the media files linked to a card (in the card's media settings). Missing files are

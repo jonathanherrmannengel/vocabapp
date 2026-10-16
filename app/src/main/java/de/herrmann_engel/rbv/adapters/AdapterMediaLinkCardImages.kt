@@ -10,7 +10,7 @@ import coil3.load
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.databinding.RecViewImageBinding
 import de.herrmann_engel.rbv.db.DB_Media
-import de.herrmann_engel.rbv.utils.MediaFiles
+import de.herrmann_engel.rbv.media.MediaFiles
 
 
 /**

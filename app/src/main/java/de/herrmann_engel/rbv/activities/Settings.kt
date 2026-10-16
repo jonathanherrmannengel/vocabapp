@@ -14,12 +14,14 @@ import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.databinding.ActivitySettingsBinding
 import de.herrmann_engel.rbv.databinding.DiaInfoBinding
+import de.herrmann_engel.rbv.media.MediaFileManager
 
 /**
  * App settings. All changes are saved immediately to the settings preferences.
- * Extends [FileTools] to update the .nomedia file when the gallery setting changes.
+ * Uses a [MediaFileManager] to update the .nomedia file when the gallery setting changes.
  */
-class Settings : FileTools() {
+class Settings : RBVActivity() {
+    private val mediaFileManager = MediaFileManager(this)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val binding = ActivitySettingsBinding.inflate(layoutInflater)
@@ -197,7 +199,7 @@ class Settings : FileTools() {
         binding.settingsMediaInGallery.setOnCheckedChangeListener { _, c: Boolean ->
             settingsEdit.putBoolean("media_in_gallery", c)
             settingsEdit.apply()
-            handleNoMediaFile()
+            mediaFileManager.handleNoMediaFile()
         }
         setBgImage(settings.getBoolean("ui_bg_images", true), binding)
         // Edge-to-edge: keep the content clear of the system bars
@@ -223,6 +225,4 @@ class Settings : FileTools() {
         }
     }
 
-    override fun notifyFolderSet() {}
-    override fun notifyMissingAction(id: Int) {}
 }

@@ -1,11 +1,11 @@
-package de.herrmann_engel.rbv.utils
+package de.herrmann_engel.rbv.media
 
 import android.app.Dialog
 import android.net.Uri
 
 /**
  * Access to the files in the media folder, as needed by the media adapters.
- * Implemented by the activities extending FileTools.
+ * Implemented by [MediaFileManager].
  */
 interface MediaFiles {
     /**

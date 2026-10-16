@@ -1,13 +1,15 @@
-package de.herrmann_engel.rbv.activities
+package de.herrmann_engel.rbv.media
 
+import android.app.Activity
 import android.app.Dialog
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.os.Bundle
 import android.provider.DocumentsContract
 import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
+import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.edit
@@ -25,21 +27,32 @@ import de.herrmann_engel.rbv.databinding.DiaImageBinding
 import de.herrmann_engel.rbv.databinding.DiaRecBinding
 import de.herrmann_engel.rbv.db.DB_Media
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
-import de.herrmann_engel.rbv.utils.MediaFiles
 
 /**
- * Base class for activities that work with media files.
+ * Media file handling for an activity that works with media files.
  *
  * Media files are stored in a folder chosen by the user (Storage Access Framework); its URI is
  * saved in the config preferences. The database only stores the file names (see DB_Media).
  * This class handles selecting the folder and opening, sharing, displaying and deleting files.
+ *
+ * It has to be created while the activity is constructed (e.g. as a property initializer),
+ * because it registers the folder picker for an activity result.
+ *
+ * @param onFolderSet called after the user has selected a new media folder
+ * @param onMissingFileAction called if the user wants to handle a missing file of the card with
+ * the given id
  */
-abstract class FileTools : RBVActivity(), MediaFiles {
+class MediaFileManager(
+    private val activity: ComponentActivity,
+    private val onFolderSet: () -> Unit = {},
+    private val onMissingFileAction: (cardId: Int) -> Unit = {}
+) : MediaFiles {
+
     // Result of the folder picker: save the folder and keep the access permission across restarts
-    private val selectMediaFolder = registerForActivityResult(
+    private val selectMediaFolder = activity.registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result: ActivityResult ->
-        if (result.resultCode == RESULT_OK) {
+        if (result.resultCode == Activity.RESULT_OK) {
             val data = result.data
             val destination = data?.data
             var takeFlags = data?.flags
@@ -47,30 +60,32 @@ abstract class FileTools : RBVActivity(), MediaFiles {
                 setCardMediaFolder(destination.toString())
                 takeFlags =
                     takeFlags and (Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
-                contentResolver.takePersistableUriPermission(destination, takeFlags)
-                notifyFolderSet()
+                activity.contentResolver.takePersistableUriPermission(destination, takeFlags)
+                onFolderSet()
             } else {
-                Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show()
+                Toast.makeText(activity, R.string.error, Toast.LENGTH_LONG).show()
             }
         }
     }
 
-    // Ask the user to (re)select the media folder if media entries exist but the folder is missing or inaccessible
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    /**
+     * Asks the user to (re)select the media folder if media entries exist but the folder is
+     * missing or inaccessible.
+     */
+    fun askForFolderIfNeeded() {
         try {
             val folder = cardMediaFolder
-            val dbHelperGet = DB_Helper_Get(this)
+            val dbHelperGet = DB_Helper_Get(activity)
             // Check: No media folder set
             if (folder.isNullOrEmpty()) {
                 if (dbHelperGet.allMedia.isNotEmpty()) {
-                    showSelectDialog(resources.getString(R.string.select_folder_help_db_entries))
+                    showSelectDialog(activity.getString(R.string.select_folder_help_db_entries))
                 }
             } else {
-                val outputDirectory = DocumentFile.fromTreeUri(this, Uri.parse(folder))
+                val outputDirectory = DocumentFile.fromTreeUri(activity, folder.toUri())
                 // Check: Media folder is set, but directory not accessible
                 if (outputDirectory == null || !outputDirectory.isDirectory) {
-                    showSelectDialog(resources.getString(R.string.select_folder_help_reselect))
+                    showSelectDialog(activity.getString(R.string.select_folder_help_reselect))
                 }
             }
         } catch (e: Exception) {
@@ -86,13 +101,14 @@ abstract class FileTools : RBVActivity(), MediaFiles {
         selectMediaFolder.launch(intent)
     }
 
-    protected fun showSelectDialog(text: String?) {
-        val selectFolderInfoDialog = Dialog(this, R.style.dia_view)
+    // Explains why a media folder is needed and lets the user select one
+    fun showSelectDialog(text: String?) {
+        val selectFolderInfoDialog = Dialog(activity, R.style.dia_view)
         val bindingSelectFolderInfoDialog = DiaConfirmBinding.inflate(
-            layoutInflater
+            activity.layoutInflater
         )
         selectFolderInfoDialog.setContentView(bindingSelectFolderInfoDialog.root)
-        selectFolderInfoDialog.setTitle(resources.getString(R.string.select_folder_title))
+        selectFolderInfoDialog.setTitle(activity.getString(R.string.select_folder_title))
         selectFolderInfoDialog.window!!.setLayout(
             WindowManager.LayoutParams.MATCH_PARENT,
             WindowManager.LayoutParams.MATCH_PARENT
@@ -107,42 +123,39 @@ abstract class FileTools : RBVActivity(), MediaFiles {
         selectFolderInfoDialog.show()
     }
 
-    // Informs the user that a media file linked to the card is missing; on confirmation notifyMissingAction is called
+    // Informs the user that a media file linked to the card is missing; on confirmation onMissingFileAction is called
     private fun showMissingDialog(card: Int, parentDialog: Dialog?) {
-        val selectFolderInfoDialog = Dialog(this, R.style.dia_view)
+        val selectFolderInfoDialog = Dialog(activity, R.style.dia_view)
         val bindingSelectFolderInfoDialog = DiaConfirmBinding.inflate(
-            layoutInflater
+            activity.layoutInflater
         )
         selectFolderInfoDialog.setContentView(bindingSelectFolderInfoDialog.root)
-        selectFolderInfoDialog.setTitle(resources.getString(R.string.media_missing_dialog))
+        selectFolderInfoDialog.setTitle(activity.getString(R.string.media_missing_dialog))
         selectFolderInfoDialog.window!!.setLayout(
             WindowManager.LayoutParams.MATCH_PARENT,
             WindowManager.LayoutParams.MATCH_PARENT
         )
         bindingSelectFolderInfoDialog.diaConfirmDesc.text =
-            resources.getString(R.string.media_missing_dialog_text)
+            activity.getString(R.string.media_missing_dialog_text)
         bindingSelectFolderInfoDialog.diaConfirmDesc.visibility = View.VISIBLE
         bindingSelectFolderInfoDialog.diaConfirmYes.setOnClickListener {
             parentDialog?.dismiss()
             selectFolderInfoDialog.dismiss()
-            notifyMissingAction(card)
+            onMissingFileAction(card)
         }
         bindingSelectFolderInfoDialog.diaConfirmNo.setOnClickListener { selectFolderInfoDialog.dismiss() }
         selectFolderInfoDialog.show()
     }
 
-    /**
-     * Shows an image in a fullscreen dialog. If the file is missing, the user is told so instead.
-     */
     override fun showImageDialog(fileId: Int, cardId: Int, dialog: Dialog?) {
         val uri = getImageUri(fileId)
         if (uri != null) {
-            val imageDialog = Dialog(this, R.style.dia_view)
+            val imageDialog = Dialog(activity, R.style.dia_view)
             val bindingImageDialog = DiaImageBinding.inflate(
-                layoutInflater
+                activity.layoutInflater
             )
             imageDialog.setContentView(bindingImageDialog.root)
-            imageDialog.setTitle(resources.getString(R.string.image_media))
+            imageDialog.setTitle(activity.getString(R.string.image_media))
             imageDialog.window!!.setLayout(
                 WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.MATCH_PARENT
@@ -158,7 +171,7 @@ abstract class FileTools : RBVActivity(), MediaFiles {
      * Shows the images of a card: a single image directly, up to MAX_SIZE_CARD_IMAGE_PREVIEW images
      * as a grid of previews, more as a list of file names.
      */
-    protected fun showImageListDialog(imageList: ArrayList<DB_Media>, cardNo: Int) {
+    fun showImageListDialog(imageList: ArrayList<DB_Media>, cardNo: Int) {
         if (imageList.size == 1) {
             showImageDialog(imageList[0].uid, cardNo)
         } else if (imageList.size > Globals.MAX_SIZE_CARD_IMAGE_PREVIEW) {
@@ -166,15 +179,15 @@ abstract class FileTools : RBVActivity(), MediaFiles {
                 imageList,
                 cardNo,
                 true,
-                resources.getString(R.string.query_media_image_title)
+                activity.getString(R.string.query_media_image_title)
             )
         } else {
-            val imageListDialog = Dialog(this, R.style.dia_view)
+            val imageListDialog = Dialog(activity, R.style.dia_view)
             val bindingImageListDialog = DiaRecBinding.inflate(
-                layoutInflater
+                activity.layoutInflater
             )
             imageListDialog.setContentView(bindingImageListDialog.root)
-            imageListDialog.setTitle(resources.getString(R.string.query_media_image_title))
+            imageListDialog.setTitle(activity.getString(R.string.query_media_image_title))
             imageListDialog.window!!.setLayout(
                 WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.MATCH_PARENT
@@ -182,17 +195,17 @@ abstract class FileTools : RBVActivity(), MediaFiles {
             imageListDialog.show()
             val adapter = AdapterMediaLinkCardImages(imageList, cardNo, imageListDialog, this)
             bindingImageListDialog.diaRec.adapter = adapter
-            bindingImageListDialog.diaRec.layoutManager = GridLayoutManager(this, 3)
+            bindingImageListDialog.diaRec.layoutManager = GridLayoutManager(activity, 3)
         }
     }
 
     // Shows all media files of a card as a list
-    protected fun showMediaListDialog(mediaList: ArrayList<DB_Media>, cardNo: Int) {
+    fun showMediaListDialog(mediaList: ArrayList<DB_Media>, cardNo: Int) {
         showMediaListDialog(
             mediaList,
             cardNo,
             false,
-            resources.getString(R.string.query_media_all_title)
+            activity.getString(R.string.query_media_all_title)
         )
     }
 
@@ -202,9 +215,9 @@ abstract class FileTools : RBVActivity(), MediaFiles {
         onlyImages: Boolean,
         title: String
     ) {
-        val mediaListDialog = Dialog(this, R.style.dia_view)
+        val mediaListDialog = Dialog(activity, R.style.dia_view)
         val bindingMediaListDialog = DiaRecBinding.inflate(
-            layoutInflater
+            activity.layoutInflater
         )
         mediaListDialog.setContentView(bindingMediaListDialog.root)
         mediaListDialog.setTitle(title)
@@ -215,28 +228,25 @@ abstract class FileTools : RBVActivity(), MediaFiles {
         mediaListDialog.show()
         val adapter = AdapterMediaLinkCardAll(mediaList, cardNo, onlyImages, mediaListDialog, this)
         bindingMediaListDialog.diaRec.adapter = adapter
-        bindingMediaListDialog.diaRec.layoutManager = LinearLayoutManager(this)
+        bindingMediaListDialog.diaRec.layoutManager = LinearLayoutManager(activity)
     }
 
-    /**
-     * Asks for confirmation and deletes the file from the media folder.
-     */
     override fun showDeleteDialog(
         fileName: String,
         text: String?
     ): Dialog {
-        val deleteFileDialog = Dialog(this, R.style.dia_view)
+        val deleteFileDialog = Dialog(activity, R.style.dia_view)
         val bindingDeleteFileDialog = DiaConfirmBinding.inflate(
-            layoutInflater
+            activity.layoutInflater
         )
         deleteFileDialog.setContentView(bindingDeleteFileDialog.root)
-        deleteFileDialog.setTitle(resources.getString(R.string.delete_file_title))
+        deleteFileDialog.setTitle(activity.getString(R.string.delete_file_title))
         deleteFileDialog.window!!.setLayout(
             WindowManager.LayoutParams.MATCH_PARENT,
             WindowManager.LayoutParams.MATCH_PARENT
         )
         bindingDeleteFileDialog.diaConfirmDesc.text =
-            text ?: resources.getString(R.string.delete_file_info)
+            text ?: activity.getString(R.string.delete_file_info)
         bindingDeleteFileDialog.diaConfirmDesc.visibility = View.VISIBLE
         bindingDeleteFileDialog.diaConfirmYes.setOnClickListener {
             deleteMediaFile(fileName)
@@ -251,22 +261,19 @@ abstract class FileTools : RBVActivity(), MediaFiles {
      * Creates or deletes the ".nomedia" file in the media folder according to the "media_in_gallery"
      * setting, so that gallery apps show or hide the media files.
      */
-    protected fun handleNoMediaFile() {
+    fun handleNoMediaFile() {
         try {
-            val folder = cardMediaFolder
-            if (folder.isNullOrEmpty()) {
-                return
-            }
-            val outputDirectory = DocumentFile.fromTreeUri(this, Uri.parse(folder))
+            val outputDirectory = mediaFolder
             if (outputDirectory == null || !outputDirectory.exists() || !outputDirectory.isDirectory) {
                 return
             }
-            val settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE)
+            val settings =
+                activity.getSharedPreferences(Globals.SETTINGS_NAME, Context.MODE_PRIVATE)
             val mediaInGallery = settings.getBoolean("media_in_gallery", true)
             val noMediaFile = outputDirectory.findFile(".nomedia")
             if (mediaInGallery && noMediaFile != null && noMediaFile.exists() && noMediaFile.isFile) {
                 DocumentsContract.deleteDocument(
-                    contentResolver,
+                    activity.contentResolver,
                     noMediaFile.uri
                 )
             } else if (!mediaInGallery && (noMediaFile == null || !noMediaFile.exists())) {
@@ -277,14 +284,13 @@ abstract class FileTools : RBVActivity(), MediaFiles {
         }
     }
 
-    // Returns the URI of a media file by its database id, or null if it cannot be found
     override fun getImageUri(id: Int): Uri? {
         val file = getFile(id) ?: return null
         return file.uri
     }
 
     // Lists all files in the media folder, null if no folder is selected
-    protected fun listFiles(): Array<DocumentFile>? {
+    fun listFiles(): Array<DocumentFile>? {
         return mediaFolder?.listFiles()
     }
 
@@ -293,7 +299,7 @@ abstract class FileTools : RBVActivity(), MediaFiles {
     }
 
     private fun getFile(id: Int): DocumentFile? {
-        val dbHelperGet = DB_Helper_Get(this)
+        val dbHelperGet = DB_Helper_Get(activity)
         val currentMedia = dbHelperGet.getSingleMedia(id) ?: return null
         val fileName = currentMedia.file
         return getFile(fileName)
@@ -305,10 +311,10 @@ abstract class FileTools : RBVActivity(), MediaFiles {
             intent.action = Intent.ACTION_VIEW
             intent.setDataAndType(file.uri, file.type)
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            this.startActivity(intent)
+            activity.startActivity(intent)
         } catch (e: Exception) {
             e.printStackTrace()
-            Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show()
+            Toast.makeText(activity, R.string.error, Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -317,7 +323,7 @@ abstract class FileTools : RBVActivity(), MediaFiles {
         if (file != null && file.isFile) {
             openFile(file)
         } else {
-            Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show()
+            Toast.makeText(activity, R.string.error, Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -326,7 +332,7 @@ abstract class FileTools : RBVActivity(), MediaFiles {
         if (file != null && file.isFile) {
             openFile(file)
         } else {
-            Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show()
+            Toast.makeText(activity, R.string.error, Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -336,7 +342,7 @@ abstract class FileTools : RBVActivity(), MediaFiles {
         intent.type = file.type
         intent.putExtra(Intent.EXTRA_STREAM, file.uri)
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        this.startActivity(Intent.createChooser(intent, file.name))
+        activity.startActivity(Intent.createChooser(intent, file.name))
     }
 
     override fun shareFile(name: String) {
@@ -344,7 +350,7 @@ abstract class FileTools : RBVActivity(), MediaFiles {
         if (file != null && file.isFile) {
             shareFile(file)
         } else {
-            Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show()
+            Toast.makeText(activity, R.string.error, Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -353,7 +359,7 @@ abstract class FileTools : RBVActivity(), MediaFiles {
         if (file != null && file.isFile) {
             shareFile(file)
         } else {
-            Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show()
+            Toast.makeText(activity, R.string.error, Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -361,33 +367,37 @@ abstract class FileTools : RBVActivity(), MediaFiles {
         val file = getFile(name)
         if (file != null && file.isFile) {
             DocumentsContract.deleteDocument(
-                contentResolver,
+                activity.contentResolver,
                 file.uri
             )
         } else {
-            Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show()
+            Toast.makeText(activity, R.string.error, Toast.LENGTH_SHORT).show()
         }
     }
 
     // URI of the media folder as string, null if not set yet
-    protected val cardMediaFolder: String?
+    private val cardMediaFolder: String?
         get() {
-            val config = getSharedPreferences(Globals.CONFIG_NAME, MODE_PRIVATE)
+            val config = activity.getSharedPreferences(Globals.CONFIG_NAME, Context.MODE_PRIVATE)
             return config.getString("card_media_folder", null)
         }
 
+    // True if the user has selected a media folder (it may still be inaccessible)
+    val isFolderSelected: Boolean
+        get() = !cardMediaFolder.isNullOrEmpty()
+
     // The media folder, null if no folder is selected yet
-    protected val mediaFolder: DocumentFile?
+    val mediaFolder: DocumentFile?
         get() {
             val folder = cardMediaFolder
             if (folder.isNullOrEmpty()) {
                 return null
             }
-            return DocumentFile.fromTreeUri(this, folder.toUri())
+            return DocumentFile.fromTreeUri(activity, folder.toUri())
         }
 
     private fun setCardMediaFolder(uri: String) {
-        val config = getSharedPreferences(Globals.CONFIG_NAME, MODE_PRIVATE)
+        val config = activity.getSharedPreferences(Globals.CONFIG_NAME, Context.MODE_PRIVATE)
         config.edit {
             putString("card_media_folder", uri)
         }
@@ -397,15 +407,10 @@ abstract class FileTools : RBVActivity(), MediaFiles {
         return name?.let { mediaFolder?.findFile(it)?.exists() } == true
     }
 
-    fun existsMediaFile(input: Int): Boolean {
-        val dbHelperGet = DB_Helper_Get(this)
+    private fun existsMediaFile(input: Int): Boolean {
+        val dbHelperGet = DB_Helper_Get(activity)
         val currentMedia = dbHelperGet.getSingleMedia(input) ?: return false
         val fileName = currentMedia.file
         return existsMediaFile(fileName)
     }
-
-    // Called after the user has selected a new media folder
-    protected abstract fun notifyFolderSet()
-    // Called if the user wants to handle a missing file of the card with the given id
-    protected abstract fun notifyMissingAction(id: Int)
 }
