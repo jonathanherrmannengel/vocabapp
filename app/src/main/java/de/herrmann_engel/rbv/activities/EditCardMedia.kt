@@ -122,6 +122,8 @@ class EditCardMedia : RBVActivity() {
             WindowInsetsCompat.CONSUMED
         }
         enableEdgeToEdge()
+        // Ask for the media folder if media entries exist but the folder is missing or inaccessible
+        mediaFileManager.askForFolderIfNeeded()
     }
 
     override fun onResume() {
