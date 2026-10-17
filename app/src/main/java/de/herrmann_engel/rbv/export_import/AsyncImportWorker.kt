@@ -32,7 +32,8 @@ import java.util.TimeZone
  * ROWS_PER_TRANSACTION rows, each in its own transaction: this is much faster than writing every
  * row on its own, while other database writes (e.g. rating a card while the import is running)
  * only have to wait for the current chunk. If the import fails as a whole, the rows imported
- * until then are kept.
+ * until then are kept. If the file cannot be read to the end (e.g. a cut-off file), the rows
+ * before the unreadable part are imported (result "warn").
  */
 class AsyncImportWorker(
     val context: Context,
@@ -171,11 +172,21 @@ class AsyncImportWorker(
         }
         try {
             var endOfFile = false
+            // True if the rest of the file could not be read (e.g. a cut-off file)
+            var readFailed = false
             while (!endOfFile) {
                 AppDatabase.getInstance(context).runInTransaction(Runnable {
                     var rows = 0
                     while (rows < ROWS_PER_TRANSACTION) {
-                        val line = csvReader.readNext()
+                        val line = try {
+                            csvReader.readNext()
+                        } catch (e: Exception) {
+                            // End the import here instead of failing the transaction, so the
+                            // rows read so far are committed with this chunk
+                            e.printStackTrace()
+                            readFailed = true
+                            null
+                        }
                         if (line == null) {
                             endOfFile = true
                             break
@@ -477,6 +488,10 @@ class AsyncImportWorker(
                         }
                     }
                 })
+            }
+            // Only an error if nothing could be imported
+            if (readFailed && errorLevel == Globals.IMPORT_ERROR_LEVEL_OKAY) {
+                errorLevel = Globals.IMPORT_ERROR_LEVEL_WARN
             }
         } finally {
             // Nothing could be imported from a simple list: remove the pack (and the collection)
