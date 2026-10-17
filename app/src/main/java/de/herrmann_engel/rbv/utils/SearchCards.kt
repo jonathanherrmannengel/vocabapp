@@ -9,14 +9,11 @@ import java.util.regex.Pattern
  * Filters card lists by a search query (case-insensitive) matching front, back, notes or tags.
  */
 class SearchCards {
-    private fun hasNoMatch(source: String?, query: String): Boolean {
+    private fun hasNoMatch(source: String?, pattern: Pattern): Boolean {
         return if (source == null) {
             true
         } else {
-            !Pattern.compile(
-                Pattern.quote(query),
-                Pattern.CASE_INSENSITIVE or Pattern.UNICODE_CASE
-            ).matcher(source).find()
+            !pattern.matcher(source).find()
         }
     }
 
@@ -49,19 +46,24 @@ class SearchCards {
                 ))
             }
         } else {
+            // Matches the query literally, ignoring case; shared by all cards and fields
+            val pattern = Pattern.compile(
+                Pattern.quote(query),
+                Pattern.CASE_INSENSITIVE or Pattern.UNICODE_CASE
+            )
             input.removeIf { l: DB_Card_With_Meta ->
                 hasNoMatch(
                     l.formattedFront ?: l.card.front,
-                    query
+                    pattern
                 ) && hasNoMatch(
                     l.formattedBack ?: l.card.back,
-                    query
+                    pattern
                 ) && hasNoMatch(
                     l.card.notes,
-                    query
+                    pattern
                 ) && (l.tagNames.isNullOrBlank() || hasNoMatch(
                     l.tagNames,
-                    query
+                    pattern
                 ))
             }
         }

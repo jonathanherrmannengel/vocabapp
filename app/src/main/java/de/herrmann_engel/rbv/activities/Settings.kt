@@ -78,7 +78,7 @@ class Settings : RBVActivity() {
         }
         // Side(s) of the cards shown in card lists
         binding.settingsFlashcardListSide.clearCheck()
-        when (settings.getInt("flashcard_list_side", Globals.SORT_CARDS_DEFAULT)) {
+        when (settings.getInt("flashcard_list_side", Globals.FLASHCARD_LIST_SIDE_FRONT)) {
             Globals.FLASHCARD_LIST_SIDE_BACK -> {
                 binding.settingsFlashcardListSideBack.isChecked = true
             }
