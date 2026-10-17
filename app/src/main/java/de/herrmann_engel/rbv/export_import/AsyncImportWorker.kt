@@ -124,6 +124,8 @@ class AsyncImportWorker(
         val cardUidConverter = AsyncImportUidConvert()
         val mediaUidConverter = AsyncImportUidConvert()
         val tagsUidConverter = AsyncImportUidConvert()
+        // Tags created by this import; those without card in the end are deleted again
+        val createdTags = mutableListOf<Int>()
         // Collection created for a simple list (null if an existing one is used)
         var simpleListCreatedCollection: Int? = null
         // Simple list: all cards go into a new pack (named after the current date) inside a dedicated
@@ -435,6 +437,7 @@ class AsyncImportWorker(
                                                     val tagUidNew =
                                                         helperCreate.createTag(name, emoji, color).toInt()
                                                     tagsUidConverter.insertPair(tagUidOld, tagUidNew)
+                                                    createdTags.add(tagUidNew)
                                                 }
                                             }
                                         } catch (e: Exception) {
@@ -494,10 +497,13 @@ class AsyncImportWorker(
                 errorLevel = Globals.IMPORT_ERROR_LEVEL_WARN
             }
         } finally {
+            val helperDelete = DB_Helper_Delete(context)
+            // Tags can stay unused, e.g. if the file contains unused tags, the cards of a tag were
+            // skipped or the file is incomplete
+            helperDelete.deleteUnusedTags(createdTags)
             // Nothing could be imported from a simple list: remove the pack (and the collection)
             // created for it
             if (mode == Globals.IMPORT_MODE_SIMPLE_LIST && errorLevel == Globals.IMPORT_ERROR_LEVEL_ERROR) {
-                val helperDelete = DB_Helper_Delete(context)
                 helperGet.getSinglePack(packUidConverter.getNewValue(0))?.let {
                     helperDelete.deletePack(it, true)
                 }

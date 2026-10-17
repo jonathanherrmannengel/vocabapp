@@ -38,10 +38,6 @@ public class DB_Helper_Get {
         return dbHelper.media_dao.hasMedia();
     }
 
-    public boolean mediaHasLink(int file) {
-        return dbHelper.media_link_card_dao.mediaHasLink(file);
-    }
-
     public boolean hasTags() {
         return dbHelper.tag_dao.hasTags();
     }
@@ -232,10 +228,6 @@ public class DB_Helper_Get {
     // Get All: Media Links
     private boolean isPhoto(String mime) {
         return mime.equals("image/png") || mime.equals("image/jpeg") || mime.equals("image/webp");
-    }
-
-    public List<Integer> getAllMediaLinkFileIdsByCard(int card) {
-        return dbHelper.media_link_card_dao.getAllMediaIdsByCard(card);
     }
 
     // Get All: Tags

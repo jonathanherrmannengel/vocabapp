@@ -36,9 +36,11 @@ public interface DB_Tag_DAO {
     @Query("SELECT * FROM db_tag WHERE tag_name=:tagName LIMIT 1")
     DB_Tag getSingleTag(String tagName);
 
-    // Removes tags that are not assigned to any card
-    @Query("DELETE FROM db_tag WHERE NOT EXISTS (SELECT 1 FROM db_tag_link_card WHERE db_tag_link_card.tagId=db_tag.uid)")
-    void deleteDeadTags();
+    // Removes the given tags if they are not assigned to any card; returns the number of removed
+    // tags. Only the given tags are checked, so tags of a running import that are not linked yet
+    // are not affected.
+    @Query("DELETE FROM db_tag WHERE uid IN (:tags) AND NOT EXISTS (SELECT 1 FROM db_tag_link_card WHERE db_tag_link_card.tagId=db_tag.uid)")
+    int deleteUnusedTags(List<Integer> tags);
 
     @Update
     void update(DB_Tag dbTag);

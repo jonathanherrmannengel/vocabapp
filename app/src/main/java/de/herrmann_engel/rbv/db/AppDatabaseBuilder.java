@@ -118,6 +118,9 @@ public class AppDatabaseBuilder {
             database.execSQL("UPDATE DB_Tag_Link_Card SET tagId = (SELECT MIN(t2.uid) FROM DB_Tag t1 JOIN DB_Tag t2 ON t2.tag_name = t1.tag_name WHERE t1.uid = DB_Tag_Link_Card.tagId) WHERE tagId IN (SELECT t.uid FROM DB_Tag t WHERE t.uid > (SELECT MIN(t2.uid) FROM DB_Tag t2 WHERE t2.tag_name = t.tag_name))");
             database.execSQL("DELETE FROM DB_Tag WHERE uid > (SELECT MIN(t2.uid) FROM DB_Tag t2 WHERE t2.tag_name = DB_Tag.tag_name)");
             database.execSQL("DELETE FROM DB_Tag_Link_Card WHERE uid NOT IN (SELECT MIN(uid) FROM DB_Tag_Link_Card GROUP BY tagId, cardId)");
+            // From now on, tags are deleted as soon as they are no longer used; remove those that
+            // are unused already
+            database.execSQL("DELETE FROM DB_Tag WHERE uid NOT IN (SELECT tagId FROM DB_Tag_Link_Card)");
 
             // SQLite cannot add foreign keys to existing tables, so the tables are recreated.
             // Parents are recreated before their children.

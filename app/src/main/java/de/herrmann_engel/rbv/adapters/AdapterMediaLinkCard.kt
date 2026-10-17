@@ -10,7 +10,6 @@ import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.databinding.RecViewFilesBinding
 import de.herrmann_engel.rbv.db.DB_Media
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Delete
-import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.media.MediaFiles
 
 /**
@@ -88,17 +87,10 @@ class AdapterMediaLinkCard(
         viewHolder: ViewHolder,
         context: Context
     ): Boolean {
-        val fileId = currentMedia.uid
-        val dbHelperGet = DB_Helper_Get(context)
-        val dbHelperDelete = DB_Helper_Delete(context)
-        dbHelperDelete.deleteMediaLink(fileId, cardNo)
+        val mediaDeleted = DB_Helper_Delete(context).deleteMediaLink(currentMedia.uid, cardNo)
         media.remove(currentMedia)
         notifyItemRemoved(viewHolder.bindingAdapterPosition)
         notifyItemRangeChanged(viewHolder.bindingAdapterPosition, media.size)
-        if (!dbHelperGet.mediaHasLink(fileId)) {
-            dbHelperDelete.deleteMedia(fileId)
-            return true
-        }
-        return false
+        return mediaDeleted
     }
 }

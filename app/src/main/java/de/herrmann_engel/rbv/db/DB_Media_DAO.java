@@ -42,6 +42,11 @@ public interface DB_Media_DAO {
     @Query("DELETE FROM db_media WHERE uid=:id")
     void deleteMedia(int id);
 
+    // Removes the given media entries if they are not linked to any card; returns the number of
+    // removed entries
+    @Query("DELETE FROM db_media WHERE uid IN (:ids) AND NOT EXISTS (SELECT 1 FROM db_media_link_card WHERE db_media_link_card.fileId=db_media.uid)")
+    int deleteUnusedMedia(List<Integer> ids);
+
     @Insert
     long insert(DB_Media media);
 }

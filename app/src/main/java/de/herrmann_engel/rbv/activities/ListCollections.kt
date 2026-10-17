@@ -26,7 +26,6 @@ import de.herrmann_engel.rbv.databinding.DiaConfirmBinding
 import de.herrmann_engel.rbv.databinding.DiaExportBinding
 import de.herrmann_engel.rbv.databinding.DiaImportBinding
 import de.herrmann_engel.rbv.db.DB_Collection_With_Meta
-import de.herrmann_engel.rbv.db.utils.DB_Helper_Delete
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.export_import.AsyncExport
 import de.herrmann_engel.rbv.export_import.AsyncImport
@@ -306,14 +305,10 @@ class ListCollections : RBVActivity() {
     }
 
     /**
-     * Updates the .nomedia file, removes dead media links and unused tags and deletes cached
-     * files (e.g. old exports) older than one day.
+     * Updates the .nomedia file and deletes cached files (e.g. old exports) older than one day.
      */
     private fun cleanUp() {
         mediaFileManager.handleNoMediaFile()
-        val dbHelperDelete = DB_Helper_Delete(this@ListCollections)
-        dbHelperDelete.deleteDeadMediaLinks()
-        dbHelperDelete.deleteDeadTags()
         val cacheDir = cacheDir
         val files = cacheDir.listFiles()
         if (files != null) {
