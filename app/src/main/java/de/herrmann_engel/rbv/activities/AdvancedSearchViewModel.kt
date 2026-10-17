@@ -45,6 +45,14 @@ class AdvancedSearchViewModel(private val savedState: SavedStateHandle) : ViewMo
     val tagList: ArrayList<Int>
         get() = ArrayList(savedState.get<ArrayList<Int>>(KEY_TAG_LIST) ?: arrayListOf())
 
+    fun isPackSelected(packId: Int): Boolean {
+        return savedState.get<ArrayList<Int>>(KEY_PACK_LIST)?.contains(packId) == true
+    }
+
+    fun isTagSelected(tagId: Int): Boolean {
+        return savedState.get<ArrayList<Int>>(KEY_TAG_LIST)?.contains(tagId) == true
+    }
+
     fun setPackSelected(packId: Int, selected: Boolean) {
         savedState[KEY_PACK_LIST] = changeList(packList, packId, selected)
     }

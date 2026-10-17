@@ -76,7 +76,7 @@ class AdvancedSearch : RBVActivity() {
         // Packs including card counts and collection names, loaded in the background
         lifecycleScope.launch {
             val packs = withContext(Dispatchers.IO) { dbHelperGet.allPacksWithMeta }
-            binding.recAdvancedSearch.adapter = AdapterPacksAdvancedSearch(packs, packList) { packId, checked ->
+            binding.recAdvancedSearch.adapter = AdapterPacksAdvancedSearch(packs, viewModel::isPackSelected) { packId, checked ->
                 viewModel.setPackSelected(packId, checked)
             }
         }
@@ -183,7 +183,7 @@ class AdvancedSearch : RBVActivity() {
         if (dbHelperGet.hasTags()) {
             binding.advancedSearchContainerTags.visibility = View.VISIBLE
             val tags = dbHelperGet.allTags
-            val adapterTags = AdapterTagsAdvancedSearch(tags, tagList) { tagId, checked ->
+            val adapterTags = AdapterTagsAdvancedSearch(tags, viewModel::isTagSelected) { tagId, checked ->
                 viewModel.setTagSelected(tagId, checked)
             }
             binding.recAdvancedSearchTags.adapter = adapterTags

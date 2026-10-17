@@ -16,7 +16,8 @@ import java.util.Locale
  */
 class AdapterPacksAdvancedSearch(
     private val packs: List<DB_Pack_With_Meta>,
-    private val packIdsCheckedInitially: List<Int>,
+    // Asked on every bind, so rebuilt rows show the current selection
+    private val isChecked: (packId: Int) -> Boolean,
     private val onCheckedChange: (packId: Int, checked: Boolean) -> Unit
 ) : RecyclerView.Adapter<AdapterPacksAdvancedSearch.ViewHolder>() {
     class ViewHolder(val binding: RecViewSmallBinding) : RecyclerView.ViewHolder(binding.root)
@@ -66,7 +67,7 @@ class AdapterPacksAdvancedSearch(
             )
             viewHolder.binding.recSmallCheckbox.contentDescription = checkBoxContentDescription
             val extra = pack.uid
-            viewHolder.binding.recSmallCheckbox.isChecked = packIdsCheckedInitially.contains(extra)
+            viewHolder.binding.recSmallCheckbox.isChecked = isChecked(extra)
             viewHolder.binding.recSmallCheckbox.setOnCheckedChangeListener { _, checked ->
                 onCheckedChange(extra, checked)
             }

@@ -13,7 +13,8 @@ import de.herrmann_engel.rbv.utils.StringTools
  */
 class AdapterTagsAdvancedSearch(
     private val tags: List<DB_Tag>,
-    private val tagIdsCheckedInitially: List<Int>,
+    // Asked on every bind, so rebuilt rows show the current selection
+    private val isChecked: (tagId: Int) -> Boolean,
     private val onCheckedChange: (tagId: Int, checked: Boolean) -> Unit
 ) : RecyclerView.Adapter<AdapterTagsAdvancedSearch.ViewHolder>() {
     class ViewHolder(val binding: RecViewSmallBinding) : RecyclerView.ViewHolder(binding.root)
@@ -39,7 +40,7 @@ class AdapterTagsAdvancedSearch(
         }
         viewHolder.binding.recSmallCheckbox.contentDescription = tags[position].name
         val extra = tags[position].uid
-        viewHolder.binding.recSmallCheckbox.isChecked = tagIdsCheckedInitially.contains(extra)
+        viewHolder.binding.recSmallCheckbox.isChecked = isChecked(extra)
         viewHolder.binding.recSmallCheckbox.setOnCheckedChangeListener { _, checked ->
             onCheckedChange(extra, checked)
         }
