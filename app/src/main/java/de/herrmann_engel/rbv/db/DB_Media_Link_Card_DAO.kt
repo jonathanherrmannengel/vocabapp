@@ -1,37 +1,33 @@
-package de.herrmann_engel.rbv.db;
+package de.herrmann_engel.rbv.db
 
-import android.database.Cursor;
-
-import androidx.room.Dao;
-import androidx.room.Insert;
-import androidx.room.Query;
-
-import java.util.List;
+import android.database.Cursor
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.Query
 
 /**
  * Data access for the links between media files and cards.
  */
 @Dao
-public interface DB_Media_Link_Card_DAO {
-
+interface DB_Media_Link_Card_DAO {
     @Query("SELECT fileId FROM db_media_link_card WHERE cardId=:card")
-    List<Integer> getAllMediaIdsByCard(int card);
+    fun getAllMediaIdsByCard(card: Int): MutableList<Int?>?
 
     @Query("SELECT DISTINCT fileId FROM db_media_link_card WHERE cardId IN (SELECT uid FROM db_card WHERE pack=:pack)")
-    List<Integer> getAllMediaIdsByPack(int pack);
+    fun getAllMediaIdsByPack(pack: Int): MutableList<Int?>?
 
     @Query("SELECT EXISTS (SELECT 1 FROM db_media_link_card WHERE fileId=:file AND cardId=:card LIMIT 1)")
-    boolean existsMediaLinkCard(int file, int card);
+    fun existsMediaLinkCard(file: Int, card: Int): Boolean
 
-    @Query("SELECT * FROM db_media_link_card")
-    Cursor getAllExport();
+    @get:Query("SELECT * FROM db_media_link_card")
+    val allExport: Cursor?
 
     @Query("SELECT * FROM db_media_link_card WHERE cardId IN (SELECT uid FROM db_card WHERE pack IN (SELECT uid FROM db_pack WHERE collection=:collection))")
-    Cursor getAllExportByCollection(int collection);
+    fun getAllExportByCollection(collection: Int): Cursor?
 
     @Query("DELETE FROM db_media_link_card WHERE fileId=:file AND cardId=:card")
-    void deleteMediaLinkCard(int file, int card);
+    fun deleteMediaLinkCard(file: Int, card: Int)
 
     @Insert
-    long insert(DB_Media_Link_Card dbMediaLinkCard);
+    fun insert(dbMediaLinkCard: DB_Media_Link_Card?): Long
 }

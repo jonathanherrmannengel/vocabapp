@@ -1,36 +1,33 @@
-package de.herrmann_engel.rbv.db;
+package de.herrmann_engel.rbv.db
 
-import android.database.Cursor;
-
-import androidx.room.Dao;
-import androidx.room.Insert;
-import androidx.room.Query;
-
-import java.util.List;
+import android.database.Cursor
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.Query
 
 /**
  * Data access for the links between tags and cards.
  */
 @Dao
-public interface DB_Tag_Link_Card_DAO {
+interface DB_Tag_Link_Card_DAO {
     @Query("SELECT EXISTS (SELECT 1 FROM db_tag_link_card WHERE tagId=:tag AND cardId=:card LIMIT 1)")
-    boolean existsTagLinkCard(int tag, int card);
+    fun existsTagLinkCard(tag: Int, card: Int): Boolean
 
-    @Query("SELECT * FROM db_tag_link_card")
-    Cursor getAllExport();
+    @get:Query("SELECT * FROM db_tag_link_card")
+    val allExport: Cursor?
 
     @Query("SELECT * FROM db_tag_link_card WHERE cardId IN (SELECT uid FROM db_card WHERE pack IN (SELECT uid FROM db_pack WHERE collection=:collection))")
-    Cursor getAllExportByCollection(int collection);
+    fun getAllExportByCollection(collection: Int): Cursor?
 
     @Query("DELETE FROM db_tag_link_card WHERE tagId=:tag AND cardId=:card")
-    void deleteTagLinkCard(int tag, int card);
+    fun deleteTagLinkCard(tag: Int, card: Int)
 
     @Query("SELECT tagId FROM db_tag_link_card WHERE cardId=:card")
-    List<Integer> getAllTagIdsByCard(int card);
+    fun getAllTagIdsByCard(card: Int): MutableList<Int?>?
 
     @Query("SELECT DISTINCT tagId FROM db_tag_link_card WHERE cardId IN (SELECT uid FROM db_card WHERE pack=:pack)")
-    List<Integer> getAllTagIdsByPack(int pack);
+    fun getAllTagIdsByPack(pack: Int): MutableList<Int?>?
 
     @Insert
-    long insert(DB_Tag_Link_Card dbTagLinkCard);
+    fun insert(dbTagLinkCard: DB_Tag_Link_Card?): Long
 }

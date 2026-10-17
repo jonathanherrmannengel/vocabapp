@@ -1,52 +1,47 @@
-package de.herrmann_engel.rbv.db;
+package de.herrmann_engel.rbv.db
 
-import android.database.Cursor;
-
-import androidx.room.Dao;
-import androidx.room.Insert;
-import androidx.room.Query;
-
-import java.util.List;
+import android.database.Cursor
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.Query
 
 /**
  * Data access for media files.
  */
 @Dao
-public interface DB_Media_DAO {
-
+interface DB_Media_DAO {
     @Query("SELECT EXISTS (SELECT 1 FROM db_media LIMIT 1)")
-    boolean hasMedia();
+    fun hasMedia(): Boolean
 
-    @Query("SELECT * FROM db_media ORDER BY file COLLATE NOCASE ASC")
-    List<DB_Media> getAll();
+    @get:Query("SELECT * FROM db_media ORDER BY file COLLATE NOCASE ASC")
+    val all: MutableList<DB_Media?>?
 
     @Query("SELECT * FROM db_media WHERE db_media.uid IN (SELECT fileId FROM db_media_link_card WHERE cardId=:card) ORDER BY file COLLATE NOCASE ASC")
-    List<DB_Media> getAllByCard(int card);
+    fun getAllByCard(card: Int): MutableList<DB_Media?>?
 
     @Query("SELECT * FROM db_media WHERE file=:file LIMIT 1")
-    DB_Media getSingleMedia(String file);
+    fun getSingleMedia(file: String?): DB_Media?
 
     @Query("SELECT * FROM db_media WHERE uid=:id LIMIT 1")
-    DB_Media getSingleMedia(int id);
+    fun getSingleMedia(id: Int): DB_Media?
 
     @Query("SELECT EXISTS (SELECT 1 FROM db_media WHERE file=:file LIMIT 1)")
-    boolean existsMedia(String file);
+    fun existsMedia(file: String?): Boolean
 
-    // Raw cursors used by the CSV export
-    @Query("SELECT * FROM db_media")
-    Cursor getAllExport();
+    @get:Query("SELECT * FROM db_media")
+    val allExport: Cursor?
 
     @Query("SELECT * FROM db_media WHERE uid IN (SELECT fileId FROM db_media_link_card WHERE cardId IN (SELECT uid FROM db_card WHERE pack IN (SELECT uid FROM db_pack WHERE collection=:collection)))")
-    Cursor getAllExportByCollection(int collection);
+    fun getAllExportByCollection(collection: Int): Cursor?
 
     @Query("DELETE FROM db_media WHERE uid=:id")
-    void deleteMedia(int id);
+    fun deleteMedia(id: Int)
 
     // Removes the given media entries if they are not linked to any card; returns the number of
     // removed entries
     @Query("DELETE FROM db_media WHERE uid IN (:ids) AND NOT EXISTS (SELECT 1 FROM db_media_link_card WHERE db_media_link_card.fileId=db_media.uid)")
-    int deleteUnusedMedia(List<Integer> ids);
+    fun deleteUnusedMedia(ids: MutableList<Int?>?): Int
 
     @Insert
-    long insert(DB_Media media);
+    fun insert(media: DB_Media?): Long
 }
