@@ -19,6 +19,7 @@ import de.herrmann_engel.rbv.adapters.AdapterOSS
 import de.herrmann_engel.rbv.databinding.ActivityInformationBinding
 import de.herrmann_engel.rbv.oss.OSSLicenses
 import de.herrmann_engel.rbv.oss.OSSProject
+import de.herrmann_engel.rbv.settings.AppSettings
 
 /**
  * App information: link to the online help and the list of open source licenses.
@@ -90,8 +91,8 @@ class AppInformation : RBVActivity() {
             e.printStackTrace()
             Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show()
         }
-        val settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE)
-        if (settings.getBoolean("ui_bg_images", true)) {
+        val settings = AppSettings(this)
+        if (settings.uiBackgroundImages) {
             binding.informationBackgroundImage.visibility = View.VISIBLE
             binding.informationBackgroundImage.setImageDrawable(
                 AppCompatResources.getDrawable(
@@ -107,7 +108,7 @@ class AppInformation : RBVActivity() {
                 )
             )
         }
-        if (settings.getBoolean("ui_font_size", false)) {
+        if (settings.uiFontSizeBig) {
             binding.titleLicenses.setTextSize(
                 TypedValue.COMPLEX_UNIT_PX,
                 resources.getDimension(R.dimen.title_size_big)

@@ -1,7 +1,6 @@
 package de.herrmann_engel.rbv.adapters
 
 import android.app.Dialog
-import android.content.Context
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -9,11 +8,11 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
-import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.databinding.DiaOssBinding
 import de.herrmann_engel.rbv.databinding.RecViewBinding
 import de.herrmann_engel.rbv.oss.OSSLicenses
+import de.herrmann_engel.rbv.settings.AppSettings
 import de.herrmann_engel.rbv.utils.ContextTools
 
 /**
@@ -29,10 +28,9 @@ class AdapterOSS(private val licenses: List<OSSLicenses>) :
             viewGroup,
             false
         )
-        val settings =
-            viewGroup.context.getSharedPreferences(Globals.SETTINGS_NAME, Context.MODE_PRIVATE)
+        val settings = AppSettings(viewGroup.context)
         // Larger font size setting
-        if (settings.getBoolean("ui_font_size", false)) {
+        if (settings.uiFontSizeBig) {
             binding.recName.setTextSize(
                 TypedValue.COMPLEX_UNIT_PX,
                 viewGroup.context.resources.getDimension(R.dimen.rec_view_font_size_big)

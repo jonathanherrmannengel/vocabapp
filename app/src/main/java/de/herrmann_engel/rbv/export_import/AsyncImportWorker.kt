@@ -9,6 +9,7 @@ import de.herrmann_engel.rbv.db.AppDatabase
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Create
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Delete
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
+import de.herrmann_engel.rbv.settings.AppSettings
 import de.herrmann_engel.rbv.utils.StringTools
 import java.io.InputStreamReader
 import java.text.ParseException
@@ -525,30 +526,18 @@ class AsyncImportWorker(
         private const val ROWS_PER_TRANSACTION = 500
     }
 
-    // Columns: name, type ("int" or "bool"), value
+    /**
+     * Columns: name, type ("int" or "bool"), value. Only known settings with the expected type
+     * and a valid value are applied; other rows are skipped.
+     */
     private fun applySettings() {
-        val settings = context.getSharedPreferences(Globals.SETTINGS_NAME, Context.MODE_PRIVATE)
-        val editor = settings.edit()
+        val settings = AppSettings(context)
         for (line in importedSettings) {
-            try {
-                val name = line[1]
-                when {
-                    line[2] == "int" -> {
-                        line[3]?.toInt()?.let {
-                            editor.putInt(name, it)
-                        }
-                    }
-
-                    line[2] == "bool" -> {
-                        line[3]?.toBoolean()?.let {
-                            editor.putBoolean(name, it)
-                        }
-                    }
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
+            val setting = AppSettings.ALL.find { it.key == line.getOrNull(1) } ?: continue
+            val value = line.getOrNull(3) ?: continue
+            if (line.getOrNull(2) == setting.typeName) {
+                setting.setFromText(settings, value)
             }
         }
-        editor.apply()
     }
 }

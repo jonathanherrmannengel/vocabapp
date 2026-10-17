@@ -17,6 +17,7 @@ import de.herrmann_engel.rbv.actions.PackActions
 import de.herrmann_engel.rbv.databinding.ActivityViewCollectionOrPackBinding
 import de.herrmann_engel.rbv.db.DB_Pack
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
+import de.herrmann_engel.rbv.settings.AppSettings
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -53,8 +54,8 @@ class ViewPack : RBVActivity(), PackActions.Listener {
     // Load the pack again on every resume, as it may have been edited
     public override fun onResume() {
         super.onResume()
-        val settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE)
-        val increaseFontSize = settings.getBoolean("ui_font_size", false)
+        val settings = AppSettings(this)
+        val increaseFontSize = settings.uiFontSizeBig
         pack = dbHelperGet.getSinglePack(packNo)
         title = getString(R.string.pack_details)
         if (pack.emoji.isNullOrBlank()) {

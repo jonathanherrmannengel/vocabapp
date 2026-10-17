@@ -21,7 +21,6 @@ import androidx.core.graphics.toColorInt
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
-import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.actions.CardActions
 import de.herrmann_engel.rbv.databinding.ActivityViewCardBinding
@@ -30,6 +29,7 @@ import de.herrmann_engel.rbv.db.DB_Media
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Update
 import de.herrmann_engel.rbv.media.MediaFileManager
+import de.herrmann_engel.rbv.settings.AppSettings
 import de.herrmann_engel.rbv.ui.TagSpan
 import de.herrmann_engel.rbv.utils.StringTools
 import io.noties.markwon.Markwon
@@ -94,9 +94,9 @@ class ViewCard : RBVActivity(), CardActions.Listener {
     // (Re)load the card on every resume, as it may have been edited
     override fun onResume() {
         super.onResume()
-        val settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE)
-        val formatCards = settings.getBoolean("format_cards", false)
-        val increaseFontSize = settings.getBoolean("ui_font_size", false)
+        val settings = AppSettings(this)
+        val formatCards = settings.formatCards
+        val increaseFontSize = settings.uiFontSizeBig
         card = dbHelperGet.getSingleCard(cardNo)
         if (formatCards) {
             val formatString = StringTools()
@@ -145,7 +145,7 @@ class ViewCard : RBVActivity(), CardActions.Listener {
         } else {
             binding.cardTags.visibility = View.GONE
         }
-        val formatCardNotes = settings.getBoolean("format_card_notes", false)
+        val formatCardNotes = settings.formatCardNotes
         if (!card.notes.isNullOrBlank()) {
             binding.cardNotesContainer.visibility = View.VISIBLE
             // Notes are rendered as Markdown; links are clickable in both modes

@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.View
 import android.view.WindowManager
-import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.ViewCompat
@@ -23,6 +22,7 @@ import de.herrmann_engel.rbv.databinding.DiaExportBinding
 import de.herrmann_engel.rbv.db.DB_Pack_With_Meta
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.export_import.AsyncExport
+import de.herrmann_engel.rbv.settings.AppSettings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -135,8 +135,8 @@ class ListPacks : RBVActivity(), PackActions.Listener {
 
     override fun onResume() {
         super.onResume()
-        val settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE)
-        if (settings.getBoolean("ui_bg_images", true)) {
+        val settings = AppSettings(this)
+        if (settings.uiBackgroundImages) {
             binding.backgroundImage.visibility = View.VISIBLE
             binding.backgroundImage.setImageDrawable(
                 AppCompatResources.getDrawable(
@@ -169,8 +169,8 @@ class ListPacks : RBVActivity(), PackActions.Listener {
     // Load the packs in the background; create the adapter on first load, update it (and the
     // font size setting) afterwards
     private fun refreshContent() {
-        val settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE)
-        val uiFontSizeBig = settings.getBoolean("ui_font_size", false)
+        val settings = AppSettings(this)
+        val uiFontSizeBig = settings.uiFontSizeBig
         lifecycleScope.launch {
             val content = withContext(Dispatchers.IO) { loadContent() }
             adapter?.updateSettingsAndContent(content, uiFontSizeBig) ?: run {

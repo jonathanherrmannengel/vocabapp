@@ -7,6 +7,7 @@ import com.opencsv.CSVWriter
 import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Export
+import de.herrmann_engel.rbv.settings.AppSettings
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileWriter
@@ -187,80 +188,10 @@ class AsyncExportWorker(
                 return null
             }
             if (includeSettings) {
-                val settings =
-                    context.getSharedPreferences(Globals.SETTINGS_NAME, Context.MODE_PRIVATE)
-                if (settings.contains("default_sort")) {
-                    exportSetting(
-                        "default_sort",
-                        file.name,
-                        "int",
-                        settings.getInt("default_sort", Globals.SORT_CARDS_DEFAULT).toString()
-                    )
-                }
-                if (settings.contains("flashcard_list_side")) {
-                    exportSetting(
-                        "flashcard_list_side",
-                        file.name,
-                        "int",
-                        settings.getInt("flashcard_list_side", Globals.FLASHCARD_LIST_SIDE_FRONT)
-                            .toString()
-                    )
-                }
-                if (settings.contains("format_cards")) {
-                    exportSetting(
-                        "format_cards",
-                        file.name,
-                        "bool",
-                        settings.getBoolean("format_cards", false).toString()
-                    )
-                }
-                if (settings.contains("format_card_notes")) {
-                    exportSetting(
-                        "format_card_notes",
-                        file.name,
-                        "bool",
-                        settings.getBoolean("format_card_notes", false).toString()
-                    )
-                }
-                if (settings.contains("query_mode_reset_progress")) {
-                    exportSetting(
-                        "query_mode_reset_progress",
-                        file.name,
-                        "bool",
-                        settings.getBoolean("query_mode_reset_progress", false).toString()
-                    )
-                }
-                if (settings.contains("ui_bg_images")) {
-                    exportSetting(
-                        "ui_bg_images",
-                        file.name,
-                        "bool",
-                        settings.getBoolean("ui_bg_images", true).toString()
-                    )
-                }
-                if (settings.contains("ui_font_size")) {
-                    exportSetting(
-                        "ui_font_size",
-                        file.name,
-                        "bool",
-                        settings.getBoolean("ui_font_size", false).toString()
-                    )
-                }
-                if (settings.contains("ui_mode")) {
-                    exportSetting(
-                        "ui_mode",
-                        file.name,
-                        "int",
-                        settings.getInt("ui_mode", Globals.UI_MODE_DAY).toString()
-                    )
-                }
-                if (settings.contains("media_in_gallery")) {
-                    exportSetting(
-                        "media_in_gallery",
-                        file.name,
-                        "bool",
-                        settings.getBoolean("media_in_gallery", true).toString()
-                    )
+                // Only stored settings; settings never set keep their default on import
+                val settings = AppSettings(context)
+                AppSettings.ALL.filter { it.isSet(settings) }.forEach {
+                    exportSetting(it.key, file.name, it.typeName, it.toText(settings))
                 }
             }
             // Copy the file to the location chosen by the user; the export fails if this fails

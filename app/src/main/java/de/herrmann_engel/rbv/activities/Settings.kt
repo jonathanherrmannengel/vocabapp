@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
 import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -15,9 +14,10 @@ import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.databinding.ActivitySettingsBinding
 import de.herrmann_engel.rbv.databinding.DiaInfoBinding
 import de.herrmann_engel.rbv.media.MediaFileManager
+import de.herrmann_engel.rbv.settings.AppSettings
 
 /**
- * App settings. All changes are saved immediately to the settings preferences.
+ * App settings screen. All changes are saved immediately (see [AppSettings]).
  * Uses a [MediaFileManager] to update the .nomedia file when the gallery setting changes.
  */
 class Settings : RBVActivity() {
@@ -26,11 +26,10 @@ class Settings : RBVActivity() {
         super.onCreate(savedInstanceState)
         val binding = ActivitySettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        val settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE)
-        val settingsEdit = settings.edit()
+        val settings = AppSettings(this)
         // Default sort order of card lists
         binding.settingsSort.clearCheck()
-        when (settings.getInt("default_sort", Globals.SORT_CARDS_DEFAULT)) {
+        when (settings.defaultSort) {
             Globals.SORT_CARDS_ALPHABETICAL -> {
                 binding.settingsSortAlphabetical.isChecked = true
             }
@@ -73,12 +72,11 @@ class Settings : RBVActivity() {
                     Globals.SORT_CARDS_DEFAULT
                 }
             }
-            settingsEdit.putInt("default_sort", sortNew)
-            settingsEdit.apply()
+            settings.defaultSort = sortNew
         }
         // Side(s) of the cards shown in card lists
         binding.settingsFlashcardListSide.clearCheck()
-        when (settings.getInt("flashcard_list_side", Globals.FLASHCARD_LIST_SIDE_FRONT)) {
+        when (settings.flashcardListSide) {
             Globals.FLASHCARD_LIST_SIDE_BACK -> {
                 binding.settingsFlashcardListSideBack.isChecked = true
             }
@@ -105,15 +103,13 @@ class Settings : RBVActivity() {
                     Globals.FLASHCARD_LIST_SIDE_FRONT
                 }
             }
-            settingsEdit.putInt("flashcard_list_side", sideNew)
-            settingsEdit.apply()
+            settings.flashcardListSide = sideNew
         }
         // Simple formatting markup on cards (see StringTools) and Markdown in notes
-        val formatCards = settings.getBoolean("format_cards", false)
+        val formatCards = settings.formatCards
         binding.settingsFormatCards.isChecked = formatCards
         binding.settingsFormatCards.setOnCheckedChangeListener { _, c: Boolean ->
-            settingsEdit.putBoolean("format_cards", c)
-            settingsEdit.apply()
+            settings.formatCards = c
         }
         binding.settingsFormatCardsInfo.setOnClickListener {
             val infoDialog = Dialog(this, R.style.dia_view)
@@ -129,35 +125,31 @@ class Settings : RBVActivity() {
             bindingInfoDialog.diaInfoText.setText(R.string.settings_format_cards_info)
             infoDialog.show()
         }
-        val formatCardNotes = settings.getBoolean("format_card_notes", false)
+        val formatCardNotes = settings.formatCardNotes
         binding.settingsFormatCardNotes.isChecked = formatCardNotes
         binding.settingsFormatCardNotes.setOnCheckedChangeListener { _, c: Boolean ->
-            settingsEdit.putBoolean("format_card_notes", c)
-            settingsEdit.apply()
+            settings.formatCardNotes = c
         }
         // If set, an unknown card in query mode resets its progress to 0 instead of decreasing it by 1
-        val queryModeResetProgress = settings.getBoolean("query_mode_reset_progress", false)
+        val queryModeResetProgress = settings.queryModeResetProgress
         binding.settingsQueryModeResetProgress.isChecked = queryModeResetProgress
         binding.settingsQueryModeResetProgress.setOnCheckedChangeListener { _, c: Boolean ->
-            settingsEdit.putBoolean("query_mode_reset_progress", c)
-            settingsEdit.apply()
+            settings.queryModeResetProgress = c
         }
-        val uiBgImages = settings.getBoolean("ui_bg_images", true)
+        val uiBgImages = settings.uiBackgroundImages
         binding.settingsUiBackgroundImages.isChecked = uiBgImages
         binding.settingsUiBackgroundImages.setOnCheckedChangeListener { _, c: Boolean ->
-            settingsEdit.putBoolean("ui_bg_images", c)
-            settingsEdit.apply()
+            settings.uiBackgroundImages = c
             setBgImage(c, binding)
         }
-        val uiFontSize = settings.getBoolean("ui_font_size", false)
+        val uiFontSize = settings.uiFontSizeBig
         binding.settingsUiIncreaseFontSize.isChecked = uiFontSize
         binding.settingsUiIncreaseFontSize.setOnCheckedChangeListener { _, c: Boolean ->
-            settingsEdit.putBoolean("ui_font_size", c)
-            settingsEdit.apply()
+            settings.uiFontSizeBig = c
         }
         // Theme: day, night or follow system; applied immediately
         binding.settingsUiMode.clearCheck()
-        when (settings.getInt("ui_mode", Globals.UI_MODE_DAY)) {
+        when (settings.uiMode) {
             Globals.UI_MODE_NIGHT -> {
                 binding.settingsUiModeNight.isChecked = true
             }
@@ -177,31 +169,17 @@ class Settings : RBVActivity() {
             } else if (id == R.id.settings_ui_mode_day) {
                 uiModeNew = Globals.UI_MODE_DAY
             }
-            settingsEdit.putInt("ui_mode", uiModeNew)
-            settingsEdit.apply()
-            when (uiModeNew) {
-                Globals.UI_MODE_NIGHT -> {
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-                }
-
-                Globals.UI_MODE_DAY -> {
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-                }
-
-                else -> {
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
-                }
-            }
+            settings.uiMode = uiModeNew
+            settings.applyUiMode()
         }
         // Show or hide the media folder in gallery apps
-        val mediaInGallery = settings.getBoolean("media_in_gallery", true)
+        val mediaInGallery = settings.mediaInGallery
         binding.settingsMediaInGallery.isChecked = mediaInGallery
         binding.settingsMediaInGallery.setOnCheckedChangeListener { _, c: Boolean ->
-            settingsEdit.putBoolean("media_in_gallery", c)
-            settingsEdit.apply()
+            settings.mediaInGallery = c
             mediaFileManager.handleNoMediaFile()
         }
-        setBgImage(settings.getBoolean("ui_bg_images", true), binding)
+        setBgImage(settings.uiBackgroundImages, binding)
         // Edge-to-edge: keep the content clear of the system bars
         ViewCompat.setOnApplyWindowInsetsListener(binding.settingsContainer) { v, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())

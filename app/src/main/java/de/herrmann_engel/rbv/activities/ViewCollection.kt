@@ -12,13 +12,13 @@ import androidx.activity.enableEdgeToEdge
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
-import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.databinding.ActivityViewCollectionOrPackBinding
 import de.herrmann_engel.rbv.databinding.DiaConfirmBinding
 import de.herrmann_engel.rbv.db.DB_Collection
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Delete
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
+import de.herrmann_engel.rbv.settings.AppSettings
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -67,8 +67,8 @@ class ViewCollection : RBVActivity() {
     // Load the collection again on every resume, as it may have been edited
     public override fun onResume() {
         super.onResume()
-        val settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE)
-        val increaseFontSize = settings.getBoolean("ui_font_size", false)
+        val settings = AppSettings(this)
+        val increaseFontSize = settings.uiFontSizeBig
         collection = dbHelperGet.getSingleCollection(collectionNo)
         title = getString(R.string.collection_details)
         binding.collectionOrPackName.text = collection.name

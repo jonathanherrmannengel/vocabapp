@@ -9,7 +9,6 @@ import android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.FileProvider
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -18,6 +17,7 @@ import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.databinding.DiaInfoBinding
 import de.herrmann_engel.rbv.export_import.ImportExportEvents
+import de.herrmann_engel.rbv.settings.AppSettings
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 
@@ -103,20 +103,7 @@ abstract class RBVActivity : AppCompatActivity() {
         }
         onImportFinished()
         // Apply the theme setting, which may have been changed by the import
-        val settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE)
-        when (settings.getInt("ui_mode", Globals.UI_MODE_DAY)) {
-            Globals.UI_MODE_NIGHT -> {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-            }
-
-            Globals.UI_MODE_DAY -> {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-            }
-
-            else -> {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
-            }
-        }
+        AppSettings(this).applyUiMode()
     }
 
     // Called after a successful import, e.g. to reload displayed data

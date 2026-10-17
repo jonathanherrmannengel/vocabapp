@@ -3,7 +3,6 @@ package de.herrmann_engel.rbv.activities
 import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -13,7 +12,6 @@ import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.SearchView
-import androidx.core.content.edit
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
@@ -37,6 +35,8 @@ import de.herrmann_engel.rbv.databinding.DiaInfoBinding
 import de.herrmann_engel.rbv.db.DB_Card_With_Meta
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.media.MediaFileManager
+import de.herrmann_engel.rbv.settings.AppConfig
+import de.herrmann_engel.rbv.settings.AppSettings
 import de.herrmann_engel.rbv.utils.FormatCards
 import de.herrmann_engel.rbv.utils.SearchCards
 import de.herrmann_engel.rbv.utils.SortCards
@@ -59,7 +59,7 @@ class ListCards : RBVActivity(), CardActions.Listener {
     )
     private lateinit var binding: ActivityDefaultRecBinding
     private lateinit var dbHelperGet: DB_Helper_Get
-    private lateinit var settings: SharedPreferences
+    private lateinit var settings: AppSettings
     private lateinit var queryMode: QueryMode
     private lateinit var showCardSideMenuItem: MenuItem
     private lateinit var changeListSortMenuItem: MenuItem
@@ -115,12 +115,12 @@ class ListCards : RBVActivity(), CardActions.Listener {
         binding = ActivityDefaultRecBinding.inflate(layoutInflater)
         setContentView(binding.root)
         dbHelperGet = DB_Helper_Get(this)
-        settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE)
+        settings = AppSettings(this)
         // Initial sort order and side(s) to show, can be changed via the menu. If the activity
         // is recreated, the values chosen before are kept.
         if (!viewModel.hasDisplaySettings) {
-            listSort = settings.getInt("default_sort", Globals.SORT_CARDS_DEFAULT)
-            when (settings.getInt("flashcard_list_side", Globals.FLASHCARD_LIST_SIDE_FRONT)) {
+            listSort = settings.defaultSort
+            when (settings.flashcardListSide) {
                 Globals.FLASHCARD_LIST_SIDE_BACK -> {
                     frontBackReverse = true
                     showFrontAndBack = false
@@ -146,7 +146,7 @@ class ListCards : RBVActivity(), CardActions.Listener {
         progressNumber = intent.extras!!.getInt("progressNumber")
         repetitionOlder = intent.extras!!.getBoolean("repetitionOlder")
         repetitionNumber = intent.extras!!.getInt("repetitionNumber")
-        if (settings.getBoolean("ui_bg_images", true)) {
+        if (settings.uiBackgroundImages) {
             binding.backgroundImage.visibility = View.VISIBLE
             binding.backgroundImage.setImageDrawable(
                 AppCompatResources.getDrawable(
@@ -198,7 +198,7 @@ class ListCards : RBVActivity(), CardActions.Listener {
                 } == true
             ) {
                 dbHelperGet.getSingleCardWithMeta(cardAdded)?.let {
-                    if (settings.getBoolean("format_cards", false)) {
+                    if (settings.formatCards) {
                         FormatCards().formatCard(it, false)
                     }
                     cardsList?.add(it)
@@ -211,7 +211,7 @@ class ListCards : RBVActivity(), CardActions.Listener {
                     ?.filter { i -> i.card.uid == cardWithMetaNew?.card?.uid }
                     ?.findFirst()?.orElse(null)
                 if (cardWithMetaNew != null && cardWithMetaOld != null) {
-                    if (settings.getBoolean("format_cards", false)) {
+                    if (settings.formatCards) {
                         FormatCards().formatCard(
                             cardWithMetaNew,
                             cardWithMetaOld.formattingIsInaccurate
@@ -305,49 +305,44 @@ class ListCards : RBVActivity(), CardActions.Listener {
             // Warning: Big lists
             // Show the warning about inaccurate formatting/search only once per mode (stored in the config)
             if ((cardsList?.size ?: 0) > Globals.MAX_SIZE_CARDS_LIST_ACCURATE) {
-                val config = getSharedPreferences(Globals.CONFIG_NAME, MODE_PRIVATE)
-                val formatCardsActivated = settings.getBoolean("format_cards", false)
+                val config = AppConfig(this@ListCards)
+                val formatCardsActivated = settings.formatCards
                 val warnInaccurateFormat =
-                    formatCardsActivated && config.getBoolean("inaccurate_warning_format", true)
+                    formatCardsActivated && config.showInaccurateWarningFormat
                 val warnInaccurateNoFormat =
-                    !formatCardsActivated && config.getBoolean(
-                        "inaccurate_warning_no_format",
-                        true
-                    )
+                    !formatCardsActivated && config.showInaccurateWarningNoFormat
                 if (warnInaccurateFormat || warnInaccurateNoFormat) {
-                    config.edit {
-                        val infoDialog = Dialog(this@ListCards, R.style.dia_view)
-                        val bindingInfoDialog = DiaInfoBinding.inflate(
-                            layoutInflater
+                    val infoDialog = Dialog(this@ListCards, R.style.dia_view)
+                    val bindingInfoDialog = DiaInfoBinding.inflate(
+                        layoutInflater
+                    )
+                    infoDialog.setContentView(bindingInfoDialog.root)
+                    infoDialog.setTitle(resources.getString(R.string.info))
+                    infoDialog.window!!.setLayout(
+                        WindowManager.LayoutParams.MATCH_PARENT,
+                        WindowManager.LayoutParams.MATCH_PARENT
+                    )
+                    val warnings: MutableList<String> = ArrayList()
+                    warnings.add(
+                        String.format(
+                            resources.getString(R.string.warn_inaccurate),
+                            Globals.MAX_SIZE_CARDS_LIST_ACCURATE
                         )
-                        infoDialog.setContentView(bindingInfoDialog.root)
-                        infoDialog.setTitle(resources.getString(R.string.info))
-                        infoDialog.window!!.setLayout(
-                            WindowManager.LayoutParams.MATCH_PARENT,
-                            WindowManager.LayoutParams.MATCH_PARENT
-                        )
-                        val warnings: MutableList<String> = ArrayList()
-                        warnings.add(
-                            String.format(
-                                resources.getString(R.string.warn_inaccurate),
-                                Globals.MAX_SIZE_CARDS_LIST_ACCURATE
-                            )
-                        )
-                        if (warnInaccurateFormat) {
-                            putBoolean("inaccurate_warning_format", false)
-                            warnings.add(resources.getString(R.string.warn_inaccurate_list))
-                        }
-                        if (warnInaccurateNoFormat) {
-                            putBoolean("inaccurate_warning_no_format", false)
-                        }
-                        warnings.add(resources.getString(R.string.warn_inaccurate_search))
-                        warnings.add(resources.getString(R.string.warn_inaccurate_note))
-                        bindingInfoDialog.diaInfoText.text = java.lang.String.join(
-                            System.lineSeparator().plus(System.lineSeparator()),
-                            warnings
-                        )
-                        infoDialog.show()
+                    )
+                    if (warnInaccurateFormat) {
+                        config.showInaccurateWarningFormat = false
+                        warnings.add(resources.getString(R.string.warn_inaccurate_list))
                     }
+                    if (warnInaccurateNoFormat) {
+                        config.showInaccurateWarningNoFormat = false
+                    }
+                    warnings.add(resources.getString(R.string.warn_inaccurate_search))
+                    warnings.add(resources.getString(R.string.warn_inaccurate_note))
+                    bindingInfoDialog.diaInfoText.text = java.lang.String.join(
+                        System.lineSeparator().plus(System.lineSeparator()),
+                        warnings
+                    )
+                    infoDialog.show()
                 }
             }
 
@@ -420,7 +415,7 @@ class ListCards : RBVActivity(), CardActions.Listener {
             } else {
                 dbHelperGet.getAllCardsByPackWithMeta(packNo)
             }
-        if (settings.getBoolean("format_cards", false)) {
+        if (settings.formatCards) {
             FormatCards().formatCards(cards)
         }
         SortCards().sortCards(cards, sort)
@@ -583,7 +578,7 @@ class ListCards : RBVActivity(), CardActions.Listener {
                 cardsListFiltered = tempCardList
                 adapter = AdapterCards(
                     cardsListFiltered!!,
-                    settings.getBoolean("ui_font_size", false),
+                    settings.uiFontSizeBig,
                     frontBackReverse,
                     showFrontAndBack,
                     packNo,
@@ -598,7 +593,7 @@ class ListCards : RBVActivity(), CardActions.Listener {
                     tempCardList,
                     frontBackReverse,
                     showFrontAndBack,
-                    settings.getBoolean("ui_font_size", false)
+                    settings.uiFontSizeBig
                 )
             }
             invalidateOptionsMenu()

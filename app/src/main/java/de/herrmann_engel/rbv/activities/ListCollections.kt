@@ -30,6 +30,7 @@ import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.export_import.AsyncExport
 import de.herrmann_engel.rbv.export_import.AsyncImport
 import de.herrmann_engel.rbv.media.MediaFileManager
+import de.herrmann_engel.rbv.settings.AppSettings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -289,8 +290,8 @@ class ListCollections : RBVActivity() {
 
     override fun onResume() {
         super.onResume()
-        val settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE)
-        if (settings.getBoolean("ui_bg_images", true)) {
+        val settings = AppSettings(this)
+        if (settings.uiBackgroundImages) {
             binding.backgroundImage.visibility = View.VISIBLE
             binding.backgroundImage.setImageDrawable(
                 AppCompatResources.getDrawable(
@@ -339,8 +340,8 @@ class ListCollections : RBVActivity() {
 
     // Load the collections in the background; create the adapter on first load, update it afterwards
     private fun updateSettingsAndContent() {
-        val settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE)
-        val uiFontSizeBig = settings.getBoolean("ui_font_size", false)
+        val settings = AppSettings(this)
+        val uiFontSizeBig = settings.uiFontSizeBig
 
         lifecycleScope.launch {
             val content = withContext(Dispatchers.IO) { loadContent() }

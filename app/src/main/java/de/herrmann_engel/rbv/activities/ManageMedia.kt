@@ -9,13 +9,13 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.LinearLayoutManager
-import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.adapters.AdapterMediaManage
 import de.herrmann_engel.rbv.databinding.ActivityManageMediaBinding
 import de.herrmann_engel.rbv.db.DB_Media
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.media.MediaFileManager
+import de.herrmann_engel.rbv.settings.AppSettings
 
 /**
  * Lists all media entries of the database (see [AdapterMediaManage]) and links to
@@ -28,8 +28,8 @@ class ManageMedia : RBVActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityManageMediaBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        val settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE)
-        if (settings.getBoolean("ui_bg_images", true)) {
+        val settings = AppSettings(this)
+        if (settings.uiBackgroundImages) {
             binding.mediaBackgroundImage.visibility = View.VISIBLE
             binding.mediaBackgroundImage.setImageDrawable(
                 AppCompatResources.getDrawable(

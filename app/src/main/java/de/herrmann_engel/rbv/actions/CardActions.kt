@@ -29,6 +29,7 @@ import de.herrmann_engel.rbv.db.DB_Tag
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Delete
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.media.MediaFiles
+import de.herrmann_engel.rbv.settings.AppSettings
 import de.herrmann_engel.rbv.utils.StringTools
 import org.commonmark.parser.Parser
 import org.commonmark.renderer.html.HtmlRenderer
@@ -153,10 +154,9 @@ class CardActions(
             WindowManager.LayoutParams.MATCH_PARENT,
             WindowManager.LayoutParams.MATCH_PARENT
         )
-        val settings =
-            activity.getSharedPreferences(Globals.SETTINGS_NAME, AppCompatActivity.MODE_PRIVATE)
-        val formatCards = settings.getBoolean("format_cards", false)
-        val formatCardNotes = settings.getBoolean("format_card_notes", false)
+        val settings = AppSettings(activity)
+        val formatCards = settings.formatCards
+        val formatCardNotes = settings.formatCardNotes
         val dbHelperGet = DB_Helper_Get(activity)
         val stringTools = StringTools()
         val jobName: String

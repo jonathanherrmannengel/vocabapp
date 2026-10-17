@@ -2,7 +2,6 @@ package de.herrmann_engel.rbv.media
 
 import android.app.Activity
 import android.app.Dialog
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.DocumentsContract
@@ -12,7 +11,6 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.edit
 import androidx.core.net.toUri
 import androidx.documentfile.provider.DocumentFile
 import androidx.recyclerview.widget.GridLayoutManager
@@ -27,6 +25,8 @@ import de.herrmann_engel.rbv.databinding.DiaImageBinding
 import de.herrmann_engel.rbv.databinding.DiaRecBinding
 import de.herrmann_engel.rbv.db.DB_Media
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
+import de.herrmann_engel.rbv.settings.AppConfig
+import de.herrmann_engel.rbv.settings.AppSettings
 
 /**
  * Media file handling for an activity that works with media files.
@@ -258,8 +258,8 @@ class MediaFileManager(
     }
 
     /**
-     * Creates or deletes the ".nomedia" file in the media folder according to the "media_in_gallery"
-     * setting, so that gallery apps show or hide the media files.
+     * Creates or deletes the ".nomedia" file in the media folder according to the mediaInGallery
+     * setting (see [AppSettings]), so that gallery apps show or hide the media files.
      */
     fun handleNoMediaFile() {
         try {
@@ -267,9 +267,8 @@ class MediaFileManager(
             if (outputDirectory == null || !outputDirectory.exists() || !outputDirectory.isDirectory) {
                 return
             }
-            val settings =
-                activity.getSharedPreferences(Globals.SETTINGS_NAME, Context.MODE_PRIVATE)
-            val mediaInGallery = settings.getBoolean("media_in_gallery", true)
+            val settings = AppSettings(activity)
+            val mediaInGallery = settings.mediaInGallery
             val noMediaFile = outputDirectory.findFile(".nomedia")
             if (mediaInGallery && noMediaFile != null && noMediaFile.exists() && noMediaFile.isFile) {
                 DocumentsContract.deleteDocument(
@@ -377,10 +376,7 @@ class MediaFileManager(
 
     // URI of the media folder as string, null if not set yet
     private val cardMediaFolder: String?
-        get() {
-            val config = activity.getSharedPreferences(Globals.CONFIG_NAME, Context.MODE_PRIVATE)
-            return config.getString("card_media_folder", null)
-        }
+        get() = AppConfig(activity).mediaFolder
 
     // True if the user has selected a media folder (it may still be inaccessible)
     val isFolderSelected: Boolean
@@ -397,10 +393,7 @@ class MediaFileManager(
         }
 
     private fun setCardMediaFolder(uri: String) {
-        val config = activity.getSharedPreferences(Globals.CONFIG_NAME, Context.MODE_PRIVATE)
-        config.edit {
-            putString("card_media_folder", uri)
-        }
+        AppConfig(activity).mediaFolder = uri
     }
 
     override fun existsMediaFile(name: String?): Boolean {

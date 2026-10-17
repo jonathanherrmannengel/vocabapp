@@ -1,7 +1,6 @@
 package de.herrmann_engel.rbv.adapters
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface.BOLD
@@ -164,7 +163,6 @@ class AdapterCards(
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         val binding =
             RecViewCardBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false)
-        viewGroup.context.getSharedPreferences(Globals.SETTINGS_NAME, Context.MODE_PRIVATE)
         return ViewHolder(binding)
     }
 

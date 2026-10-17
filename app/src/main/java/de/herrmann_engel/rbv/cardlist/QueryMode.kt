@@ -6,7 +6,6 @@ import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Dialog
-import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.LayerDrawable
@@ -18,7 +17,6 @@ import android.util.TypedValue
 import android.view.View
 import android.view.WindowManager
 import androidx.core.view.isVisible
-import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.activities.EditCard
 import de.herrmann_engel.rbv.databinding.DiaInfoBinding
@@ -29,6 +27,7 @@ import de.herrmann_engel.rbv.db.DB_Media
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Update
 import de.herrmann_engel.rbv.media.MediaFileManager
+import de.herrmann_engel.rbv.settings.AppSettings
 import de.herrmann_engel.rbv.ui.SwipeEvents
 import de.herrmann_engel.rbv.utils.StringTools
 import io.noties.markwon.Markwon
@@ -59,8 +58,7 @@ class QueryMode(
 ) {
     private val dialog = Dialog(activity, R.style.dia_view)
     private val binding = DiaQueryBinding.inflate(activity.layoutInflater)
-    private val settings =
-        activity.getSharedPreferences(Globals.SETTINGS_NAME, Context.MODE_PRIVATE)
+    private val settings = AppSettings(activity)
     private val dbHelperGet = DB_Helper_Get(activity)
     private val dbHelperUpdate = DB_Helper_Update(activity)
 
@@ -174,7 +172,7 @@ class QueryMode(
 
     // Card not known: decrease the progress by 1 or reset it to 0, depending on the settings
     private fun minusAction(card: DB_Card) {
-        val known = if (settings.getBoolean("query_mode_reset_progress", false)) {
+        val known = if (settings.queryModeResetProgress) {
             0
         } else {
             0.coerceAtLeast(card.known - 1)
@@ -195,7 +193,7 @@ class QueryMode(
         val front: SpannableString
         val back: SpannableString
         val formatString = StringTools()
-        if (settings.getBoolean("format_cards", false)) {
+        if (settings.formatCards) {
             front =
                 if (reverse) {
                     formatString.format(card.back)
@@ -216,7 +214,7 @@ class QueryMode(
         }
         binding.queryShow.text = front
         binding.queryHide.text = back
-        if (settings.getBoolean("ui_font_size", false)) {
+        if (settings.uiFontSizeBig) {
             binding.queryShow.setTextSize(
                 TypedValue.COMPLEX_UNIT_PX,
                 activity.resources.getDimension(R.dimen.card_front_size_big)
@@ -336,7 +334,7 @@ class QueryMode(
             WindowManager.LayoutParams.MATCH_PARENT
         )
         bindingInfoDialog.diaInfoText.setTextIsSelectable(true)
-        if (settings.getBoolean("format_card_notes", false)) {
+        if (settings.formatCardNotes) {
             val markwon = Markwon.builder(activity)
                 .usePlugin(
                     LinkifyPlugin.create(
