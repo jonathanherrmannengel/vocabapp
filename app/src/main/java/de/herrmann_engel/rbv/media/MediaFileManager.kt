@@ -299,8 +299,7 @@ class MediaFileManager(
 
     private fun getFile(id: Int): DocumentFile? {
         val dbHelperGet = DB_Helper_Get(activity)
-        val currentMedia = dbHelperGet.getSingleMedia(id) ?: return null
-        val fileName = currentMedia.file
+        val fileName = dbHelperGet.getSingleMedia(id)?.file ?: return null
         return getFile(fileName)
     }
 

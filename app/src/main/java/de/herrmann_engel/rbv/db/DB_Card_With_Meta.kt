@@ -9,12 +9,9 @@ import java.util.Objects
  * names (and emojis) of its tags. The ignored fields are computed in memory and not stored.
  */
 class DB_Card_With_Meta {
-    @JvmField
     @Embedded
-    var card: DB_Card? = null
-    @JvmField
+    lateinit var card: DB_Card
     var packColor: Int = 0
-    @JvmField
     var tagNames: String? = null
 
     // Front and back with formatting markup (*, _) removed; used for searching and sorting

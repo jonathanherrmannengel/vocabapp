@@ -14,19 +14,13 @@ import de.herrmann_engel.rbv.db.DB_Tag_Link_Card
  * InvalidEntryException if the entry cannot be created (e.g. empty name, missing parent,
  * duplicate). They return the uid of the new entry.
  */
-class DB_Helper_Create(context: Context?) {
+class DB_Helper_Create(context: Context) {
     // Thrown if an entry cannot be created; the message says why
     class InvalidEntryException(message: String?) : Exception(message)
 
-    private val dbHelper: DB_Helper
+    private val dbHelper = DB_Helper(context)
 
-    init {
-        dbHelper = DB_Helper(context)
-    }
-
-    // Creates a collection without color and emoji, dated now
-    @JvmOverloads
-    @Throws(InvalidEntryException::class)
+    // Creates a collection; by default without color and emoji, dated now
     fun createCollection(
         name: String,
         desc: String?,
@@ -46,7 +40,6 @@ class DB_Helper_Create(context: Context?) {
         throw InvalidEntryException("Collection name is empty")
     }
 
-    @Throws(InvalidEntryException::class)
     fun createPack(
         name: String,
         desc: String?,
@@ -70,13 +63,10 @@ class DB_Helper_Create(context: Context?) {
     }
 
     // Creates a pack without emoji, dated now, inheriting the color of its collection
-    @Throws(InvalidEntryException::class)
     fun createPack(name: String, desc: String?, collection: Int): Long {
         val dbHelperGet = DB_Helper_Get(dbHelper.context)
         val parent = dbHelperGet.getSingleCollection(collection)
-        if (parent == null) {
-            throw InvalidEntryException("Collection " + collection + " does not exist")
-        }
+            ?: throw InvalidEntryException("Collection " + collection + " does not exist")
         return createPack(
             name,
             desc,
@@ -87,9 +77,7 @@ class DB_Helper_Create(context: Context?) {
         )
     }
 
-    // Creates a card without progress or repetitions, dated now
-    @JvmOverloads
-    @Throws(InvalidEntryException::class)
+    // Creates a card; by default without progress or repetitions, dated now
     fun createCard(
         front: String,
         back: String,
@@ -116,8 +104,7 @@ class DB_Helper_Create(context: Context?) {
         throw InvalidEntryException("Card front or back is empty or pack " + pack + " does not exist")
     }
 
-    @Throws(InvalidEntryException::class)
-    fun createMedia(file: String?, mime: String?): Long {
+    fun createMedia(file: String, mime: String): Long {
         val dbHelperGet = DB_Helper_Get(dbHelper.context)
         if (!dbHelperGet.existsMedia(file)) {
             val media = DB_Media()
@@ -128,7 +115,6 @@ class DB_Helper_Create(context: Context?) {
         throw InvalidEntryException("Media entry for file " + file + " already exists")
     }
 
-    @Throws(InvalidEntryException::class)
     fun createMediaLink(file: Int, card: Int): Long {
         val dbHelperGet = DB_Helper_Get(dbHelper.context)
         if (!dbHelperGet.existsMediaLinkCard(file, card)) {
@@ -140,9 +126,7 @@ class DB_Helper_Create(context: Context?) {
         throw InvalidEntryException("Media file " + file + " is already linked to card " + card)
     }
 
-    @JvmOverloads
-    @Throws(InvalidEntryException::class)
-    fun createTag(tagName: String?, emoji: String? = null, color: String? = null): Long {
+    fun createTag(tagName: String, emoji: String? = null, color: String? = null): Long {
         val dbHelperGet = DB_Helper_Get(dbHelper.context)
         if (!dbHelperGet.existsTag(tagName)) {
             val newTag = DB_Tag()
@@ -154,7 +138,6 @@ class DB_Helper_Create(context: Context?) {
         throw InvalidEntryException("Tag " + tagName + " already exists")
     }
 
-    @Throws(InvalidEntryException::class)
     fun createTagLink(tag: Int, card: Int): Long {
         val dbHelperGet = DB_Helper_Get(dbHelper.context)
         if (!dbHelperGet.existsTagLinkCard(tag, card)) {
@@ -167,15 +150,9 @@ class DB_Helper_Create(context: Context?) {
     }
 
     // Links a tag to a card by name, creating the tag first if it does not exist yet
-    @Throws(InvalidEntryException::class)
-    fun createTagLink(tagName: String?, card: Int): Long {
+    fun createTagLink(tagName: String, card: Int): Long {
         val dbHelperGet = DB_Helper_Get(dbHelper.context)
-        val tag: Int
-        if (dbHelperGet.existsTag(tagName)) {
-            tag = dbHelperGet.getSingleTag(tagName).uid
-        } else {
-            tag = createTag(tagName).toInt()
-        }
+        val tag = dbHelperGet.getSingleTag(tagName)?.uid ?: createTag(tagName).toInt()
         return createTagLink(tag, card)
     }
 }

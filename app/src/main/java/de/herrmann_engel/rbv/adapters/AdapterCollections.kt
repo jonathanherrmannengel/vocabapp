@@ -243,7 +243,7 @@ class AdapterCollections(
             }
 
             else -> {
-                val currentCollection = collections[position].collection
+                val currentCollection = collections[position].collection!!
                 val extra = currentCollection.uid
                 viewHolder.binding.root.setOnClickListener {
                     val intent = Intent(
@@ -255,12 +255,12 @@ class AdapterCollections(
                 }
                 viewHolder.binding.recCollectionsName.text =
                     stringTools.shorten(currentCollection.name)
-                if (currentCollection.desc.isNullOrBlank()) {
+                val desc = currentCollection.desc
+                if (desc.isNullOrBlank()) {
                     viewHolder.binding.recCollectionsDesc.visibility = View.GONE
                 } else {
                     viewHolder.binding.recCollectionsDesc.visibility = View.VISIBLE
-                    viewHolder.binding.recCollectionsDesc.text = stringTools
-                        .shorten(currentCollection.desc)
+                    viewHolder.binding.recCollectionsDesc.text = stringTools.shorten(desc)
                 }
                 viewHolder.binding.recCollectionsPreviewText.text =
                     if (currentCollection.emoji.isNullOrBlank()) {

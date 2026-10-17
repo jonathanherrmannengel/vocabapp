@@ -127,6 +127,10 @@ class AppDatabaseBuilder {
                     )
                 }
             }
+            // Tags without a name and media entries without a file name cannot be used; their
+            // links are removed below
+            database.execSQL("DELETE FROM DB_Tag WHERE tag_name IS NULL")
+            database.execSQL("DELETE FROM DB_Media WHERE file IS NULL")
             // Links to missing entries are invisible, so they can simply be removed
             database.execSQL("DELETE FROM DB_Media_Link_Card WHERE fileId NOT IN (SELECT uid FROM DB_Media) OR cardId NOT IN (SELECT uid FROM DB_Card)")
             database.execSQL("DELETE FROM DB_Tag_Link_Card WHERE tagId NOT IN (SELECT uid FROM DB_Tag) OR cardId NOT IN (SELECT uid FROM DB_Card)")
@@ -140,17 +144,37 @@ class AppDatabaseBuilder {
             // have no link already
             database.execSQL("DELETE FROM DB_Tag WHERE uid NOT IN (SELECT tagId FROM DB_Tag_Link_Card)")
 
-            // SQLite cannot add foreign keys to existing tables, so the tables are recreated.
-            // Parents are recreated before their children.
+            // SQLite cannot add foreign keys or NOT NULL constraints to existing tables, so the
+            // tables are recreated. Parents are recreated before their children. Missing texts
+            // become empty.
+            recreateTable(
+                database, "DB_Collection",
+                "CREATE TABLE IF NOT EXISTS `_new_DB_Collection` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `desc` TEXT, `date` INTEGER NOT NULL, `colors` INTEGER NOT NULL, `emoji` TEXT)",
+                "`uid`, `name`, `desc`, `date`, `colors`, `emoji`",
+                "`uid`, COALESCE(`name`, ''), `desc`, `date`, `colors`, `emoji`"
+            )
             recreateTable(
                 database, "DB_Pack",
-                "CREATE TABLE IF NOT EXISTS `_new_DB_Pack` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT, `desc` TEXT, `date` INTEGER NOT NULL, `colors` INTEGER NOT NULL, `collection` INTEGER NOT NULL, `emoji` TEXT, FOREIGN KEY(`collection`) REFERENCES `DB_Collection`(`uid`) ON UPDATE NO ACTION ON DELETE CASCADE )",
-                "`uid`, `name`, `desc`, `date`, `colors`, `collection`, `emoji`"
+                "CREATE TABLE IF NOT EXISTS `_new_DB_Pack` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `desc` TEXT, `date` INTEGER NOT NULL, `colors` INTEGER NOT NULL, `collection` INTEGER NOT NULL, `emoji` TEXT, FOREIGN KEY(`collection`) REFERENCES `DB_Collection`(`uid`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+                "`uid`, `name`, `desc`, `date`, `colors`, `collection`, `emoji`",
+                "`uid`, COALESCE(`name`, ''), `desc`, `date`, `colors`, `collection`, `emoji`"
             )
             recreateTable(
                 database, "DB_Card",
-                "CREATE TABLE IF NOT EXISTS `_new_DB_Card` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `front` TEXT, `back` TEXT, `pack` INTEGER NOT NULL, `known` INTEGER NOT NULL, `date` INTEGER NOT NULL, `notes` TEXT, `last_repetition` INTEGER NOT NULL, `count_repetitions` INTEGER NOT NULL, FOREIGN KEY(`pack`) REFERENCES `DB_Pack`(`uid`) ON UPDATE NO ACTION ON DELETE CASCADE )",
-                "`uid`, `front`, `back`, `pack`, `known`, `date`, `notes`, `last_repetition`, `count_repetitions`"
+                "CREATE TABLE IF NOT EXISTS `_new_DB_Card` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `front` TEXT NOT NULL, `back` TEXT NOT NULL, `pack` INTEGER NOT NULL, `known` INTEGER NOT NULL, `date` INTEGER NOT NULL, `notes` TEXT, `last_repetition` INTEGER NOT NULL, `count_repetitions` INTEGER NOT NULL, FOREIGN KEY(`pack`) REFERENCES `DB_Pack`(`uid`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+                "`uid`, `front`, `back`, `pack`, `known`, `date`, `notes`, `last_repetition`, `count_repetitions`",
+                "`uid`, COALESCE(`front`, ''), COALESCE(`back`, ''), `pack`, `known`, `date`, `notes`, `last_repetition`, `count_repetitions`"
+            )
+            recreateTable(
+                database, "DB_Media",
+                "CREATE TABLE IF NOT EXISTS `_new_DB_Media` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `file` TEXT NOT NULL, `mime` TEXT NOT NULL)",
+                "`uid`, `file`, `mime`",
+                "`uid`, `file`, COALESCE(`mime`, '')"
+            )
+            recreateTable(
+                database, "DB_Tag",
+                "CREATE TABLE IF NOT EXISTS `_new_DB_Tag` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `tag_name` TEXT NOT NULL, `emoji` TEXT, `color` TEXT)",
+                "`uid`, `tag_name`, `emoji`, `color`"
             )
             recreateTable(
                 database, "DB_Media_Link_Card",
@@ -185,15 +209,20 @@ class AppDatabaseBuilder {
             }
         }
 
-        // Copies all rows into a new table with the given definition and replaces the old table by it
+        /**
+         * Copies all rows into a new table with the given definition and replaces the old table by
+         * it. values are the expressions selected from the old table for the columns (by default
+         * the columns themselves).
+         */
         private fun recreateTable(
             database: SupportSQLiteDatabase,
-            table: String?,
+            table: String,
             createNewTable: String,
-            columns: String?
+            columns: String,
+            values: String = columns
         ) {
             database.execSQL(createNewTable)
-            database.execSQL("INSERT INTO `_new_" + table + "` (" + columns + ") SELECT " + columns + " FROM `" + table + "`")
+            database.execSQL("INSERT INTO `_new_" + table + "` (" + columns + ") SELECT " + values + " FROM `" + table + "`")
             database.execSQL("DROP TABLE `" + table + "`")
             database.execSQL("ALTER TABLE `_new_" + table + "` RENAME TO `" + table + "`")
         }

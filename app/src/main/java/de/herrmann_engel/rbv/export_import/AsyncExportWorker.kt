@@ -104,10 +104,10 @@ class AsyncExportWorker(
         try {
             val dbHelperExport = DB_Helper_Export(context)
             val index: String
-            var collectionNos: MutableList<Int> = ArrayList()
+            val collectionNos: List<Int>
             if (singleCollection) {
                 index = collectionNo.toString()
-                collectionNos.add(collectionNo)
+                collectionNos = listOf(collectionNo)
             } else {
                 collectionNos = dbHelperExport.allCollectionIDs
                 index = "all"

@@ -13,12 +13,8 @@ import de.herrmann_engel.rbv.db.DB_Tag
 /**
  * Read access to the database.
  */
-class DB_Helper_Get(context: Context?) {
-    private val dbHelper: DB_Helper
-
-    init {
-        dbHelper = DB_Helper(context)
-    }
+class DB_Helper_Get(context: Context) {
+    private val dbHelper = DB_Helper(context)
 
     // Check if has content
     fun hasCollections(): Boolean {
@@ -71,11 +67,11 @@ class DB_Helper_Get(context: Context?) {
         return dbHelper.pack_dao.existsPack(id)
     }
 
-    fun existsMedia(file: String?): Boolean {
+    fun existsMedia(file: String): Boolean {
         return dbHelper.media_dao.existsMedia(file)
     }
 
-    fun existsTag(tagName: String?): Boolean {
+    fun existsTag(tagName: String): Boolean {
         return dbHelper.tag_dao.existsTag(tagName)
     }
 
@@ -106,14 +102,14 @@ class DB_Helper_Get(context: Context?) {
 
     fun getSingleCardIdByPackAndFrontAndBackAndNotes(
         pack: Int,
-        front: String?,
-        back: String?,
+        front: String,
+        back: String,
         notes: String?
     ): Int {
         return dbHelper.card_dao.getOneIdByPackAndFrontAndBackAndNotes(pack, front, back, notes)
     }
 
-    fun getSingleMedia(file: String?): DB_Media? {
+    fun getSingleMedia(file: String): DB_Media? {
         return dbHelper.media_dao.getSingleMedia(file)
     }
 
@@ -121,63 +117,63 @@ class DB_Helper_Get(context: Context?) {
         return dbHelper.media_dao.getSingleMedia(id)
     }
 
-    fun getSingleTag(tagName: String?): DB_Tag? {
+    fun getSingleTag(tagName: String): DB_Tag? {
         return dbHelper.tag_dao.getSingleTag(tagName)
     }
 
-    val allCollections: MutableList<DB_Collection?>?
-        // Get All: Collections
+    // Get All: Collections
+    val allCollections: List<DB_Collection>
         get() = dbHelper.collection_dao.all
 
-    fun getAllCollectionsByName(name: String?): MutableList<DB_Collection?>? {
+    fun getAllCollectionsByName(name: String): List<DB_Collection> {
         return dbHelper.collection_dao.getAllByName(name)
     }
 
-    val allCollectionsWithMeta: MutableList<DB_Collection_With_Meta?>?
+    val allCollectionsWithMeta: MutableList<DB_Collection_With_Meta>
         get() = dbHelper.collection_dao.allWithMeta
 
-    val allCollectionsWithMetaNoCounter: MutableList<DB_Collection_With_Meta?>?
+    val allCollectionsWithMetaNoCounter: MutableList<DB_Collection_With_Meta>
         get() = dbHelper.collection_dao.allWithMetaNoCounter
 
-    val allPacks: MutableList<DB_Pack?>?
-        // Get All: Packs
+    // Get All: Packs
+    val allPacks: List<DB_Pack>
         get() = dbHelper.pack_dao.all
 
-    fun getAllPacksByCollection(collection: Int): MutableList<DB_Pack?>? {
+    fun getAllPacksByCollection(collection: Int): List<DB_Pack> {
         return dbHelper.pack_dao.getAllByCollection(collection)
     }
 
     fun getAllPacksByCollectionAndNameAndDesc(
         collection: Int,
-        name: String?,
+        name: String,
         desc: String?
-    ): MutableList<DB_Pack?>? {
+    ): List<DB_Pack> {
         return dbHelper.pack_dao.getAllByCollectionAndNameAndDesc(collection, name, desc)
     }
 
-    val allPacksWithMeta: MutableList<DB_Pack_With_Meta?>?
+    val allPacksWithMeta: MutableList<DB_Pack_With_Meta>
         get() = dbHelper.pack_dao.allWithMeta
 
-    val allPacksWithMetaNoCounter: MutableList<DB_Pack_With_Meta?>?
+    val allPacksWithMetaNoCounter: MutableList<DB_Pack_With_Meta>
         get() = dbHelper.pack_dao.allWithMetaNoCounter
 
-    fun getAllPacksWithMetaByCollection(collection: Int): MutableList<DB_Pack_With_Meta?>? {
+    fun getAllPacksWithMetaByCollection(collection: Int): MutableList<DB_Pack_With_Meta> {
         return dbHelper.pack_dao.getAllByCollectionWithMeta(collection)
     }
 
-    fun getAllPacksWithMetaNoCounterByCollection(collection: Int): MutableList<DB_Pack_With_Meta?>? {
+    fun getAllPacksWithMetaNoCounterByCollection(collection: Int): MutableList<DB_Pack_With_Meta> {
         return dbHelper.pack_dao.getAllByCollectionWithMetaNoCounter(collection)
     }
 
-    val allCardsWithMeta: MutableList<DB_Card_With_Meta?>?
-        // Get All: Cards
+    // Get All: Cards
+    val allCardsWithMeta: MutableList<DB_Card_With_Meta>
         get() = dbHelper.card_dao.allWithMeta
 
-    fun getAllCardsByPackWithMeta(pack: Int): MutableList<DB_Card_With_Meta?>? {
+    fun getAllCardsByPackWithMeta(pack: Int): MutableList<DB_Card_With_Meta> {
         return dbHelper.card_dao.getAllByPackWithMeta(pack)
     }
 
-    fun getAllCardsByCollectionWithMeta(collection: Int): MutableList<DB_Card_With_Meta?>? {
+    fun getAllCardsByCollectionWithMeta(collection: Int): MutableList<DB_Card_With_Meta> {
         return dbHelper.card_dao.getAllByCollectionWithMeta(collection)
     }
 
@@ -192,52 +188,49 @@ class DB_Helper_Get(context: Context?) {
      * @param repetitionNumber number of days, negative to disable the repetition filter
      */
     fun getAllCardsWithMetaFiltered(
-        packs: MutableList<Int?>?,
-        tags: MutableList<Int?>?,
+        packs: List<Int>?,
+        tags: List<Int>?,
         progressGreater: Boolean,
         progressNumber: Int,
         repetitionOlder: Boolean,
         repetitionNumber: Int
-    ): MutableList<DB_Card_With_Meta?>? {
+    ): MutableList<DB_Card_With_Meta> {
         // Point in time repetitionNumber days ago (Unix time in seconds)
         val date = System.currentTimeMillis() / 1000L - repetitionNumber * 86400L
         return dbHelper.card_dao.getAllFilteredWithMeta(
-            packs == null, if (packs == null) mutableListOf<Int?>() else packs,
-            tags == null, if (tags == null) mutableListOf<Int?>() else tags,
+            packs == null, packs ?: emptyList(),
+            tags == null, tags ?: emptyList(),
             progressNumber >= 0, progressGreater, progressNumber,
             repetitionNumber >= 0, repetitionOlder, date
         )
     }
 
-    fun getAllCardsByMediaWithMeta(mediaId: Int): MutableList<DB_Card_With_Meta?>? {
+    fun getAllCardsByMediaWithMeta(mediaId: Int): MutableList<DB_Card_With_Meta> {
         return dbHelper.card_dao.getAllByMedia(mediaId)
     }
 
-    val allMedia: MutableList<DB_Media?>?
-        // Get All: Media
+    // Get All: Media
+    val allMedia: List<DB_Media>
         get() = dbHelper.media_dao.all
 
-    fun getCardMedia(cardId: Int): MutableList<DB_Media?> {
+    fun getCardMedia(cardId: Int): List<DB_Media> {
         return dbHelper.media_dao.getAllByCard(cardId)
     }
 
     // Only the media files of a card that can be displayed as images
-    fun getCardImageMedia(cardId: Int): MutableList<DB_Media?> {
-        val list = dbHelper.media_dao.getAllByCard(cardId)
-        list.removeIf { l: DB_Media? -> !isPhoto(l!!.mime) }
-        return list
+    fun getCardImageMedia(cardId: Int): List<DB_Media> {
+        return dbHelper.media_dao.getAllByCard(cardId).filter { media -> isPhoto(media.mime) }
     }
 
-    // Get All: Media Links
     private fun isPhoto(mime: String): Boolean {
         return mime == "image/png" || mime == "image/jpeg" || mime == "image/webp"
     }
 
-    val allTags: MutableList<DB_Tag?>?
-        // Get All: Tags
+    // Get All: Tags
+    val allTags: List<DB_Tag>
         get() = dbHelper.tag_dao.all
 
-    fun getCardTags(cardId: Int): MutableList<DB_Tag?>? {
+    fun getCardTags(cardId: Int): MutableList<DB_Tag> {
         return dbHelper.tag_dao.getAllByCard(cardId)
     }
 }

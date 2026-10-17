@@ -30,10 +30,15 @@ class NewPack : RBVActivity() {
         setContentView(binding.root)
         val dbHelperGet = DB_Helper_Get(this)
         collectionNo = intent.extras!!.getInt("collection")
+        // Close if the collection no longer exists (e.g. deleted in the meantime)
+        val collection = dbHelperGet.getSingleCollection(collectionNo) ?: run {
+            finish()
+            return
+        }
         val colors = resources.obtainTypedArray(R.array.pack_color_main)
         val colorsBackground = resources.obtainTypedArray(R.array.pack_color_background)
         val minimalLength = colors.length().coerceAtMost(colorsBackground.length())
-        val collectionColors = dbHelperGet.getSingleCollection(collectionNo).colors
+        val collectionColors = collection.colors
         if (collectionColors in 0..<minimalLength) {
             val color = colors.getColor(collectionColors, 0)
             val colorBackground = colorsBackground.getColor(collectionColors, 0)

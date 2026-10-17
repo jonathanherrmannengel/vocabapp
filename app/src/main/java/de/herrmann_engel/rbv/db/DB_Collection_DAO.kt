@@ -22,33 +22,33 @@ interface DB_Collection_DAO {
     fun existsCollection(cid: Int): Boolean
 
     @get:Query("SELECT * FROM db_collection ORDER BY name COLLATE NOCASE ASC, uid DESC")
-    val all: MutableList<DB_Collection?>?
+    val all: List<DB_Collection>
 
     @Query("SELECT * FROM db_collection WHERE name=:name ORDER BY name COLLATE NOCASE ASC, uid DESC")
-    fun getAllByName(name: String?): MutableList<DB_Collection?>?
+    fun getAllByName(name: String): List<DB_Collection>
 
     @get:Query("SELECT *, (SELECT COUNT(*) FROM db_pack WHERE collection=db_collection.uid) AS counter FROM db_collection ORDER BY name COLLATE NOCASE ASC, uid DESC")
-    val allWithMeta: MutableList<DB_Collection_With_Meta?>?
+    val allWithMeta: MutableList<DB_Collection_With_Meta>
 
     @get:Query("SELECT *, -1 AS counter FROM db_collection ORDER BY name COLLATE NOCASE ASC, uid DESC")
-    val allWithMetaNoCounter: MutableList<DB_Collection_With_Meta?>?
+    val allWithMetaNoCounter: MutableList<DB_Collection_With_Meta>
 
     @get:Query("SELECT uid FROM db_collection ORDER BY name COLLATE NOCASE ASC, uid DESC")
-    val allIds: MutableList<Int?>?
+    val allIds: List<Int>
 
     @Query("SELECT * FROM db_collection WHERE uid=:cid LIMIT 1")
     fun getOne(cid: Int): DB_Collection?
 
     // Raw cursor used by the CSV export
     @Query("SELECT * FROM db_collection WHERE uid=:cid")
-    fun getOneExport(cid: Int): Cursor?
+    fun getOneExport(cid: Int): Cursor
 
     @Update
-    fun update(collection: DB_Collection?)
+    fun update(collection: DB_Collection)
 
     @Insert
-    fun insert(collection: DB_Collection?): Long
+    fun insert(collection: DB_Collection): Long
 
     @Delete
-    fun delete(collection: DB_Collection?)
+    fun delete(collection: DB_Collection)
 }

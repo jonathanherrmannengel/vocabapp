@@ -29,11 +29,15 @@ class EditCardTags : RBVActivity() {
         setContentView(binding.root)
         dbHelperGet = DB_Helper_Get(this)
         cardNo = intent.extras!!.getInt("card")
-        val card = dbHelperGet.getSingleCard(cardNo)
+        // Close if the card no longer exists (e.g. deleted in the meantime)
+        val card = dbHelperGet.getSingleCard(cardNo) ?: run {
+            finish()
+            return
+        }
         val colorsBackground = resources.obtainTypedArray(R.array.pack_color_background)
         val minimalLength = colorsBackground.length()
-        val packColors = dbHelperGet.getSinglePack(card.pack).colors
-        if (packColors in 0..<minimalLength) {
+        val packColors = dbHelperGet.getSinglePack(card.pack)?.colors
+        if (packColors != null && packColors in 0..<minimalLength) {
             val colorBackground = colorsBackground.getColor(packColors, 0)
             binding.root.setBackgroundColor(colorBackground)
         }

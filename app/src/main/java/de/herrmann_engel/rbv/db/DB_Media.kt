@@ -9,15 +9,12 @@ import androidx.room.PrimaryKey
  */
 @Entity
 class DB_Media {
-    @JvmField
     @PrimaryKey(autoGenerate = true)
     var uid: Int = 0
 
-    @JvmField
     @ColumnInfo(name = "file")
-    var file: String? = null
+    var file: String = ""
 
-    @JvmField
     @ColumnInfo(name = "mime")
-    var mime: String? = null
+    var mime: String = ""
 }

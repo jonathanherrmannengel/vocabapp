@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 12,
-    "identityHash": "dd33f4d73df6af01301b8b7082587358",
+    "identityHash": "d1d4ba892bb301f94ed72e0ff748ea01",
     "entities": [
       {
         "tableName": "DB_Pack",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT, `desc` TEXT, `date` INTEGER NOT NULL, `colors` INTEGER NOT NULL, `collection` INTEGER NOT NULL, `emoji` TEXT, FOREIGN KEY(`collection`) REFERENCES `DB_Collection`(`uid`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `desc` TEXT, `date` INTEGER NOT NULL, `colors` INTEGER NOT NULL, `collection` INTEGER NOT NULL, `emoji` TEXT, FOREIGN KEY(`collection`) REFERENCES `DB_Collection`(`uid`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "uid",
@@ -17,7 +17,8 @@
           {
             "fieldPath": "name",
             "columnName": "name",
-            "affinity": "TEXT"
+            "affinity": "TEXT",
+            "notNull": true
           },
           {
             "fieldPath": "desc",
@@ -81,7 +82,7 @@
       },
       {
         "tableName": "DB_Card",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `front` TEXT, `back` TEXT, `pack` INTEGER NOT NULL, `known` INTEGER NOT NULL, `date` INTEGER NOT NULL, `notes` TEXT, `last_repetition` INTEGER NOT NULL, `count_repetitions` INTEGER NOT NULL, FOREIGN KEY(`pack`) REFERENCES `DB_Pack`(`uid`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `front` TEXT NOT NULL, `back` TEXT NOT NULL, `pack` INTEGER NOT NULL, `known` INTEGER NOT NULL, `date` INTEGER NOT NULL, `notes` TEXT, `last_repetition` INTEGER NOT NULL, `count_repetitions` INTEGER NOT NULL, FOREIGN KEY(`pack`) REFERENCES `DB_Pack`(`uid`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "uid",
@@ -92,12 +93,14 @@
           {
             "fieldPath": "front",
             "columnName": "front",
-            "affinity": "TEXT"
+            "affinity": "TEXT",
+            "notNull": true
           },
           {
             "fieldPath": "back",
             "columnName": "back",
-            "affinity": "TEXT"
+            "affinity": "TEXT",
+            "notNull": true
           },
           {
             "fieldPath": "pack",
@@ -168,7 +171,7 @@
       },
       {
         "tableName": "DB_Collection",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT, `desc` TEXT, `date` INTEGER NOT NULL, `colors` INTEGER NOT NULL, `emoji` TEXT)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `desc` TEXT, `date` INTEGER NOT NULL, `colors` INTEGER NOT NULL, `emoji` TEXT)",
         "fields": [
           {
             "fieldPath": "uid",
@@ -179,7 +182,8 @@
           {
             "fieldPath": "name",
             "columnName": "name",
-            "affinity": "TEXT"
+            "affinity": "TEXT",
+            "notNull": true
           },
           {
             "fieldPath": "desc",
@@ -213,7 +217,7 @@
       },
       {
         "tableName": "DB_Media",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `file` TEXT, `mime` TEXT)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `file` TEXT NOT NULL, `mime` TEXT NOT NULL)",
         "fields": [
           {
             "fieldPath": "uid",
@@ -224,12 +228,14 @@
           {
             "fieldPath": "file",
             "columnName": "file",
-            "affinity": "TEXT"
+            "affinity": "TEXT",
+            "notNull": true
           },
           {
             "fieldPath": "mime",
             "columnName": "mime",
-            "affinity": "TEXT"
+            "affinity": "TEXT",
+            "notNull": true
           }
         ],
         "primaryKey": {
@@ -316,7 +322,7 @@
       },
       {
         "tableName": "DB_Tag",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `tag_name` TEXT, `emoji` TEXT, `color` TEXT)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `tag_name` TEXT NOT NULL, `emoji` TEXT, `color` TEXT)",
         "fields": [
           {
             "fieldPath": "uid",
@@ -327,7 +333,8 @@
           {
             "fieldPath": "name",
             "columnName": "tag_name",
-            "affinity": "TEXT"
+            "affinity": "TEXT",
+            "notNull": true
           },
           {
             "fieldPath": "emoji",
@@ -436,7 +443,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'dd33f4d73df6af01301b8b7082587358')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd1d4ba892bb301f94ed72e0ff748ea01')"
     ]
   }
 }

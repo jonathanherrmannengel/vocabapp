@@ -10,29 +10,23 @@ import java.util.Objects
  */
 @Entity
 class DB_Collection {
-    @JvmField
     @PrimaryKey(autoGenerate = true)
     var uid: Int = 0
 
-    @JvmField
     @ColumnInfo(name = "name")
-    var name: String? = null
+    var name: String = ""
 
-    @JvmField
     @ColumnInfo(name = "desc")
     var desc: String? = null
 
     // Creation date (Unix time in seconds)
-    @JvmField
     @ColumnInfo(name = "date")
     var date: Long = 0
 
     // Index into the pack color resource arrays (e.g. R.array.pack_color_main)
-    @JvmField
     @ColumnInfo(name = "colors")
     var colors: Int = 0
 
-    @JvmField
     @ColumnInfo(name = "emoji")
     var emoji: String? = null
 

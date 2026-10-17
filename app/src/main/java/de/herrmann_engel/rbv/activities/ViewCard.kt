@@ -97,7 +97,11 @@ class ViewCard : RBVActivity(), CardActions.Listener {
         val settings = AppSettings(this)
         val formatCards = settings.formatCards
         val increaseFontSize = settings.uiFontSizeBig
-        card = dbHelperGet.getSingleCard(cardNo)
+        // Close if the card no longer exists (e.g. deleted in the meantime)
+        card = dbHelperGet.getSingleCard(cardNo) ?: run {
+            finish()
+            return
+        }
         if (formatCards) {
             val formatString = StringTools()
             binding.cardFront.text = formatString.format(card.front)
@@ -118,9 +122,10 @@ class ViewCard : RBVActivity(), CardActions.Listener {
                     this,
                     R.color.tag_background
                 )
-                if (!it.color.isNullOrBlank()) {
+                val tagColor = it.color
+                if (!tagColor.isNullOrBlank()) {
                     try {
-                        color = it.color.toColorInt()
+                        color = tagColor.toColorInt()
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
@@ -146,7 +151,8 @@ class ViewCard : RBVActivity(), CardActions.Listener {
             binding.cardTags.visibility = View.GONE
         }
         val formatCardNotes = settings.formatCardNotes
-        if (!card.notes.isNullOrBlank()) {
+        val notes = card.notes
+        if (!notes.isNullOrBlank()) {
             binding.cardNotesContainer.visibility = View.VISIBLE
             // Notes are rendered as Markdown; links are clickable in both modes
             if (formatCardNotes) {
@@ -160,10 +166,10 @@ class ViewCard : RBVActivity(), CardActions.Listener {
                     .build()
                 binding.cardNotes.movementMethod = BetterLinkMovementMethod.getInstance()
                 binding.cardNotes.textAlignment = View.TEXT_ALIGNMENT_TEXT_START
-                markwon.setMarkdown(binding.cardNotes, card.notes)
+                markwon.setMarkdown(binding.cardNotes, notes)
             } else {
                 binding.cardNotes.autoLinkMask = Linkify.WEB_URLS
-                binding.cardNotes.text = card.notes
+                binding.cardNotes.text = notes
             }
         } else {
             binding.cardNotesContainer.visibility = View.GONE
@@ -272,8 +278,8 @@ class ViewCard : RBVActivity(), CardActions.Listener {
         val colorsBackgroundLight =
             resources.obtainTypedArray(R.array.pack_color_background_light)
         val minimalLength = colorsBackground.length().coerceAtMost(colorsBackgroundLight.length())
-        val packColors = dbHelperGet.getSinglePack(card.pack).colors
-        if (packColors in 0..<minimalLength) {
+        val packColors = dbHelperGet.getSinglePack(card.pack)?.colors
+        if (packColors != null && packColors in 0..<minimalLength) {
             val colorBackground = colorsBackground.getColor(packColors, 0)
             val colorBackgroundLight = colorsBackgroundLight.getColor(packColors, 0)
             binding.root.setBackgroundColor(colorBackground)
@@ -324,7 +330,11 @@ class ViewCard : RBVActivity(), CardActions.Listener {
     // Show the card list of the new pack
     override fun movedCards(cardIds: ArrayList<Int>) {
         try {
-            card = dbHelperGet.getSingleCard(cardNo)
+            // Close if the card no longer exists (e.g. deleted in the meantime)
+            card = dbHelperGet.getSingleCard(cardNo) ?: run {
+                finish()
+                return
+            }
             packNo = card.pack
             updateColors()
             val intent = Intent(this, ListCards::class.java)

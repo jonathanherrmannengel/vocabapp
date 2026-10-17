@@ -9,12 +9,8 @@ import de.herrmann_engel.rbv.db.DB_Tag
 /**
  * Updates existing entries. Methods return false if the new values are invalid (e.g. empty names).
  */
-class DB_Helper_Update(context: Context?) {
-    private val dbHelper: DB_Helper
-
-    init {
-        dbHelper = DB_Helper(context)
-    }
+class DB_Helper_Update(context: Context) {
+    private val dbHelper = DB_Helper(context)
 
     fun updateCollection(collection: DB_Collection): Boolean {
         if (collection.name.isEmpty()) {

@@ -29,13 +29,13 @@ interface DB_Card_DAO {
     fun countCardsInPack(pid: Int): Int
 
     @get:Query(SELECT_WITH_META)
-    val allWithMeta: MutableList<DB_Card_With_Meta?>?
+    val allWithMeta: MutableList<DB_Card_With_Meta>
 
     @Query(SELECT_WITH_META + " WHERE pack IN (SELECT uid FROM db_pack WHERE collection=:cid)")
-    fun getAllByCollectionWithMeta(cid: Int): MutableList<DB_Card_With_Meta?>?
+    fun getAllByCollectionWithMeta(cid: Int): MutableList<DB_Card_With_Meta>
 
     @Query(SELECT_WITH_META + " WHERE pack=:pid")
-    fun getAllByPackWithMeta(pid: Int): MutableList<DB_Card_With_Meta?>?
+    fun getAllByPackWithMeta(pid: Int): MutableList<DB_Card_With_Meta>
 
     /**
      * Cards matching the advanced search filters. Each filter can be switched off.
@@ -55,24 +55,24 @@ interface DB_Card_DAO {
     )
     fun getAllFilteredWithMeta(
         allPacks: Boolean,
-        packIds: MutableList<Int?>?,
+        packIds: List<Int>,
         allTags: Boolean,
-        tagIds: MutableList<Int?>?,
+        tagIds: List<Int>,
         filterProgress: Boolean,
         progressGreater: Boolean,
         progress: Int,
         filterRepetition: Boolean,
         repetitionOlder: Boolean,
         date: Long
-    ): MutableList<DB_Card_With_Meta?>?
+    ): MutableList<DB_Card_With_Meta>
 
     // Cards linked to the given media file
     @Query(SELECT_WITH_META + " INNER JOIN db_media_link_card ON db_card.uid = db_media_link_card.cardId WHERE db_media_link_card.fileId=:fileId")
-    fun getAllByMedia(fileId: Int): MutableList<DB_Card_With_Meta?>?
+    fun getAllByMedia(fileId: Int): MutableList<DB_Card_With_Meta>
 
     // Raw cursor used by the CSV export
     @Query("SELECT * FROM db_card WHERE pack IN (SELECT uid FROM db_pack WHERE collection=:collection)")
-    fun getAllExportByCollection(collection: Int): Cursor?
+    fun getAllExportByCollection(collection: Int): Cursor
 
     @Query("SELECT * FROM db_card WHERE uid=:cardId LIMIT 1")
     fun getOne(cardId: Int): DB_Card?
@@ -84,19 +84,19 @@ interface DB_Card_DAO {
     @Query("SELECT uid FROM db_card WHERE pack=:pid AND front=:front AND back=:back AND notes=:notes LIMIT 1")
     fun getOneIdByPackAndFrontAndBackAndNotes(
         pid: Int,
-        front: String?,
-        back: String?,
+        front: String,
+        back: String,
         notes: String?
     ): Int
 
     @Update
-    fun update(card: DB_Card?)
+    fun update(card: DB_Card)
 
     @Insert
-    fun insert(card: DB_Card?): Long
+    fun insert(card: DB_Card): Long
 
     @Delete
-    fun delete(card: DB_Card?)
+    fun delete(card: DB_Card)
 
     companion object {
         // Cards with the color of their pack and their tags' emojis and names (used for search and display)

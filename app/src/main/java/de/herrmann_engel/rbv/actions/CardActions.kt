@@ -4,7 +4,6 @@ import android.app.Activity
 import android.app.Dialog
 import android.print.PrintAttributes
 import android.print.PrintManager
-import android.text.TextUtils
 import android.view.View
 import android.view.WindowManager
 import android.webkit.WebResourceRequest
@@ -12,6 +11,7 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.text.htmlEncode
 import androidx.core.text.toHtml
 import androidx.core.text.toSpanned
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -52,7 +52,7 @@ class CardActions(
 
     // User data has to be escaped before it is inserted into the print HTML
     private fun escapeHtml(text: String?): String {
-        return TextUtils.htmlEncode(text ?: "")
+        return (text ?: "").htmlEncode()
     }
 
     /**
@@ -163,7 +163,7 @@ class CardActions(
         // For a single card, hide the options for content the card does not have
         if (cards.size == 1) {
             jobName = "rbv_flashcard_" + cards[0].uid
-            if (cards[0].notes == null || cards[0].notes.isBlank()) {
+            if (cards[0].notes.isNullOrBlank()) {
                 bindingPrintDialog.diaPrintIncludeNotesLayout.visibility = View.GONE
                 bindingPrintDialog.diaPrintIncludeNotes.isChecked = false
             }
@@ -252,7 +252,8 @@ class CardActions(
                     card.back.toSpanned()
                 }.toHtml()
                 htmlDocument += "</div></article>"
-                if (card.notes != null && card.notes.isNotBlank() && bindingPrintDialog.diaPrintIncludeNotes.isChecked) {
+                val notes = card.notes
+                if (!notes.isNullOrBlank() && bindingPrintDialog.diaPrintIncludeNotes.isChecked) {
                     htmlDocument += "<article>"
                     if (bindingPrintDialog.diaPrintIncludeHeadings.isChecked) {
                         htmlDocument += "<h2 class=\"title border-top\" dir=\"auto\">" + escapeHtml(activity.getString(R.string.card_notes)) + "</h2>"
@@ -263,12 +264,12 @@ class CardActions(
                     htmlDocument += if (formatCardNotes) {
                         // Notes are formatted as Markdown
                         val parser = Parser.builder().build()
-                        val document = parser.parse(card.notes)
+                        val document = parser.parse(notes)
                         // Raw HTML in notes is printed as text instead of being interpreted
                         val renderer = HtmlRenderer.builder().escapeHtml(true).build()
                         renderer.render(document)
                     } else {
-                        card.notes.toSpanned().toHtml()
+                        notes.toSpanned().toHtml()
                     }
                     htmlDocument += "</div></article>"
                 }

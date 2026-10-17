@@ -79,7 +79,11 @@ class EditCollection : RBVActivity() {
             getString(R.string.collection_or_pack_emoji)
         )
         val collectionNo = intent.extras!!.getInt("collection")
-        collection = dbHelperGet.getSingleCollection(collectionNo)
+        // Close if the collection no longer exists (e.g. deleted in the meantime)
+        collection = dbHelperGet.getSingleCollection(collectionNo) ?: run {
+            finish()
+            return
+        }
         binding.editCollectionOrPackName.setText(collection.name)
         binding.editCollectionOrPackDesc.setText(collection.desc)
         binding.editCollectionOrPackEmoji.setText(collection.emoji)

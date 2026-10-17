@@ -25,10 +25,12 @@ class ListPackCompare(
             return false
         }
         // The first item ("all cards") is a placeholder without pack
-        if (oldList[oldItemPosition].pack == null || newList[newItemPosition].pack == null) {
-            return oldList[oldItemPosition].pack == newList[newItemPosition].pack
+        val oldPack = oldList[oldItemPosition].pack
+        val newPack = newList[newItemPosition].pack
+        if (oldPack == null || newPack == null) {
+            return oldPack == newPack
         }
-        return oldList[oldItemPosition].pack.uid == newList[newItemPosition].pack.uid
+        return oldPack.uid == newPack.uid
     }
 
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {

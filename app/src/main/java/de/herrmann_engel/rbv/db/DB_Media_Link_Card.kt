@@ -12,26 +12,23 @@ import androidx.room.PrimaryKey
 @Entity(
     foreignKeys = [ForeignKey(
         entity = DB_Media::class,
-        parentColumns = "uid",
-        childColumns = "fileId",
+        parentColumns = ["uid"],
+        childColumns = ["fileId"],
         onDelete = ForeignKey.CASCADE
     ), ForeignKey(
         entity = DB_Card::class,
-        parentColumns = "uid",
-        childColumns = "cardId",
+        parentColumns = ["uid"],
+        childColumns = ["cardId"],
         onDelete = ForeignKey.CASCADE
     )], indices = [Index(value = ["fileId", "cardId"], unique = true), Index("cardId")]
 )
 class DB_Media_Link_Card {
-    @JvmField
     @PrimaryKey(autoGenerate = true)
     var uid: Int = 0
 
-    @JvmField
     @ColumnInfo(name = "fileId")
     var file: Int = 0
 
-    @JvmField
     @ColumnInfo(name = "cardId")
     var card: Int = 0
 }

@@ -7,12 +7,10 @@ import java.util.Objects
  * A collection together with the number of packs in it.
  */
 class DB_Collection_With_Meta {
-    @JvmField
     @Embedded
     var collection: DB_Collection? = null
 
     // Number of packs in the collection, -1 if not counted
-    @JvmField
     var counter: Int = 0
 
     override fun equals(o: Any?): Boolean {

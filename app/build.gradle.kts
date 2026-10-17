@@ -1,5 +1,6 @@
 plugins {
     id("com.android.application")
+    id("com.google.devtools.ksp")
 }
 android {
     compileSdk = 37
@@ -9,13 +10,6 @@ android {
         targetSdk = 37
         versionCode = 86
         versionName = "4.0.0"
-        javaCompileOptions {
-            annotationProcessorOptions {
-                arguments += mapOf(
-                    "room.schemaLocation" to "$projectDir/schemas"
-                )
-            }
-        }
     }
 
     buildTypes {
@@ -55,6 +49,9 @@ android {
     }
     namespace = "de.herrmann_engel.rbv"
 }
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
+}
 dependencies {
     val kotlinVersion = rootProject.extra.get("kotlinVersion") as String
     val roomVersion = "2.8.5"
@@ -63,7 +60,7 @@ dependencies {
     implementation("androidx.documentfile:documentfile:1.1.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.11.0")
     implementation("androidx.room:room-runtime:$roomVersion")
-    annotationProcessor("androidx.room:room-compiler:$roomVersion")
+    ksp("androidx.room:room-compiler:$roomVersion")
     implementation("com.google.android.material:material:1.14.0")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0")

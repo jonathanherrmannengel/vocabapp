@@ -11,52 +11,43 @@ import java.util.Objects
  * A single flashcard with a front and a back side, belonging to a pack.
  */
 @Entity(
-    foreignKeys = ForeignKey(
+    foreignKeys = [ForeignKey(
         entity = DB_Pack::class,
-        parentColumns = "uid",
-        childColumns = "pack",
+        parentColumns = ["uid"],
+        childColumns = ["pack"],
         onDelete = ForeignKey.CASCADE
-    ), indices = Index("pack")
+    )], indices = [Index("pack")]
 )
 class DB_Card {
-    @JvmField
     @PrimaryKey(autoGenerate = true)
     var uid: Int = 0
 
-    @JvmField
     @ColumnInfo(name = "front")
-    var front: String? = null
+    var front: String = ""
 
-    @JvmField
     @ColumnInfo(name = "back")
-    var back: String? = null
+    var back: String = ""
 
     // uid of the pack the card belongs to
-    @JvmField
     @ColumnInfo(name = "pack")
     var pack: Int = 0
 
     // Learning progress: how often the card has been marked as known (decreases when it is not known)
-    @JvmField
     @ColumnInfo(name = "known")
     var known: Int = 0
 
     // Creation date (Unix time in seconds)
-    @JvmField
     @ColumnInfo(name = "date")
     var date: Long = 0
 
-    @JvmField
     @ColumnInfo(name = "notes")
     var notes: String? = null
 
     // Date of the last repetition (Unix time in seconds, 0 if never repeated)
-    @JvmField
     @ColumnInfo(name = "last_repetition")
     var lastRepetition: Long = 0
 
     // Total number of repetitions
-    @JvmField
     @ColumnInfo(name = "count_repetitions")
     var countRepetitions: Int = 0
 

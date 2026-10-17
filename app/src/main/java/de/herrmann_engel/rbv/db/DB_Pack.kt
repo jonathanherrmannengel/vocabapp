@@ -11,42 +11,35 @@ import java.util.Objects
  * A pack belongs to a collection and contains cards.
  */
 @Entity(
-    foreignKeys = ForeignKey(
+    foreignKeys = [ForeignKey(
         entity = DB_Collection::class,
-        parentColumns = "uid",
-        childColumns = "collection",
+        parentColumns = ["uid"],
+        childColumns = ["collection"],
         onDelete = ForeignKey.CASCADE
-    ), indices = Index("collection")
+    )], indices = [Index("collection")]
 )
 class DB_Pack {
-    @JvmField
     @PrimaryKey(autoGenerate = true)
     var uid: Int = 0
 
-    @JvmField
     @ColumnInfo(name = "name")
-    var name: String? = null
+    var name: String = ""
 
-    @JvmField
     @ColumnInfo(name = "desc")
     var desc: String? = null
 
     // Creation date (Unix time in seconds)
-    @JvmField
     @ColumnInfo(name = "date")
     var date: Long = 0
 
     // Index into the pack color resource arrays (e.g. R.array.pack_color_main)
-    @JvmField
     @ColumnInfo(name = "colors")
     var colors: Int = 0
 
     // uid of the collection the pack belongs to
-    @JvmField
     @ColumnInfo(name = "collection")
     var collection: Int = 0
 
-    @JvmField
     @ColumnInfo(name = "emoji")
     var emoji: String? = null
 

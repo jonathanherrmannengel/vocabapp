@@ -82,8 +82,8 @@ class AdapterPacks(
                 R.id.menu_list_cards_context_delete -> {
                     val contextualMenuModePackList: ArrayList<DB_Pack> = ArrayList()
                     for (id in contextualMenuModePackIdList) {
-                        packs.find { p -> p.pack?.uid == id }
-                            ?.let { contextualMenuModePackList.add(it.pack) }
+                        packs.find { p -> p.pack?.uid == id }?.pack
+                            ?.let { contextualMenuModePackList.add(it) }
                     }
                     packActions.delete(contextualMenuModePackList)
                     mode.finish()
@@ -93,8 +93,8 @@ class AdapterPacks(
                 R.id.menu_list_cards_context_move -> {
                     val contextualMenuModePackList: ArrayList<DB_Pack> = ArrayList()
                     for (id in contextualMenuModePackIdList) {
-                        packs.find { p -> p.pack?.uid == id }
-                            ?.let { contextualMenuModePackList.add(it.pack) }
+                        packs.find { p -> p.pack?.uid == id }?.pack
+                            ?.let { contextualMenuModePackList.add(it) }
                     }
                     packActions.move(contextualMenuModePackList)
                     mode.finish()
@@ -103,8 +103,8 @@ class AdapterPacks(
 
                 R.id.menu_list_cards_context_select_all -> {
                     packs.forEach {
-                        if (it.pack != null) {
-                            val pack = it.pack.uid
+                        it.pack?.let { currentPack ->
+                            val pack = currentPack.uid
                             if (!contextualMenuModePackIdList.contains(pack)
                             ) {
                                 contextualMenuModeSelectItem(pack)
@@ -329,7 +329,7 @@ class AdapterPacks(
             }
 
             else -> {
-                val currentPack = packs[position].pack
+                val currentPack = packs[position].pack!!
                 val extra = currentPack.uid
                 viewHolder.binding.root.setOnClickListener {
                     // In selection mode a click toggles the selection, otherwise it opens the pack
@@ -374,12 +374,12 @@ class AdapterPacks(
                         IMPORTANT_FOR_ACCESSIBILITY_YES
                     viewHolder.binding.recCollectionsName.setTypeface(null, Typeface.BOLD)
                 }
-                if (currentPack.desc.isNullOrBlank()) {
+                val desc = currentPack.desc
+                if (desc.isNullOrBlank()) {
                     viewHolder.binding.recCollectionsDesc.visibility = View.GONE
                 } else {
                     viewHolder.binding.recCollectionsDesc.visibility = View.VISIBLE
-                    viewHolder.binding.recCollectionsDesc.text =
-                        stringTools.shorten(currentPack.desc)
+                    viewHolder.binding.recCollectionsDesc.text = stringTools.shorten(desc)
                 }
                 viewHolder.binding.recCollectionsPreviewText.text =
                     if (contextualMenuMode != null && contextualMenuModePackIdList.contains(

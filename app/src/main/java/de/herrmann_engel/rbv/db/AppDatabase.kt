@@ -13,19 +13,19 @@ import androidx.room.RoomDatabase
     version = 12
 )
 abstract class AppDatabase : RoomDatabase() {
-    abstract fun packDAO(): DB_Pack_DAO?
+    abstract fun packDAO(): DB_Pack_DAO
 
-    abstract fun cardDAO(): DB_Card_DAO?
+    abstract fun cardDAO(): DB_Card_DAO
 
-    abstract fun collectionDAO(): DB_Collection_DAO?
+    abstract fun collectionDAO(): DB_Collection_DAO
 
-    abstract fun mediaDAO(): DB_Media_DAO?
+    abstract fun mediaDAO(): DB_Media_DAO
 
-    abstract fun mediaLinkCardDAO(): DB_Media_Link_Card_DAO?
+    abstract fun mediaLinkCardDAO(): DB_Media_Link_Card_DAO
 
-    abstract fun tagDAO(): DB_Tag_DAO?
+    abstract fun tagDAO(): DB_Tag_DAO
 
-    abstract fun tagLinkCardDAO(): DB_Tag_Link_Card_DAO?
+    abstract fun tagLinkCardDAO(): DB_Tag_Link_Card_DAO
 
     companion object {
         private var appDatabase: AppDatabase? = null
@@ -34,11 +34,8 @@ abstract class AppDatabase : RoomDatabase() {
          * Returns the app-wide database singleton, creating it on first access.
          */
         @Synchronized
-        fun getInstance(context: Context?): AppDatabase? {
-            if (appDatabase == null) {
-                appDatabase = (AppDatabaseBuilder()).get(context)
-            }
-            return appDatabase
+        fun getInstance(context: Context): AppDatabase {
+            return appDatabase ?: AppDatabaseBuilder().get(context).also { appDatabase = it }
         }
     }
 }

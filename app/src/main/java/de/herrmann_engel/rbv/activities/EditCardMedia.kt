@@ -51,8 +51,10 @@ class EditCardMedia : RBVActivity() {
                         if (input != null) {
                             val inputFileName = input.name
                             val mime = input.type
-                            if (inputFileName != null && outputDirectory.findFile(inputFileName) == null) {
-                                createMediaFile(outputDirectory, mime!!, inputFileName, fileUri)
+                            if (inputFileName == null || mime == null) {
+                                Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show()
+                            } else if (outputDirectory.findFile(inputFileName) == null) {
+                                createMediaFile(outputDirectory, mime, inputFileName, fileUri)
                             } else {
                                 val fileExistsDialog = Dialog(this, R.style.dia_view)
                                 val bindingFileExistsDialog = DiaFileExistsBinding.inflate(
@@ -69,12 +71,7 @@ class EditCardMedia : RBVActivity() {
                                     fileExistsDialog.dismiss()
                                 }
                                 bindingFileExistsDialog.diaFileExistsNew.setOnClickListener {
-                                    createMediaFile(
-                                        outputDirectory,
-                                        mime!!,
-                                        inputFileName!!,
-                                        fileUri
-                                    )
+                                    createMediaFile(outputDirectory, mime, inputFileName, fileUri)
                                     fileExistsDialog.dismiss()
                                 }
                                 fileExistsDialog.show()
@@ -95,11 +92,15 @@ class EditCardMedia : RBVActivity() {
         setContentView(binding.root)
         dbHelperGet = DB_Helper_Get(this)
         cardNo = intent.extras!!.getInt("card")
-        val card = dbHelperGet.getSingleCard(cardNo)
+        // Close if the card no longer exists (e.g. deleted in the meantime)
+        val card = dbHelperGet.getSingleCard(cardNo) ?: run {
+            finish()
+            return
+        }
         val colorsBackground = resources.obtainTypedArray(R.array.pack_color_background)
         val minimalLength = colorsBackground.length()
-        val packColors = dbHelperGet.getSinglePack(card.pack).colors
-        if (packColors in 0..<minimalLength) {
+        val packColors = dbHelperGet.getSinglePack(card.pack)?.colors
+        if (packColors != null && packColors in 0..<minimalLength) {
             val colorBackground = colorsBackground.getColor(packColors, 0)
             binding.root.setBackgroundColor(colorBackground)
         }
@@ -141,6 +142,10 @@ class EditCardMedia : RBVActivity() {
         try {
             val output = outputDirectory.createFile(mime, inputFileName)!!
             val outputFileName = output.name
+            if (outputFileName == null) {
+                output.delete()
+                throw IllegalStateException("Created file has no name")
+            }
             val outputStream = contentResolver.openOutputStream(output.uri)!!
             val inputStream = contentResolver.openInputStream(fileUri)!!
             val buffer = ByteArray(1024)
@@ -159,21 +164,14 @@ class EditCardMedia : RBVActivity() {
     }
 
     // Creates the media entry for the file name (if it does not exist yet) and links it to the card
-    private fun addMediaLink(outputFileName: String?, mime: String?) {
+    private fun addMediaLink(outputFileName: String, mime: String) {
         try {
             val dbHelperCreate = DB_Helper_Create(this)
-            if (!dbHelperGet.existsMedia(outputFileName)) {
-                dbHelperCreate.createMedia(outputFileName, mime)
-            }
-            if (dbHelperGet.existsMedia(outputFileName)) {
-                val media = dbHelperGet.getSingleMedia(outputFileName)
-                val fileId = media.uid
-                dbHelperCreate.createMediaLink(fileId, cardNo)
-                setRecView()
-                Toast.makeText(this, R.string.success, Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show()
-            }
+            val fileId = dbHelperGet.getSingleMedia(outputFileName)?.uid
+                ?: dbHelperCreate.createMedia(outputFileName, mime).toInt()
+            dbHelperCreate.createMediaLink(fileId, cardNo)
+            setRecView()
+            Toast.makeText(this, R.string.success, Toast.LENGTH_SHORT).show()
         } catch (e: Exception) {
             e.printStackTrace()
             Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show()

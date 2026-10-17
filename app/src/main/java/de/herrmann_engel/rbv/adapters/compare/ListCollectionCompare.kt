@@ -25,10 +25,12 @@ class ListCollectionCompare(
             return false
         }
         // The first item ("all packs") is a placeholder without collection
-        if (oldList[oldItemPosition].collection == null || newList[newItemPosition].collection == null) {
-            return oldList[oldItemPosition].collection == newList[newItemPosition].collection
+        val oldCollection = oldList[oldItemPosition].collection
+        val newCollection = newList[newItemPosition].collection
+        if (oldCollection == null || newCollection == null) {
+            return oldCollection == newCollection
         }
-        return oldList[oldItemPosition].collection.uid == newList[newItemPosition].collection.uid
+        return oldCollection.uid == newCollection.uid
     }
 
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {

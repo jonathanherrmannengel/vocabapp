@@ -56,7 +56,11 @@ class ViewPack : RBVActivity(), PackActions.Listener {
         super.onResume()
         val settings = AppSettings(this)
         val increaseFontSize = settings.uiFontSizeBig
-        pack = dbHelperGet.getSinglePack(packNo)
+        // Close if the pack no longer exists (e.g. deleted in the meantime)
+        pack = dbHelperGet.getSinglePack(packNo) ?: run {
+            finish()
+            return
+        }
         title = getString(R.string.pack_details)
         if (pack.emoji.isNullOrBlank()) {
             binding.collectionOrPackEmoji.visibility = View.GONE
@@ -138,7 +142,11 @@ class ViewPack : RBVActivity(), PackActions.Listener {
     // Show the pack list of the new collection
     override fun movedPacks(packIds: ArrayList<Int>) {
         try {
-            pack = dbHelperGet.getSinglePack(packNo)
+            // Close if the pack no longer exists (e.g. deleted in the meantime)
+            pack = dbHelperGet.getSinglePack(packNo) ?: run {
+                finish()
+                return
+            }
             collectionNo = pack.collection
             val intent = Intent(this, ListPacks::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK

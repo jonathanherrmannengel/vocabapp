@@ -457,11 +457,8 @@ class AsyncImportWorker(
         if (file.isEmpty() || mime.isEmpty()) {
             return
         }
-        val mediaUidNew = if (helperGet.existsMedia(file)) {
-            helperGet.getSingleMedia(file).uid
-        } else {
-            helperCreate.createMedia(file, mime).toInt()
-        }
+        val mediaUidNew =
+            helperGet.getSingleMedia(file)?.uid ?: helperCreate.createMedia(file, mime).toInt()
         mediaUidConverter.insertPair(mediaUidOld, mediaUidNew)
     }
 
@@ -493,8 +490,9 @@ class AsyncImportWorker(
         if (name.isBlank()) {
             return
         }
-        if (helperGet.existsTag(name)) {
-            tagsUidConverter.insertPair(tagUidOld, helperGet.getSingleTag(name).uid)
+        val existingTag = helperGet.getSingleTag(name)
+        if (existingTag != null) {
+            tagsUidConverter.insertPair(tagUidOld, existingTag.uid)
         } else {
             val tagUidNew = helperCreate.createTag(name, emoji, color).toInt()
             tagsUidConverter.insertPair(tagUidOld, tagUidNew)

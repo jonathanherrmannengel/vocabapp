@@ -35,7 +35,11 @@ class EditCard : RBVActivity() {
         val dbHelperGet = DB_Helper_Get(this)
         val cardNo = intent.extras!!.getInt("card")
         backToList = intent.extras!!.getBoolean("backToList")
-        card = dbHelperGet.getSingleCard(cardNo)
+        // Close if the card no longer exists (e.g. deleted in the meantime)
+        card = dbHelperGet.getSingleCard(cardNo) ?: run {
+            finish()
+            return
+        }
         binding.editCardFront.setText(card.front)
         // Allow multiple lines in the input field if the text already has multiple lines
         if (card.front.contains(System.lineSeparator())) {
@@ -53,8 +57,8 @@ class EditCard : RBVActivity() {
         val colors = resources.obtainTypedArray(R.array.pack_color_main)
         val colorsBackground = resources.obtainTypedArray(R.array.pack_color_background)
         val minimalLength = colors.length().coerceAtMost(colorsBackground.length())
-        val packColors = dbHelperGet.getSinglePack(card.pack).colors
-        if (packColors in 0..<minimalLength) {
+        val packColors = dbHelperGet.getSinglePack(card.pack)?.colors
+        if (packColors != null && packColors in 0..<minimalLength) {
             val color = colors.getColor(packColors, 0)
             val colorBackground = colorsBackground.getColor(packColors, 0)
             binding.editCardFrontLayout.boxStrokeColor = color

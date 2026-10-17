@@ -59,7 +59,8 @@ class ManageFiles : RBVActivity() {
             val dbHelperGet = DB_Helper_Get(this)
             // Ignore directories and the .nomedia file
             for (file in files) {
-                if (!dbHelperGet.existsMedia(file.name) && file.isFile && file.name != ".nomedia") {
+                val name = file.name ?: continue
+                if (!dbHelperGet.existsMedia(name) && file.isFile && name != ".nomedia") {
                     filesWithoutMedia.add(file)
                 }
             }

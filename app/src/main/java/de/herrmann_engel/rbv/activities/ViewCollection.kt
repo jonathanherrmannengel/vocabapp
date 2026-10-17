@@ -69,7 +69,11 @@ class ViewCollection : RBVActivity() {
         super.onResume()
         val settings = AppSettings(this)
         val increaseFontSize = settings.uiFontSizeBig
-        collection = dbHelperGet.getSingleCollection(collectionNo)
+        // Close if the collection no longer exists (e.g. deleted in the meantime)
+        collection = dbHelperGet.getSingleCollection(collectionNo) ?: run {
+            finish()
+            return
+        }
         title = getString(R.string.collection_details)
         binding.collectionOrPackName.text = collection.name
         if (collection.emoji.isNullOrBlank()) {

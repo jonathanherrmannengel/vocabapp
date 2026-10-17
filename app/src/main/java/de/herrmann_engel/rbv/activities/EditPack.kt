@@ -79,7 +79,11 @@ class EditPack : RBVActivity() {
             getString(R.string.collection_or_pack_emoji)
         )
         val packNo = intent.extras!!.getInt("pack")
-        pack = dbHelperGet.getSinglePack(packNo)
+        // Close if the pack no longer exists (e.g. deleted in the meantime)
+        pack = dbHelperGet.getSinglePack(packNo) ?: run {
+            finish()
+            return
+        }
         binding.editCollectionOrPackName.setText(pack.name)
         binding.editCollectionOrPackDesc.setText(pack.desc)
         binding.editCollectionOrPackEmoji.setText(pack.emoji)

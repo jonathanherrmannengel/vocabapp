@@ -14,20 +14,20 @@ interface DB_Tag_Link_Card_DAO {
     fun existsTagLinkCard(tag: Int, card: Int): Boolean
 
     @get:Query("SELECT * FROM db_tag_link_card")
-    val allExport: Cursor?
+    val allExport: Cursor
 
     @Query("SELECT * FROM db_tag_link_card WHERE cardId IN (SELECT uid FROM db_card WHERE pack IN (SELECT uid FROM db_pack WHERE collection=:collection))")
-    fun getAllExportByCollection(collection: Int): Cursor?
+    fun getAllExportByCollection(collection: Int): Cursor
 
     @Query("DELETE FROM db_tag_link_card WHERE tagId=:tag AND cardId=:card")
     fun deleteTagLinkCard(tag: Int, card: Int)
 
     @Query("SELECT tagId FROM db_tag_link_card WHERE cardId=:card")
-    fun getAllTagIdsByCard(card: Int): MutableList<Int?>?
+    fun getAllTagIdsByCard(card: Int): List<Int>
 
     @Query("SELECT DISTINCT tagId FROM db_tag_link_card WHERE cardId IN (SELECT uid FROM db_card WHERE pack=:pack)")
-    fun getAllTagIdsByPack(pack: Int): MutableList<Int?>?
+    fun getAllTagIdsByPack(pack: Int): List<Int>
 
     @Insert
-    fun insert(dbTagLinkCard: DB_Tag_Link_Card?): Long
+    fun insert(dbTagLinkCard: DB_Tag_Link_Card): Long
 }

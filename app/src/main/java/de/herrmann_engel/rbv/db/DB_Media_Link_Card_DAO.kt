@@ -11,23 +11,23 @@ import androidx.room.Query
 @Dao
 interface DB_Media_Link_Card_DAO {
     @Query("SELECT fileId FROM db_media_link_card WHERE cardId=:card")
-    fun getAllMediaIdsByCard(card: Int): MutableList<Int?>?
+    fun getAllMediaIdsByCard(card: Int): List<Int>
 
     @Query("SELECT DISTINCT fileId FROM db_media_link_card WHERE cardId IN (SELECT uid FROM db_card WHERE pack=:pack)")
-    fun getAllMediaIdsByPack(pack: Int): MutableList<Int?>?
+    fun getAllMediaIdsByPack(pack: Int): List<Int>
 
     @Query("SELECT EXISTS (SELECT 1 FROM db_media_link_card WHERE fileId=:file AND cardId=:card LIMIT 1)")
     fun existsMediaLinkCard(file: Int, card: Int): Boolean
 
     @get:Query("SELECT * FROM db_media_link_card")
-    val allExport: Cursor?
+    val allExport: Cursor
 
     @Query("SELECT * FROM db_media_link_card WHERE cardId IN (SELECT uid FROM db_card WHERE pack IN (SELECT uid FROM db_pack WHERE collection=:collection))")
-    fun getAllExportByCollection(collection: Int): Cursor?
+    fun getAllExportByCollection(collection: Int): Cursor
 
     @Query("DELETE FROM db_media_link_card WHERE fileId=:file AND cardId=:card")
     fun deleteMediaLinkCard(file: Int, card: Int)
 
     @Insert
-    fun insert(dbMediaLinkCard: DB_Media_Link_Card?): Long
+    fun insert(dbMediaLinkCard: DB_Media_Link_Card): Long
 }

@@ -76,10 +76,10 @@ class AdapterTagLinkCard(
                     )
                     bindingEditDialog.editTagName.setText(currentTag.name)
                     bindingEditDialog.editTagEmoji.setText(currentTag.emoji)
-                    if (!currentTag.color.isNullOrBlank()) {
+                    val tagColor = currentTag.color
+                    if (!tagColor.isNullOrBlank()) {
                         try {
-                            bindingEditDialog.editTagColor.color =
-                                currentTag.color.toColorInt()
+                            bindingEditDialog.editTagColor.color = tagColor.toColorInt()
                         } catch (_: Exception) {
                         }
                     }

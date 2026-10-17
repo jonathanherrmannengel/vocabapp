@@ -30,10 +30,15 @@ class NewCard : RBVActivity() {
         setContentView(binding.root)
         val dbHelperGet = DB_Helper_Get(this)
         packNo = intent.extras!!.getInt("pack")
+        // Close if the pack no longer exists (e.g. deleted in the meantime)
+        val pack = dbHelperGet.getSinglePack(packNo) ?: run {
+            finish()
+            return
+        }
         val colors = resources.obtainTypedArray(R.array.pack_color_main)
         val colorsBackground = resources.obtainTypedArray(R.array.pack_color_background)
         val minimalLength = colors.length().coerceAtMost(colorsBackground.length())
-        val packColors = dbHelperGet.getSinglePack(packNo).colors
+        val packColors = pack.colors
         if (packColors in 0..<minimalLength) {
             val color = colors.getColor(packColors, 0)
             val colorBackground = colorsBackground.getColor(packColors, 0)

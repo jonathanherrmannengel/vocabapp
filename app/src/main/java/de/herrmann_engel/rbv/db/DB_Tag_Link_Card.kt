@@ -12,26 +12,23 @@ import androidx.room.PrimaryKey
 @Entity(
     foreignKeys = [ForeignKey(
         entity = DB_Tag::class,
-        parentColumns = "uid",
-        childColumns = "tagId",
+        parentColumns = ["uid"],
+        childColumns = ["tagId"],
         onDelete = ForeignKey.CASCADE
     ), ForeignKey(
         entity = DB_Card::class,
-        parentColumns = "uid",
-        childColumns = "cardId",
+        parentColumns = ["uid"],
+        childColumns = ["cardId"],
         onDelete = ForeignKey.CASCADE
     )], indices = [Index(value = ["tagId", "cardId"], unique = true), Index("cardId")]
 )
 class DB_Tag_Link_Card {
-    @JvmField
     @PrimaryKey(autoGenerate = true)
     var uid: Int = 0
 
-    @JvmField
     @ColumnInfo(name = "tagId")
     var tag: Int = 0
 
-    @JvmField
     @ColumnInfo(name = "cardId")
     var card: Int = 0
 }

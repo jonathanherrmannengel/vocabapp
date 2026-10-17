@@ -193,22 +193,12 @@ class QueryMode(
         val front: SpannableString
         val back: SpannableString
         val formatString = StringTools()
+        val frontString = if (reverse) card.back else card.front
+        val backString = if (reverse) card.front else card.back
         if (settings.formatCards) {
-            front =
-                if (reverse) {
-                    formatString.format(card.back)
-                } else {
-                    formatString.format(card.front)
-                }
-            back =
-                if (reverse) {
-                    formatString.format(card.front)
-                } else {
-                    formatString.format(card.back)
-                }
+            front = formatString.format(frontString)
+            back = formatString.format(backString)
         } else {
-            val frontString = if (reverse) card.back else card.front
-            val backString = if (reverse) card.front else card.back
             front = SpannableString(frontString)
             back = SpannableString(backString)
         }
@@ -225,12 +215,13 @@ class QueryMode(
             )
         }
 
-        if (card.notes.isNullOrBlank()) {
+        val notes = card.notes
+        if (notes.isNullOrBlank()) {
             binding.queryButtonNotes.visibility = View.GONE
         } else {
             binding.queryButtonNotes.visibility = View.VISIBLE
             binding.queryButtonNotes.setOnClickListener {
-                showNotes(card.notes)
+                showNotes(notes)
             }
         }
 
