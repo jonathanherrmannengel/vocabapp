@@ -1,10 +1,12 @@
 package de.herrmann_engel.rbv.activities
 
+import android.app.Dialog
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
+import android.view.WindowManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -14,6 +16,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.R
+import de.herrmann_engel.rbv.databinding.DiaInfoBinding
 import de.herrmann_engel.rbv.export_import.ImportExportEvents
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
@@ -118,5 +121,37 @@ abstract class RBVActivity : AppCompatActivity() {
 
     // Called after a successful import, e.g. to reload displayed data
     protected open fun onImportFinished() {}
+
+    // Shows a dialog and returns true if an import or export is already running (only one at a time)
+    protected fun showIfImportExportRunning(): Boolean {
+        if (ImportExportEvents.isRunning) {
+            showImportExportRunningDialog()
+            return true
+        }
+        return false
+    }
+
+    // Shows whether an import or export was started (execute() returns false if one is already running)
+    protected fun showImportExportStarted(started: Boolean) {
+        if (started) {
+            Toast.makeText(this, R.string.wait, Toast.LENGTH_LONG).show()
+        } else {
+            showImportExportRunningDialog()
+        }
+    }
+
+    // A dialog instead of a toast, so the message is not missed among the progress toasts
+    private fun showImportExportRunningDialog() {
+        val infoDialog = Dialog(this, R.style.dia_view)
+        val bindingInfoDialog = DiaInfoBinding.inflate(layoutInflater)
+        infoDialog.setContentView(bindingInfoDialog.root)
+        infoDialog.setTitle(getString(R.string.info))
+        infoDialog.window!!.setLayout(
+            WindowManager.LayoutParams.MATCH_PARENT,
+            WindowManager.LayoutParams.MATCH_PARENT
+        )
+        bindingInfoDialog.diaInfoText.setText(R.string.import_export_running)
+        infoDialog.show()
+    }
 
 }

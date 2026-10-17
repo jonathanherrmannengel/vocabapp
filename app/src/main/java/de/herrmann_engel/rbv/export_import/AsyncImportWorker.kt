@@ -85,8 +85,8 @@ class AsyncImportWorker(
         }
     }
 
-    fun execute() {
-        ImportExportEvents.reportResult(ImportExportEvents.Result.ImportFinished(execute2()))
+    fun execute(): ImportExportEvents.Result {
+        return ImportExportEvents.Result.ImportFinished(execute2())
     }
 
     // Returns one of the IMPORT_ERROR_LEVEL_* constants

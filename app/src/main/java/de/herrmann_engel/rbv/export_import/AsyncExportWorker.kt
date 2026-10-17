@@ -31,8 +31,8 @@ class AsyncExportWorker(
 ) {
     private var progress = 0
     private var lastProgressSentTime = 0L
-    fun execute() {
-        ImportExportEvents.reportResult(ImportExportEvents.Result.ExportFinished(exportFile()))
+    fun execute(): ImportExportEvents.Result {
+        return ImportExportEvents.Result.ExportFinished(exportFile())
     }
 
     // Appends a single setting as an "app_setting" row (name, type, value)

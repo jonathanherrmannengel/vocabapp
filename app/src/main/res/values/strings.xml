@@ -17,6 +17,7 @@
     <string name="error_creating_duplicate_tag_db">error – does this tag already exist?</string>
     <string name="success">successfully completed</string>
     <string name="wait">please wait</string>
+    <string name="import_export_running">An import or export is already running. This one was not started – please start it again once the running one has finished.</string>
     <string name="add">add</string>
     <string name="start">start</string>
     <string name="edit">edit</string>

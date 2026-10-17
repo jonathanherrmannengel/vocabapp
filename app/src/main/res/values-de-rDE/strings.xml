@@ -11,6 +11,7 @@
     <string name="error_creating_duplicate_tag_db">Fehler – Existiert dieses Schlagwort bereits?</string>
     <string name="success">Erfolgreich abgeschlossen</string>
     <string name="wait">Bitte warten</string>
+    <string name="import_export_running">Es läuft bereits ein Import oder Export. Dieser Vorgang wurde nicht gestartet – bitte starte ihn erneut, sobald der laufende abgeschlossen ist.</string>
     <string name="add">Hinzufügen</string>
     <string name="start">Starten</string>
     <string name="edit">Bearbeiten</string>

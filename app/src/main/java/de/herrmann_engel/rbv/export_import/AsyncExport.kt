@@ -44,16 +44,33 @@ class AsyncExport {
         exportFileUri = null
     }
 
-    fun execute() {
-        (context as RBVApplication).applicationScope.launch {
-            AsyncExportWorker(
-                context,
-                singleCollection,
-                collectionNo,
-                includeSettings,
-                includeMedia,
-                exportFileUri
-            ).execute()
+    /**
+     * Starts the operation. Returns false if another import or export is still running; then
+     * nothing is started.
+     */
+    fun execute(): Boolean {
+        if (!ImportExportEvents.tryStart()) {
+            return false
         }
+        (context as RBVApplication).applicationScope.launch {
+            val result = try {
+                AsyncExportWorker(
+                    context,
+                    singleCollection,
+                    collectionNo,
+                    includeSettings,
+                    includeMedia,
+                    exportFileUri
+                ).execute()
+            } catch (e: Throwable) {
+                // Unexpected failure: no result, but a new import or export must be possible
+                ImportExportEvents.finish()
+                throw e
+            }
+            // Finish before publishing the result, so a new import or export can be started right away
+            ImportExportEvents.finish()
+            ImportExportEvents.reportResult(result)
+        }
+        return true
     }
 }

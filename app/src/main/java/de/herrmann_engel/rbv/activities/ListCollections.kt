@@ -54,14 +54,15 @@ class ListCollections : RBVActivity() {
         ActivityResultContracts.StartActivityForResult()
     ) { result: ActivityResult ->
         if (result.resultCode == RESULT_OK) {
-            AsyncImport(
-                this,
-                result.data?.data!!,
-                importMode,
-                importIncludeSettings,
-                importIncludeMedia
-            ).execute()
-            Toast.makeText(this, R.string.wait, Toast.LENGTH_LONG).show()
+            showImportExportStarted(
+                AsyncImport(
+                    this,
+                    result.data?.data!!,
+                    importMode,
+                    importIncludeSettings,
+                    importIncludeMedia
+                ).execute()
+            )
         } else {
             Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show()
         }
@@ -79,8 +80,9 @@ class ListCollections : RBVActivity() {
                 uri!!,
                 Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
             )
-            AsyncExport(this, exportIncludeSettings, exportIncludeMedia, uri).execute()
-            Toast.makeText(this, R.string.wait, Toast.LENGTH_LONG).show()
+            showImportExportStarted(
+                AsyncExport(this, exportIncludeSettings, exportIncludeMedia, uri).execute()
+            )
         } else {
             Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show()
         }
@@ -114,6 +116,9 @@ class ListCollections : RBVActivity() {
             return@setOnMenuItemClickListener true
         }
         menu.findItem(R.id.menu_list_collections_import).setOnMenuItemClickListener {
+            if (showIfImportExportRunning()) {
+                return@setOnMenuItemClickListener true
+            }
             val startImportDialog = Dialog(this, R.style.dia_view)
             val bindingStartImportDialog = DiaImportBinding.inflate(
                 layoutInflater
@@ -175,6 +180,9 @@ class ListCollections : RBVActivity() {
         }
         // Import of a simple CSV list of cards into a new pack
         menu.findItem(R.id.menu_list_collections_import_simple_list).setOnMenuItemClickListener {
+            if (showIfImportExportRunning()) {
+                return@setOnMenuItemClickListener true
+            }
             val startImportDialog = Dialog(this, R.style.dia_view)
             val bindingStartImportDialog = DiaConfirmBinding.inflate(
                 layoutInflater
@@ -200,6 +208,9 @@ class ListCollections : RBVActivity() {
             return@setOnMenuItemClickListener true
         }
         menu.findItem(R.id.menu_list_collections_export).setOnMenuItemClickListener {
+            if (showIfImportExportRunning()) {
+                return@setOnMenuItemClickListener true
+            }
             val startExportDialog = Dialog(this, R.style.dia_view)
             val bindingStartExportDialog = DiaExportBinding.inflate(
                 layoutInflater

@@ -80,6 +80,9 @@ class ListPacks : RBVActivity(), PackActions.Listener {
             }
             // Export dialog for this collection (settings are never included)
             export.setOnMenuItemClickListener {
+                if (showIfImportExportRunning()) {
+                    return@setOnMenuItemClickListener true
+                }
                 val startExportDialog = Dialog(this, R.style.dia_view)
                 val bindingStartExportDialog = DiaExportBinding.inflate(
                     layoutInflater
@@ -111,13 +114,14 @@ class ListPacks : RBVActivity(), PackActions.Listener {
                     }
                 }
                 bindingStartExportDialog.diaExportStart.setOnClickListener {
-                    AsyncExport(
-                        this,
-                        collectionNo,
-                        bindingStartExportDialog.diaExportIncludeMedia.isChecked
-                    ).execute()
+                    showImportExportStarted(
+                        AsyncExport(
+                            this,
+                            collectionNo,
+                            bindingStartExportDialog.diaExportIncludeMedia.isChecked
+                        ).execute()
+                    )
                     startExportDialog.dismiss()
-                    Toast.makeText(this, R.string.wait, Toast.LENGTH_LONG).show()
                 }
                 startExportDialog.show()
                 return@setOnMenuItemClickListener true

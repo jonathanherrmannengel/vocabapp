@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.channels.BufferOverflow
 import java.io.File
+import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * Connects running imports and exports with the UI.
@@ -14,6 +15,10 @@ import java.io.File
  * activity directly. The activity in the foreground shows progress and results (see RBVActivity),
  * so results are neither lost nor delivered to a destroyed activity when the user leaves the
  * screen or rotates the device.
+ *
+ * Only one import or export runs at a time (see tryStart). Two simultaneous imports could create
+ * duplicates, and an export during an import would write a half-finished state. This also means
+ * that at most one result can be waiting to be shown.
  */
 object ImportExportEvents {
     sealed class Result {
@@ -30,6 +35,25 @@ object ImportExportEvents {
         onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
     val progress: SharedFlow<String> = progressFlow
+
+    // True while an import or export is running
+    private val running = AtomicBoolean(false)
+
+    val isRunning: Boolean
+        get() = running.get()
+
+    /**
+     * Marks an import or export as running. Returns false if one is already running; the new one
+     * must then not be started.
+     */
+    fun tryStart(): Boolean {
+        return running.compareAndSet(false, true)
+    }
+
+    // Marks the running import or export as finished
+    fun finish() {
+        running.set(false)
+    }
 
     // The latest result is kept until an activity has handled it
     private val resultFlow = MutableStateFlow<Result?>(null)
