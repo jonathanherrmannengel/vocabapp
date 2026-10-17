@@ -50,9 +50,6 @@ interface DB_Pack_DAO {
     @Query("SELECT * FROM db_pack WHERE collection=:cid")
     fun getAllExportByCollection(cid: Int): Cursor
 
-    @Query("SELECT uid FROM db_pack WHERE collection=:cid ORDER BY name COLLATE NOCASE ASC, uid DESC")
-    fun getAllIdsByCollection(cid: Int): List<Int>
-
     @Query("SELECT * FROM db_pack WHERE uid=:pid LIMIT 1")
     fun getOne(pid: Int): DB_Pack?
 
