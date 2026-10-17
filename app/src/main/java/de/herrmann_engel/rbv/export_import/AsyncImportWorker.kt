@@ -11,9 +11,11 @@ import de.herrmann_engel.rbv.db.utils.DB_Helper_Delete
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.utils.StringTools
 import java.io.InputStreamReader
+import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import java.util.TimeZone
 
 /**
  * Imports a CSV file, either in the format written by [AsyncExportWorker] or as a simple list
@@ -57,6 +59,30 @@ class AsyncImportWorker(
         val schema = schemas[this[0]]
         val index = if (schema != null) schema[name] ?: return null else defaultIndex
         return getOrNull(index)
+    }
+
+    // Text format of SQLite's DATETIME() (UTC)
+    private val sqliteDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ROOT).apply {
+        timeZone = TimeZone.getTimeZone("UTC")
+        isLenient = false
+    }
+
+    /**
+     * Parses a date column (Unix time in seconds). Backups of old versions may contain the date of
+     * the default collection in the text format of SQLite's DATETIME() instead (written by an old
+     * migration), so this format is accepted too. Missing or unknown values become 0, so the row
+     * is still imported.
+     */
+    private fun parseDate(value: String?): Long {
+        if (value.isNullOrBlank()) {
+            return 0
+        }
+        value.trim().toLongOrNull()?.let { return it }
+        return try {
+            (sqliteDateFormat.parse(value.trim())?.time ?: 0L) / 1000L
+        } catch (_: ParseException) {
+            0
+        }
     }
 
     fun execute() {
@@ -194,7 +220,7 @@ class AsyncImportWorker(
                                         val collectionUidOld = (line.column("uid", 1) ?: "0").toInt()
                                         val name = line.column("name", 2) ?: ""
                                         val desc = line.column("desc", 3) ?: ""
-                                        val date = (line.column("date", 4) ?: "0").toLong()
+                                        val date = parseDate(line.column("date", 4))
                                         val colors = (line.column("colors", 5) ?: "0").toInt()
                                         val emoji = line.column("emoji", 6)?.let {
                                             StringTools().firstEmoji(it)
@@ -257,7 +283,7 @@ class AsyncImportWorker(
                                             val packUidOld = (line.column("uid", 1) ?: "0").toInt()
                                             val name = line.column("name", 2) ?: ""
                                             val desc = line.column("desc", 3) ?: ""
-                                            val date = (line.column("date", 4) ?: "0").toLong()
+                                            val date = parseDate(line.column("date", 4))
                                             val colors = (line.column("colors", 5) ?: "0").toInt()
                                             val emoji = line.column("emoji", 7)?.let {
                                                 StringTools().firstEmoji(it)
@@ -300,10 +326,10 @@ class AsyncImportWorker(
                                                 val front = line.column("front", 2) ?: ""
                                                 val back = line.column("back", 3) ?: ""
                                                 val known = (line.column("known", 5) ?: "0").toInt()
-                                                val date = (line.column("date", 6) ?: "0").toLong()
+                                                val date = parseDate(line.column("date", 6))
                                                 val notes = line.column("notes", 7) ?: ""
                                                 val lastRepetition =
-                                                    (line.column("last_repetition", 8) ?: "0").toLong()
+                                                    parseDate(line.column("last_repetition", 8))
                                                 val countRepetitions =
                                                     (line.column("count_repetitions", 9) ?: "0").toInt()
                                                 val sameNamed =
