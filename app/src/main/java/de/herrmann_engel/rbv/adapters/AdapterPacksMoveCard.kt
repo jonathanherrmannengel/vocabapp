@@ -75,7 +75,7 @@ class AdapterPacksMoveCard(
             val cardIds = arrayListOf<Int>()
             // Only cards not already in the target pack are moved and reported
             // All cards are moved or none
-            AppDatabase.getInstance(context).runInTransaction(Runnable {
+            AppDatabase.getInstance(context).runInTransaction {
                 for (card in cards) {
                     if (card.pack != currentPackId) {
                         cardIds.add(card.uid)
@@ -83,7 +83,7 @@ class AdapterPacksMoveCard(
                         updateHelper.updateCard(card)
                     }
                 }
-            })
+            }
             onMoved(cardIds)
             dialog.dismiss()
         }

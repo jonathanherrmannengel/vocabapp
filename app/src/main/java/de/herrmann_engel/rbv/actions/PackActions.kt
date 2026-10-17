@@ -65,12 +65,12 @@ class PackActions(val activity: Activity, private val listener: Listener) {
                 val dbHelperDelete = DB_Helper_Delete(activity)
                 val packIds = arrayListOf<Int>()
                 // All packs are deleted or none
-                AppDatabase.getInstance(activity).runInTransaction(Runnable {
+                AppDatabase.getInstance(activity).runInTransaction {
                     for (pack in packs) {
                         packIds.add(pack.uid)
                         dbHelperDelete.deletePack(pack, forceDelete)
                     }
-                })
+                }
                 listener.deletedPacks(packIds)
             } else {
                 delete(packs, true)

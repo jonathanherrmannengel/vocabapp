@@ -83,12 +83,12 @@ class CardActions(
                 val dbHelperDelete = DB_Helper_Delete(activity)
                 val cardIds = arrayListOf<Int>()
                 // All cards are deleted or none
-                AppDatabase.getInstance(activity).runInTransaction(Runnable {
+                AppDatabase.getInstance(activity).runInTransaction {
                     for (card in cards) {
                         cardIds.add(card.uid)
                         dbHelperDelete.deleteCard(card)
                     }
-                })
+                }
                 listener.deletedCards(cardIds)
             } else {
                 delete(cards, true)

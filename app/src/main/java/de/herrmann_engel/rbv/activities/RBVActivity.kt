@@ -54,7 +54,7 @@ abstract class RBVActivity : AppCompatActivity() {
         super.onResume()
         // Edge-to-edge is enforced on Android 15+: use dark status bar icons in day mode
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-            val currentNightMode = (getResources().configuration.uiMode
+            val currentNightMode = (resources.configuration.uiMode
                     and Configuration.UI_MODE_NIGHT_MASK)
 
             window?.insetsController?.setSystemBarsAppearance(

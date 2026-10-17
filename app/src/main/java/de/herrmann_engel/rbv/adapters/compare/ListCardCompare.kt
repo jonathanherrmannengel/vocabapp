@@ -32,10 +32,7 @@ class ListCardCompare(
     }
 
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-        if (updateAllContent) {
-            return false
-        }
-        return oldList[oldItemPosition] == newList[newItemPosition]
+        return !updateAllContent && oldList[oldItemPosition] == newList[newItemPosition]
     }
 
 }

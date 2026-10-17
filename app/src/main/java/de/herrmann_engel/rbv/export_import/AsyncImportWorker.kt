@@ -144,7 +144,7 @@ class AsyncImportWorker(
             // True if the rest of the file could not be read (e.g. a cut-off file)
             var readFailed = false
             while (!endOfFile) {
-                AppDatabase.getInstance(context).runInTransaction(Runnable {
+                AppDatabase.getInstance(context).runInTransaction {
                     var rows = 0
                     while (rows < ROWS_PER_TRANSACTION) {
                         val line = try {
@@ -169,7 +169,7 @@ class AsyncImportWorker(
                         }
                         reportProgress()
                     }
-                })
+                }
             }
             // Only an error if nothing could be imported
             if (readFailed && errorLevel == Globals.IMPORT_ERROR_LEVEL_OKAY) {

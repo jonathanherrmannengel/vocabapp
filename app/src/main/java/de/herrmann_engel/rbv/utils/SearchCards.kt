@@ -10,18 +10,12 @@ import java.util.regex.Pattern
  */
 class SearchCards {
     private fun hasNoMatch(source: String?, pattern: Pattern): Boolean {
-        return if (source == null) {
-            true
-        } else {
-            !pattern.matcher(source).find()
-        }
+        return source == null || !pattern.matcher(source).find()
     }
 
     // Faster variant for large lists: compares lowercased strings instead of using a regex
     private fun hasNoMatchInaccurate(source: String?, query: String): Boolean {
-        return if (source == null) {
-            true
-        } else !source.lowercase(Locale.ROOT).contains(query)
+        return source == null || !source.lowercase(Locale.ROOT).contains(query)
     }
 
     /**

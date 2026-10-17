@@ -29,7 +29,6 @@ class AdapterTagsAdvancedSearch(
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-        val context = viewHolder.binding.root.context
         // Not recyclable, so that checkbox listeners are not triggered for recycled views
         viewHolder.setIsRecyclable(false)
         viewHolder.binding.recSmallName.text = stringTools.shorten(tags[position].name)

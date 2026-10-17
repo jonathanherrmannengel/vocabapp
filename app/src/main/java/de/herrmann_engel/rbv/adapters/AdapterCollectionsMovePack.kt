@@ -62,7 +62,7 @@ class AdapterCollectionsMovePack(
             val packIds = arrayListOf<Int>()
             // Only packs not already in the target collection are moved and reported
             // All packs are moved or none
-            AppDatabase.getInstance(context).runInTransaction(Runnable {
+            AppDatabase.getInstance(context).runInTransaction {
                 for (pack in packs) {
                     if (pack.collection != currentCollectionId) {
                         packIds.add(pack.uid)
@@ -70,7 +70,7 @@ class AdapterCollectionsMovePack(
                         updateHelper.updatePack(pack)
                     }
                 }
-            })
+            }
             onMoved(packIds)
             dialog.dismiss()
         }

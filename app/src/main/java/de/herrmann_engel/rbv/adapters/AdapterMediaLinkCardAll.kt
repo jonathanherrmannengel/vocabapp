@@ -31,7 +31,6 @@ class AdapterMediaLinkCardAll(
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-        val context = viewHolder.binding.root.context
         val currentMedia = media[position]
         val fileId = currentMedia.uid
         val fileName = currentMedia.file

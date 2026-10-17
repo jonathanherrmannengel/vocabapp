@@ -20,7 +20,6 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.Globals.MAX_SIZE_CARDS_CONTEXTUAL_MENU_PRINT
 import de.herrmann_engel.rbv.Globals.MAX_SIZE_CARDS_CONTEXTUAL_MENU_SELECT
 import de.herrmann_engel.rbv.R
