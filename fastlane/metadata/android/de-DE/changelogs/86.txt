@@ -1,3 +1,4 @@
+Umfangreiche interne Überarbeitung für mehr Stabilität und Datenkonsistenz.
 Schnellerer und zuverlässigerer Backup-Import und -Export.
 Optimierte Farben.
 Fehlerkorrekturen.

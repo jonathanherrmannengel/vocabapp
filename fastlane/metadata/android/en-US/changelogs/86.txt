@@ -1,3 +1,4 @@
+Extensive internal revision for more stability and data integrity.
 Faster and more reliable backup import and export.
 Optimized colors.
 Bugfixes.
