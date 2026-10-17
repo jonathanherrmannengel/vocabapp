@@ -1,0 +1,3 @@
+Faster and more reliable backup import and export.
+Optimized colors.
+Bugfixes.

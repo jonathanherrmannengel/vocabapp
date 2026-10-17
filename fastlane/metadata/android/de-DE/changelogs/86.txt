@@ -1,0 +1,3 @@
+Schnellerer und zuverlässigerer Backup-Import und -Export.
+Optimierte Farben.
+Fehlerkorrekturen.

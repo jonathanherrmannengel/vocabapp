@@ -447,8 +447,8 @@ class AsyncImportWorker(
         }
     }
 
-    // Only the database entries are imported; the files themselves are expected in the media folder.
-    // Existing entries for the same file name are reused.
+    // Columns: uid, file, mime. Only the database entries are imported; the files themselves are
+    // expected in the media folder. Existing entries for the same file name are reused.
     private fun importMedia(line: Array<String?>) {
         val mediaUidOld = (line.column("uid", 1) ?: "0").toInt()
         val file = line.column("file", 2) ?: ""
@@ -483,7 +483,7 @@ class AsyncImportWorker(
         }
     }
 
-    // Tags are identified by name; existing tags are reused
+    // Columns: uid, tag_name, emoji, color. Tags are identified by name; existing tags are reused.
     private fun importTag(line: Array<String?>) {
         val tagUidOld = (line.column("uid", 1) ?: "0").toInt()
         val name = line.column("tag_name", 2) ?: ""
