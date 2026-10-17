@@ -223,17 +223,15 @@ class ListCards : RBVActivity(), CardActions.Listener {
                             it[index] = cardWithMetaNew
                         }
                     } ?: Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show()
+                    // If the activity was recreated, the displayed list does not exist yet; it is
+                    // then built from cardsList in onResume
                     cardsListFiltered?.let {
                         val index = it.indexOf(cardWithMetaOld)
                         if (index != -1) {
                             it[index] = cardWithMetaNew
-                            adapter?.notifyItemChanged(index) ?: Toast.makeText(
-                                this,
-                                R.string.error,
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            adapter?.notifyItemChanged(index)
                         }
-                    } ?: Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show()
+                    }
                 } else {
                     Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show()
                 }
