@@ -7,13 +7,13 @@ import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.db.AppDatabase
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Create
+import de.herrmann_engel.rbv.db.utils.DB_Helper_Delete
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.utils.StringTools
 import java.io.InputStreamReader
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import java.util.concurrent.Callable
 
 /**
  * Imports a CSV file, either in the format written by [AsyncExportWorker] or as a simple list
@@ -26,8 +26,11 @@ import java.util.concurrent.Callable
  * Columns are looked up by name using the "<type>_schema" rows written by the export. For files
  * without schema rows, the column positions of the current format are used.
  *
- * The import runs in a single transaction: rows that cannot be imported are skipped (result
- * "warn"), but if the import fails as a whole, nothing is imported.
+ * Rows that cannot be imported are skipped (result "warn"). The rows are written in chunks of
+ * ROWS_PER_TRANSACTION rows, each in its own transaction: this is much faster than writing every
+ * row on its own, while other database writes (e.g. rating a card while the import is running)
+ * only have to wait for the current chunk. If the import fails as a whole, the rows imported
+ * until then are kept.
  */
 class AsyncImportWorker(
     val context: Context,
@@ -39,6 +42,9 @@ class AsyncImportWorker(
 
     private var progress = 0
     private var lastProgressSentTime = 0L
+
+    // One of the IMPORT_ERROR_LEVEL_* constants; stays at "error" unless at least one entry was imported
+    private var errorLevel = Globals.IMPORT_ERROR_LEVEL_ERROR
 
     // Column name -> position per row type, from the "<type>_schema" rows
     private val schemas = HashMap<String, Map<String, Int>>()
@@ -57,36 +63,31 @@ class AsyncImportWorker(
         ImportExportEvents.reportResult(ImportExportEvents.Result.ImportFinished(execute2()))
     }
 
-    // Returns one of the IMPORT_ERROR_LEVEL_* constants; stays at "error" unless at least one entry was imported
+    // Returns one of the IMPORT_ERROR_LEVEL_* constants
     private fun execute2(): Int {
         try {
             val inputStream = context.contentResolver.openInputStream(uri)
                 ?: return Globals.IMPORT_ERROR_LEVEL_ERROR
             // Settings are only applied once the import has succeeded
             val importedSettings = ArrayList<Array<String?>>()
-            val errorLevel = CSVReader(InputStreamReader(inputStream)).use { csvReader ->
-                AppDatabase.getInstance(context).runInTransaction(Callable {
-                    importRows(csvReader, importedSettings).also {
-                        // Nothing could be imported: roll back (e.g. the pack created for a simple list)
-                        if (it == Globals.IMPORT_ERROR_LEVEL_ERROR) {
-                            throw NothingImportedException()
-                        }
-                    }
-                })
+            CSVReader(InputStreamReader(inputStream)).use { csvReader ->
+                importRows(csvReader, importedSettings)
             }
             applySettings(importedSettings)
             return errorLevel
-        } catch (_: NothingImportedException) {
         } catch (e: Exception) {
             e.printStackTrace()
         }
-        return Globals.IMPORT_ERROR_LEVEL_ERROR
+        // The import failed as a whole: rows imported until then are kept, so this is only an
+        // error if nothing was imported
+        return if (errorLevel == Globals.IMPORT_ERROR_LEVEL_ERROR) {
+            Globals.IMPORT_ERROR_LEVEL_ERROR
+        } else {
+            Globals.IMPORT_ERROR_LEVEL_WARN
+        }
     }
 
-    private class NothingImportedException : Exception()
-
-    private fun importRows(csvReader: CSVReader, importedSettings: MutableList<Array<String?>>): Int {
-        var errorLevel = Globals.IMPORT_ERROR_LEVEL_ERROR
+    private fun importRows(csvReader: CSVReader, importedSettings: MutableList<Array<String?>>) {
         val helperCreate =
             DB_Helper_Create(context)
         val helperGet =
@@ -96,7 +97,8 @@ class AsyncImportWorker(
         val cardUidConverter = AsyncImportUidConvert()
         val mediaUidConverter = AsyncImportUidConvert()
         val tagsUidConverter = AsyncImportUidConvert()
-        var line: Array<String?>?
+        // Collection created for a simple list (null if an existing one is used)
+        var simpleListCreatedCollection: Int? = null
         // Simple list: all cards go into a new pack (named after the current date) inside a dedicated
         // collection, which is reused if it already exists. Both are stored under the old uid 0.
         if (mode == Globals.IMPORT_MODE_SIMPLE_LIST) {
@@ -120,6 +122,7 @@ class AsyncImportWorker(
                     helperCreate
                         .createCollection(collectionName, collectionDesc)
                         .toInt()
+                simpleListCreatedCollection = collectionUidNew
                 collectionUidConverter.insertPair(
                     0,
                     collectionUidNew
@@ -140,304 +143,333 @@ class AsyncImportWorker(
                     .toInt()
             )
         }
-        while (csvReader.readNext().also { line = it } != null) {
-            try {
-                line!!
-                if (line[0]?.endsWith("_schema") == true && mode != Globals.IMPORT_MODE_SIMPLE_LIST) {
-                    schemas[line[0]!!.removeSuffix("_schema")] =
-                        line.withIndex().drop(1).associate { (i, name) -> (name ?: "") to i }
-                } else if (mode == Globals.IMPORT_MODE_SIMPLE_LIST) {
-                    try {
-                        if (line.size == 2 || line.size == 3) {
-                            val front = line[0] ?: ""
-                            val back = line[1] ?: ""
-                            val notes =
-                                if (line.size == 3) {
-                                    line[2] ?: ""
-                                } else ""
-                            helperCreate.createCard(
-                                front,
-                                back,
-                                notes,
-                                packUidConverter.getNewValue(0)
-                            )
-                            if (errorLevel == Globals.IMPORT_ERROR_LEVEL_ERROR) {
-                                errorLevel = Globals.IMPORT_ERROR_LEVEL_OKAY
-                            }
-                        } else {
-                            errorLevel = Globals.IMPORT_ERROR_LEVEL_WARN
+        try {
+            var endOfFile = false
+            while (!endOfFile) {
+                AppDatabase.getInstance(context).runInTransaction(Runnable {
+                    var rows = 0
+                    while (rows < ROWS_PER_TRANSACTION) {
+                        val line = csvReader.readNext()
+                        if (line == null) {
+                            endOfFile = true
+                            break
                         }
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                        errorLevel = Globals.IMPORT_ERROR_LEVEL_WARN
-                    }
-                } else {
-                    when {
-                        // Columns: uid, name, desc, date, colors (optional), emoji (optional)
-                        line[0] == "collection" -> {
-                            if (errorLevel == Globals.IMPORT_ERROR_LEVEL_ERROR) {
-                                errorLevel = Globals.IMPORT_ERROR_LEVEL_OKAY
-                            }
-                            val collectionUidOld = (line.column("uid", 1) ?: "0").toInt()
-                            val name = line.column("name", 2) ?: ""
-                            val desc = line.column("desc", 3) ?: ""
-                            val date = (line.column("date", 4) ?: "0").toLong()
-                            val colors = (line.column("colors", 5) ?: "0").toInt()
-                            val emoji = line.column("emoji", 6)?.let {
-                                StringTools().firstEmoji(it)
-                            }
-                            val sameNamed = helperGet.getAllCollectionsByName(name)
-                            // Create a new collection unless one with the same name exists; in integrate mode the
-                            // existing one is used instead, in skip mode its content is skipped
-                            if (sameNamed.isEmpty() || mode == Globals.IMPORT_MODE_DUPLICATES) {
-                                val collectionUidNew =
-                                    helperCreate
-                                        .createCollection(name, desc, colors, emoji, date)
-                                        .toInt()
-                                collectionUidConverter.insertPair(
-                                    collectionUidOld,
-                                    collectionUidNew
-                                )
-                            } else if (mode == Globals.IMPORT_MODE_INTEGRATE) {
-                                collectionUidConverter.insertPair(
-                                    collectionUidOld,
-                                    sameNamed[0].uid
-                                )
-                            }
-                        }
-
-                        // Columns: uid, name, desc, date, colors, collection (optional), emoji (optional)
-                        line[0] == "packs" -> {
-                            // Files from old versions without collections: put the packs into a "_default" collection
-                            if (collectionUidConverter.getSize() == 0 &&
-                                mode != Globals.IMPORT_MODE_SKIP
-                            ) {
-                                if (errorLevel == Globals.IMPORT_ERROR_LEVEL_ERROR) {
-                                    errorLevel = Globals.IMPORT_ERROR_LEVEL_OKAY
-                                }
-                                val name = "_default"
-                                val desc = "_default"
-                                val date = System.currentTimeMillis() / 1000L
-                                val colors = 0
-                                val emoji = null
-                                val sameNamed = helperGet.getAllCollectionsByName(name)
-                                if (sameNamed.isEmpty() || mode == Globals.IMPORT_MODE_DUPLICATES) {
-                                    val collectionUidNew =
-                                        helperCreate
-                                            .createCollection(
-                                                name,
-                                                desc,
-                                                colors,
-                                                emoji,
-                                                date
-                                            )
-                                            .toInt()
-                                    collectionUidConverter.insertPair(0, collectionUidNew)
-                                } else {
-                                    collectionUidConverter.insertPair(0, sameNamed[0].uid)
-                                }
-                            }
-                            val currentCollection = line.column("collection", 6)?.let {
-                                collectionUidConverter.getNewValue(it.toInt())
-                            } ?: collectionUidConverter.getNewValue(0)
-                            if (currentCollection > 0) {
-                                val packUidOld = (line.column("uid", 1) ?: "0").toInt()
-                                val name = line.column("name", 2) ?: ""
-                                val desc = line.column("desc", 3) ?: ""
-                                val date = (line.column("date", 4) ?: "0").toLong()
-                                val colors = (line.column("colors", 5) ?: "0").toInt()
-                                val emoji = line.column("emoji", 7)?.let {
-                                    StringTools().firstEmoji(it)
-                                }
-                                val sameNamed =
-                                    helperGet.getAllPacksByCollectionAndNameAndDesc(
-                                        currentCollection,
-                                        name,
-                                        desc
-                                    )
-                                if (sameNamed.isEmpty() || mode == Globals.IMPORT_MODE_DUPLICATES) {
-                                    val packUidNew =
-                                        helperCreate
-                                            .createPack(
-                                                name,
-                                                desc,
-                                                currentCollection,
-                                                colors,
-                                                emoji,
-                                                date
-                                            )
-                                            .toInt()
-                                    packUidConverter.insertPair(packUidOld, packUidNew)
-                                } else if (mode == Globals.IMPORT_MODE_INTEGRATE) {
-                                    packUidConverter.insertPair(packUidOld, sameNamed[0].uid)
-                                }
-                            }
-                        }
-
-                        // Columns: uid, front, back, pack, known, date, notes, last repetition (optional), repetition count (optional)
-                        line[0] == "cards" -> {
-                            val currentPack =
-                                packUidConverter.getNewValue(
-                                    (line.column("pack", 4) ?: "0").toInt()
-                                )
-                            if (currentPack > 0) {
+                        rows++
+                        try {
+                            if (line[0]?.endsWith("_schema") == true && mode != Globals.IMPORT_MODE_SIMPLE_LIST) {
+                                schemas[line[0]!!.removeSuffix("_schema")] =
+                                    line.withIndex().drop(1).associate { (i, name) -> (name ?: "") to i }
+                            } else if (mode == Globals.IMPORT_MODE_SIMPLE_LIST) {
                                 try {
-                                    helperGet.getSinglePack(currentPack)
-                                    val cardUidOld = (line.column("uid", 1) ?: "0").toInt()
-                                    val front = line.column("front", 2) ?: ""
-                                    val back = line.column("back", 3) ?: ""
-                                    val known = (line.column("known", 5) ?: "0").toInt()
-                                    val date = (line.column("date", 6) ?: "0").toLong()
-                                    val notes = line.column("notes", 7) ?: ""
-                                    val lastRepetition =
-                                        (line.column("last_repetition", 8) ?: "0").toLong()
-                                    val countRepetitions =
-                                        (line.column("count_repetitions", 9) ?: "0").toInt()
-                                    val sameNamed =
-                                        helperGet.getSingleCardIdByPackAndFrontAndBackAndNotes(
-                                            currentPack,
-                                            front,
-                                            back,
-                                            notes
-                                        )
-                                    // Existing identical cards are skipped, or reused in integrate mode
-                                    if (sameNamed == 0 || mode == Globals.IMPORT_MODE_DUPLICATES) {
-                                        val cardUidNew = helperCreate.createCard(
+                                    if (line.size == 2 || line.size == 3) {
+                                        val front = line[0] ?: ""
+                                        val back = line[1] ?: ""
+                                        val notes =
+                                            if (line.size == 3) {
+                                                line[2] ?: ""
+                                            } else ""
+                                        helperCreate.createCard(
                                             front,
                                             back,
                                             notes,
-                                            currentPack,
-                                            known,
-                                            date,
-                                            lastRepetition,
-                                            countRepetitions
-                                        ).toInt()
-                                        cardUidConverter.insertPair(cardUidOld, cardUidNew)
-                                    } else if (mode == Globals.IMPORT_MODE_INTEGRATE) {
-                                        cardUidConverter.insertPair(cardUidOld, sameNamed)
+                                            packUidConverter.getNewValue(0)
+                                        )
+                                        if (errorLevel == Globals.IMPORT_ERROR_LEVEL_ERROR) {
+                                            errorLevel = Globals.IMPORT_ERROR_LEVEL_OKAY
+                                        }
+                                    } else {
+                                        errorLevel = Globals.IMPORT_ERROR_LEVEL_WARN
                                     }
                                 } catch (e: Exception) {
                                     e.printStackTrace()
                                     errorLevel = Globals.IMPORT_ERROR_LEVEL_WARN
                                 }
-                            }
-                        }
+                            } else {
+                                when {
+                                    // Columns: uid, name, desc, date, colors (optional), emoji (optional)
+                                    line[0] == "collection" -> {
+                                        if (errorLevel == Globals.IMPORT_ERROR_LEVEL_ERROR) {
+                                            errorLevel = Globals.IMPORT_ERROR_LEVEL_OKAY
+                                        }
+                                        val collectionUidOld = (line.column("uid", 1) ?: "0").toInt()
+                                        val name = line.column("name", 2) ?: ""
+                                        val desc = line.column("desc", 3) ?: ""
+                                        val date = (line.column("date", 4) ?: "0").toLong()
+                                        val colors = (line.column("colors", 5) ?: "0").toInt()
+                                        val emoji = line.column("emoji", 6)?.let {
+                                            StringTools().firstEmoji(it)
+                                        }
+                                        val sameNamed = helperGet.getAllCollectionsByName(name)
+                                        // Create a new collection unless one with the same name exists; in integrate mode the
+                                        // existing one is used instead, in skip mode its content is skipped
+                                        if (sameNamed.isEmpty() || mode == Globals.IMPORT_MODE_DUPLICATES) {
+                                            val collectionUidNew =
+                                                helperCreate
+                                                    .createCollection(name, desc, colors, emoji, date)
+                                                    .toInt()
+                                            collectionUidConverter.insertPair(
+                                                collectionUidOld,
+                                                collectionUidNew
+                                            )
+                                        } else if (mode == Globals.IMPORT_MODE_INTEGRATE) {
+                                            collectionUidConverter.insertPair(
+                                                collectionUidOld,
+                                                sameNamed[0].uid
+                                            )
+                                        }
+                                    }
 
-                        // Only the database entries are imported; the files themselves are expected in the media folder.
-                        // Existing entries for the same file name are reused.
-                        line[0] == "media" && includeMedia -> {
-                            try {
-                                val mediaUidOld = (line.column("uid", 1) ?: "0").toInt()
-                                val file = line.column("file", 2) ?: ""
-                                val mime = line.column("mime", 3) ?: ""
-                                if (file.isNotEmpty() && mime.isNotEmpty()) {
-                                    if (helperGet.existsMedia(file)) {
-                                        val mediaUidNew = helperGet.getSingleMedia(file).uid
-                                        mediaUidConverter.insertPair(mediaUidOld, mediaUidNew)
-                                    } else {
-                                        val mediaUidNew =
-                                            helperCreate.createMedia(file, mime).toInt()
-                                        mediaUidConverter.insertPair(mediaUidOld, mediaUidNew)
+                                    // Columns: uid, name, desc, date, colors, collection (optional), emoji (optional)
+                                    line[0] == "packs" -> {
+                                        // Files from old versions without collections: put the packs into a "_default" collection
+                                        if (collectionUidConverter.getSize() == 0 &&
+                                            mode != Globals.IMPORT_MODE_SKIP
+                                        ) {
+                                            if (errorLevel == Globals.IMPORT_ERROR_LEVEL_ERROR) {
+                                                errorLevel = Globals.IMPORT_ERROR_LEVEL_OKAY
+                                            }
+                                            val name = "_default"
+                                            val desc = "_default"
+                                            val date = System.currentTimeMillis() / 1000L
+                                            val colors = 0
+                                            val emoji = null
+                                            val sameNamed = helperGet.getAllCollectionsByName(name)
+                                            if (sameNamed.isEmpty() || mode == Globals.IMPORT_MODE_DUPLICATES) {
+                                                val collectionUidNew =
+                                                    helperCreate
+                                                        .createCollection(
+                                                            name,
+                                                            desc,
+                                                            colors,
+                                                            emoji,
+                                                            date
+                                                        )
+                                                        .toInt()
+                                                collectionUidConverter.insertPair(0, collectionUidNew)
+                                            } else {
+                                                collectionUidConverter.insertPair(0, sameNamed[0].uid)
+                                            }
+                                        }
+                                        val currentCollection = line.column("collection", 6)?.let {
+                                            collectionUidConverter.getNewValue(it.toInt())
+                                        } ?: collectionUidConverter.getNewValue(0)
+                                        if (currentCollection > 0) {
+                                            val packUidOld = (line.column("uid", 1) ?: "0").toInt()
+                                            val name = line.column("name", 2) ?: ""
+                                            val desc = line.column("desc", 3) ?: ""
+                                            val date = (line.column("date", 4) ?: "0").toLong()
+                                            val colors = (line.column("colors", 5) ?: "0").toInt()
+                                            val emoji = line.column("emoji", 7)?.let {
+                                                StringTools().firstEmoji(it)
+                                            }
+                                            val sameNamed =
+                                                helperGet.getAllPacksByCollectionAndNameAndDesc(
+                                                    currentCollection,
+                                                    name,
+                                                    desc
+                                                )
+                                            if (sameNamed.isEmpty() || mode == Globals.IMPORT_MODE_DUPLICATES) {
+                                                val packUidNew =
+                                                    helperCreate
+                                                        .createPack(
+                                                            name,
+                                                            desc,
+                                                            currentCollection,
+                                                            colors,
+                                                            emoji,
+                                                            date
+                                                        )
+                                                        .toInt()
+                                                packUidConverter.insertPair(packUidOld, packUidNew)
+                                            } else if (mode == Globals.IMPORT_MODE_INTEGRATE) {
+                                                packUidConverter.insertPair(packUidOld, sameNamed[0].uid)
+                                            }
+                                        }
+                                    }
 
+                                    // Columns: uid, front, back, pack, known, date, notes, last repetition (optional), repetition count (optional)
+                                    line[0] == "cards" -> {
+                                        val currentPack =
+                                            packUidConverter.getNewValue(
+                                                (line.column("pack", 4) ?: "0").toInt()
+                                            )
+                                        if (currentPack > 0) {
+                                            try {
+                                                helperGet.getSinglePack(currentPack)
+                                                val cardUidOld = (line.column("uid", 1) ?: "0").toInt()
+                                                val front = line.column("front", 2) ?: ""
+                                                val back = line.column("back", 3) ?: ""
+                                                val known = (line.column("known", 5) ?: "0").toInt()
+                                                val date = (line.column("date", 6) ?: "0").toLong()
+                                                val notes = line.column("notes", 7) ?: ""
+                                                val lastRepetition =
+                                                    (line.column("last_repetition", 8) ?: "0").toLong()
+                                                val countRepetitions =
+                                                    (line.column("count_repetitions", 9) ?: "0").toInt()
+                                                val sameNamed =
+                                                    helperGet.getSingleCardIdByPackAndFrontAndBackAndNotes(
+                                                        currentPack,
+                                                        front,
+                                                        back,
+                                                        notes
+                                                    )
+                                                // Existing identical cards are skipped, or reused in integrate mode
+                                                if (sameNamed == 0 || mode == Globals.IMPORT_MODE_DUPLICATES) {
+                                                    val cardUidNew = helperCreate.createCard(
+                                                        front,
+                                                        back,
+                                                        notes,
+                                                        currentPack,
+                                                        known,
+                                                        date,
+                                                        lastRepetition,
+                                                        countRepetitions
+                                                    ).toInt()
+                                                    cardUidConverter.insertPair(cardUidOld, cardUidNew)
+                                                } else if (mode == Globals.IMPORT_MODE_INTEGRATE) {
+                                                    cardUidConverter.insertPair(cardUidOld, sameNamed)
+                                                }
+                                            } catch (e: Exception) {
+                                                e.printStackTrace()
+                                                errorLevel = Globals.IMPORT_ERROR_LEVEL_WARN
+                                            }
+                                        }
+                                    }
+
+                                    // Only the database entries are imported; the files themselves are expected in the media folder.
+                                    // Existing entries for the same file name are reused.
+                                    line[0] == "media" && includeMedia -> {
+                                        try {
+                                            val mediaUidOld = (line.column("uid", 1) ?: "0").toInt()
+                                            val file = line.column("file", 2) ?: ""
+                                            val mime = line.column("mime", 3) ?: ""
+                                            if (file.isNotEmpty() && mime.isNotEmpty()) {
+                                                if (helperGet.existsMedia(file)) {
+                                                    val mediaUidNew = helperGet.getSingleMedia(file).uid
+                                                    mediaUidConverter.insertPair(mediaUidOld, mediaUidNew)
+                                                } else {
+                                                    val mediaUidNew =
+                                                        helperCreate.createMedia(file, mime).toInt()
+                                                    mediaUidConverter.insertPair(mediaUidOld, mediaUidNew)
+
+                                                }
+                                            }
+                                        } catch (e: Exception) {
+                                            e.printStackTrace()
+                                            errorLevel = Globals.IMPORT_ERROR_LEVEL_WARN
+                                        }
+                                    }
+
+                                    line[0] == "media_link_card" && includeMedia -> {
+                                        try {
+                                            val currentMedia =
+                                                mediaUidConverter.getNewValue(
+                                                    (line.column("fileId", 2) ?: "0").toInt()
+                                                )
+                                            val currentCard =
+                                                cardUidConverter.getNewValue(
+                                                    (line.column("cardId", 3) ?: "0").toInt()
+                                                )
+                                            if (currentMedia != 0 && currentCard != 0 && !helperGet.existsMediaLinkCard(
+                                                    currentMedia,
+                                                    currentCard
+                                                )
+                                            ) {
+                                                helperCreate.createMediaLink(currentMedia, currentCard)
+                                            }
+                                        } catch (e: Exception) {
+                                            e.printStackTrace()
+                                            errorLevel = Globals.IMPORT_ERROR_LEVEL_WARN
+                                        }
+                                    }
+
+                                    // Tags are identified by name; existing tags are reused
+                                    line[0] == "tags" -> {
+                                        try {
+                                            val tagUidOld = (line.column("uid", 1) ?: "0").toInt()
+                                            val name = line.column("tag_name", 2) ?: ""
+                                            val emoji = line.column("emoji", 3) ?: ""
+                                            val color = line.column("color", 4) ?: ""
+                                            if (name.isNotBlank()) {
+                                                if (helperGet.existsTag(name)) {
+                                                    val tagUidNew = helperGet.getSingleTag(name).uid
+                                                    tagsUidConverter.insertPair(tagUidOld, tagUidNew)
+                                                } else {
+                                                    val tagUidNew =
+                                                        helperCreate.createTag(name, emoji, color).toInt()
+                                                    tagsUidConverter.insertPair(tagUidOld, tagUidNew)
+                                                }
+                                            }
+                                        } catch (e: Exception) {
+                                            e.printStackTrace()
+                                            errorLevel = Globals.IMPORT_ERROR_LEVEL_WARN
+                                        }
+                                    }
+
+                                    line[0] == "tags_link_card" -> {
+                                        try {
+                                            val currentTag =
+                                                tagsUidConverter.getNewValue(
+                                                    (line.column("tagId", 2) ?: "0").toInt()
+                                                )
+                                            val currentCard =
+                                                cardUidConverter.getNewValue(
+                                                    (line.column("cardId", 3) ?: "0").toInt()
+                                                )
+                                            if (currentTag != 0 && currentCard != 0 && !helperGet.existsTagLinkCard(
+                                                    currentTag,
+                                                    currentCard
+                                                )
+                                            ) {
+                                                helperCreate.createTagLink(currentTag, currentCard)
+                                            }
+                                        } catch (e: Exception) {
+                                            e.printStackTrace()
+                                            errorLevel = Globals.IMPORT_ERROR_LEVEL_WARN
+                                        }
+                                    }
+
+                                    line[0] == "app_setting" && includeSettings -> {
+                                        importedSettings.add(line)
                                     }
                                 }
-                            } catch (e: Exception) {
-                                e.printStackTrace()
-                                errorLevel = Globals.IMPORT_ERROR_LEVEL_WARN
                             }
-                        }
-
-                        line[0] == "media_link_card" && includeMedia -> {
-                            try {
-                                val currentMedia =
-                                    mediaUidConverter.getNewValue(
-                                        (line.column("fileId", 2) ?: "0").toInt()
+                            progress++
+                            val currentTime = System.currentTimeMillis()
+                            if (progress % 1000 == 0 && currentTime - lastProgressSentTime > 3000) {
+                                lastProgressSentTime = currentTime
+                                ImportExportEvents.reportProgress(
+                                    String.format(
+                                        context.getString(R.string.import_export_lines_progress),
+                                        progress
                                     )
-                                val currentCard =
-                                    cardUidConverter.getNewValue(
-                                        (line.column("cardId", 3) ?: "0").toInt()
-                                    )
-                                if (currentMedia != 0 && currentCard != 0 && !helperGet.existsMediaLinkCard(
-                                        currentMedia,
-                                        currentCard
-                                    )
-                                ) {
-                                    helperCreate.createMediaLink(currentMedia, currentCard)
-                                }
-                            } catch (e: Exception) {
-                                e.printStackTrace()
-                                errorLevel = Globals.IMPORT_ERROR_LEVEL_WARN
+                                )
                             }
-                        }
-
-                        // Tags are identified by name; existing tags are reused
-                        line[0] == "tags" -> {
-                            try {
-                                val tagUidOld = (line.column("uid", 1) ?: "0").toInt()
-                                val name = line.column("tag_name", 2) ?: ""
-                                val emoji = line.column("emoji", 3) ?: ""
-                                val color = line.column("color", 4) ?: ""
-                                if (name.isNotBlank()) {
-                                    if (helperGet.existsTag(name)) {
-                                        val tagUidNew = helperGet.getSingleTag(name).uid
-                                        tagsUidConverter.insertPair(tagUidOld, tagUidNew)
-                                    } else {
-                                        val tagUidNew =
-                                            helperCreate.createTag(name, emoji, color).toInt()
-                                        tagsUidConverter.insertPair(tagUidOld, tagUidNew)
-                                    }
-                                }
-                            } catch (e: Exception) {
-                                e.printStackTrace()
-                                errorLevel = Globals.IMPORT_ERROR_LEVEL_WARN
-                            }
-                        }
-
-                        line[0] == "tags_link_card" -> {
-                            try {
-                                val currentTag =
-                                    tagsUidConverter.getNewValue(
-                                        (line.column("tagId", 2) ?: "0").toInt()
-                                    )
-                                val currentCard =
-                                    cardUidConverter.getNewValue(
-                                        (line.column("cardId", 3) ?: "0").toInt()
-                                    )
-                                if (currentTag != 0 && currentCard != 0 && !helperGet.existsTagLinkCard(
-                                        currentTag,
-                                        currentCard
-                                    )
-                                ) {
-                                    helperCreate.createTagLink(currentTag, currentCard)
-                                }
-                            } catch (e: Exception) {
-                                e.printStackTrace()
-                                errorLevel = Globals.IMPORT_ERROR_LEVEL_WARN
-                            }
-                        }
-
-                        line[0] == "app_setting" && includeSettings -> {
-                            importedSettings.add(line)
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                            errorLevel = Globals.IMPORT_ERROR_LEVEL_WARN
                         }
                     }
+                })
+            }
+        } finally {
+            // Nothing could be imported from a simple list: remove the pack (and the collection)
+            // created for it
+            if (mode == Globals.IMPORT_MODE_SIMPLE_LIST && errorLevel == Globals.IMPORT_ERROR_LEVEL_ERROR) {
+                val helperDelete = DB_Helper_Delete(context)
+                helperGet.getSinglePack(packUidConverter.getNewValue(0))?.let {
+                    helperDelete.deletePack(it, true)
                 }
-                progress++
-                val currentTime = System.currentTimeMillis()
-                if (progress % 1000 == 0 && currentTime - lastProgressSentTime > 3000) {
-                    lastProgressSentTime = currentTime
-                    ImportExportEvents.reportProgress(
-                        String.format(
-                            context.getString(R.string.import_export_lines_progress),
-                            progress
-                        )
-                    )
+                simpleListCreatedCollection?.let { uid ->
+                    helperGet.getSingleCollection(uid)?.let { helperDelete.deleteCollection(it, true) }
                 }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                errorLevel = Globals.IMPORT_ERROR_LEVEL_WARN
             }
         }
-        return errorLevel
+    }
+
+    companion object {
+        // Number of rows written per transaction
+        private const val ROWS_PER_TRANSACTION = 500
     }
 
     // Columns: name, type ("int" or "bool"), value
