@@ -14,7 +14,8 @@ import androidx.room.PrimaryKey;
                 @ForeignKey(entity = DB_Media.class, parentColumns = "uid", childColumns = "fileId", onDelete = ForeignKey.CASCADE),
                 @ForeignKey(entity = DB_Card.class, parentColumns = "uid", childColumns = "cardId", onDelete = ForeignKey.CASCADE)
         },
-        indices = {@Index("fileId"), @Index("cardId")}
+        // A media file is linked to a card at most once; the index also serves lookups by fileId
+        indices = {@Index(value = {"fileId", "cardId"}, unique = true), @Index("cardId")}
 )
 public class DB_Media_Link_Card {
     @PrimaryKey(autoGenerate = true)

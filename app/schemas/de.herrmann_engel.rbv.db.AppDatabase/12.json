@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 12,
-    "identityHash": "dd335fde79ce0b6730883c85f858d52e",
+    "identityHash": "dd33f4d73df6af01301b8b7082587358",
     "entities": [
       {
         "tableName": "DB_Pack",
@@ -270,13 +270,14 @@
         },
         "indices": [
           {
-            "name": "index_DB_Media_Link_Card_fileId",
-            "unique": false,
+            "name": "index_DB_Media_Link_Card_fileId_cardId",
+            "unique": true,
             "columnNames": [
-              "fileId"
+              "fileId",
+              "cardId"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_DB_Media_Link_Card_fileId` ON `${TABLE_NAME}` (`fileId`)"
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_DB_Media_Link_Card_fileId_cardId` ON `${TABLE_NAME}` (`fileId`, `cardId`)"
           },
           {
             "name": "index_DB_Media_Link_Card_cardId",
@@ -388,13 +389,14 @@
         },
         "indices": [
           {
-            "name": "index_DB_Tag_Link_Card_tagId",
-            "unique": false,
+            "name": "index_DB_Tag_Link_Card_tagId_cardId",
+            "unique": true,
             "columnNames": [
-              "tagId"
+              "tagId",
+              "cardId"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_DB_Tag_Link_Card_tagId` ON `${TABLE_NAME}` (`tagId`)"
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_DB_Tag_Link_Card_tagId_cardId` ON `${TABLE_NAME}` (`tagId`, `cardId`)"
           },
           {
             "name": "index_DB_Tag_Link_Card_cardId",
@@ -434,7 +436,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'dd335fde79ce0b6730883c85f858d52e')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'dd33f4d73df6af01301b8b7082587358')"
     ]
   }
 }

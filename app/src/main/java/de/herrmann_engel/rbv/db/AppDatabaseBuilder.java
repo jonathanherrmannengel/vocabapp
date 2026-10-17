@@ -117,6 +117,8 @@ public class AppDatabaseBuilder {
             // Merge tags with the same name into the oldest one
             database.execSQL("UPDATE DB_Tag_Link_Card SET tagId = (SELECT MIN(t2.uid) FROM DB_Tag t1 JOIN DB_Tag t2 ON t2.tag_name = t1.tag_name WHERE t1.uid = DB_Tag_Link_Card.tagId) WHERE tagId IN (SELECT t.uid FROM DB_Tag t WHERE t.uid > (SELECT MIN(t2.uid) FROM DB_Tag t2 WHERE t2.tag_name = t.tag_name))");
             database.execSQL("DELETE FROM DB_Tag WHERE uid > (SELECT MIN(t2.uid) FROM DB_Tag t2 WHERE t2.tag_name = DB_Tag.tag_name)");
+            // Remove duplicate links, which the new unique indices do not allow
+            database.execSQL("DELETE FROM DB_Media_Link_Card WHERE uid NOT IN (SELECT MIN(uid) FROM DB_Media_Link_Card GROUP BY fileId, cardId)");
             database.execSQL("DELETE FROM DB_Tag_Link_Card WHERE uid NOT IN (SELECT MIN(uid) FROM DB_Tag_Link_Card GROUP BY tagId, cardId)");
             // From now on, tags are deleted as soon as they are no longer used; remove those that
             // are unused already
@@ -139,10 +141,10 @@ public class AppDatabaseBuilder {
 
             database.execSQL("CREATE INDEX IF NOT EXISTS `index_DB_Pack_collection` ON `DB_Pack` (`collection`)");
             database.execSQL("CREATE INDEX IF NOT EXISTS `index_DB_Card_pack` ON `DB_Card` (`pack`)");
-            database.execSQL("CREATE INDEX IF NOT EXISTS `index_DB_Media_Link_Card_fileId` ON `DB_Media_Link_Card` (`fileId`)");
+            database.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_DB_Media_Link_Card_fileId_cardId` ON `DB_Media_Link_Card` (`fileId`, `cardId`)");
             database.execSQL("CREATE INDEX IF NOT EXISTS `index_DB_Media_Link_Card_cardId` ON `DB_Media_Link_Card` (`cardId`)");
             database.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_DB_Tag_tag_name` ON `DB_Tag` (`tag_name`)");
-            database.execSQL("CREATE INDEX IF NOT EXISTS `index_DB_Tag_Link_Card_tagId` ON `DB_Tag_Link_Card` (`tagId`)");
+            database.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_DB_Tag_Link_Card_tagId_cardId` ON `DB_Tag_Link_Card` (`tagId`, `cardId`)");
             database.execSQL("CREATE INDEX IF NOT EXISTS `index_DB_Tag_Link_Card_cardId` ON `DB_Tag_Link_Card` (`cardId`)");
         }
 

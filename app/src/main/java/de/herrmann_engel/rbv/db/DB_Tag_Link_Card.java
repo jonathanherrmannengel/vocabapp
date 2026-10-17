@@ -14,7 +14,8 @@ import androidx.room.PrimaryKey;
                 @ForeignKey(entity = DB_Tag.class, parentColumns = "uid", childColumns = "tagId", onDelete = ForeignKey.CASCADE),
                 @ForeignKey(entity = DB_Card.class, parentColumns = "uid", childColumns = "cardId", onDelete = ForeignKey.CASCADE)
         },
-        indices = {@Index("tagId"), @Index("cardId")}
+        // A tag is assigned to a card at most once; the index also serves lookups by tagId
+        indices = {@Index(value = {"tagId", "cardId"}, unique = true), @Index("cardId")}
 )
 public class DB_Tag_Link_Card {
     @PrimaryKey(autoGenerate = true)
