@@ -117,11 +117,11 @@ public class AppDatabaseBuilder {
             // Merge tags with the same name into the oldest one
             database.execSQL("UPDATE DB_Tag_Link_Card SET tagId = (SELECT MIN(t2.uid) FROM DB_Tag t1 JOIN DB_Tag t2 ON t2.tag_name = t1.tag_name WHERE t1.uid = DB_Tag_Link_Card.tagId) WHERE tagId IN (SELECT t.uid FROM DB_Tag t WHERE t.uid > (SELECT MIN(t2.uid) FROM DB_Tag t2 WHERE t2.tag_name = t.tag_name))");
             database.execSQL("DELETE FROM DB_Tag WHERE uid > (SELECT MIN(t2.uid) FROM DB_Tag t2 WHERE t2.tag_name = DB_Tag.tag_name)");
-            // Remove duplicate links, which the new unique indices do not allow
+            // Remove duplicate links, which the unique indices of version 12 do not allow
             database.execSQL("DELETE FROM DB_Media_Link_Card WHERE uid NOT IN (SELECT MIN(uid) FROM DB_Media_Link_Card GROUP BY fileId, cardId)");
             database.execSQL("DELETE FROM DB_Tag_Link_Card WHERE uid NOT IN (SELECT MIN(uid) FROM DB_Tag_Link_Card GROUP BY tagId, cardId)");
-            // From now on, tags are deleted as soon as they are no longer used; remove those that
-            // are unused already
+            // Since version 12, tags are deleted together with their last link; remove tags that
+            // have no link already
             database.execSQL("DELETE FROM DB_Tag WHERE uid NOT IN (SELECT tagId FROM DB_Tag_Link_Card)");
 
             // SQLite cannot add foreign keys to existing tables, so the tables are recreated.
