@@ -16,7 +16,7 @@ class DB_Helper_Update(context: Context) {
         if (collection.name.isEmpty()) {
             return false
         }
-        dbHelper.collection_dao.update(collection)
+        dbHelper.collectionDao.update(collection)
         return true
     }
 
@@ -24,7 +24,7 @@ class DB_Helper_Update(context: Context) {
         if (pack.name.isEmpty()) {
             return false
         }
-        dbHelper.pack_dao.update(pack)
+        dbHelper.packDao.update(pack)
         return true
     }
 
@@ -32,7 +32,7 @@ class DB_Helper_Update(context: Context) {
         if (card.front.isEmpty() || card.back.isEmpty()) {
             return false
         }
-        dbHelper.card_dao.update(card)
+        dbHelper.cardDao.update(card)
         return true
     }
 
@@ -46,7 +46,7 @@ class DB_Helper_Update(context: Context) {
         if (tag.name.isBlank()) {
             return false
         }
-        dbHelper.tag_dao.update(tag)
+        dbHelper.tagDao.update(tag)
         return true
     }
 }

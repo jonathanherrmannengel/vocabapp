@@ -15,11 +15,11 @@ import de.herrmann_engel.rbv.db.DB_Tag_Link_Card_DAO
  */
 internal class DB_Helper(val context: Context) {
     val database: AppDatabase = AppDatabase.getInstance(context)
-    val collection_dao: DB_Collection_DAO = database.collectionDAO()
-    val pack_dao: DB_Pack_DAO = database.packDAO()
-    val card_dao: DB_Card_DAO = database.cardDAO()
-    val media_dao: DB_Media_DAO = database.mediaDAO()
-    val media_link_card_dao: DB_Media_Link_Card_DAO = database.mediaLinkCardDAO()
-    val tag_dao: DB_Tag_DAO = database.tagDAO()
-    val tag_link_card_dao: DB_Tag_Link_Card_DAO = database.tagLinkCardDAO()
+    val collectionDao: DB_Collection_DAO = database.collectionDAO()
+    val packDao: DB_Pack_DAO = database.packDAO()
+    val cardDao: DB_Card_DAO = database.cardDAO()
+    val mediaDao: DB_Media_DAO = database.mediaDAO()
+    val mediaLinkCardDao: DB_Media_Link_Card_DAO = database.mediaLinkCardDAO()
+    val tagDao: DB_Tag_DAO = database.tagDAO()
+    val tagLinkCardDao: DB_Tag_Link_Card_DAO = database.tagLinkCardDAO()
 }

@@ -109,7 +109,7 @@ class AsyncExportWorker(
                 index = collectionNo.toString()
                 collectionNos = listOf(collectionNo)
             } else {
-                collectionNos = dbHelperExport.allCollectionIDs
+                collectionNos = dbHelperExport.allCollectionIds
                 index = "all"
             }
             val file = File(

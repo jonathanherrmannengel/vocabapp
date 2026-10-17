@@ -13,11 +13,11 @@ class DB_Collection_With_Meta {
     // Number of packs in the collection, -1 if not counted
     var counter: Int = 0
 
-    override fun equals(o: Any?): Boolean {
-        if (this === o) return true
-        if (o == null || javaClass != o.javaClass) return false
-        val that = o as DB_Collection_With_Meta
-        return counter == that.counter && collection == that.collection
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is DB_Collection_With_Meta) return false
+        return counter == other.counter &&
+            collection == other.collection
     }
 
     override fun hashCode(): Int {

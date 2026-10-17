@@ -29,11 +29,15 @@ class DB_Card_With_Meta {
     @Ignore
     var mixedWeight: Double = 0.0
 
-    override fun equals(o: Any?): Boolean {
-        if (this === o) return true
-        if (o == null || javaClass != o.javaClass) return false
-        val that = o as DB_Card_With_Meta
-        return packColor == that.packColor && formattingIsInaccurate == that.formattingIsInaccurate && card == that.card && tagNames == that.tagNames && formattedFront == that.formattedFront && formattedBack == that.formattedBack
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is DB_Card_With_Meta) return false
+        return packColor == other.packColor &&
+            formattingIsInaccurate == other.formattingIsInaccurate &&
+            card == other.card &&
+            tagNames == other.tagNames &&
+            formattedFront == other.formattedFront &&
+            formattedBack == other.formattedBack
     }
 
     override fun hashCode(): Int {

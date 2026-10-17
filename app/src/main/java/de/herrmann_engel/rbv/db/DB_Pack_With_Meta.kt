@@ -14,11 +14,12 @@ class DB_Pack_With_Meta {
     var counter: Int = 0
     var collectionName: String? = null
 
-    override fun equals(o: Any?): Boolean {
-        if (this === o) return true
-        if (o == null || javaClass != o.javaClass) return false
-        val that = o as DB_Pack_With_Meta
-        return counter == that.counter && pack == that.pack && collectionName == that.collectionName
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is DB_Pack_With_Meta) return false
+        return counter == other.counter &&
+            pack == other.pack &&
+            collectionName == other.collectionName
     }
 
     override fun hashCode(): Int {

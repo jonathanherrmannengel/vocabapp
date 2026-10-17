@@ -9,47 +9,33 @@ import android.database.Cursor
 class DB_Helper_Export(context: Context) {
     private val dbHelper = DB_Helper(context)
 
-    val allCollectionIDs: List<Int>
-        get() = dbHelper.collection_dao.allIds
+    val allCollectionIds: List<Int>
+        get() = dbHelper.collectionDao.allIds
 
-    fun getSingleCollection(collection: Int): Cursor {
-        return dbHelper.collection_dao.getOneExport(collection)
-    }
+    fun getSingleCollection(collection: Int): Cursor = dbHelper.collectionDao.getOneExport(collection)
 
-    fun getAllPacksByCollection(collection: Int): Cursor {
-        return dbHelper.pack_dao.getAllExportByCollection(collection)
-    }
+    fun getAllPacksByCollection(collection: Int): Cursor = dbHelper.packDao.getAllExportByCollection(collection)
 
-    fun getAllCardsByCollection(collection: Int): Cursor {
-        return dbHelper.card_dao.getAllExportByCollection(collection)
-    }
+    fun getAllCardsByCollection(collection: Int): Cursor = dbHelper.cardDao.getAllExportByCollection(collection)
 
     val allMedia: Cursor
-        get() = dbHelper.media_dao.allExport
+        get() = dbHelper.mediaDao.allExport
 
-    fun getAllMediaByCollection(collection: Int): Cursor {
-        return dbHelper.media_dao.getAllExportByCollection(collection)
-    }
+    fun getAllMediaByCollection(collection: Int): Cursor = dbHelper.mediaDao.getAllExportByCollection(collection)
 
     val allMediaLinks: Cursor
-        get() = dbHelper.media_link_card_dao.allExport
+        get() = dbHelper.mediaLinkCardDao.allExport
 
-    fun getAllMediaLinksByCollection(collection: Int): Cursor {
-        return dbHelper.media_link_card_dao.getAllExportByCollection(collection)
-    }
+    fun getAllMediaLinksByCollection(collection: Int): Cursor = dbHelper.mediaLinkCardDao.getAllExportByCollection(collection)
 
 
     val allTags: Cursor
-        get() = dbHelper.tag_dao.allExport
+        get() = dbHelper.tagDao.allExport
 
-    fun getAllTagsByCollection(collection: Int): Cursor {
-        return dbHelper.tag_dao.getAllExportByCollection(collection)
-    }
+    fun getAllTagsByCollection(collection: Int): Cursor = dbHelper.tagDao.getAllExportByCollection(collection)
 
     val allTagLinks: Cursor
-        get() = dbHelper.tag_link_card_dao.allExport
+        get() = dbHelper.tagLinkCardDao.allExport
 
-    fun getAllTagLinksByCollection(collection: Int): Cursor {
-        return dbHelper.tag_link_card_dao.getAllExportByCollection(collection)
-    }
+    fun getAllTagLinksByCollection(collection: Int): Cursor = dbHelper.tagLinkCardDao.getAllExportByCollection(collection)
 }

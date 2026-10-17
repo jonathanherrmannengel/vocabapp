@@ -89,8 +89,8 @@ class AppDatabaseBuilder {
     private val MIGRATION_11_12: Migration = object : Migration(11, 12) {
         override fun migrate(database: SupportSQLiteDatabase) {
             // MIGRATION_3_4 used to store the date of the default collection as text
-            for (table in arrayOf<String>("DB_Collection", "DB_Pack", "DB_Card")) {
-                database.execSQL("UPDATE " + table + " SET date = COALESCE(CAST(strftime('%s', date) AS INTEGER), 0) WHERE typeof(date) = 'text'")
+            for (table in arrayOf("DB_Collection", "DB_Pack", "DB_Card")) {
+                database.execSQL("UPDATE $table SET date = COALESCE(CAST(strftime('%s', date) AS INTEGER), 0) WHERE typeof(date) = 'text'")
             }
 
             // Data has to satisfy the new constraints before the tables are recreated.
@@ -108,22 +108,22 @@ class AppDatabaseBuilder {
                 val now = System.currentTimeMillis() / 1000L
                 database.execSQL(
                     "INSERT INTO DB_Collection (name, `desc`, date, colors) VALUES ('_recovered', '_recovered', ?, 0)",
-                    arrayOf<Any>(now)
+                    arrayOf(now)
                 )
                 val collectionId = lastInsertId(database)
                 database.execSQL(
                     "UPDATE DB_Pack SET collection = ? WHERE collection NOT IN (SELECT uid FROM DB_Collection)",
-                    arrayOf<Any>(collectionId)
+                    arrayOf(collectionId)
                 )
                 if (orphanedCards) {
                     database.execSQL(
                         "INSERT INTO DB_Pack (name, `desc`, date, colors, collection) VALUES ('_recovered', '_recovered', ?, 0, ?)",
-                        arrayOf<Any>(now, collectionId)
+                        arrayOf(now, collectionId)
                     )
                     val packId = lastInsertId(database)
                     database.execSQL(
                         "UPDATE DB_Card SET pack = ? WHERE pack NOT IN (SELECT uid FROM DB_Pack)",
-                        arrayOf<Any>(packId)
+                        arrayOf(packId)
                     )
                 }
             }
@@ -222,9 +222,9 @@ class AppDatabaseBuilder {
             values: String = columns
         ) {
             database.execSQL(createNewTable)
-            database.execSQL("INSERT INTO `_new_" + table + "` (" + columns + ") SELECT " + values + " FROM `" + table + "`")
-            database.execSQL("DROP TABLE `" + table + "`")
-            database.execSQL("ALTER TABLE `_new_" + table + "` RENAME TO `" + table + "`")
+            database.execSQL("INSERT INTO `_new_$table` ($columns) SELECT $values FROM `$table`")
+            database.execSQL("DROP TABLE `$table`")
+            database.execSQL("ALTER TABLE `_new_$table` RENAME TO `$table`")
         }
     }
 
