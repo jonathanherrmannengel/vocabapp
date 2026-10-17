@@ -525,7 +525,6 @@ class ListCards : RBVActivity(), CardActions.Listener {
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
                 searchCardsMenuItem.collapseActionView()
-                searchCardsOffMenuItem.isVisible = true
                 searchQuery = query
                 updateContent(true)
                 return true
@@ -538,7 +537,6 @@ class ListCards : RBVActivity(), CardActions.Listener {
         searchCardsOffMenuItem = menu.findItem(R.id.search_cards_off)
         searchCardsOffMenuItem.setOnMenuItemClickListener {
             searchQuery = ""
-            searchCardsOffMenuItem.isVisible = false
             updateContent(true)
             false
         }
@@ -551,9 +549,9 @@ class ListCards : RBVActivity(), CardActions.Listener {
         showQueryModeMenuItem.isVisible = !cardsListFiltered.isNullOrEmpty()
         showListStatsMenuItem.isVisible = !cardsListFiltered.isNullOrEmpty()
         searchCardsMenuItem.isVisible = !cardsListFiltered.isNullOrEmpty()
-        if (!searchQuery.isNullOrEmpty()) {
-            searchCardsOffMenuItem.isVisible = true
-        }
+        // updateContent() may change the search (e.g. reset it if nothing was found) before the
+        // menu exists, so the visibility is only set here
+        searchCardsOffMenuItem.isVisible = !searchQuery.isNullOrEmpty()
         return true
     }
 
@@ -576,7 +574,6 @@ class ListCards : RBVActivity(), CardActions.Listener {
                 val searchResults: MutableList<DB_Card_With_Meta> = ArrayList(tempCardList)
                 SearchCards().searchCards(searchResults, searchQueryLocal)
                 if (searchResults.isEmpty()) {
-                    searchCardsOffMenuItem.isVisible = false
                     searchQuery = ""
                     Toast.makeText(this, R.string.search_no_results, Toast.LENGTH_LONG).show()
                 } else {
