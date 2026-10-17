@@ -140,7 +140,8 @@ abstract class RBVActivity : AppCompatActivity() {
         }
     }
 
-    // A dialog instead of a toast, so the message is not missed among the progress toasts
+    // Shown as a dialog: the user explicitly tried to start something, so the explanation has to
+    // stay visible until it has been read
     private fun showImportExportRunningDialog() {
         val infoDialog = Dialog(this, R.style.dia_view)
         val bindingInfoDialog = DiaInfoBinding.inflate(layoutInflater)

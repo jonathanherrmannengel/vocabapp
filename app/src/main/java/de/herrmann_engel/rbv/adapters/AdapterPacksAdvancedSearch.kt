@@ -16,7 +16,8 @@ import java.util.Locale
  */
 class AdapterPacksAdvancedSearch(
     private val packs: List<DB_Pack_With_Meta>,
-    // Asked on every bind, so rebuilt rows show the current selection
+    // Called on every bind: rows are rebound (e.g. when scrolled back into view) and must then
+    // show the current selection
     private val isChecked: (packId: Int) -> Boolean,
     private val onCheckedChange: (packId: Int, checked: Boolean) -> Unit
 ) : RecyclerView.Adapter<AdapterPacksAdvancedSearch.ViewHolder>() {

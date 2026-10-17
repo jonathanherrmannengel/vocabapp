@@ -13,7 +13,8 @@ import de.herrmann_engel.rbv.utils.StringTools
  */
 class AdapterTagsAdvancedSearch(
     private val tags: List<DB_Tag>,
-    // Asked on every bind, so rebuilt rows show the current selection
+    // Called on every bind: rows are rebound (e.g. when scrolled back into view) and must then
+    // show the current selection
     private val isChecked: (tagId: Int) -> Boolean,
     private val onCheckedChange: (tagId: Int, checked: Boolean) -> Unit
 ) : RecyclerView.Adapter<AdapterTagsAdvancedSearch.ViewHolder>() {

@@ -181,8 +181,8 @@ class AsyncImportWorker(
                         val line = try {
                             csvReader.readNext()
                         } catch (e: Exception) {
-                            // End the import here instead of failing the transaction, so the
-                            // rows read so far are committed with this chunk
+                            // A read error (e.g. a cut-off file) ends the import. It is caught
+                            // here, inside the transaction, so the rows read so far are committed.
                             e.printStackTrace()
                             readFailed = true
                             null
