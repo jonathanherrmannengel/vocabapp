@@ -82,7 +82,7 @@
     <string name="select_folder_title">Ordner auswählen</string>
     <string name="select_folder_help">Du musst einen Ordner auswählen, in dem diese App ihre Dateien speichern kann. Bitte wähle einen Ordner exklusiv für diese App und sichere diesen selbstständig. Auswahl jetzt setzen?</string>
     <string name="select_folder_help_reselect">Ausgewählter Medien-Ordner ist nicht erreichbar. Ordner jetzt erneut auswählen?</string>
-    <string name="select_folder_help_db_entries">Datenbank enthält Medien-Einträge, aber es its kein Ordner ausgewählt. Den Ordner jetzt auswähen?</string>
+    <string name="select_folder_help_db_entries">Datenbank enthält Medien-Einträge, aber es ist kein Ordner ausgewählt. Den Ordner jetzt auswählen?</string>
     <string name="file_exists">Eine Datei mit diesem Name existstiert im Medienordner der App. Wie möchtest Du verfahren?</string>
     <string name="file_exists_title">Datei vorhanden</string>
     <string name="file_exists_action_link">Bestehende anstelle der ausgewählten Datei benutzen</string>

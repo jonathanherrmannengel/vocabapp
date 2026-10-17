@@ -88,7 +88,7 @@
     <string name="select_folder_title">Select folder</string>
     <string name="select_folder_help">You need to select a folder for this app to save its media. It is recommended to use a folder exclusive to this app and backup it manually. Select one now?</string>
     <string name="select_folder_help_reselect">Selected media folder not accessible. Re-select it now?</string>
-    <string name="select_folder_help_db_entries">Database contains media entries, but no folder ist selected. Select the folder now?</string>
+    <string name="select_folder_help_db_entries">Database contains media entries, but no folder is selected. Select the folder now?</string>
     <string name="file_exists">A file with this name exists in the app media folder. You have the following options:</string>
     <string name="file_exists_title">file exists</string>
     <string name="file_exists_action_link">use existing instead of selected file</string>
