@@ -18,6 +18,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import de.herrmann_engel.rbv.Globals
@@ -67,8 +68,16 @@ class ListCards : RBVActivity(), CardActions.Listener {
     private lateinit var searchCardsMenuItem: MenuItem
     private lateinit var searchCardsOffMenuItem: MenuItem
     private var adapter: AdapterCards? = null
+    // Loaded cards and display settings survive the activity being recreated (see ListCardsViewModel)
+    private val viewModel: ListCardsViewModel by lazy {
+        ViewModelProvider(this)[ListCardsViewModel::class.java]
+    }
     // All cards of this list (sorted) and the currently displayed cards (after search)
-    private var cardsList: MutableList<DB_Card_With_Meta>? = null
+    private var cardsList: MutableList<DB_Card_With_Meta>?
+        get() = viewModel.cardsList
+        set(value) {
+            viewModel.cardsList = value
+        }
     private var cardsListFiltered: MutableList<DB_Card_With_Meta>? = null
     private var collectionNo = 0
     private var packNo = 0
@@ -80,10 +89,26 @@ class ListCards : RBVActivity(), CardActions.Listener {
     private var progressNumber = 0
     private var repetitionOlder = false
     private var repetitionNumber = 0
-    private var frontBackReverse = false
-    private var showFrontAndBack = false
-    private var listSort = Globals.SORT_CARDS_DEFAULT
-    private var searchQuery: String? = null
+    private var frontBackReverse: Boolean
+        get() = viewModel.frontBackReverse
+        set(value) {
+            viewModel.frontBackReverse = value
+        }
+    private var showFrontAndBack: Boolean
+        get() = viewModel.showFrontAndBack
+        set(value) {
+            viewModel.showFrontAndBack = value
+        }
+    private var listSort: Int
+        get() = viewModel.listSort
+        set(value) {
+            viewModel.listSort = value
+        }
+    private var searchQuery: String?
+        get() = viewModel.searchQuery
+        set(value) {
+            viewModel.searchQuery = value
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -91,22 +116,25 @@ class ListCards : RBVActivity(), CardActions.Listener {
         setContentView(binding.root)
         dbHelperGet = DB_Helper_Get(this)
         settings = getSharedPreferences(Globals.SETTINGS_NAME, MODE_PRIVATE)
-        listSort = settings.getInt("default_sort", Globals.SORT_CARDS_DEFAULT)
-        // Initial side(s) to show, can be changed via the menu
-        when (settings.getInt("flashcard_list_side", Globals.FLASHCARD_LIST_SIDE_FRONT)) {
-            Globals.FLASHCARD_LIST_SIDE_BACK -> {
-                frontBackReverse = true
-                showFrontAndBack = false
-            }
+        // Initial sort order and side(s) to show, can be changed via the menu. If the activity
+        // is recreated, the values chosen before are kept.
+        if (!viewModel.hasDisplaySettings) {
+            listSort = settings.getInt("default_sort", Globals.SORT_CARDS_DEFAULT)
+            when (settings.getInt("flashcard_list_side", Globals.FLASHCARD_LIST_SIDE_FRONT)) {
+                Globals.FLASHCARD_LIST_SIDE_BACK -> {
+                    frontBackReverse = true
+                    showFrontAndBack = false
+                }
 
-            Globals.FLASHCARD_LIST_SIDE_BOTH -> {
-                frontBackReverse = false
-                showFrontAndBack = true
-            }
+                Globals.FLASHCARD_LIST_SIDE_BOTH -> {
+                    frontBackReverse = false
+                    showFrontAndBack = true
+                }
 
-            else -> {
-                frontBackReverse = false
-                showFrontAndBack = false
+                else -> {
+                    frontBackReverse = false
+                    showFrontAndBack = false
+                }
             }
         }
         collectionNo = intent.extras!!.getInt("collection")
@@ -133,6 +161,7 @@ class ListCards : RBVActivity(), CardActions.Listener {
             mediaFileManager,
             onCardChanged = { adapter?.notifyItemChanged(it) },
             onClosed = { lastPosition ->
+                viewModel.queryCardId = null
                 updateContent()
                 if (lastPosition < 0 || lastPosition >= cardsListFiltered!!.size) {
                     binding.recDefault.scrollToPosition(0)
@@ -330,8 +359,31 @@ class ListCards : RBVActivity(), CardActions.Listener {
                 queryMode.update(cardsListFiltered!!)
             } else {
                 updateContent()
+                // Reopen the query mode at the same card if it was open before the activity was
+                // recreated; if the card is no longer in the list, the query mode stays closed
+                viewModel.queryCardId?.let { cardId ->
+                    val cards = cardsListFiltered
+                    val position = cards?.indexOfFirst { it.card.uid == cardId } ?: -1
+                    if (cards != null && position >= 0) {
+                        queryMode.start(cards, position, frontBackReverse)
+                    } else {
+                        viewModel.queryCardId = null
+                    }
+                }
             }
         }
+    }
+
+    // Remember an open query mode, so it can be reopened if the activity is recreated
+    override fun onSaveInstanceState(outState: Bundle) {
+        viewModel.queryCardId = if (queryMode.isShowing) queryMode.currentCardId else null
+        super.onSaveInstanceState(outState)
+    }
+
+    override fun onDestroy() {
+        // Close the dialog without treating it as closed by the user
+        queryMode.release()
+        super.onDestroy()
     }
 
     // Loads, formats and sorts the cards of this list

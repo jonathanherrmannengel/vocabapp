@@ -82,6 +82,10 @@ class QueryMode(
     val isShowing: Boolean
         get() = dialog.isShowing
 
+    // Id of the current card, null if there is none
+    val currentCardId: Int?
+        get() = cards.getOrNull(position)?.card?.uid
+
     init {
         dialog.setContentView(binding.root)
         dialog.window!!.setLayout(
@@ -112,6 +116,14 @@ class QueryMode(
         position = startPosition
         showCard(false)
         dialog.show()
+    }
+
+    /**
+     * Closes the dialog without calling onClosed, e.g. because the activity is destroyed.
+     */
+    fun release() {
+        dialog.setOnDismissListener(null)
+        dialog.dismiss()
     }
 
     /**

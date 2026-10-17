@@ -8,6 +8,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import de.herrmann_engel.rbv.Globals
@@ -30,17 +31,39 @@ import kotlinx.coroutines.withContext
  * The results are shown in [ListCards].
  */
 class AdvancedSearch : RBVActivity() {
+    // Selections survive the activity being recreated (see AdvancedSearchViewModel)
+    private val viewModel: AdvancedSearchViewModel by lazy {
+        ViewModelProvider(this)[AdvancedSearchViewModel::class.java]
+    }
     // Ids of the selected packs and tags (only used if "select" is chosen instead of "all")
-    private val packList = ArrayList<Int>()
-    private val tagList = ArrayList<Int>()
+    private val packList: ArrayList<Int>
+        get() = viewModel.packList
+    private val tagList: ArrayList<Int>
+        get() = viewModel.tagList
     private lateinit var dbHelperGet: DB_Helper_Get
     private lateinit var binding: ActivityAdvancedSearchBinding
-    private var pack = LIST_CARDS_GET_DB_PACKS_ADVANCED_SEARCH_ALL
-    private var tag = LIST_CARDS_GET_DB_TAGS_ADVANCED_SEARCH_ALL
-    private var progressGreater = false
+    private var pack: Int
+        get() = viewModel.pack
+        set(value) {
+            viewModel.pack = value
+        }
+    private var tag: Int
+        get() = viewModel.tag
+        set(value) {
+            viewModel.tag = value
+        }
+    private var progressGreater: Boolean
+        get() = viewModel.progressGreater
+        set(value) {
+            viewModel.progressGreater = value
+        }
     // -1 disables the filter
     private var progressNumber = -1
-    private var repetitionOlder = false
+    private var repetitionOlder: Boolean
+        get() = viewModel.repetitionOlder
+        set(value) {
+            viewModel.repetitionOlder = value
+        }
     // Number of days; -1 disables the filter
     private var repetitionNumber = -1
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,7 +77,7 @@ class AdvancedSearch : RBVActivity() {
         lifecycleScope.launch {
             val packs = withContext(Dispatchers.IO) { dbHelperGet.allPacksWithMeta }
             binding.recAdvancedSearch.adapter = AdapterPacksAdvancedSearch(packs, packList) { packId, checked ->
-                if (checked) addToPackList(packId) else removeFromPackList(packId)
+                viewModel.setPackSelected(packId, checked)
             }
         }
         binding.recAdvancedSearch.layoutManager = LinearLayoutManager(this)
@@ -161,7 +184,7 @@ class AdvancedSearch : RBVActivity() {
             binding.advancedSearchContainerTags.visibility = View.VISIBLE
             val tags = dbHelperGet.allTags
             val adapterTags = AdapterTagsAdvancedSearch(tags, tagList) { tagId, checked ->
-                if (checked) addToTagList(tagId) else removeFromTagList(tagId)
+                viewModel.setTagSelected(tagId, checked)
             }
             binding.recAdvancedSearchTags.adapter = adapterTags
             binding.recAdvancedSearchTags.layoutManager = LinearLayoutManager(this)
@@ -185,31 +208,6 @@ class AdvancedSearch : RBVActivity() {
         } else {
             binding.advancedSearchContainerTags.visibility = View.GONE
             tag = LIST_CARDS_GET_DB_TAGS_ADVANCED_SEARCH_ALL
-        }
-    }
-
-    // Called by the adapters when checkboxes change
-    private fun addToPackList(i: Int) {
-        if (!packList.contains(i)) {
-            packList.add(i)
-        }
-    }
-
-    private fun removeFromPackList(i: Int) {
-        if (packList.contains(i)) {
-            packList.remove(Integer.valueOf(i))
-        }
-    }
-
-    private fun addToTagList(i: Int) {
-        if (!tagList.contains(i)) {
-            tagList.add(i)
-        }
-    }
-
-    private fun removeFromTagList(i: Int) {
-        if (tagList.contains(i)) {
-            tagList.remove(Integer.valueOf(i))
         }
     }
 }
