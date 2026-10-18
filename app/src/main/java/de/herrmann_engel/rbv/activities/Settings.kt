@@ -4,11 +4,7 @@ import android.app.Dialog
 import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updatePadding
 import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.databinding.ActivitySettingsBinding
@@ -180,13 +176,7 @@ class Settings : RBVActivity() {
             mediaFileManager.handleNoMediaFile()
         }
         setBgImage(settings.uiBackgroundImages, binding)
-        // Edge-to-edge: keep the content clear of the system bars
-        ViewCompat.setOnApplyWindowInsetsListener(binding.settingsContainer) { v, windowInsets ->
-            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.updatePadding(insets.left, insets.top, insets.right, insets.bottom)
-            WindowInsetsCompat.CONSUMED
-        }
-        enableEdgeToEdge()
+        setUpEdgeToEdge(binding.settingsContainer)
     }
 
     private fun setBgImage(show: Boolean, binding: ActivitySettingsBinding) {

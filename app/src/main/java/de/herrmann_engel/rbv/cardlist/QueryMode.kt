@@ -30,6 +30,7 @@ import de.herrmann_engel.rbv.media.MediaFileManager
 import de.herrmann_engel.rbv.settings.AppSettings
 import de.herrmann_engel.rbv.ui.SwipeEvents
 import de.herrmann_engel.rbv.utils.StringTools
+import de.herrmann_engel.rbv.utils.colorAt
 import io.noties.markwon.Markwon
 import io.noties.markwon.linkify.LinkifyPlugin
 import me.saket.bettermovementmethod.BetterLinkMovementMethod
@@ -238,24 +239,16 @@ class QueryMode(
                 )
             )
 
-            val colorsBackgroundQuery =
-                activity.resources.obtainTypedArray(R.array.pack_color_background_query)
-            val colorsBackgroundHighlight = activity.resources
-                .obtainTypedArray(R.array.pack_color_background_highlight)
-            val minimalLength =
-                colorsBackgroundQuery.length().coerceAtMost(colorsBackgroundHighlight.length())
-            val packColors = cardWithMeta.packColor
-            if (packColors in 0..<minimalLength) {
-                val colorBackgroundQuery = colorsBackgroundQuery.getColor(packColors, 0)
-                val colorBackgroundHighlight =
-                    colorsBackgroundHighlight.getColor(packColors, 0)
+            val colorBackgroundQuery = activity.resources
+                .colorAt(R.array.pack_color_background_query, cardWithMeta.packColor)
+            val colorBackgroundHighlight = activity.resources
+                .colorAt(R.array.pack_color_background_highlight, cardWithMeta.packColor)
+            if (colorBackgroundQuery != null && colorBackgroundHighlight != null) {
                 val rootBackgroundMain =
                     rootBackground.findDrawableByLayerId(R.id.dia_query_root_background_main) as GradientDrawable
                 rootBackgroundMain.setColor(colorBackgroundQuery)
                 binding.queryHide.setBackgroundColor(colorBackgroundHighlight)
             }
-            colorsBackgroundQuery.recycle()
-            colorsBackgroundHighlight.recycle()
 
             val imageList =
                 dbHelperGet.getCardImageMedia(card.uid) as ArrayList<DB_Media>

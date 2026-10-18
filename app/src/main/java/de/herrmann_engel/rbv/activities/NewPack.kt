@@ -7,15 +7,12 @@ import android.view.Menu
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.activity.enableEdgeToEdge
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updatePadding
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.databinding.ActivityNewCollectionOrPackBinding
 import de.herrmann_engel.rbv.databinding.DiaConfirmBinding
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Create
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
+import de.herrmann_engel.rbv.utils.colorAt
 
 /**
  * Form to create a new pack in the collection passed as "collection" extra.
@@ -35,13 +32,9 @@ class NewPack : RBVActivity() {
             finish()
             return
         }
-        val colors = resources.obtainTypedArray(R.array.pack_color_main)
-        val colorsBackground = resources.obtainTypedArray(R.array.pack_color_background)
-        val minimalLength = colors.length().coerceAtMost(colorsBackground.length())
-        val collectionColors = collection.colors
-        if (collectionColors in 0..<minimalLength) {
-            val color = colors.getColor(collectionColors, 0)
-            val colorBackground = colorsBackground.getColor(collectionColors, 0)
+        val color = resources.colorAt(R.array.pack_color_main, collection.colors)
+        val colorBackground = resources.colorAt(R.array.pack_color_background, collection.colors)
+        if (color != null && colorBackground != null) {
             binding.newCollectionOrPackNameLayout.boxStrokeColor = color
             binding.newCollectionOrPackNameLayout.hintTextColor =
                 ColorStateList.valueOf(color)
@@ -50,8 +43,6 @@ class NewPack : RBVActivity() {
                 ColorStateList.valueOf(color)
             binding.root.setBackgroundColor(colorBackground)
         }
-        colors.recycle()
-        colorsBackground.recycle()
         binding.newCollectionOrPackNameLayout.hint = String.format(
             getString(R.string.collection_or_pack_name_format),
             getString(R.string.pack_name), getString(R.string.collection_or_pack_name)
@@ -84,13 +75,7 @@ class NewPack : RBVActivity() {
             }
         })
 
-        // Edge-to-edge: keep the content clear of the system bars
-        ViewCompat.setOnApplyWindowInsetsListener(binding.newCollectionOrPackLayout) { v, windowInsets ->
-            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.updatePadding(insets.left, insets.top, insets.right, insets.bottom)
-            WindowInsetsCompat.CONSUMED
-        }
-        enableEdgeToEdge()
+        setUpEdgeToEdge(binding.newCollectionOrPackLayout)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

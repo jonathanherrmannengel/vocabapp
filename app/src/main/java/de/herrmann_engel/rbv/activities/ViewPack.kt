@@ -6,10 +6,6 @@ import android.util.TypedValue
 import android.view.Menu
 import android.view.View
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updatePadding
 import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.actions.PackActions
@@ -17,6 +13,7 @@ import de.herrmann_engel.rbv.databinding.ActivityViewCollectionOrPackBinding
 import de.herrmann_engel.rbv.db.DB_Pack
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.settings.AppSettings
+import de.herrmann_engel.rbv.utils.colorAt
 import de.herrmann_engel.rbv.utils.formatDateTime
 
 /**
@@ -36,13 +33,7 @@ class ViewPack : RBVActivity(), PackActions.Listener {
         dbHelperGet = DB_Helper_Get(this)
         collectionNo = intent.extras!!.getInt("collection")
         packNo = intent.extras!!.getInt("pack")
-        // Edge-to-edge: keep the content clear of the system bars
-        ViewCompat.setOnApplyWindowInsetsListener(binding.viewCollectionOrPackLayout) { v, windowInsets ->
-            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.updatePadding(insets.left, insets.top, insets.right, insets.bottom)
-            WindowInsetsCompat.CONSUMED
-        }
-        enableEdgeToEdge()
+        setUpEdgeToEdge(binding.viewCollectionOrPackLayout)
     }
 
     // Load the pack again on every resume, as it may have been edited
@@ -85,14 +76,8 @@ class ViewPack : RBVActivity(), PackActions.Listener {
         }
         // Format the creation date (stored in seconds)
         binding.collectionOrPackDate.text = formatDateTime(this, pack.date)
-        val colorsBackground = resources.obtainTypedArray(R.array.pack_color_background)
-        val minimalLength = colorsBackground.length()
-        val packColors = pack.colors
-        if (packColors in 0..<minimalLength) {
-            val colorBackground = colorsBackground.getColor(packColors, 0)
-            binding.root.setBackgroundColor(colorBackground)
-        }
-        colorsBackground.recycle()
+        resources.colorAt(R.array.pack_color_background, pack.colors)
+            ?.let { binding.root.setBackgroundColor(it) }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

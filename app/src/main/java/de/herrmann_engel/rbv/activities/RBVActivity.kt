@@ -5,11 +5,16 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
+import android.view.View
 import android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
 import android.view.WindowManager
 import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -104,6 +109,17 @@ abstract class RBVActivity : AppCompatActivity() {
         onImportFinished()
         // Apply the theme setting, which may have been changed by the import
         AppSettings(this).applyUiMode()
+    }
+
+    // Draws the screen edge-to-edge (behind the system bars) and pads the given view, so that its
+    // content stays clear of the system bars
+    protected fun setUpEdgeToEdge(paddedView: View) {
+        ViewCompat.setOnApplyWindowInsetsListener(paddedView) { v, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.updatePadding(insets.left, insets.top, insets.right, insets.bottom)
+            WindowInsetsCompat.CONSUMED
+        }
+        enableEdgeToEdge()
     }
 
     // Called after a successful import, e.g. to reload displayed data

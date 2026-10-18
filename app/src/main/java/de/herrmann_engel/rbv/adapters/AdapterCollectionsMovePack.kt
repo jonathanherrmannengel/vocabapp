@@ -12,6 +12,7 @@ import de.herrmann_engel.rbv.db.DB_Collection
 import de.herrmann_engel.rbv.db.DB_Pack
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Update
 import de.herrmann_engel.rbv.settings.AppSettings
+import de.herrmann_engel.rbv.utils.colorAt
 
 /**
  * Collection list in the "move pack" dialog. Clicking a collection moves the packs there and
@@ -48,12 +49,8 @@ class AdapterCollectionsMovePack(
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         val context = viewHolder.binding.root.context
-        val colors = context.resources.obtainTypedArray(R.array.pack_color_list)
-        val color = collection[position].colors
-        if (color >= 0 && color < colors.length()) {
-            viewHolder.binding.recName.setTextColor(colors.getColor(color, 0))
-        }
-        colors.recycle()
+        context.resources.colorAt(R.array.pack_color_list, collection[position].colors)
+            ?.let { viewHolder.binding.recName.setTextColor(it) }
         viewHolder.binding.recName.text = collection[position].name
         val currentCollectionId = collection[position].uid
         viewHolder.binding.recName.setOnClickListener {

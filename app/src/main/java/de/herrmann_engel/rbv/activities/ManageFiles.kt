@@ -2,11 +2,7 @@ package de.herrmann_engel.rbv.activities
 
 import android.os.Bundle
 import android.view.View
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updatePadding
 import androidx.documentfile.provider.DocumentFile
 import androidx.recyclerview.widget.LinearLayoutManager
 import de.herrmann_engel.rbv.R
@@ -36,13 +32,7 @@ class ManageFiles : RBVActivity() {
                 )
             )
         }
-        // Edge-to-edge: keep the content clear of the system bars
-        ViewCompat.setOnApplyWindowInsetsListener(binding.recFilesManage) { v, windowInsets ->
-            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.updatePadding(insets.left, insets.top, insets.right, insets.bottom)
-            WindowInsetsCompat.CONSUMED
-        }
-        enableEdgeToEdge()
+        setUpEdgeToEdge(binding.recFilesManage)
         // Ask for the media folder if media entries exist but the folder is missing or inaccessible
         mediaFileManager.askForFolderIfNeeded()
     }

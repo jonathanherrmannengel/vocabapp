@@ -6,11 +6,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.View
 import android.view.WindowManager
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updatePadding
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import de.herrmann_engel.rbv.Globals
@@ -23,6 +19,7 @@ import de.herrmann_engel.rbv.db.DB_Pack_With_Meta
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.export_import.AsyncExport
 import de.herrmann_engel.rbv.settings.AppSettings
+import de.herrmann_engel.rbv.utils.colorAt
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -43,13 +40,7 @@ class ListPacks : RBVActivity(), PackActions.Listener {
         setContentView(binding.root)
         dbHelperGet = DB_Helper_Get(this)
         collectionNo = intent.extras!!.getInt("collection")
-        // Edge-to-edge: keep the content clear of the system bars
-        ViewCompat.setOnApplyWindowInsetsListener(binding.recDefault) { v, windowInsets ->
-            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.updatePadding(insets.left, insets.top, insets.right, insets.bottom)
-            WindowInsetsCompat.CONSUMED
-        }
-        enableEdgeToEdge()
+        setUpEdgeToEdge(binding.recDefault)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -149,16 +140,10 @@ class ListPacks : RBVActivity(), PackActions.Listener {
         }
         refreshContent()
         if (collectionNo >= 0) {
-            val colorsBackground =
-                resources.obtainTypedArray(R.array.pack_color_background_list)
-            val minimalLength = colorsBackground.length()
-            dbHelperGet.getSingleCollection(collectionNo)?.let {
-                if (it.colors in 0..<minimalLength) {
-                    val colorBackground = colorsBackground.getColor(it.colors, 0)
-                    binding.root.setBackgroundColor(colorBackground)
-                }
-            }
-            colorsBackground.recycle()
+            resources.colorAt(
+                R.array.pack_color_background_list,
+                dbHelperGet.getSingleCollection(collectionNo)?.colors
+            )?.let { binding.root.setBackgroundColor(it) }
         }
     }
 

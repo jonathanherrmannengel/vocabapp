@@ -3,16 +3,13 @@ package de.herrmann_engel.rbv.activities
 import android.os.Bundle
 import android.view.inputmethod.EditorInfo
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.LinearLayoutManager
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.adapters.AdapterTagLinkCard
 import de.herrmann_engel.rbv.databinding.ActivityEditCardTagsBinding
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Create
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
+import de.herrmann_engel.rbv.utils.colorAt
 
 /**
  * Manages the tags of the card passed as "card" extra: add tags by name (creating them
@@ -34,14 +31,8 @@ class EditCardTags : RBVActivity() {
             finish()
             return
         }
-        val colorsBackground = resources.obtainTypedArray(R.array.pack_color_background)
-        val minimalLength = colorsBackground.length()
-        val packColors = dbHelperGet.getSinglePack(card.pack)?.colors
-        if (packColors != null && packColors in 0..<minimalLength) {
-            val colorBackground = colorsBackground.getColor(packColors, 0)
-            binding.root.setBackgroundColor(colorBackground)
-        }
-        colorsBackground.recycle()
+        resources.colorAt(R.array.pack_color_background, dbHelperGet.getSinglePack(card.pack)?.colors)
+            ?.let { binding.root.setBackgroundColor(it) }
         // Add the tag when the keyboard's done/next/enter key is pressed
         binding.editCardTagsAdd.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_NEXT || actionId == EditorInfo.IME_NULL) {
@@ -53,13 +44,7 @@ class EditCardTags : RBVActivity() {
         binding.editCardTagsGo.setOnClickListener {
             createNewTag()
         }
-        // Edge-to-edge: keep the content clear of the system bars
-        ViewCompat.setOnApplyWindowInsetsListener(binding.editCardTagsLayout) { v, windowInsets ->
-            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.updatePadding(insets.left, insets.top, insets.right, insets.bottom)
-            WindowInsetsCompat.CONSUMED
-        }
-        enableEdgeToEdge()
+        setUpEdgeToEdge(binding.editCardTagsLayout)
     }
 
     override fun onResume() {

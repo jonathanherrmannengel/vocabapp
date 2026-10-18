@@ -15,6 +15,7 @@ import de.herrmann_engel.rbv.db.DB_Pack_With_Meta
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Update
 import de.herrmann_engel.rbv.settings.AppSettings
 import de.herrmann_engel.rbv.utils.StringTools
+import de.herrmann_engel.rbv.utils.colorAt
 
 /**
  * Pack list in the "move card" dialog. Clicking a pack moves the cards there and reports the
@@ -54,13 +55,9 @@ class AdapterPacksMoveCard(
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         val context = viewHolder.binding.root.context
-        val colors = context.resources.obtainTypedArray(R.array.pack_color_list)
         val pack = packs[position].pack!!
-        val color = pack.colors
-        if (color >= 0 && color < colors.length()) {
-            viewHolder.binding.recName.setTextColor(colors.getColor(color, 0))
-        }
-        colors.recycle()
+        context.resources.colorAt(R.array.pack_color_list, pack.colors)
+            ?.let { viewHolder.binding.recName.setTextColor(it) }
         viewHolder.binding.recName.text = pack.name
         // Packs of all collections are listed: show the collection name as well
         if (collectionNo == LIST_CARDS_GET_DB_COLLECTIONS_ALL) {

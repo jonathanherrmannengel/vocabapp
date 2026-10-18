@@ -7,10 +7,6 @@ import android.util.TypedValue
 import android.view.Menu
 import android.view.View
 import android.view.WindowManager
-import androidx.activity.enableEdgeToEdge
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updatePadding
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.databinding.ActivityViewCollectionOrPackBinding
 import de.herrmann_engel.rbv.databinding.DiaConfirmBinding
@@ -18,6 +14,7 @@ import de.herrmann_engel.rbv.db.DB_Collection
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Delete
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.settings.AppSettings
+import de.herrmann_engel.rbv.utils.colorAt
 import de.herrmann_engel.rbv.utils.formatDateTime
 
 /**
@@ -34,13 +31,7 @@ class ViewCollection : RBVActivity() {
         setContentView(binding.root)
         dbHelperGet = DB_Helper_Get(this)
         collectionNo = intent.extras!!.getInt("collection")
-        // Edge-to-edge: keep the content clear of the system bars
-        ViewCompat.setOnApplyWindowInsetsListener(binding.viewCollectionOrPackLayout) { v, windowInsets ->
-            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.updatePadding(insets.left, insets.top, insets.right, insets.bottom)
-            WindowInsetsCompat.CONSUMED
-        }
-        enableEdgeToEdge()
+        setUpEdgeToEdge(binding.viewCollectionOrPackLayout)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -98,14 +89,8 @@ class ViewCollection : RBVActivity() {
         }
         // Format the creation date (stored in seconds)
         binding.collectionOrPackDate.text = formatDateTime(this, collection.date)
-        val colorsBackground = resources.obtainTypedArray(R.array.pack_color_background)
-        val minimalLength = colorsBackground.length()
-        val collectionColors = collection.colors
-        if (collectionColors in 0..<minimalLength) {
-            val colorBackground = colorsBackground.getColor(collectionColors, 0)
-            binding.root.setBackgroundColor(colorBackground)
-        }
-        colorsBackground.recycle()
+        resources.colorAt(R.array.pack_color_background, collection.colors)
+            ?.let { binding.root.setBackgroundColor(it) }
     }
 
     /**

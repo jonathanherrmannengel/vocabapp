@@ -3,11 +3,7 @@ package de.herrmann_engel.rbv.activities
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.LinearLayoutManager
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.adapters.AdapterMediaManage
@@ -42,13 +38,7 @@ class ManageMedia : RBVActivity() {
             val intent = Intent(this, ManageFiles::class.java)
             startActivity(intent)
         }
-        // Edge-to-edge: keep the content clear of the system bars
-        ViewCompat.setOnApplyWindowInsetsListener(binding.mediaContainer) { v, windowInsets ->
-            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.updatePadding(insets.left, insets.top, insets.right, insets.bottom)
-            WindowInsetsCompat.CONSUMED
-        }
-        enableEdgeToEdge()
+        setUpEdgeToEdge(binding.mediaContainer)
         // Ask for the media folder if media entries exist but the folder is missing or inaccessible
         mediaFileManager.askForFolderIfNeeded()
     }

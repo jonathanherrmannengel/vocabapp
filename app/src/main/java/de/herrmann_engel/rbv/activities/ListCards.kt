@@ -9,12 +9,8 @@ import android.view.MenuItem
 import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.SearchView
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updatePadding
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -39,6 +35,7 @@ import de.herrmann_engel.rbv.settings.AppSettings
 import de.herrmann_engel.rbv.utils.FormatCards
 import de.herrmann_engel.rbv.utils.SearchCards
 import de.herrmann_engel.rbv.utils.SortCards
+import de.herrmann_engel.rbv.utils.colorAt
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -171,13 +168,7 @@ class ListCards : RBVActivity(), CardActions.Listener {
                 }
             }
         )
-        // Edge-to-edge: keep the content clear of the system bars
-        ViewCompat.setOnApplyWindowInsetsListener(binding.recDefault) { v, windowInsets ->
-            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.updatePadding(insets.left, insets.top, insets.right, insets.bottom)
-            WindowInsetsCompat.CONSUMED
-        }
-        enableEdgeToEdge()
+        setUpEdgeToEdge(binding.recDefault)
     }
 
     /**
@@ -265,27 +256,15 @@ class ListCards : RBVActivity(), CardActions.Listener {
 
         // Colors
         if (packNo >= 0) {
-            val colorsBackground =
-                resources.obtainTypedArray(R.array.pack_color_background_list)
-            val minimalLength = colorsBackground.length()
-            dbHelperGet.getSinglePack(packNo)?.let {
-                if (it.colors in 0..<minimalLength) {
-                    val colorBackground = colorsBackground.getColor(it.colors, 0)
-                    binding.root.setBackgroundColor(colorBackground)
-                }
-            }
-            colorsBackground.recycle()
+            resources.colorAt(
+                R.array.pack_color_background_list,
+                dbHelperGet.getSinglePack(packNo)?.colors
+            )?.let { binding.root.setBackgroundColor(it) }
         } else if (collectionNo >= 0) {
-            val colorsBackground =
-                resources.obtainTypedArray(R.array.pack_color_background_list)
-            val minimalLength = colorsBackground.length()
-            dbHelperGet.getSingleCollection(collectionNo)?.let {
-                if (it.colors in 0..<minimalLength) {
-                    val colorBackground = colorsBackground.getColor(it.colors, 0)
-                    binding.root.setBackgroundColor(colorBackground)
-                }
-            }
-            colorsBackground.recycle()
+            resources.colorAt(
+                R.array.pack_color_background_list,
+                dbHelperGet.getSingleCollection(collectionNo)?.colors
+            )?.let { binding.root.setBackgroundColor(it) }
         }
 
         lifecycleScope.launch {

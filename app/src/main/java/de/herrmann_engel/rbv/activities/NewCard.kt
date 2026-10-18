@@ -8,15 +8,12 @@ import android.view.Menu
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.activity.enableEdgeToEdge
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updatePadding
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.databinding.ActivityNewCardBinding
 import de.herrmann_engel.rbv.databinding.DiaConfirmBinding
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Create
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
+import de.herrmann_engel.rbv.utils.colorAt
 
 /**
  * Form to create a new card in the pack passed as "pack" extra. The form is colored like the pack.
@@ -35,13 +32,10 @@ class NewCard : RBVActivity() {
             finish()
             return
         }
-        val colors = resources.obtainTypedArray(R.array.pack_color_main)
-        val colorsBackground = resources.obtainTypedArray(R.array.pack_color_background)
-        val minimalLength = colors.length().coerceAtMost(colorsBackground.length())
         val packColors = pack.colors
-        if (packColors in 0..<minimalLength) {
-            val color = colors.getColor(packColors, 0)
-            val colorBackground = colorsBackground.getColor(packColors, 0)
+        val color = resources.colorAt(R.array.pack_color_main, packColors)
+        val colorBackground = resources.colorAt(R.array.pack_color_background, packColors)
+        if (color != null && colorBackground != null) {
             binding.newCardFrontLayout.boxStrokeColor = color
             binding.newCardFrontLayout.hintTextColor =
                 ColorStateList.valueOf(color)
@@ -53,8 +47,6 @@ class NewCard : RBVActivity() {
                 ColorStateList.valueOf(color)
             binding.root.setBackgroundColor(colorBackground)
         }
-        colors.recycle()
-        colorsBackground.recycle()
         binding.newCardNotesLayout.hint =
             String.format(getString(R.string.optional), getString(R.string.card_notes))
 
@@ -82,13 +74,7 @@ class NewCard : RBVActivity() {
             }
         })
 
-        // Edge-to-edge: keep the content clear of the system bars
-        ViewCompat.setOnApplyWindowInsetsListener(binding.newCardLayout) { v, windowInsets ->
-            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.updatePadding(insets.left, insets.top, insets.right, insets.bottom)
-            WindowInsetsCompat.CONSUMED
-        }
-        enableEdgeToEdge()
+        setUpEdgeToEdge(binding.newCardLayout)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

@@ -9,16 +9,13 @@ import android.view.Menu
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.activity.enableEdgeToEdge
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updatePadding
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.databinding.ActivityEditCardBinding
 import de.herrmann_engel.rbv.databinding.DiaConfirmBinding
 import de.herrmann_engel.rbv.db.DB_Card
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Update
+import de.herrmann_engel.rbv.utils.colorAt
 
 /**
  * Form to edit the card passed as "card" extra. The form is colored like the card's pack.
@@ -54,13 +51,10 @@ class EditCard : RBVActivity() {
         binding.editCardNotes.setText(card.notes)
         binding.editCardNotesLayout.hint =
             String.format(getString(R.string.optional), getString(R.string.card_notes))
-        val colors = resources.obtainTypedArray(R.array.pack_color_main)
-        val colorsBackground = resources.obtainTypedArray(R.array.pack_color_background)
-        val minimalLength = colors.length().coerceAtMost(colorsBackground.length())
         val packColors = dbHelperGet.getSinglePack(card.pack)?.colors
-        if (packColors != null && packColors in 0..<minimalLength) {
-            val color = colors.getColor(packColors, 0)
-            val colorBackground = colorsBackground.getColor(packColors, 0)
+        val color = resources.colorAt(R.array.pack_color_main, packColors)
+        val colorBackground = resources.colorAt(R.array.pack_color_background, packColors)
+        if (color != null && colorBackground != null) {
             binding.editCardFrontLayout.boxStrokeColor = color
             binding.editCardFrontLayout.hintTextColor =
                 ColorStateList.valueOf(color)
@@ -72,8 +66,6 @@ class EditCard : RBVActivity() {
                 ColorStateList.valueOf(color)
             binding.root.setBackgroundColor(colorBackground)
         }
-        colors.recycle()
-        colorsBackground.recycle()
         // Ask before discarding changes
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -99,13 +91,7 @@ class EditCard : RBVActivity() {
                 }
             }
         })
-        // Edge-to-edge: keep the content clear of the system bars
-        ViewCompat.setOnApplyWindowInsetsListener(binding.editCardLayout) { v, windowInsets ->
-            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.updatePadding(insets.left, insets.top, insets.right, insets.bottom)
-            WindowInsetsCompat.CONSUMED
-        }
-        enableEdgeToEdge()
+        setUpEdgeToEdge(binding.editCardLayout)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

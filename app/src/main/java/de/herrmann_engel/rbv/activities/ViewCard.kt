@@ -14,12 +14,8 @@ import android.view.Menu
 import android.view.View
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.activity.enableEdgeToEdge
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.toColorInt
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updatePadding
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.actions.CardActions
 import de.herrmann_engel.rbv.databinding.ActivityViewCardBinding
@@ -31,6 +27,7 @@ import de.herrmann_engel.rbv.media.MediaFileManager
 import de.herrmann_engel.rbv.settings.AppSettings
 import de.herrmann_engel.rbv.ui.TagSpan
 import de.herrmann_engel.rbv.utils.StringTools
+import de.herrmann_engel.rbv.utils.colorAt
 import de.herrmann_engel.rbv.utils.formatDateTime
 import io.noties.markwon.Markwon
 import io.noties.markwon.linkify.LinkifyPlugin
@@ -77,13 +74,7 @@ class ViewCard : RBVActivity(), CardActions.Listener {
             }
         })
 
-        // Edge-to-edge: keep the content clear of the system bars
-        ViewCompat.setOnApplyWindowInsetsListener(binding.viewCardLayout) { v, windowInsets ->
-            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.updatePadding(insets.left, insets.top, insets.right, insets.bottom)
-            WindowInsetsCompat.CONSUMED
-        }
-        enableEdgeToEdge()
+        setUpEdgeToEdge(binding.viewCardLayout)
     }
 
     // (Re)load the card on every resume, as it may have been edited
@@ -261,22 +252,17 @@ class ViewCard : RBVActivity(), CardActions.Listener {
 
     // Colors the screen like the card's pack
     private fun updateColors() {
-        val colorsBackground = resources.obtainTypedArray(R.array.pack_color_background)
-        val colorsBackgroundLight =
-            resources.obtainTypedArray(R.array.pack_color_background_light)
-        val minimalLength = colorsBackground.length().coerceAtMost(colorsBackgroundLight.length())
         val packColors = dbHelperGet.getSinglePack(card.pack)?.colors
-        if (packColors != null && packColors in 0..<minimalLength) {
-            val colorBackground = colorsBackground.getColor(packColors, 0)
-            val colorBackgroundLight = colorsBackgroundLight.getColor(packColors, 0)
+        val colorBackground = resources.colorAt(R.array.pack_color_background, packColors)
+        val colorBackgroundLight =
+            resources.colorAt(R.array.pack_color_background_light, packColors)
+        if (colorBackground != null && colorBackgroundLight != null) {
             binding.root.setBackgroundColor(colorBackground)
             val cardKnownProgressDrawable = GradientDrawable()
             cardKnownProgressDrawable.setColor(colorBackgroundLight)
             cardKnownProgressDrawable.cornerRadius = 50f
             binding.cardKnownProgress.background = cardKnownProgressDrawable
         }
-        colorsBackground.recycle()
-        colorsBackgroundLight.recycle()
     }
 
     private fun updateCardLastRepetition() {

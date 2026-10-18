@@ -21,6 +21,7 @@ import de.herrmann_engel.rbv.adapters.compare.ListCollectionCompare
 import de.herrmann_engel.rbv.databinding.RecViewCollectionOrPackBinding
 import de.herrmann_engel.rbv.db.DB_Collection_With_Meta
 import de.herrmann_engel.rbv.utils.StringTools
+import de.herrmann_engel.rbv.utils.colorAt
 import java.util.Locale
 
 /**
@@ -282,38 +283,24 @@ class AdapterCollections(
                 } else {
                     viewHolder.binding.recCollectionsNumberText.visibility = View.GONE
                 }
-                val colors =
-                    context.resources.obtainTypedArray(R.array.pack_color_list)
-                val colorsBackground =
-                    context.resources.obtainTypedArray(R.array.pack_color_background_light)
-                val colorsBackgroundAlpha =
-                    context.resources.obtainTypedArray(R.array.pack_color_background_light_alpha)
-                val minimalLength = colors.length().coerceAtMost(colorsBackground.length())
-                    .coerceAtMost(colorsBackgroundAlpha.length())
-                val color = currentCollection.colors
-                if (color in 0..<minimalLength) {
-                    viewHolder.binding.recCollectionsName.setTextColor(colors.getColor(color, 0))
-                    viewHolder.binding.recCollectionsPreviewText.setTextColor(
-                        colors.getColor(
-                            color,
-                            0
-                        )
-                    )
-                    viewHolder.binding.recCollectionsPreviewText.setBackgroundColor(
-                        colorsBackground.getColor(
-                            color,
-                            0
-                        )
-                    )
+                val resources = context.resources
+                val color = resources.colorAt(R.array.pack_color_list, currentCollection.colors)
+                val colorBackground =
+                    resources.colorAt(R.array.pack_color_background_light, currentCollection.colors)
+                val colorBackgroundAlpha = resources.colorAt(
+                    R.array.pack_color_background_light_alpha,
+                    currentCollection.colors
+                )
+                if (color != null && colorBackground != null && colorBackgroundAlpha != null) {
+                    viewHolder.binding.recCollectionsName.setTextColor(color)
+                    viewHolder.binding.recCollectionsPreviewText.setTextColor(color)
+                    viewHolder.binding.recCollectionsPreviewText.setBackgroundColor(colorBackground)
                     background.mutate()
-                    background.setStroke(2, colors.getColor(color, 0))
-                    background.setColor(colorsBackgroundAlpha.getColor(color, 0))
+                    background.setStroke(2, color)
+                    background.setColor(colorBackgroundAlpha)
                     backgroundBehind.mutate()
-                    backgroundBehind.setStroke(1, colorsBackground.getColor(color, 0))
+                    backgroundBehind.setStroke(1, colorBackground)
                 }
-                colors.recycle()
-                colorsBackground.recycle()
-                colorsBackgroundAlpha.recycle()
             }
         }
     }

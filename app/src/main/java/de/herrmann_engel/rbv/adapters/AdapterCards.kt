@@ -31,6 +31,7 @@ import de.herrmann_engel.rbv.db.DB_Card
 import de.herrmann_engel.rbv.db.DB_Card_With_Meta
 import de.herrmann_engel.rbv.utils.ContextTools
 import de.herrmann_engel.rbv.utils.StringTools
+import de.herrmann_engel.rbv.utils.colorAt
 import java.util.Locale
 
 /**
@@ -331,13 +332,8 @@ class AdapterCards(
                 )
         }
         if (packNo < 0) {
-            val colors =
-                context.resources.obtainTypedArray(R.array.pack_color_list)
-            val color = card.packColor
-            if (color >= 0 && color < colors.length()) {
-                recText.setTextColor(colors.getColor(color, 0))
-            }
-            colors.recycle()
+            context.resources.colorAt(R.array.pack_color_list, card.packColor)
+                ?.let { recText.setTextColor(it) }
         }
         val extra = card.card.uid
         recText.setOnClickListener {

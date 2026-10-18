@@ -34,6 +34,7 @@ import de.herrmann_engel.rbv.db.DB_Pack
 import de.herrmann_engel.rbv.db.DB_Pack_With_Meta
 import de.herrmann_engel.rbv.utils.ContextTools
 import de.herrmann_engel.rbv.utils.StringTools
+import de.herrmann_engel.rbv.utils.colorAt
 import java.util.Locale
 
 /**
@@ -410,16 +411,14 @@ class AdapterPacks(
                     viewHolder.binding.recCollectionsParent.visibility = View.VISIBLE
                     viewHolder.binding.recCollectionsParent.text = packs[position].collectionName
                 }
-                val colors = context.resources.obtainTypedArray(R.array.pack_color_list)
-                val colorsBackground =
-                    context.resources.obtainTypedArray(R.array.pack_color_background_light)
-                val colorsBackgroundAlpha =
-                    context.resources.obtainTypedArray(R.array.pack_color_background_light_alpha)
-                val minimalLength = colors.length().coerceAtMost(colorsBackground.length())
-                    .coerceAtMost(colorsBackgroundAlpha.length())
-                val color = currentPack.colors
-                if (color in 0..<minimalLength) {
-                    viewHolder.binding.recCollectionsName.setTextColor(colors.getColor(color, 0))
+                val resources = context.resources
+                val color = resources.colorAt(R.array.pack_color_list, currentPack.colors)
+                val colorBackground =
+                    resources.colorAt(R.array.pack_color_background_light, currentPack.colors)
+                val colorBackgroundAlpha =
+                    resources.colorAt(R.array.pack_color_background_light_alpha, currentPack.colors)
+                if (color != null && colorBackground != null && colorBackgroundAlpha != null) {
+                    viewHolder.binding.recCollectionsName.setTextColor(color)
                     viewHolder.binding.recCollectionsPreviewText.setTextColor(
                         if (contextualMenuMode != null && contextualMenuModePackIdList.contains(
                                 currentPack.uid
@@ -430,7 +429,7 @@ class AdapterPacks(
                                 R.color.default_text
                             )
                         } else {
-                            colors.getColor(color, 0)
+                            color
                         }
                     )
                     viewHolder.binding.recCollectionsPreviewText.setBackgroundColor(
@@ -440,21 +439,15 @@ class AdapterPacks(
                         ) {
                             Color.TRANSPARENT
                         } else {
-                            colorsBackground.getColor(
-                                color,
-                                0
-                            )
+                            colorBackground
                         }
                     )
                     background.mutate()
-                    background.setStroke(2, colors.getColor(color, 0))
-                    background.setColor(colorsBackgroundAlpha.getColor(color, 0))
+                    background.setStroke(2, color)
+                    background.setColor(colorBackgroundAlpha)
                     backgroundBehind.mutate()
-                    backgroundBehind.setStroke(1, colorsBackground.getColor(color, 0))
+                    backgroundBehind.setStroke(1, colorBackground)
                 }
-                colors.recycle()
-                colorsBackground.recycle()
-                colorsBackgroundAlpha.recycle()
             }
         }
     }

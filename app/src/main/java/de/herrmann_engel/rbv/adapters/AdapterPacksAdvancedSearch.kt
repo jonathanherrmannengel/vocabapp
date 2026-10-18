@@ -8,6 +8,7 @@ import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.databinding.RecViewSmallBinding
 import de.herrmann_engel.rbv.db.DB_Pack_With_Meta
 import de.herrmann_engel.rbv.utils.StringTools
+import de.herrmann_engel.rbv.utils.colorAt
 import java.util.Locale
 
 /**
@@ -42,13 +43,9 @@ class AdapterPacksAdvancedSearch(
             viewHolder.binding.recSmallDesc.visibility = View.GONE
             viewHolder.binding.recSmallCheckbox.visibility = View.GONE
         } else {
-            val colors = context.resources.obtainTypedArray(R.array.pack_color_list)
             val pack = packs[position].pack!!
-            val color = pack.colors
-            if (color >= 0 && color < colors.length()) {
-                viewHolder.binding.recSmallName.setTextColor(colors.getColor(color, 0))
-            }
-            colors.recycle()
+            context.resources.colorAt(R.array.pack_color_list, pack.colors)
+                ?.let { viewHolder.binding.recSmallName.setTextColor(it) }
             val size = packs[position].counter
             var checkBoxContentDescription = pack.name
             viewHolder.binding.recSmallName.text =
