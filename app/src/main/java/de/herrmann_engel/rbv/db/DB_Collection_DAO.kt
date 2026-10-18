@@ -18,8 +18,8 @@ interface DB_Collection_DAO {
     @Query("SELECT COUNT(*) FROM db_collection")
     fun countCollections(): Int
 
-    @Query("SELECT EXISTS (SELECT 1 FROM db_collection WHERE uid=:cid LIMIT 1)")
-    fun existsCollection(cid: Int): Boolean
+    @Query("SELECT EXISTS (SELECT 1 FROM db_collection WHERE uid=:collectionId LIMIT 1)")
+    fun existsCollection(collectionId: Int): Boolean
 
     @get:Query("SELECT * FROM db_collection ORDER BY name COLLATE NOCASE ASC, uid DESC")
     val all: List<DB_Collection>
@@ -36,12 +36,12 @@ interface DB_Collection_DAO {
     @get:Query("SELECT uid FROM db_collection ORDER BY name COLLATE NOCASE ASC, uid DESC")
     val allIds: List<Int>
 
-    @Query("SELECT * FROM db_collection WHERE uid=:cid LIMIT 1")
-    fun getOne(cid: Int): DB_Collection?
+    @Query("SELECT * FROM db_collection WHERE uid=:collectionId LIMIT 1")
+    fun getOne(collectionId: Int): DB_Collection?
 
     // Raw cursor used by the CSV export
-    @Query("SELECT * FROM db_collection WHERE uid=:cid")
-    fun getOneExport(cid: Int): Cursor
+    @Query("SELECT * FROM db_collection WHERE uid=:collectionId")
+    fun getOneExport(collectionId: Int): Cursor
 
     @Update
     fun update(collection: DB_Collection)

@@ -64,23 +64,23 @@ class DB_Helper_Delete(context: Context) {
         }
 
     // Deletes a media entry; its links are deleted with it (cascade)
-    fun deleteMedia(file: Int) {
-        dbHelper.mediaDao.deleteMedia(file)
+    fun deleteMedia(fileId: Int) {
+        dbHelper.mediaDao.deleteMedia(fileId)
     }
 
     // Removes a media file from a card; returns true if the media entry was deleted because it is
     // no longer used
-    fun deleteMediaLink(file: Int, card: Int): Boolean =
+    fun deleteMediaLink(fileId: Int, cardId: Int): Boolean =
         dbHelper.database.runInTransaction<Boolean> {
-            dbHelper.mediaLinkCardDao.deleteMediaLinkCard(file, card)
-            deleteUnusedMedia(listOf(file)) > 0
+            dbHelper.mediaLinkCardDao.deleteMediaLinkCard(fileId, cardId)
+            deleteUnusedMedia(listOf(fileId)) > 0
         }
 
     // Removes a tag from a card; returns true if the tag was deleted because it is no longer used
-    fun deleteTagLink(tag: Int, card: Int): Boolean =
+    fun deleteTagLink(tagId: Int, cardId: Int): Boolean =
         dbHelper.database.runInTransaction<Boolean> {
-            dbHelper.tagLinkCardDao.deleteTagLinkCard(tag, card)
-            deleteUnusedTags(listOf(tag)) > 0
+            dbHelper.tagLinkCardDao.deleteTagLinkCard(tagId, cardId)
+            deleteUnusedTags(listOf(tagId)) > 0
         }
 
     /**
@@ -88,13 +88,13 @@ class DB_Helper_Delete(context: Context) {
      * their number. Deleting cards only removes their media links (cascade), so the entries are
      * checked here. The files themselves are kept.
      */
-    fun deleteUnusedMedia(files: List<Int>): Int = deleteInChunks(files) { ids -> dbHelper.mediaDao.deleteUnusedMedia(ids) }
+    fun deleteUnusedMedia(fileIds: List<Int>): Int = deleteInChunks(fileIds) { ids -> dbHelper.mediaDao.deleteUnusedMedia(ids) }
 
     /**
      * Deletes those of the given tags that are no longer assigned to any card and returns their
      * number. Deleting cards only removes their tag links (cascade), so the tags are checked here.
      */
-    fun deleteUnusedTags(tags: List<Int>): Int = deleteInChunks(tags) { ids -> dbHelper.tagDao.deleteUnusedTags(ids) }
+    fun deleteUnusedTags(tagIds: List<Int>): Int = deleteInChunks(tagIds) { ids -> dbHelper.tagDao.deleteUnusedTags(ids) }
 
     // Runs a delete query for a list of ids in chunks and returns the number of deleted rows
     private fun deleteInChunks(ids: List<Int>, delete: (List<Int>) -> Int): Int {

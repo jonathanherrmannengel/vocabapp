@@ -22,20 +22,20 @@ interface DB_Card_DAO {
     @Query("SELECT COUNT(*) FROM db_card")
     fun countCards(): Int
 
-    @Query("SELECT COUNT(*) FROM db_card WHERE pack IN (SELECT uid FROM db_pack WHERE collection=:cid)")
-    fun countCardsInCollection(cid: Int): Int
+    @Query("SELECT COUNT(*) FROM db_card WHERE pack IN (SELECT uid FROM db_pack WHERE collection=:collectionId)")
+    fun countCardsInCollection(collectionId: Int): Int
 
-    @Query("SELECT COUNT(*) FROM db_card WHERE pack=:pid")
-    fun countCardsInPack(pid: Int): Int
+    @Query("SELECT COUNT(*) FROM db_card WHERE pack=:packId")
+    fun countCardsInPack(packId: Int): Int
 
     @get:Query(SELECT_WITH_META)
     val allWithMeta: MutableList<DB_Card_With_Meta>
 
-    @Query(SELECT_WITH_META + " WHERE pack IN (SELECT uid FROM db_pack WHERE collection=:cid)")
-    fun getAllByCollectionWithMeta(cid: Int): MutableList<DB_Card_With_Meta>
+    @Query(SELECT_WITH_META + " WHERE pack IN (SELECT uid FROM db_pack WHERE collection=:collectionId)")
+    fun getAllByCollectionWithMeta(collectionId: Int): MutableList<DB_Card_With_Meta>
 
-    @Query(SELECT_WITH_META + " WHERE pack=:pid")
-    fun getAllByPackWithMeta(pid: Int): MutableList<DB_Card_With_Meta>
+    @Query(SELECT_WITH_META + " WHERE pack=:packId")
+    fun getAllByPackWithMeta(packId: Int): MutableList<DB_Card_With_Meta>
 
     /**
      * Cards matching the advanced search filters. Each filter can be switched off.
@@ -50,7 +50,7 @@ interface DB_Card_DAO {
     @Query(
         (SELECT_WITH_META + " WHERE (:allPacks OR pack IN (:packIds))"
                 + " AND (:allTags OR db_card.uid IN (SELECT cardId FROM db_tag_link_card WHERE tagId IN (:tagIds)))"
-                + " AND (NOT :filterProgress OR (CASE WHEN :progressGreater THEN known >= :progress ELSE known <= :progress END))"
+                + " AND (NOT :filterProgress OR (CASE WHEN :progressGreater THEN known >= :progressThreshold ELSE known <= :progressThreshold END))"
                 + " AND (NOT :filterRepetition OR (CASE WHEN :repetitionOlder THEN last_repetition < :date ELSE last_repetition >= :date END))")
     )
     fun getAllFilteredWithMeta(
@@ -60,7 +60,7 @@ interface DB_Card_DAO {
         tagIds: List<Int>,
         filterProgress: Boolean,
         progressGreater: Boolean,
-        progress: Int,
+        progressThreshold: Int,
         filterRepetition: Boolean,
         repetitionOlder: Boolean,
         date: Long
@@ -71,8 +71,8 @@ interface DB_Card_DAO {
     fun getAllByMedia(fileId: Int): MutableList<DB_Card_With_Meta>
 
     // Raw cursor used by the CSV export
-    @Query("SELECT * FROM db_card WHERE pack IN (SELECT uid FROM db_pack WHERE collection=:collection)")
-    fun getAllExportByCollection(collection: Int): Cursor
+    @Query("SELECT * FROM db_card WHERE pack IN (SELECT uid FROM db_pack WHERE collection=:collectionId)")
+    fun getAllExportByCollection(collectionId: Int): Cursor
 
     @Query("SELECT * FROM db_card WHERE uid=:cardId LIMIT 1")
     fun getOne(cardId: Int): DB_Card?
@@ -81,9 +81,9 @@ interface DB_Card_DAO {
     fun getOneWithMeta(cardId: Int): DB_Card_With_Meta?
 
     // Used by the import to find already existing cards; null if there is none
-    @Query("SELECT uid FROM db_card WHERE pack=:pid AND front=:front AND back=:back AND notes=:notes LIMIT 1")
+    @Query("SELECT uid FROM db_card WHERE pack=:packId AND front=:front AND back=:back AND notes=:notes LIMIT 1")
     fun getOneIdByPackAndFrontAndBackAndNotes(
-        pid: Int,
+        packId: Int,
         front: String,
         back: String,
         notes: String?
