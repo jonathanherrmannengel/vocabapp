@@ -80,14 +80,14 @@ interface DB_Card_DAO {
     @Query(SELECT_WITH_META + " WHERE db_card.uid=:cardId LIMIT 1")
     fun getOneWithMeta(cardId: Int): DB_Card_With_Meta?
 
-    // Used by the import to find already existing cards
+    // Used by the import to find already existing cards; null if there is none
     @Query("SELECT uid FROM db_card WHERE pack=:pid AND front=:front AND back=:back AND notes=:notes LIMIT 1")
     fun getOneIdByPackAndFrontAndBackAndNotes(
         pid: Int,
         front: String,
         back: String,
         notes: String?
-    ): Int
+    ): Int?
 
     @Update
     fun update(card: DB_Card)

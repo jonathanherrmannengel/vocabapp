@@ -6,7 +6,6 @@ import android.util.TypedValue
 import android.view.Menu
 import android.view.View
 import android.widget.Toast
-import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.actions.PackActions
 import de.herrmann_engel.rbv.databinding.ActivityViewCollectionOrPackBinding
@@ -15,6 +14,8 @@ import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.settings.AppSettings
 import de.herrmann_engel.rbv.utils.colorAt
 import de.herrmann_engel.rbv.utils.formatDateTime
+import de.herrmann_engel.rbv.utils.getListCollection
+import de.herrmann_engel.rbv.utils.putListCollection
 
 /**
  * Details of a pack (name, emoji, description, creation date) with options to edit,
@@ -25,13 +26,14 @@ class ViewPack : RBVActivity(), PackActions.Listener {
     private lateinit var dbHelperGet: DB_Helper_Get
     private lateinit var pack: DB_Pack
     private var packNo = 0
-    private var collectionNo = 0
+    // Collection of the pack list the pack was opened from, null for the list of all packs
+    private var listCollectionId: Int? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityViewCollectionOrPackBinding.inflate(layoutInflater)
         setContentView(binding.root)
         dbHelperGet = DB_Helper_Get(this)
-        collectionNo = intent.extras!!.getInt("collection")
+        listCollectionId = intent.getListCollection()
         packNo = intent.extras!!.getInt("pack")
         setUpEdgeToEdge(binding.viewCollectionOrPackLayout)
     }
@@ -93,7 +95,7 @@ class ViewPack : RBVActivity(), PackActions.Listener {
             return@setOnMenuItemClickListener true
         }
         // Moving is only offered when the pack was opened from within its collection
-        if (collectionNo == Globals.LIST_CARDS_GET_DB_COLLECTIONS_ALL) {
+        if (listCollectionId == null) {
             menu.findItem(R.id.menu_view_pack_move).isVisible = false
         } else {
             menu.findItem(R.id.menu_view_pack_move).setOnMenuItemClickListener {
@@ -118,10 +120,9 @@ class ViewPack : RBVActivity(), PackActions.Listener {
                 finish()
                 return
             }
-            collectionNo = pack.collection
             val intent = Intent(this, ListPacks::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            intent.putExtra("collection", collectionNo)
+            intent.putListCollection(pack.collection)
             startActivity(intent)
         } catch (e: Exception) {
             e.printStackTrace()

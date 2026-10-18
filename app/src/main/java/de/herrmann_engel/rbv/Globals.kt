@@ -43,12 +43,5 @@ object Globals {
     const val MAX_SIZE_CARDS_CONTEXTUAL_MENU_SELECT = 1000
     const val MAX_SIZE_PACKS_CONTEXTUAL_MENU_SELECT = 75
     const val MAX_SIZE_COLLECTIONS_OR_PACKS_LIST_COUNTER = 40
-    // Special ids passed to ListCards instead of real collection/pack/tag ids
-    const val LIST_CARDS_GET_DB_COLLECTIONS_ALL = -1
-    const val LIST_CARDS_GET_DB_PACKS_ALL = -1
-    const val LIST_CARDS_GET_DB_PACKS_ADVANCED_SEARCH_LIST = -2
-    const val LIST_CARDS_GET_DB_PACKS_ADVANCED_SEARCH_ALL = -3
-    const val LIST_CARDS_GET_DB_TAGS_ADVANCED_SEARCH_LIST = -2
-    const val LIST_CARDS_GET_DB_TAGS_ADVANCED_SEARCH_ALL = -3
     const val ONLINE_HELP = "https://herrmann-engel.de/projekte/rbv/info/?lang=%s"
 }

@@ -18,6 +18,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.toColorInt
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.actions.CardActions
+import de.herrmann_engel.rbv.cardlist.CardSource
 import de.herrmann_engel.rbv.databinding.ActivityViewCardBinding
 import de.herrmann_engel.rbv.db.DB_Card
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
@@ -28,6 +29,8 @@ import de.herrmann_engel.rbv.ui.TagSpan
 import de.herrmann_engel.rbv.utils.StringTools
 import de.herrmann_engel.rbv.utils.colorAt
 import de.herrmann_engel.rbv.utils.formatDateTime
+import de.herrmann_engel.rbv.utils.getCardSource
+import de.herrmann_engel.rbv.utils.putCardSource
 import io.noties.markwon.Markwon
 import io.noties.markwon.linkify.LinkifyPlugin
 import me.saket.bettermovementmethod.BetterLinkMovementMethod
@@ -35,7 +38,8 @@ import java.util.Locale
 
 /**
  * Shows a single card with all its details (both sides, tags, notes, dates, progress, media)
- * and lets the user change its progress manually. Expects "collection", "pack" and "card" extras.
+ * and lets the user change its progress manually. Expects the "card" extra and the card list it
+ * was opened from (see [CardSource]).
  */
 class ViewCard : RBVActivity(), CardActions.Listener {
     private val mediaFileManager = MediaFileManager(
@@ -49,8 +53,8 @@ class ViewCard : RBVActivity(), CardActions.Listener {
     private lateinit var card: DB_Card
     // Current progress of the card
     private var known = 0
-    private var collectionNo = 0
-    private var packNo = 0
+    // The card list the card was opened from
+    private var cardSource: CardSource = CardSource.AllCards
     private var cardNo = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,8 +63,7 @@ class ViewCard : RBVActivity(), CardActions.Listener {
         dbHelperGet = DB_Helper_Get(this)
         dbHelperUpdate = DB_Helper_Update(this)
 
-        collectionNo = intent.extras!!.getInt("collection")
-        packNo = intent.extras!!.getInt("pack")
+        intent.getCardSource()?.let { cardSource = it }
         cardNo = intent.extras!!.getInt("card")
 
         // Return to the card list, which then reloads this card as it may have changed
@@ -238,9 +241,10 @@ class ViewCard : RBVActivity(), CardActions.Listener {
             return@setOnMenuItemClickListener true
         }
         // Moving is only offered when the card was opened from within its pack
-        if (packNo >= 0) {
+        val packSource = cardSource as? CardSource.Pack
+        if (packSource != null) {
             menu.findItem(R.id.menu_view_card_move).setOnMenuItemClickListener {
-                CardActions(this, this, mediaFileManager).move(card, collectionNo)
+                CardActions(this, this, mediaFileManager).move(card, packSource.listCollectionId)
                 return@setOnMenuItemClickListener true
             }
         } else {
@@ -298,12 +302,12 @@ class ViewCard : RBVActivity(), CardActions.Listener {
                 finish()
                 return
             }
-            packNo = card.pack
+            val listCollectionId = (cardSource as? CardSource.Pack)?.listCollectionId
+            cardSource = CardSource.Pack(card.pack, listCollectionId)
             updateColors()
             val intent = Intent(this, ListCards::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            intent.putExtra("collection", collectionNo)
-            intent.putExtra("pack", packNo)
+            intent.putCardSource(cardSource)
             startActivity(intent)
         } catch (e: Exception) {
             e.printStackTrace()

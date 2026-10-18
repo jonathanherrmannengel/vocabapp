@@ -26,28 +26,28 @@ import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.actions.CardActions
 import de.herrmann_engel.rbv.activities.ViewCard
 import de.herrmann_engel.rbv.adapters.compare.ListCardCompare
+import de.herrmann_engel.rbv.cardlist.CardSource
 import de.herrmann_engel.rbv.databinding.RecViewCardBinding
 import de.herrmann_engel.rbv.db.DB_Card
 import de.herrmann_engel.rbv.db.DB_Card_With_Meta
 import de.herrmann_engel.rbv.utils.ContextTools
 import de.herrmann_engel.rbv.utils.StringTools
 import de.herrmann_engel.rbv.utils.colorAt
+import de.herrmann_engel.rbv.utils.putCardSource
 import java.util.Locale
 
 /**
  * Card list. Depending on the settings, the front, the back (reverse) or both sides are shown.
  * If the list is empty, a single welcome item is shown.
  *
- * packNo/collectionNo may be negative for lists across packs or collections (see the
- * LIST_CARDS_GET_DB_* constants in Globals); then cards are colored by their pack.
+ * Unless the list shows a single pack, cards are colored by their pack.
  */
 class AdapterCards(
     private val cards: MutableList<DB_Card_With_Meta>,
     private var uiFontSizeBig: Boolean,
     private var reverse: Boolean,
     private var showBothSides: Boolean,
-    private val packNo: Int,
-    private val collectionNo: Int,
+    private val cardSource: CardSource,
     private val cardActions: CardActions
 ) : RecyclerView.Adapter<AdapterCards.ViewHolder>() {
     class ViewHolder(val binding: RecViewCardBinding) : RecyclerView.ViewHolder(binding.root)
@@ -70,7 +70,7 @@ class AdapterCards(
             menu.findItem(R.id.menu_list_cards_context_delete).isVisible =
                 contextualMenuModeCardIdList.isNotEmpty()
             menu.findItem(R.id.menu_list_cards_context_move).isVisible =
-                contextualMenuModeCardIdList.isNotEmpty() && packNo >= 0
+                contextualMenuModeCardIdList.isNotEmpty() && cardSource is CardSource.Pack
             menu.findItem(R.id.menu_list_cards_context_print).isVisible =
                 contextualMenuModeCardIdList.isNotEmpty() && contextualMenuModeCardIdList.size <= MAX_SIZE_CARDS_CONTEXTUAL_MENU_PRINT
             menu.findItem(R.id.menu_list_cards_context_select_all).isVisible =
@@ -97,7 +97,9 @@ class AdapterCards(
                         cards.find { c -> c.card.uid == id }
                             ?.let { contextualMenuModeCardList.add(it.card) }
                     }
-                    cardActions.move(contextualMenuModeCardList, collectionNo)
+                    if (cardSource is CardSource.Pack) {
+                        cardActions.move(contextualMenuModeCardList, cardSource.listCollectionId)
+                    }
                     mode.finish()
                     true
                 }
@@ -205,7 +207,7 @@ class AdapterCards(
         viewHolder.binding.recMargin.visibility = GONE
         // Welcome message (with an icon replacing the "+" if cards can be created here)
         if (cards.isEmpty()) {
-            if (packNo >= 0) {
+            if (cardSource is CardSource.Pack) {
                 val text =
                     String.format(
                         Locale.ROOT,
@@ -331,7 +333,7 @@ class AdapterCards(
                     card.card.known
                 )
         }
-        if (packNo < 0) {
+        if (cardSource !is CardSource.Pack) {
             context.resources.colorAt(R.array.pack_color_list, card.packColor)
                 ?.let { recText.setTextColor(it) }
         }
@@ -354,8 +356,7 @@ class AdapterCards(
                 }
             } else {
                 val intent = Intent(context, ViewCard::class.java)
-                intent.putExtra("collection", collectionNo)
-                intent.putExtra("pack", packNo)
+                intent.putCardSource(cardSource)
                 intent.putExtra("card", extra)
                 context.startActivity(intent)
             }

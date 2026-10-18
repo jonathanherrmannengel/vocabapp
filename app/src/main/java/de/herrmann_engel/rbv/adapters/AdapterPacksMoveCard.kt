@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import de.herrmann_engel.rbv.Globals.LIST_CARDS_GET_DB_COLLECTIONS_ALL
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.databinding.RecViewBinding
 import de.herrmann_engel.rbv.db.AppDatabase
@@ -23,7 +22,8 @@ import de.herrmann_engel.rbv.utils.colorAt
  */
 class AdapterPacksMoveCard(
     private val packs: List<DB_Pack_With_Meta>,
-    private val collectionNo: Int,
+    // null: packs of all collections are listed
+    private val collectionId: Int?,
     private val cards: List<DB_Card>,
     private val dialog: Dialog,
     private val onMoved: (ArrayList<Int>) -> Unit
@@ -60,7 +60,7 @@ class AdapterPacksMoveCard(
             ?.let { viewHolder.binding.recName.setTextColor(it) }
         viewHolder.binding.recName.text = pack.name
         // Packs of all collections are listed: show the collection name as well
-        if (collectionNo == LIST_CARDS_GET_DB_COLLECTIONS_ALL) {
+        if (collectionId == null) {
             val collectionName = stringTools.shorten(packs[position].collectionName ?: "")
             viewHolder.binding.recDesc.visibility = View.VISIBLE
             viewHolder.binding.recDesc.text = collectionName

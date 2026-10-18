@@ -70,7 +70,10 @@ class AsyncImportWorker(
     private val createdTags = mutableListOf<Int>()
 
     // Collection created for a simple list (null if an existing one is used)
-    private var simpleListCreatedCollection: Int? = null
+    private var simpleListCreatedCollectionId: Int? = null
+
+    // Pack created for a simple list
+    private var simpleListPackId: Int? = null
 
     // True if rows of a simple list were skipped because they have the wrong number of columns
     private var simpleListRowsSkipped = false
@@ -185,10 +188,10 @@ class AsyncImportWorker(
             // Nothing could be imported from a simple list: remove the pack (and the collection)
             // created for it
             if (mode == Globals.IMPORT_MODE_SIMPLE_LIST && errorLevel == Globals.IMPORT_ERROR_LEVEL_ERROR) {
-                helperGet.getSinglePack(packUidConverter.getNewValue(0))?.let {
+                simpleListPackId?.let { helperGet.getSinglePack(it) }?.let {
                     helperDelete.deletePack(it, true)
                 }
-                simpleListCreatedCollection?.let { uid ->
+                simpleListCreatedCollectionId?.let { uid ->
                     helperGet.getSingleCollection(uid)?.let { helperDelete.deleteCollection(it, true) }
                 }
             }
@@ -243,7 +246,7 @@ class AsyncImportWorker(
 
     /**
      * Simple list: all cards go into a new pack (named after the current date) inside a dedicated
-     * collection, which is reused if it already exists. Both are stored under the old uid 0.
+     * collection, which is reused if it already exists.
      */
     private fun createSimpleListPack() {
         val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ROOT)
@@ -261,31 +264,13 @@ class AsyncImportWorker(
             context.resources.getString(R.string.all_packs)
         )
         val sameNamed = helperGet.getAllCollectionsByName(collectionName)
-        if (sameNamed.isEmpty()) {
-            val collectionUidNew =
-                helperCreate
-                    .createCollection(collectionName, collectionDesc)
-                    .toInt()
-            simpleListCreatedCollection = collectionUidNew
-            collectionUidConverter.insertPair(
-                0,
-                collectionUidNew
-            )
+        val collection = if (sameNamed.isEmpty()) {
+            helperCreate.createCollection(collectionName, collectionDesc).toInt()
+                .also { simpleListCreatedCollectionId = it }
         } else {
-            collectionUidConverter.insertPair(
-                0,
-                sameNamed[0].uid
-            )
+            sameNamed[0].uid
         }
-        packUidConverter.insertPair(
-            0, helperCreate
-                .createPack(
-                    packName,
-                    packDesc,
-                    collectionUidConverter.getNewValue(0)
-                )
-                .toInt()
-        )
+        simpleListPackId = helperCreate.createPack(packName, packDesc, collection).toInt()
     }
 
     // Columns: front, back, notes (optional)
@@ -304,7 +289,7 @@ class AsyncImportWorker(
             front,
             back,
             notes,
-            packUidConverter.getNewValue(0)
+            checkNotNull(simpleListPackId)
         )
         markImported()
     }
@@ -369,12 +354,10 @@ class AsyncImportWorker(
                 collectionUidConverter.insertPair(0, sameNamed[0].uid)
             }
         }
-        val currentCollection = line.column("collection", 6)?.let {
-            collectionUidConverter.getNewValue(it.toInt())
-        } ?: collectionUidConverter.getNewValue(0)
-        if (currentCollection <= 0) {
-            return
-        }
+        // Without collection column, the pack goes into the "_default" collection (old uid 0)
+        val currentCollection = collectionUidConverter.getNewValue(
+            line.column("collection", 6)?.toInt() ?: 0
+        ) ?: return
         val packUidOld = (line.column("uid", 1) ?: "0").toInt()
         val name = line.column("name", 2) ?: ""
         val desc = line.column("desc", 3) ?: ""
@@ -412,10 +395,7 @@ class AsyncImportWorker(
         val currentPack =
             packUidConverter.getNewValue(
                 (line.column("pack", 4) ?: "0").toInt()
-            )
-        if (currentPack <= 0) {
-            return
-        }
+            ) ?: return
         val cardUidOld = (line.column("uid", 1) ?: "0").toInt()
         val front = line.column("front", 2) ?: ""
         val back = line.column("back", 3) ?: ""
@@ -434,7 +414,7 @@ class AsyncImportWorker(
                 notes
             )
         // Existing identical cards are skipped, or reused in integrate mode
-        if (sameNamed == 0 || mode == Globals.IMPORT_MODE_DUPLICATES) {
+        if (sameNamed == null || mode == Globals.IMPORT_MODE_DUPLICATES) {
             val cardUidNew = helperCreate.createCard(
                 front,
                 back,
@@ -470,12 +450,12 @@ class AsyncImportWorker(
         val currentMedia =
             mediaUidConverter.getNewValue(
                 (line.column("fileId", 2) ?: "0").toInt()
-            )
+            ) ?: return
         val currentCard =
             cardUidConverter.getNewValue(
                 (line.column("cardId", 3) ?: "0").toInt()
-            )
-        if (currentMedia != 0 && currentCard != 0 && !helperGet.existsMediaLinkCard(
+            ) ?: return
+        if (!helperGet.existsMediaLinkCard(
                 currentMedia,
                 currentCard
             )
@@ -508,12 +488,12 @@ class AsyncImportWorker(
         val currentTag =
             tagsUidConverter.getNewValue(
                 (line.column("tagId", 2) ?: "0").toInt()
-            )
+            ) ?: return
         val currentCard =
             cardUidConverter.getNewValue(
                 (line.column("cardId", 3) ?: "0").toInt()
-            )
-        if (currentTag != 0 && currentCard != 0 && !helperGet.existsTagLinkCard(
+            ) ?: return
+        if (!helperGet.existsTagLinkCard(
                 currentTag,
                 currentCard
             )

@@ -65,7 +65,7 @@ class DB_Helper_Get(context: Context) {
         front: String,
         back: String,
         notes: String?
-    ): Int = dbHelper.cardDao.getOneIdByPackAndFrontAndBackAndNotes(pack, front, back, notes)
+    ): Int? = dbHelper.cardDao.getOneIdByPackAndFrontAndBackAndNotes(pack, front, back, notes)
 
     fun getSingleMedia(file: String): DB_Media? = dbHelper.mediaDao.getSingleMedia(file)
 
@@ -118,28 +118,31 @@ class DB_Helper_Get(context: Context) {
     /**
      * Returns the cards matching the advanced search filters.
      * 
-     * @param packs            packs to include, null for all packs
-     * @param tags             tags to include (a card needs at least one of them), null for no tag filter
-     * @param progressGreater  true: progress >= progressNumber, false: progress <= progressNumber
-     * @param progressNumber   progress threshold, negative to disable the progress filter
-     * @param repetitionOlder  true: last repetition older than repetitionNumber days, false: newer or equal
-     * @param repetitionNumber number of days, negative to disable the repetition filter
+     * @param packs             packs to include, null for all packs
+     * @param tags              tags to include (a card needs at least one of them), null for no
+     *                          tag filter
+     * @param progressGreater   true: progress >= progressThreshold, false: progress <=
+     *                          progressThreshold
+     * @param progressThreshold null to disable the progress filter
+     * @param repetitionOlder   true: last repetition older than repetitionDays days, false: newer
+     *                          or equal
+     * @param repetitionDays    number of days, null to disable the repetition filter
      */
     fun getAllCardsWithMetaFiltered(
         packs: List<Int>?,
         tags: List<Int>?,
         progressGreater: Boolean,
-        progressNumber: Int,
+        progressThreshold: Int?,
         repetitionOlder: Boolean,
-        repetitionNumber: Int
+        repetitionDays: Int?
     ): MutableList<DB_Card_With_Meta> {
-        // Point in time repetitionNumber days ago (Unix time in seconds)
-        val date = System.currentTimeMillis() / 1000L - repetitionNumber * 86400L
+        // Point in time repetitionDays days ago (Unix time in seconds)
+        val date = System.currentTimeMillis() / 1000L - (repetitionDays ?: 0) * 86400L
         return dbHelper.cardDao.getAllFilteredWithMeta(
             packs == null, packs ?: emptyList(),
             tags == null, tags ?: emptyList(),
-            progressNumber >= 0, progressGreater, progressNumber,
-            repetitionNumber >= 0, repetitionOlder, date
+            progressThreshold != null, progressGreater, progressThreshold ?: 0,
+            repetitionDays != null, repetitionOlder, date
         )
     }
 

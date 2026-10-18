@@ -14,7 +14,6 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import de.herrmann_engel.rbv.Globals.LIST_CARDS_GET_DB_COLLECTIONS_ALL
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.activities.ListPacks
 import de.herrmann_engel.rbv.adapters.compare.ListCollectionCompare
@@ -22,6 +21,7 @@ import de.herrmann_engel.rbv.databinding.RecViewCollectionOrPackBinding
 import de.herrmann_engel.rbv.db.DB_Collection_With_Meta
 import de.herrmann_engel.rbv.utils.StringTools
 import de.herrmann_engel.rbv.utils.colorAt
+import de.herrmann_engel.rbv.utils.putListCollection
 import java.util.Locale
 
 /**
@@ -182,7 +182,7 @@ class AdapterCollections(
                         context,
                         ListPacks::class.java
                     )
-                    intent.putExtra("collection", LIST_CARDS_GET_DB_COLLECTIONS_ALL)
+                    intent.putListCollection(null)
                     context.startActivity(intent)
                 }
                 viewHolder.binding.recCollectionsName.text =
@@ -251,7 +251,7 @@ class AdapterCollections(
                         context,
                         ListPacks::class.java
                     )
-                    intent.putExtra("collection", extra)
+                    intent.putListCollection(extra)
                     context.startActivity(intent)
                 }
                 viewHolder.binding.recCollectionsName.text =

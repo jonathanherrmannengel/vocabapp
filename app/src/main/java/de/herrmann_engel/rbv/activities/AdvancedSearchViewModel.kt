@@ -2,8 +2,6 @@ package de.herrmann_engel.rbv.activities
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import de.herrmann_engel.rbv.Globals.LIST_CARDS_GET_DB_PACKS_ADVANCED_SEARCH_ALL
-import de.herrmann_engel.rbv.Globals.LIST_CARDS_GET_DB_TAGS_ADVANCED_SEARCH_ALL
 
 /**
  * State of [AdvancedSearch] that has to survive the activity being recreated (e.g. after a
@@ -13,18 +11,18 @@ import de.herrmann_engel.rbv.Globals.LIST_CARDS_GET_DB_TAGS_ADVANCED_SEARCH_ALL
  * themselves.
  */
 class AdvancedSearchViewModel(private val savedState: SavedStateHandle) : ViewModel() {
-    // LIST_CARDS_GET_DB_PACKS_ADVANCED_SEARCH_ALL or ..._LIST (only the selected packs)
-    var pack: Int
-        get() = savedState[KEY_PACK] ?: LIST_CARDS_GET_DB_PACKS_ADVANCED_SEARCH_ALL
+    // true: search all packs, false: only the selected packs
+    var allPacks: Boolean
+        get() = savedState[KEY_ALL_PACKS] ?: true
         set(value) {
-            savedState[KEY_PACK] = value
+            savedState[KEY_ALL_PACKS] = value
         }
 
-    // LIST_CARDS_GET_DB_TAGS_ADVANCED_SEARCH_ALL or ..._LIST (only the selected tags)
-    var tag: Int
-        get() = savedState[KEY_TAG] ?: LIST_CARDS_GET_DB_TAGS_ADVANCED_SEARCH_ALL
+    // true: no tag filter, false: only cards with one of the selected tags
+    var allTags: Boolean
+        get() = savedState[KEY_ALL_TAGS] ?: true
         set(value) {
-            savedState[KEY_TAG] = value
+            savedState[KEY_ALL_TAGS] = value
         }
 
     var progressGreater: Boolean
@@ -71,8 +69,8 @@ class AdvancedSearchViewModel(private val savedState: SavedStateHandle) : ViewMo
     }
 
     companion object {
-        private const val KEY_PACK = "pack"
-        private const val KEY_TAG = "tag"
+        private const val KEY_ALL_PACKS = "allPacks"
+        private const val KEY_ALL_TAGS = "allTags"
         private const val KEY_PROGRESS_GREATER = "progressGreater"
         private const val KEY_REPETITION_OLDER = "repetitionOlder"
         private const val KEY_PACK_LIST = "packList"

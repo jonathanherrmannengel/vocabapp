@@ -12,9 +12,9 @@ class AsyncImportUidConvert {
         map[oldValue] = newValue
     }
 
-    // Returns 0 if the old uid is unknown
-    fun getNewValue(oldValue: Int): Int {
-        return map.getOrDefault(oldValue, 0)
+    // Returns null if the old uid is unknown
+    fun getNewValue(oldValue: Int): Int? {
+        return map[oldValue]
     }
 
     fun getSize(): Int {

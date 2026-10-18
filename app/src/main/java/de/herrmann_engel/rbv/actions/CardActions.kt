@@ -92,9 +92,9 @@ class CardActions(
 
     /**
      * Lets the user choose a pack to move the cards to. Only packs of the given collection are
-     * offered, unless collectionNo is LIST_CARDS_GET_DB_COLLECTIONS_ALL.
+     * offered, or of all collections if collectionId is null.
      */
-    fun move(cards: ArrayList<DB_Card>, collectionNo: Int) {
+    fun move(cards: ArrayList<DB_Card>, collectionId: Int?) {
         val bindingMoveDialog = DiaRecBinding.inflate(
             activity.layoutInflater
         )
@@ -105,19 +105,19 @@ class CardActions(
         )
         val dbHelperGet = DB_Helper_Get(activity)
         // Includes the collection names, which are shown for packs of all collections
-        val packs: List<DB_Pack_With_Meta> = if (collectionNo == Globals.LIST_CARDS_GET_DB_COLLECTIONS_ALL) {
+        val packs: List<DB_Pack_With_Meta> = if (collectionId == null) {
             dbHelperGet.allPacksWithMetaNoCounter
         } else {
-            dbHelperGet.getAllPacksWithMetaNoCounterByCollection(collectionNo)
+            dbHelperGet.getAllPacksWithMetaNoCounterByCollection(collectionId)
         }
-        val adapter = AdapterPacksMoveCard(packs, collectionNo, cards, moveDialog, listener::movedCards)
+        val adapter = AdapterPacksMoveCard(packs, collectionId, cards, moveDialog, listener::movedCards)
         bindingMoveDialog.diaRec.adapter = adapter
         bindingMoveDialog.diaRec.layoutManager = LinearLayoutManager(activity)
         moveDialog.show()
     }
 
-    fun move(card: DB_Card, collectionNo: Int) {
-        move(arrayListOf(card), collectionNo)
+    fun move(card: DB_Card, collectionId: Int?) {
+        move(arrayListOf(card), collectionId)
     }
 
     /**

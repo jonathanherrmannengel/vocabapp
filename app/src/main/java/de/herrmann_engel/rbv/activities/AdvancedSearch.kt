@@ -7,17 +7,14 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import de.herrmann_engel.rbv.Globals.LIST_CARDS_GET_DB_COLLECTIONS_ALL
-import de.herrmann_engel.rbv.Globals.LIST_CARDS_GET_DB_PACKS_ADVANCED_SEARCH_ALL
-import de.herrmann_engel.rbv.Globals.LIST_CARDS_GET_DB_PACKS_ADVANCED_SEARCH_LIST
-import de.herrmann_engel.rbv.Globals.LIST_CARDS_GET_DB_TAGS_ADVANCED_SEARCH_ALL
-import de.herrmann_engel.rbv.Globals.LIST_CARDS_GET_DB_TAGS_ADVANCED_SEARCH_LIST
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.adapters.AdapterPacksAdvancedSearch
 import de.herrmann_engel.rbv.adapters.AdapterTagsAdvancedSearch
+import de.herrmann_engel.rbv.cardlist.CardSource
 import de.herrmann_engel.rbv.databinding.ActivityAdvancedSearchBinding
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.settings.AppSettings
+import de.herrmann_engel.rbv.utils.putCardSource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -38,30 +35,26 @@ class AdvancedSearch : RBVActivity() {
         get() = viewModel.tagList
     private lateinit var dbHelperGet: DB_Helper_Get
     private lateinit var binding: ActivityAdvancedSearchBinding
-    private var pack: Int
-        get() = viewModel.pack
+    private var allPacks: Boolean
+        get() = viewModel.allPacks
         set(value) {
-            viewModel.pack = value
+            viewModel.allPacks = value
         }
-    private var tag: Int
-        get() = viewModel.tag
+    private var allTags: Boolean
+        get() = viewModel.allTags
         set(value) {
-            viewModel.tag = value
+            viewModel.allTags = value
         }
     private var progressGreater: Boolean
         get() = viewModel.progressGreater
         set(value) {
             viewModel.progressGreater = value
         }
-    // -1 disables the filter
-    private var progressNumber = -1
     private var repetitionOlder: Boolean
         get() = viewModel.repetitionOlder
         set(value) {
             viewModel.repetitionOlder = value
         }
-    // Number of days; -1 disables the filter
-    private var repetitionNumber = -1
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAdvancedSearchBinding.inflate(
@@ -77,19 +70,17 @@ class AdvancedSearch : RBVActivity() {
             }
         }
         binding.recAdvancedSearch.layoutManager = LinearLayoutManager(this)
-        if (pack == LIST_CARDS_GET_DB_PACKS_ADVANCED_SEARCH_ALL) {
+        if (allPacks) {
             binding.recAdvancedSearch.visibility = View.GONE
         }
-        binding.advancedSearchPacksAll.isChecked =
-            pack == LIST_CARDS_GET_DB_PACKS_ADVANCED_SEARCH_ALL
+        binding.advancedSearchPacksAll.isChecked = allPacks
         binding.advancedSearchPacksAll.setOnClickListener {
-            pack = LIST_CARDS_GET_DB_PACKS_ADVANCED_SEARCH_ALL
+            allPacks = true
             binding.recAdvancedSearch.visibility = View.GONE
         }
-        binding.advancedSearchPacksSelect.isChecked =
-            pack == LIST_CARDS_GET_DB_PACKS_ADVANCED_SEARCH_LIST
+        binding.advancedSearchPacksSelect.isChecked = !allPacks
         binding.advancedSearchPacksSelect.setOnClickListener {
-            pack = LIST_CARDS_GET_DB_PACKS_ADVANCED_SEARCH_LIST
+            allPacks = false
             binding.recAdvancedSearch.visibility = View.VISIBLE
         }
         binding.advancedSearchProgressGreater.isChecked = progressGreater
@@ -100,11 +91,6 @@ class AdvancedSearch : RBVActivity() {
         binding.advancedSearchProgressLess.setOnClickListener {
             progressGreater = false
         }
-        if (progressNumber >= 0) {
-            binding.advancedSearchProgressValue.setText(
-                progressNumber.toString()
-            )
-        }
         binding.advancedSearchRepetitionOlder.isChecked = repetitionOlder
         binding.advancedSearchRepetitionOlder.setOnClickListener {
             repetitionOlder = true
@@ -113,45 +99,22 @@ class AdvancedSearch : RBVActivity() {
         binding.advancedSearchRepetitionNewer.setOnClickListener {
             repetitionOlder = false
         }
-        if (repetitionNumber >= 0) {
-            binding.advancedSearchRepetitionValue.setText(
-                repetitionNumber.toString()
-            )
-        }
-        // Empty fields disable the corresponding filter
         binding.advancedSearchGo.setOnClickListener {
-            val progressValueInputTemp = binding.advancedSearchProgressValue.text.toString()
-            if (progressValueInputTemp.isEmpty()) {
-                progressNumber = -1
-            } else {
-                val progressNumberTemp = progressValueInputTemp.toInt()
-                if (progressNumberTemp >= 0) {
-                    progressNumber = progressNumberTemp
-                }
-            }
-            val repetitionValueInputTemp = binding.advancedSearchRepetitionValue.text.toString()
-            if (repetitionValueInputTemp.isEmpty()) {
-                repetitionNumber = -1
-            } else {
-                val repetitionNumberTemp = repetitionValueInputTemp.toInt()
-                if (repetitionNumberTemp >= 0) {
-                    repetitionNumber = repetitionNumberTemp
-                }
-            }
+            // Empty fields disable the corresponding filter
+            val progressThreshold =
+                binding.advancedSearchProgressValue.text.toString().toIntOrNull()
+            val repetitionDays = binding.advancedSearchRepetitionValue.text.toString().toIntOrNull()
             val intent = Intent(this, ListCards::class.java)
-            intent.putExtra("collection", LIST_CARDS_GET_DB_COLLECTIONS_ALL)
-            intent.putExtra("pack", pack)
-            if (pack == LIST_CARDS_GET_DB_PACKS_ADVANCED_SEARCH_LIST) {
-                intent.putIntegerArrayListExtra("packs", packList)
-            }
-            intent.putExtra("tag", tag)
-            if (tag == LIST_CARDS_GET_DB_TAGS_ADVANCED_SEARCH_LIST) {
-                intent.putIntegerArrayListExtra("tags", tagList)
-            }
-            intent.putExtra("progressGreater", progressGreater)
-            intent.putExtra("progressNumber", progressNumber)
-            intent.putExtra("repetitionOlder", repetitionOlder)
-            intent.putExtra("repetitionNumber", repetitionNumber)
+            intent.putCardSource(
+                CardSource.Search(
+                    packIds = if (allPacks) null else packList,
+                    tagIds = if (allTags) null else tagList,
+                    progressGreater = progressGreater,
+                    progressThreshold = progressThreshold,
+                    repetitionOlder = repetitionOlder,
+                    repetitionDays = repetitionDays
+                )
+            )
             startActivity(intent)
         }
         val settings = AppSettings(this)
@@ -178,26 +141,24 @@ class AdvancedSearch : RBVActivity() {
             }
             binding.recAdvancedSearchTags.adapter = adapterTags
             binding.recAdvancedSearchTags.layoutManager = LinearLayoutManager(this)
-            if (tag == LIST_CARDS_GET_DB_TAGS_ADVANCED_SEARCH_ALL) {
+            if (allTags) {
                 binding.recAdvancedSearchTags.visibility = View.GONE
             } else {
                 binding.recAdvancedSearchTags.visibility = View.VISIBLE
             }
-            binding.advancedSearchTagsAll.isChecked =
-                tag == LIST_CARDS_GET_DB_TAGS_ADVANCED_SEARCH_ALL
+            binding.advancedSearchTagsAll.isChecked = allTags
             binding.advancedSearchTagsAll.setOnClickListener {
-                tag = LIST_CARDS_GET_DB_TAGS_ADVANCED_SEARCH_ALL
+                allTags = true
                 binding.recAdvancedSearchTags.visibility = View.GONE
             }
-            binding.advancedSearchTagsSelect.isChecked =
-                tag == LIST_CARDS_GET_DB_TAGS_ADVANCED_SEARCH_LIST
+            binding.advancedSearchTagsSelect.isChecked = !allTags
             binding.advancedSearchTagsSelect.setOnClickListener {
-                tag = LIST_CARDS_GET_DB_TAGS_ADVANCED_SEARCH_LIST
+                allTags = false
                 binding.recAdvancedSearchTags.visibility = View.VISIBLE
             }
         } else {
             binding.advancedSearchContainerTags.visibility = View.GONE
-            tag = LIST_CARDS_GET_DB_TAGS_ADVANCED_SEARCH_ALL
+            allTags = true
         }
     }
 }

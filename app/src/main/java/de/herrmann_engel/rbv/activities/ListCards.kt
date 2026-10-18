@@ -13,14 +13,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import de.herrmann_engel.rbv.Globals
-import de.herrmann_engel.rbv.Globals.LIST_CARDS_GET_DB_COLLECTIONS_ALL
-import de.herrmann_engel.rbv.Globals.LIST_CARDS_GET_DB_PACKS_ADVANCED_SEARCH_ALL
-import de.herrmann_engel.rbv.Globals.LIST_CARDS_GET_DB_PACKS_ADVANCED_SEARCH_LIST
-import de.herrmann_engel.rbv.Globals.LIST_CARDS_GET_DB_PACKS_ALL
-import de.herrmann_engel.rbv.Globals.LIST_CARDS_GET_DB_TAGS_ADVANCED_SEARCH_ALL
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.actions.CardActions
 import de.herrmann_engel.rbv.adapters.AdapterCards
+import de.herrmann_engel.rbv.cardlist.CardSource
 import de.herrmann_engel.rbv.cardlist.ListStatsDialog
 import de.herrmann_engel.rbv.cardlist.QueryMode
 import de.herrmann_engel.rbv.databinding.ActivityDefaultRecBinding
@@ -33,6 +29,9 @@ import de.herrmann_engel.rbv.utils.FormatCards
 import de.herrmann_engel.rbv.utils.SearchCards
 import de.herrmann_engel.rbv.utils.SortCards
 import de.herrmann_engel.rbv.utils.colorAt
+import de.herrmann_engel.rbv.utils.getCardSource
+import de.herrmann_engel.rbv.utils.getIntExtraOrNull
+import de.herrmann_engel.rbv.utils.putListCollection
 import de.herrmann_engel.rbv.utils.showInfoDialog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -40,8 +39,7 @@ import kotlinx.coroutines.withContext
 
 /**
  * Card list of a pack, a collection, all cards or the results of an advanced search
- * (depending on the "collection", "pack" and filter extras, see the LIST_CARDS_GET_DB_*
- * constants in Globals).
+ * (see [CardSource]).
  *
  * Besides the list (sortable, searchable, showing front/back/both sides) it offers statistics
  * (see [ListStatsDialog]) and the query mode (see [QueryMode]).
@@ -73,16 +71,7 @@ class ListCards : RBVActivity(), CardActions.Listener {
             viewModel.cardsList = value
         }
     private var cardsListFiltered: MutableList<DB_Card_With_Meta>? = null
-    private var collectionNo = 0
-    private var packNo = 0
-    // Advanced search filters
-    private var packNos: ArrayList<Int>? = null
-    private var tagNo = 0
-    private var tagNos: ArrayList<Int>? = null
-    private var progressGreater = false
-    private var progressNumber = 0
-    private var repetitionOlder = false
-    private var repetitionNumber = 0
+    private var cardSource: CardSource = CardSource.AllCards
     private var frontBackReverse: Boolean
         get() = viewModel.frontBackReverse
         set(value) {
@@ -131,15 +120,7 @@ class ListCards : RBVActivity(), CardActions.Listener {
                 }
             }
         }
-        collectionNo = intent.extras!!.getInt("collection")
-        packNo = intent.extras!!.getInt("pack")
-        packNos = intent.extras!!.getIntegerArrayList("packs")
-        tagNo = intent.extras!!.getInt("tag")
-        tagNos = intent.extras!!.getIntegerArrayList("tags")
-        progressGreater = intent.extras!!.getBoolean("progressGreater")
-        progressNumber = intent.extras!!.getInt("progressNumber")
-        repetitionOlder = intent.extras!!.getBoolean("repetitionOlder")
-        repetitionNumber = intent.extras!!.getInt("repetitionNumber")
+        intent.getCardSource()?.let { cardSource = it }
         if (settings.uiBackgroundImages) {
             binding.backgroundImage.visibility = View.VISIBLE
             binding.backgroundImage.setImageDrawable(
@@ -176,12 +157,9 @@ class ListCards : RBVActivity(), CardActions.Listener {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         if (cardsList != null) {
-            val cardDeleted = intent.extras!!.getInt("cardDeleted")
-            if (cardDeleted != 0) {
-                deleteCardFromList(cardDeleted)
-            }
-            val cardAdded = intent.extras!!.getInt("cardAdded")
-            if (cardAdded != 0 && cardsList?.let {
+            intent.getIntExtraOrNull("cardDeleted")?.let { deleteCardFromList(it) }
+            val cardAdded = intent.getIntExtraOrNull("cardAdded")
+            if (cardAdded != null && cardsList?.let {
                     it.stream().noneMatch { i -> i.card.uid == cardAdded }
                 } == true
             ) {
@@ -192,8 +170,8 @@ class ListCards : RBVActivity(), CardActions.Listener {
                     cardsList?.add(it)
                 } ?: Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show()
             }
-            val cardUpdated = intent.extras!!.getInt("cardUpdated")
-            if (cardUpdated != 0) {
+            val cardUpdated = intent.getIntExtraOrNull("cardUpdated")
+            if (cardUpdated != null) {
                 val cardWithMetaNew = dbHelperGet.getSingleCardWithMeta(cardUpdated)
                 val cardWithMetaOld = cardsList?.stream()
                     ?.filter { i -> i.card.uid == cardWithMetaNew?.card?.uid }
@@ -245,24 +223,23 @@ class ListCards : RBVActivity(), CardActions.Listener {
         // Reset options menu
         invalidateOptionsMenu()
 
-        // Set title
-        if (collectionNo >= 0 && packNo == LIST_CARDS_GET_DB_PACKS_ALL) {
-            title = dbHelperGet.getSingleCollection(collectionNo)?.name
-        } else if (packNo >= 0) {
-            title = dbHelperGet.getSinglePack(packNo)?.name
-        }
+        // Title and colors of the pack or collection
+        when (val cardSource = cardSource) {
+            is CardSource.Pack -> {
+                val pack = dbHelperGet.getSinglePack(cardSource.packId)
+                title = pack?.name
+                resources.colorAt(R.array.pack_color_background_list, pack?.colors)
+                    ?.let { binding.root.setBackgroundColor(it) }
+            }
 
-        // Colors
-        if (packNo >= 0) {
-            resources.colorAt(
-                R.array.pack_color_background_list,
-                dbHelperGet.getSinglePack(packNo)?.colors
-            )?.let { binding.root.setBackgroundColor(it) }
-        } else if (collectionNo >= 0) {
-            resources.colorAt(
-                R.array.pack_color_background_list,
-                dbHelperGet.getSingleCollection(collectionNo)?.colors
-            )?.let { binding.root.setBackgroundColor(it) }
+            is CardSource.Collection -> {
+                val collection = dbHelperGet.getSingleCollection(cardSource.collectionId)
+                title = collection?.name
+                resources.colorAt(R.array.pack_color_background_list, collection?.colors)
+                    ?.let { binding.root.setBackgroundColor(it) }
+            }
+
+            CardSource.AllCards, is CardSource.Search -> {}
         }
 
         lifecycleScope.launch {
@@ -347,40 +324,20 @@ class ListCards : RBVActivity(), CardActions.Listener {
 
     // Loads, formats and sorts the cards of this list
     private fun loadCards(sort: Int): MutableList<DB_Card_With_Meta> {
-        val cards =
-            if (collectionNo == LIST_CARDS_GET_DB_COLLECTIONS_ALL && packNo == LIST_CARDS_GET_DB_PACKS_ALL) {
-                dbHelperGet.allCardsWithMeta
-            } else if (packNo == LIST_CARDS_GET_DB_PACKS_ALL) {
-                dbHelperGet.getAllCardsByCollectionWithMeta(collectionNo)
-            } else if (packNo == LIST_CARDS_GET_DB_PACKS_ADVANCED_SEARCH_LIST) {
-                dbHelperGet.getAllCardsWithMetaFiltered(
-                    packNos,
-                    if (tagNo == LIST_CARDS_GET_DB_TAGS_ADVANCED_SEARCH_ALL) {
-                        null
-                    } else {
-                        tagNos
-                    },
-                    progressGreater,
-                    progressNumber,
-                    repetitionOlder,
-                    repetitionNumber
-                )
-            } else if (packNo == LIST_CARDS_GET_DB_PACKS_ADVANCED_SEARCH_ALL) {
-                dbHelperGet.getAllCardsWithMetaFiltered(
-                    null,
-                    if (tagNo == LIST_CARDS_GET_DB_TAGS_ADVANCED_SEARCH_ALL) {
-                        null
-                    } else {
-                        tagNos
-                    },
-                    progressGreater,
-                    progressNumber,
-                    repetitionOlder,
-                    repetitionNumber
-                )
-            } else {
-                dbHelperGet.getAllCardsByPackWithMeta(packNo)
-            }
+        val cards = when (val cardSource = cardSource) {
+            CardSource.AllCards -> dbHelperGet.allCardsWithMeta
+            is CardSource.Collection ->
+                dbHelperGet.getAllCardsByCollectionWithMeta(cardSource.collectionId)
+            is CardSource.Pack -> dbHelperGet.getAllCardsByPackWithMeta(cardSource.packId)
+            is CardSource.Search -> dbHelperGet.getAllCardsWithMetaFiltered(
+                cardSource.packIds,
+                cardSource.tagIds,
+                cardSource.progressGreater,
+                cardSource.progressThreshold,
+                cardSource.repetitionOlder,
+                cardSource.repetitionDays
+            )
+        }
         if (settings.formatCards) {
             FormatCards().formatCards(cards)
         }
@@ -393,20 +350,21 @@ class ListCards : RBVActivity(), CardActions.Listener {
         menuInflater.inflate(R.menu.menu_list_cards, menu)
         val startNewCardMenuItem = menu.findItem(R.id.start_new_card)
         val startPackDetailsMenuItem = menu.findItem(R.id.pack_details)
-        if (packNo < 0 || !dbHelperGet.existsPack(packNo)) {
+        val cardSource = cardSource
+        if (cardSource !is CardSource.Pack || !dbHelperGet.existsPack(cardSource.packId)) {
             startNewCardMenuItem.isVisible = false
             startPackDetailsMenuItem.isVisible = false
         } else {
             startNewCardMenuItem.setOnMenuItemClickListener {
                 val intent = Intent(this, NewCard::class.java)
-                intent.putExtra("pack", packNo)
+                intent.putExtra("pack", cardSource.packId)
                 this.startActivity(intent)
                 false
             }
             startPackDetailsMenuItem.setOnMenuItemClickListener {
                 val intent = Intent(this, ViewPack::class.java)
-                intent.putExtra("collection", collectionNo)
-                intent.putExtra("pack", packNo)
+                intent.putListCollection(cardSource.listCollectionId)
+                intent.putExtra("pack", cardSource.packId)
                 this.startActivity(intent)
                 false
             }
@@ -547,8 +505,7 @@ class ListCards : RBVActivity(), CardActions.Listener {
                     settings.uiFontSizeBig,
                     frontBackReverse,
                     showFrontAndBack,
-                    packNo,
-                    collectionNo,
+                    cardSource,
                     CardActions(this, this, mediaFileManager)
                 )
                 binding.recDefault.adapter = adapter

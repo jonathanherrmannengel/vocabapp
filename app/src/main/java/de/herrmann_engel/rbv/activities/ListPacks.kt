@@ -19,26 +19,28 @@ import de.herrmann_engel.rbv.export_import.AsyncExport
 import de.herrmann_engel.rbv.settings.AppSettings
 import de.herrmann_engel.rbv.utils.colorAt
 import de.herrmann_engel.rbv.utils.createDialog
+import de.herrmann_engel.rbv.utils.getListCollection
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Locale
 
 /**
- * Pack list of the collection passed as "collection" extra, or of all collections if it is
- * LIST_CARDS_GET_DB_COLLECTIONS_ALL. A single collection can be exported and shared from here.
+ * Pack list of the collection passed as "listCollection" extra (see putListCollection), or of all
+ * collections without it. A single collection can be exported and shared from here.
  */
 class ListPacks : RBVActivity(), PackActions.Listener {
     private lateinit var binding: ActivityDefaultRecBinding
     private lateinit var dbHelperGet: DB_Helper_Get
     private var adapter: AdapterPacks? = null
-    private var collectionNo = 0
+    // null: packs of all collections
+    private var collectionId: Int? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityDefaultRecBinding.inflate(layoutInflater)
         setContentView(binding.root)
         dbHelperGet = DB_Helper_Get(this)
-        collectionNo = intent.extras!!.getInt("collection")
+        collectionId = intent.getListCollection()
         setUpEdgeToEdge(binding.recDefault)
     }
 
@@ -47,24 +49,22 @@ class ListPacks : RBVActivity(), PackActions.Listener {
         val startNewPack = menu.findItem(R.id.start_new_pack)
         val packDetails = menu.findItem(R.id.pack_details)
         val export = menu.findItem(R.id.export_single)
+        val collectionId = collectionId
         // Collection-specific actions are only available for an existing single collection
-        if (collectionNo == Globals.LIST_CARDS_GET_DB_COLLECTIONS_ALL || !dbHelperGet.existsCollection(
-                collectionNo
-            )
-        ) {
+        if (collectionId == null || !dbHelperGet.existsCollection(collectionId)) {
             startNewPack.isVisible = false
             packDetails.isVisible = false
             export.isVisible = false
         } else {
             startNewPack.setOnMenuItemClickListener {
                 val intent = Intent(this, NewPack::class.java)
-                intent.putExtra("collection", collectionNo)
+                intent.putExtra("collection", collectionId)
                 this.startActivity(intent)
                 return@setOnMenuItemClickListener true
             }
             packDetails.setOnMenuItemClickListener {
                 val intent = Intent(this, ViewCollection::class.java)
-                intent.putExtra("collection", collectionNo)
+                intent.putExtra("collection", collectionId)
                 this.startActivity(intent)
                 return@setOnMenuItemClickListener true
             }
@@ -101,7 +101,7 @@ class ListPacks : RBVActivity(), PackActions.Listener {
                     showImportExportStarted(
                         AsyncExport(
                             this,
-                            collectionNo,
+                            collectionId,
                             bindingStartExportDialog.diaExportIncludeMedia.isChecked
                         ).execute()
                     )
@@ -111,9 +111,7 @@ class ListPacks : RBVActivity(), PackActions.Listener {
                 return@setOnMenuItemClickListener true
             }
         }
-        if (collectionNo >= 0) {
-            title = dbHelperGet.getSingleCollection(collectionNo)?.name
-        }
+        collectionId?.let { title = dbHelperGet.getSingleCollection(it)?.name }
         return true
     }
 
@@ -132,18 +130,14 @@ class ListPacks : RBVActivity(), PackActions.Listener {
             binding.backgroundImage.visibility = View.GONE
         }
         refreshContent()
-        if (collectionNo >= 0) {
+        collectionId?.let {
             resources.colorAt(
                 R.array.pack_color_background_list,
-                dbHelperGet.getSingleCollection(collectionNo)?.colors
+                dbHelperGet.getSingleCollection(it)?.colors
             )?.let { binding.root.setBackgroundColor(it) }
         }
     }
 
-    /**
-     * Loads the packs including the placeholder for "all cards" as first item. For long lists,
-     * the cards per pack are not counted to save time.
-     */
     // Load the packs in the background; create the adapter on first load, update it (and the
     // font size setting) afterwards
     private fun refreshContent() {
@@ -153,7 +147,7 @@ class ListPacks : RBVActivity(), PackActions.Listener {
             val content = withContext(Dispatchers.IO) { loadContent() }
             adapter?.updateSettingsAndContent(content, uiFontSizeBig) ?: run {
                 adapter = AdapterPacks(
-                    content, uiFontSizeBig, collectionNo, PackActions(this@ListPacks, this@ListPacks)
+                    content, uiFontSizeBig, collectionId, PackActions(this@ListPacks, this@ListPacks)
                 )
                 binding.recDefault.adapter = adapter
                 binding.recDefault.layoutManager =
@@ -162,26 +156,31 @@ class ListPacks : RBVActivity(), PackActions.Listener {
         }
     }
 
+    /**
+     * Loads the packs including the placeholder for "all cards" as first item. For long lists,
+     * the cards per pack are not counted to save time.
+     */
     private fun loadContent(): MutableList<DB_Pack_With_Meta> {
+        val collectionId = collectionId
         val currentList: MutableList<DB_Pack_With_Meta> =
-            if (collectionNo == Globals.LIST_CARDS_GET_DB_COLLECTIONS_ALL) {
+            if (collectionId == null) {
                 if (dbHelperGet.countPacks() > Globals.MAX_SIZE_COLLECTIONS_OR_PACKS_LIST_COUNTER) {
                     dbHelperGet.allPacksWithMetaNoCounter
                 } else {
                     dbHelperGet.allPacksWithMeta
                 }
             } else {
-                if (dbHelperGet.countPacksInCollection(collectionNo) > Globals.MAX_SIZE_COLLECTIONS_OR_PACKS_LIST_COUNTER) {
-                    dbHelperGet.getAllPacksWithMetaNoCounterByCollection(collectionNo)
+                if (dbHelperGet.countPacksInCollection(collectionId) > Globals.MAX_SIZE_COLLECTIONS_OR_PACKS_LIST_COUNTER) {
+                    dbHelperGet.getAllPacksWithMetaNoCounterByCollection(collectionId)
                 } else {
-                    dbHelperGet.getAllPacksWithMetaByCollection(collectionNo)
+                    dbHelperGet.getAllPacksWithMetaByCollection(collectionId)
                 }
             }
         val fixedFirstItemPlaceholder = DB_Pack_With_Meta()
-        if (collectionNo == Globals.LIST_CARDS_GET_DB_COLLECTIONS_ALL) {
+        if (collectionId == null) {
             fixedFirstItemPlaceholder.counter = dbHelperGet.countCards()
         } else {
-            fixedFirstItemPlaceholder.counter = dbHelperGet.countCardsInCollection(collectionNo)
+            fixedFirstItemPlaceholder.counter = dbHelperGet.countCardsInCollection(collectionId)
         }
         currentList.add(0, fixedFirstItemPlaceholder)
         return currentList

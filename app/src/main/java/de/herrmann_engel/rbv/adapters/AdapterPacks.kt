@@ -22,23 +22,23 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import de.herrmann_engel.rbv.Globals.LIST_CARDS_GET_DB_COLLECTIONS_ALL
-import de.herrmann_engel.rbv.Globals.LIST_CARDS_GET_DB_PACKS_ALL
 import de.herrmann_engel.rbv.Globals.MAX_SIZE_PACKS_CONTEXTUAL_MENU_SELECT
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.actions.PackActions
 import de.herrmann_engel.rbv.activities.ListCards
 import de.herrmann_engel.rbv.adapters.compare.ListPackCompare
+import de.herrmann_engel.rbv.cardlist.CardSource
 import de.herrmann_engel.rbv.databinding.RecViewCollectionOrPackBinding
 import de.herrmann_engel.rbv.db.DB_Pack
 import de.herrmann_engel.rbv.db.DB_Pack_With_Meta
 import de.herrmann_engel.rbv.utils.ContextTools
 import de.herrmann_engel.rbv.utils.StringTools
 import de.herrmann_engel.rbv.utils.colorAt
+import de.herrmann_engel.rbv.utils.putCardSource
 import java.util.Locale
 
 /**
- * Pack list of a collection (or of all collections if collection is LIST_CARDS_GET_DB_COLLECTIONS_ALL).
+ * Pack list of a collection (or of all collections if collectionId is null).
  *
  * The first item is a placeholder for "all cards". If it is the only item (no packs yet),
  * a welcome message is shown instead.
@@ -46,7 +46,7 @@ import java.util.Locale
 class AdapterPacks(
     private val packs: MutableList<DB_Pack_With_Meta>,
     private var uiFontSizeBig: Boolean,
-    private val collection: Int,
+    private val collectionId: Int?,
     private val packActions: PackActions
 ) : RecyclerView.Adapter<AdapterPacks.ViewHolder>() {
     class ViewHolder(val binding: RecViewCollectionOrPackBinding) :
@@ -71,7 +71,7 @@ class AdapterPacks(
             menu.findItem(R.id.menu_list_cards_context_delete).isVisible =
                 contextualMenuModePackIdList.isNotEmpty()
             menu.findItem(R.id.menu_list_cards_context_move).isVisible =
-                contextualMenuModePackIdList.isNotEmpty() && collection >= 0
+                contextualMenuModePackIdList.isNotEmpty() && collectionId != null
             menu.findItem(R.id.menu_list_cards_context_print).isVisible = false
             menu.findItem(R.id.menu_list_cards_context_select_all).isVisible =
                 contextualMenuModePackIdList.size < packs.size - 1 && packs.size - 1 <= MAX_SIZE_PACKS_CONTEXTUAL_MENU_SELECT
@@ -209,7 +209,7 @@ class AdapterPacks(
         when (position) {
             // No packs: welcome message (with an icon replacing the "+" if packs can be created here)
             0 if packs.size == 1 -> {
-                if (collection >= 0) {
+                if (collectionId != null) {
                     val text =
                         String.format(
                             Locale.ROOT,
@@ -262,15 +262,16 @@ class AdapterPacks(
             0 -> {
                 viewHolder.binding.root.setOnClickListener {
                     val intent = Intent(context, ListCards::class.java)
-                    intent.putExtra("collection", collection)
-                    intent.putExtra("pack", LIST_CARDS_GET_DB_PACKS_ALL)
+                    intent.putCardSource(
+                        collectionId?.let { CardSource.Collection(it) } ?: CardSource.AllCards
+                    )
                     context.startActivity(intent)
                 }
                 viewHolder.binding.recCollectionsName.text =
                     context.resources.getString(R.string.all_cards)
                 viewHolder.binding.recCollectionsDesc.visibility = View.VISIBLE
                 viewHolder.binding.recCollectionsDesc.text =
-                    if (collection == LIST_CARDS_GET_DB_COLLECTIONS_ALL) {
+                    if (collectionId == null) {
                         context.resources.getString(R.string.all_cards_desc)
                     } else {
                         context.resources.getString(R.string.all_cards_desc_by_pack)
@@ -350,8 +351,7 @@ class AdapterPacks(
                         }
                     } else {
                         val intent = Intent(context, ListCards::class.java)
-                        intent.putExtra("collection", collection)
-                        intent.putExtra("pack", extra)
+                        intent.putCardSource(CardSource.Pack(extra, collectionId))
                         context.startActivity(intent)
                     }
                 }
@@ -407,7 +407,7 @@ class AdapterPacks(
                     viewHolder.binding.recCollectionsNumberText.visibility = View.GONE
                 }
                 // Packs of all collections are listed: show the collection name as well
-                if (collection == LIST_CARDS_GET_DB_COLLECTIONS_ALL) {
+                if (collectionId == null) {
                     viewHolder.binding.recCollectionsParent.visibility = View.VISIBLE
                     viewHolder.binding.recCollectionsParent.text = packs[position].collectionName
                 }
