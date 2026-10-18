@@ -118,6 +118,10 @@ abstract class RBVActivity : AppCompatActivity() {
             WindowInsetsCompat.CONSUMED
         }
         enableEdgeToEdge()
+        // Let the activity's background show through the navigation bar instead of a contrast scrim
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            window.isNavigationBarContrastEnforced = false
+        }
     }
 
     // Called after a successful import, e.g. to reload displayed data
