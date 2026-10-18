@@ -49,8 +49,11 @@ class AsyncImportWorker(
     private var progress = 0
     private var lastProgressSentTime = 0L
 
-    // One of the IMPORT_ERROR_LEVEL_* constants; stays at "error" unless at least one entry was imported
-    private var errorLevel = Globals.IMPORT_ERROR_LEVEL_ERROR
+    // True once at least one entry was imported
+    private var importedAny = false
+
+    // True if rows could not be imported or the file could not be read completely
+    private var hadProblems = false
 
     // Column name -> position per row type, from the "<type>_schema" rows
     private val schemas = HashMap<String, Map<String, Int>>()
@@ -74,9 +77,6 @@ class AsyncImportWorker(
 
     // Pack created for a simple list
     private var simpleListPackId: Int? = null
-
-    // True if rows of a simple list were skipped because they have the wrong number of columns
-    private var simpleListRowsSkipped = false
 
     // Settings rows of the file; they are only applied once the import has succeeded
     private val importedSettings = ArrayList<Array<String?>>()
@@ -128,17 +128,19 @@ class AsyncImportWorker(
                 importRows(csvReader)
             }
             applySettings()
-            return errorLevel
         } catch (e: Exception) {
+            // The import failed as a whole; rows imported until then are kept
             e.printStackTrace()
+            hadProblems = true
         }
-        // The import failed as a whole: rows imported until then are kept, so this is only an
-        // error if nothing was imported
-        return if (errorLevel == Globals.IMPORT_ERROR_LEVEL_ERROR) {
-            Globals.IMPORT_ERROR_LEVEL_ERROR
-        } else {
-            Globals.IMPORT_ERROR_LEVEL_WARN
-        }
+        return resultLevel()
+    }
+
+    // An error if nothing was imported, a warning if something could not be imported
+    private fun resultLevel(): Int = when {
+        !importedAny -> Globals.IMPORT_ERROR_LEVEL_ERROR
+        hadProblems -> Globals.IMPORT_ERROR_LEVEL_WARN
+        else -> Globals.IMPORT_ERROR_LEVEL_OKAY
     }
 
     private fun importRows(csvReader: CSVReader) {
@@ -147,8 +149,6 @@ class AsyncImportWorker(
         }
         try {
             var endOfFile = false
-            // True if the rest of the file could not be read (e.g. a cut-off file)
-            var readFailed = false
             while (!endOfFile) {
                 AppDatabase.getInstance(context).runInTransaction {
                     var rows = 0
@@ -159,7 +159,7 @@ class AsyncImportWorker(
                             // A read error (e.g. a cut-off file) ends the import. It is caught
                             // here, inside the transaction, so the rows read so far are committed.
                             e.printStackTrace()
-                            readFailed = true
+                            hadProblems = true
                             null
                         }
                         if (line == null) {
@@ -171,15 +171,11 @@ class AsyncImportWorker(
                             importRow(line)
                         } catch (e: Exception) {
                             e.printStackTrace()
-                            errorLevel = Globals.IMPORT_ERROR_LEVEL_WARN
+                            hadProblems = true
                         }
                         reportProgress()
                     }
                 }
-            }
-            // Only an error if nothing could be imported
-            if ((readFailed || simpleListRowsSkipped) && errorLevel == Globals.IMPORT_ERROR_LEVEL_OKAY) {
-                errorLevel = Globals.IMPORT_ERROR_LEVEL_WARN
             }
         } finally {
             // Tags can stay unused, e.g. if the file contains unused tags, the cards of a tag were
@@ -187,7 +183,7 @@ class AsyncImportWorker(
             helperDelete.deleteUnusedTags(createdTags)
             // Nothing could be imported from a simple list: remove the pack (and the collection)
             // created for it
-            if (mode == Globals.IMPORT_MODE_SIMPLE_LIST && errorLevel == Globals.IMPORT_ERROR_LEVEL_ERROR) {
+            if (mode == Globals.IMPORT_MODE_SIMPLE_LIST && !importedAny) {
                 simpleListPackId?.let { helperGet.getSinglePack(it) }?.let {
                     helperDelete.deletePack(it, true)
                 }
@@ -239,9 +235,7 @@ class AsyncImportWorker(
 
     // At least one entry was imported, so the import is no longer a complete failure
     private fun markImported() {
-        if (errorLevel == Globals.IMPORT_ERROR_LEVEL_ERROR) {
-            errorLevel = Globals.IMPORT_ERROR_LEVEL_OKAY
-        }
+        importedAny = true
     }
 
     /**
@@ -276,7 +270,7 @@ class AsyncImportWorker(
     // Columns: front, back, notes (optional)
     private fun importSimpleListCard(line: Array<String?>) {
         if (line.size != 2 && line.size != 3) {
-            simpleListRowsSkipped = true
+            hadProblems = true
             return
         }
         val front = line[0] ?: ""
