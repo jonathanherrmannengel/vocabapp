@@ -2,7 +2,6 @@ package de.herrmann_engel.rbv.activities
 
 import android.app.Dialog
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.util.TypedValue
 import android.view.Menu
@@ -19,12 +18,7 @@ import de.herrmann_engel.rbv.db.DB_Collection
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Delete
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.settings.AppSettings
-import java.time.Instant
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
-import java.util.Date
-import java.util.Locale
+import de.herrmann_engel.rbv.utils.formatDateTime
 
 /**
  * Details of a collection (name, emoji, description, creation date) with options to edit and delete it.
@@ -103,15 +97,7 @@ class ViewCollection : RBVActivity() {
             )
         }
         // Format the creation date (stored in seconds)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val instant = Instant.ofEpochSecond(collection.date)
-            val dateTimeFormatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)
-                .withLocale(Locale.ROOT)
-                .withZone(ZoneId.systemDefault())
-            binding.collectionOrPackDate.text = dateTimeFormatter.format(instant)
-        } else {
-            binding.collectionOrPackDate.text = Date(collection.date * 1000).toString()
-        }
+        binding.collectionOrPackDate.text = formatDateTime(this, collection.date)
         val colorsBackground = resources.obtainTypedArray(R.array.pack_color_background)
         val minimalLength = colorsBackground.length()
         val collectionColors = collection.colors

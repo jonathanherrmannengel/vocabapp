@@ -4,7 +4,6 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.drawable.GradientDrawable
-import android.os.Build
 import android.os.Bundle
 import android.text.SpannableString
 import android.text.SpannableStringBuilder
@@ -32,14 +31,10 @@ import de.herrmann_engel.rbv.media.MediaFileManager
 import de.herrmann_engel.rbv.settings.AppSettings
 import de.herrmann_engel.rbv.ui.TagSpan
 import de.herrmann_engel.rbv.utils.StringTools
+import de.herrmann_engel.rbv.utils.formatDateTime
 import io.noties.markwon.Markwon
 import io.noties.markwon.linkify.LinkifyPlugin
 import me.saket.bettermovementmethod.BetterLinkMovementMethod
-import java.time.Instant
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
-import java.util.Date
 import java.util.Locale
 
 /**
@@ -191,15 +186,7 @@ class ViewCard : RBVActivity(), CardActions.Listener {
         binding.cardDate.text = String.format(
             Locale.ROOT,
             getString(R.string.creation_date),
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                val instant = Instant.ofEpochSecond(card.date)
-                val dateTimeFormatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)
-                    .withLocale(Locale.ROOT)
-                    .withZone(ZoneId.systemDefault())
-                dateTimeFormatter.format(instant)
-            } else {
-                Date(card.date * 1000).toString()
-            }
+            formatDateTime(this, card.date)
         )
         known = card.known
         updateCardKnown()
@@ -300,16 +287,7 @@ class ViewCard : RBVActivity(), CardActions.Listener {
                 String.format(
                     Locale.ROOT,
                     getString(R.string.last_repetition_date),
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        val instant = Instant.ofEpochSecond(card.lastRepetition)
-                        val dateTimeFormatter =
-                            DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)
-                                .withLocale(Locale.ROOT)
-                                .withZone(ZoneId.systemDefault())
-                        dateTimeFormatter.format(instant)
-                    } else {
-                        Date(card.lastRepetition * 1000).toString()
-                    }
+                    formatDateTime(this, card.lastRepetition)
                 )
             }
     }
