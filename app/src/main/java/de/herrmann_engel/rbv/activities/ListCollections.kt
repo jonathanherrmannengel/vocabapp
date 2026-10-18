@@ -291,7 +291,7 @@ class ListCollections : RBVActivity() {
      * lists, the packs per collection are not counted to save time.
      */
     private fun loadContent(): MutableList<DB_Collection_With_Meta> {
-        val currentList =
+        val collections =
             if (dbHelperGet.countCollections() > MAX_SIZE_COLLECTIONS_OR_PACKS_LIST_COUNTER) {
                 dbHelperGet.allCollectionsWithMetaNoCounter
             } else {
@@ -299,8 +299,8 @@ class ListCollections : RBVActivity() {
             }
         val fixedFirstItemPlaceholder = DB_Collection_With_Meta()
         fixedFirstItemPlaceholder.counter = dbHelperGet.countPacks()
-        currentList.add(0, fixedFirstItemPlaceholder)
-        return currentList
+        collections.add(0, fixedFirstItemPlaceholder)
+        return collections
     }
 
     // Load the collections in the background; create the adapter on first load, update it afterwards

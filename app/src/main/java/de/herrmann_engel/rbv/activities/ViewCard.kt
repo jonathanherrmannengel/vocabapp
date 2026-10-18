@@ -206,7 +206,7 @@ class ViewCard : RBVActivity(), CardActions.Listener {
     }
 
     // Missing media file: open the card's media settings
-    private fun openCardMedia(id: Int) {
+    private fun openCardMedia(cardId: Int) {
         val intent = Intent(this, EditCardMedia::class.java)
         intent.putExtra("card", cardId)
         startActivity(intent)

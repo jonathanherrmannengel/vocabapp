@@ -162,7 +162,7 @@ class ListPacks : RBVActivity(), PackActions.Listener {
      */
     private fun loadContent(): MutableList<DB_Pack_With_Meta> {
         val collectionId = collectionId
-        val currentList: MutableList<DB_Pack_With_Meta> =
+        val packs: MutableList<DB_Pack_With_Meta> =
             if (collectionId == null) {
                 if (dbHelperGet.countPacks() > Globals.MAX_SIZE_COLLECTIONS_OR_PACKS_LIST_COUNTER) {
                     dbHelperGet.allPacksWithMetaNoCounter
@@ -182,8 +182,8 @@ class ListPacks : RBVActivity(), PackActions.Listener {
         } else {
             fixedFirstItemPlaceholder.counter = dbHelperGet.countCardsInCollection(collectionId)
         }
-        currentList.add(0, fixedFirstItemPlaceholder)
-        return currentList
+        packs.add(0, fixedFirstItemPlaceholder)
+        return packs
     }
 
     // Reload the list after an import, which may have added packs or changed the font size setting

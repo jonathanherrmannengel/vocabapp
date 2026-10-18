@@ -337,27 +337,27 @@ class AdapterCards(
             context.resources.colorAt(R.array.pack_color_list, card.packColor)
                 ?.let { recText.setTextColor(it) }
         }
-        val extra = card.card.uid
+        val cardId = card.card.uid
         recText.setOnClickListener {
             // In selection mode a click toggles the selection, otherwise it opens the card
             if (contextualMenuMode != null) {
-                if (contextualMenuModeCardIdList.contains(extra)) {
-                    contextualMenuModeCardIdList.remove(extra)
+                if (contextualMenuModeCardIdList.contains(cardId)) {
+                    contextualMenuModeCardIdList.remove(cardId)
                     if (contextualMenuModeCardIdList.size == cards.size - 1 || contextualMenuModeCardIdList.size == MAX_SIZE_CARDS_CONTEXTUAL_MENU_PRINT) {
                         contextualMenuMode?.invalidate()
                     }
-                    contextualMenuModeFormatCard(extra)
+                    contextualMenuModeFormatCard(cardId)
                     contextualMenuModeSelectedTitle()
                     if (contextualMenuModeCardIdList.isEmpty()) {
                         contextualMenuMode?.finish()
                     }
                 } else {
-                    contextualMenuModeSelectItem(extra)
+                    contextualMenuModeSelectItem(cardId)
                 }
             } else {
                 val intent = Intent(context, ViewCard::class.java)
                 intent.putCardSource(cardSource)
-                intent.putExtra("card", extra)
+                intent.putExtra("card", cardId)
                 context.startActivity(intent)
             }
         }
@@ -369,7 +369,7 @@ class AdapterCards(
             contextualMenuModeActivity = ContextTools().getActivity(context)
             contextualMenuMode =
                 contextualMenuModeActivity?.startActionMode(contextualMenuModeCallback)
-            contextualMenuModeSelectItem(extra)
+            contextualMenuModeSelectItem(cardId)
             return@setOnLongClickListener true
         }
     }

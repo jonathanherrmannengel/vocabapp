@@ -64,10 +64,10 @@ class AdapterPacksAdvancedSearch(
                 collectionName
             )
             viewHolder.binding.recSmallCheckbox.contentDescription = checkBoxContentDescription
-            val extra = pack.uid
-            viewHolder.binding.recSmallCheckbox.isChecked = isChecked(extra)
+            val packId = pack.uid
+            viewHolder.binding.recSmallCheckbox.isChecked = isChecked(packId)
             viewHolder.binding.recSmallCheckbox.setOnCheckedChangeListener { _, checked ->
-                onCheckedChange(extra, checked)
+                onCheckedChange(packId, checked)
             }
         }
     }

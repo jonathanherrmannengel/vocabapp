@@ -19,7 +19,7 @@ import de.herrmann_engel.rbv.utils.colorAt
  * reports the ids of the moved packs to onMoved.
  */
 class AdapterCollectionsMovePack(
-    private val collection: List<DB_Collection>,
+    private val collections: List<DB_Collection>,
     private val packs: List<DB_Pack>,
     private val dialog: Dialog,
     private val onMoved: (ArrayList<Int>) -> Unit
@@ -49,10 +49,10 @@ class AdapterCollectionsMovePack(
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         val context = viewHolder.binding.root.context
-        context.resources.colorAt(R.array.pack_color_list, collection[position].colors)
+        context.resources.colorAt(R.array.pack_color_list, collections[position].colors)
             ?.let { viewHolder.binding.recName.setTextColor(it) }
-        viewHolder.binding.recName.text = collection[position].name
-        val currentCollectionId = collection[position].uid
+        viewHolder.binding.recName.text = collections[position].name
+        val targetCollectionId = collections[position].uid
         viewHolder.binding.recName.setOnClickListener {
             val updateHelper =
                 DB_Helper_Update(context)
@@ -61,9 +61,9 @@ class AdapterCollectionsMovePack(
             // All packs are moved or none
             AppDatabase.getInstance(context).runInTransaction {
                 for (pack in packs) {
-                    if (pack.collection != currentCollectionId) {
+                    if (pack.collection != targetCollectionId) {
                         packIds.add(pack.uid)
-                        pack.collection = currentCollectionId
+                        pack.collection = targetCollectionId
                         updateHelper.updatePack(pack)
                     }
                 }
@@ -74,6 +74,6 @@ class AdapterCollectionsMovePack(
     }
 
     override fun getItemCount(): Int {
-        return collection.size
+        return collections.size
     }
 }

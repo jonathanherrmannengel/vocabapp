@@ -245,13 +245,13 @@ class AdapterCollections(
 
             else -> {
                 val currentCollection = collections[position].collection!!
-                val extra = currentCollection.uid
+                val collectionId = currentCollection.uid
                 viewHolder.binding.root.setOnClickListener {
                     val intent = Intent(
                         context,
                         ListPacks::class.java
                     )
-                    intent.putListCollection(extra)
+                    intent.putListCollection(collectionId)
                     context.startActivity(intent)
                 }
                 viewHolder.binding.recCollectionsName.text =

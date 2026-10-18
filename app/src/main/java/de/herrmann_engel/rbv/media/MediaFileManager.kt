@@ -108,14 +108,14 @@ class MediaFileManager(
     }
 
     // Informs the user that a media file linked to the card is missing; on confirmation onMissingFileAction is called
-    private fun showMissingDialog(card: Int, parentDialog: Dialog?) {
+    private fun showMissingDialog(cardId: Int, parentDialog: Dialog?) {
         showConfirmDialog(
             activity,
             activity.getString(R.string.media_missing_dialog),
             activity.getString(R.string.media_missing_dialog_text)
         ) {
             parentDialog?.dismiss()
-            onMissingFileAction(card)
+            onMissingFileAction(cardId)
         }
     }
 
@@ -230,8 +230,8 @@ class MediaFileManager(
         }
     }
 
-    override fun getImageUri(id: Int): Uri? {
-        val file = getFile(id) ?: return null
+    override fun getImageUri(fileId: Int): Uri? {
+        val file = getFile(fileId) ?: return null
         return file.uri
     }
 
@@ -244,9 +244,9 @@ class MediaFileManager(
         return mediaFolder?.findFile(name)
     }
 
-    private fun getFile(id: Int): DocumentFile? {
+    private fun getFile(fileId: Int): DocumentFile? {
         val dbHelperGet = DB_Helper_Get(activity)
-        val fileName = dbHelperGet.getSingleMedia(id)?.file ?: return null
+        val fileName = dbHelperGet.getSingleMedia(fileId)?.file ?: return null
         return getFile(fileName)
     }
 
@@ -272,8 +272,8 @@ class MediaFileManager(
         }
     }
 
-    override fun openFile(id: Int) {
-        val file = getFile(id)
+    override fun openFile(fileId: Int) {
+        val file = getFile(fileId)
         if (file != null && file.isFile) {
             openFile(file)
         } else {
@@ -299,8 +299,8 @@ class MediaFileManager(
         }
     }
 
-    override fun shareFile(id: Int) {
-        val file = getFile(id)
+    override fun shareFile(fileId: Int) {
+        val file = getFile(fileId)
         if (file != null && file.isFile) {
             shareFile(file)
         } else {
@@ -346,10 +346,9 @@ class MediaFileManager(
         return name?.let { mediaFolder?.findFile(it)?.exists() } == true
     }
 
-    private fun existsMediaFile(input: Int): Boolean {
+    private fun existsMediaFile(fileId: Int): Boolean {
         val dbHelperGet = DB_Helper_Get(activity)
-        val currentMedia = dbHelperGet.getSingleMedia(input) ?: return false
-        val fileName = currentMedia.file
-        return existsMediaFile(fileName)
+        val media = dbHelperGet.getSingleMedia(fileId) ?: return false
+        return existsMediaFile(media.file)
     }
 }

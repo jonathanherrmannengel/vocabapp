@@ -332,26 +332,26 @@ class AdapterPacks(
 
             else -> {
                 val currentPack = packs[position].pack!!
-                val extra = currentPack.uid
+                val packId = currentPack.uid
                 viewHolder.binding.root.setOnClickListener {
                     // In selection mode a click toggles the selection, otherwise it opens the pack
                     if (contextualMenuMode != null) {
-                        if (contextualMenuModePackIdList.contains(extra)) {
-                            contextualMenuModePackIdList.remove(extra)
+                        if (contextualMenuModePackIdList.contains(packId)) {
+                            contextualMenuModePackIdList.remove(packId)
                             if (contextualMenuModePackIdList.size == packs.size - 2) {
                                 contextualMenuMode?.invalidate()
                             }
-                            contextualMenuModeFormatPack(extra)
+                            contextualMenuModeFormatPack(packId)
                             contextualMenuModeSelectedTitle()
                             if (contextualMenuModePackIdList.isEmpty()) {
                                 contextualMenuMode?.finish()
                             }
                         } else {
-                            contextualMenuModeSelectItem(extra)
+                            contextualMenuModeSelectItem(packId)
                         }
                     } else {
                         val intent = Intent(context, ListCards::class.java)
-                        intent.putCardSource(CardSource.Pack(extra, collectionId))
+                        intent.putCardSource(CardSource.Pack(packId, collectionId))
                         context.startActivity(intent)
                     }
                 }
@@ -363,7 +363,7 @@ class AdapterPacks(
                     contextualMenuModeActivity = ContextTools().getActivity(context)
                     contextualMenuMode =
                         contextualMenuModeActivity?.startActionMode(contextualMenuModeCallback)
-                    contextualMenuModeSelectItem(extra)
+                    contextualMenuModeSelectItem(packId)
                     return@setOnLongClickListener true
                 }
                 viewHolder.binding.recCollectionsName.text =

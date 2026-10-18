@@ -206,10 +206,10 @@ class ListCards : RBVActivity(), CardActions.Listener {
     }
 
     // Missing media file: open the card's media settings
-    private fun openCardMedia(id: Int) {
+    private fun openCardMedia(cardId: Int) {
         try {
             val intent = Intent(this, EditCardMedia::class.java)
-            intent.putExtra("card", id)
+            intent.putExtra("card", cardId)
             startActivity(intent)
         } catch (e: Exception) {
             e.printStackTrace()
@@ -484,22 +484,22 @@ class ListCards : RBVActivity(), CardActions.Listener {
      */
     private fun updateContent(recreate: Boolean) {
         cardsList?.let {
-            var tempCardList: MutableList<DB_Card_With_Meta> = ArrayList(it)
+            var shownCards: MutableList<DB_Card_With_Meta> = ArrayList(it)
             // Search
             val searchQueryLocal = searchQuery
             if (!searchQueryLocal.isNullOrEmpty()) {
-                val searchResults: MutableList<DB_Card_With_Meta> = ArrayList(tempCardList)
+                val searchResults: MutableList<DB_Card_With_Meta> = ArrayList(shownCards)
                 SearchCards().searchCards(searchResults, searchQueryLocal)
                 if (searchResults.isEmpty()) {
                     searchQuery = ""
                     Toast.makeText(this, R.string.search_no_results, Toast.LENGTH_LONG).show()
                 } else {
-                    tempCardList = searchResults
+                    shownCards = searchResults
                 }
             }
             // Set recycler view
-            if (adapter == null || cardsListFiltered == null || recreate || cardsListFiltered!!.isEmpty() || tempCardList.isEmpty()) {
-                cardsListFiltered = tempCardList
+            if (adapter == null || cardsListFiltered == null || recreate || cardsListFiltered!!.isEmpty() || shownCards.isEmpty()) {
+                cardsListFiltered = shownCards
                 adapter = AdapterCards(
                     cardsListFiltered!!,
                     settings.uiFontSizeBig,
@@ -513,7 +513,7 @@ class ListCards : RBVActivity(), CardActions.Listener {
                 binding.recDefault.scrollToPosition(0)
             } else {
                 adapter!!.updateContent(
-                    tempCardList,
+                    shownCards,
                     frontBackReverse,
                     showFrontAndBack,
                     settings.uiFontSizeBig

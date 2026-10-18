@@ -39,10 +39,10 @@ class AdapterTagsAdvancedSearch(
             viewHolder.binding.recSmallDesc.text = tags[position].emoji
         }
         viewHolder.binding.recSmallCheckbox.contentDescription = tags[position].name
-        val extra = tags[position].uid
-        viewHolder.binding.recSmallCheckbox.isChecked = isChecked(extra)
+        val tagId = tags[position].uid
+        viewHolder.binding.recSmallCheckbox.isChecked = isChecked(tagId)
         viewHolder.binding.recSmallCheckbox.setOnCheckedChangeListener { _, checked ->
-            onCheckedChange(extra, checked)
+            onCheckedChange(tagId, checked)
         }
     }
 
