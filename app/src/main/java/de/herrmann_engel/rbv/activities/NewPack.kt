@@ -1,79 +1,53 @@
 package de.herrmann_engel.rbv.activities
 
-import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.Menu
 import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
 import de.herrmann_engel.rbv.R
-import de.herrmann_engel.rbv.databinding.ActivityNewCollectionOrPackBinding
+import de.herrmann_engel.rbv.databinding.ActivityCollectionOrPackFormBinding
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Create
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
-import de.herrmann_engel.rbv.utils.colorAt
-import de.herrmann_engel.rbv.utils.showConfirmDialog
+import de.herrmann_engel.rbv.ui.CollectionOrPackForm
 
 /**
- * Form to create a new pack in the collection passed as "collection" extra.
- * The form is colored like the collection; the new pack inherits its color.
+ * Form to create a new pack in the collection passed as "collection" extra: name, description,
+ * emoji and color. The color of the collection is preselected.
  */
 class NewPack : RBVActivity() {
-    private lateinit var binding: ActivityNewCollectionOrPackBinding
+    private lateinit var form: CollectionOrPackForm
     private var collectionNo = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityNewCollectionOrPackBinding.inflate(layoutInflater)
+        val binding = ActivityCollectionOrPackFormBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        val dbHelperGet = DB_Helper_Get(this)
         collectionNo = intent.extras!!.getInt("collection")
         // Close if the collection no longer exists (e.g. deleted in the meantime)
-        val collection = dbHelperGet.getSingleCollection(collectionNo) ?: run {
+        val collection = DB_Helper_Get(this).getSingleCollection(collectionNo) ?: run {
             finish()
             return
         }
-        val color = resources.colorAt(R.array.pack_color_main, collection.colors)
-        val colorBackground = resources.colorAt(R.array.pack_color_background, collection.colors)
-        if (color != null && colorBackground != null) {
-            binding.newCollectionOrPackNameLayout.boxStrokeColor = color
-            binding.newCollectionOrPackNameLayout.hintTextColor =
-                ColorStateList.valueOf(color)
-            binding.newCollectionOrPackDescLayout.boxStrokeColor = color
-            binding.newCollectionOrPackDescLayout.hintTextColor =
-                ColorStateList.valueOf(color)
-            binding.root.setBackgroundColor(colorBackground)
-        }
-        binding.newCollectionOrPackNameLayout.hint = String.format(
-            getString(R.string.collection_or_pack_name_format),
-            getString(R.string.pack_name), getString(R.string.collection_or_pack_name)
+        form = CollectionOrPackForm(
+            this,
+            binding,
+            R.string.pack_name,
+            CollectionOrPackForm.Values("", "", "", collection.colors)
         )
-        binding.newCollectionOrPackDescLayout.hint =
-            String.format(getString(R.string.optional), getString(R.string.collection_or_pack_desc))
-
-        // Ask before discarding entered text
-        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                val name = binding.newCollectionOrPackName.text.toString()
-                val desc = binding.newCollectionOrPackDesc.text.toString()
-                if (name.isBlank() && desc.isBlank()) {
-                    finish()
-                } else {
-                    showConfirmDialog(this@NewPack, getString(R.string.discard_changes)) {
-                        finish()
-                    }
-                }
-            }
-        })
-
-        setUpEdgeToEdge(binding.newCollectionOrPackLayout)
+        setUpEdgeToEdge(binding.collectionOrPackLayout)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_add, menu)
         menu.findItem(R.id.menu_add_insert).setOnMenuItemClickListener {
-            val name = binding.newCollectionOrPackName.text.toString()
-            val desc = binding.newCollectionOrPackDesc.text.toString()
             try {
-                val dbHelperCreate = DB_Helper_Create(this)
-                dbHelperCreate.createPack(name, desc, collectionNo)
+                DB_Helper_Create(this).createPack(
+                    form.name,
+                    form.desc,
+                    collectionNo,
+                    form.selectedColors,
+                    form.emoji,
+                    System.currentTimeMillis() / 1000L
+                )
                 finish()
             } catch (e: Exception) {
                 e.printStackTrace()

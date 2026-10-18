@@ -1,173 +1,49 @@
 package de.herrmann_engel.rbv.activities
 
-import android.content.res.ColorStateList
-import android.os.Build
 import android.os.Bundle
-import android.text.Editable
-import android.text.InputFilter
-import android.text.TextWatcher
-import android.util.DisplayMetrics
 import android.view.Menu
-import android.view.View.OnFocusChangeListener
-import android.widget.ImageButton
-import android.widget.LinearLayout
 import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
-import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.toDrawable
-import com.vanniktech.emoji.EmojiPopup
-import com.vanniktech.emoji.EmojiTheming
-import com.vanniktech.emoji.inputfilters.OnlyEmojisInputFilter
 import de.herrmann_engel.rbv.R
-import de.herrmann_engel.rbv.databinding.ActivityEditCollectionOrPackBinding
+import de.herrmann_engel.rbv.databinding.ActivityCollectionOrPackFormBinding
 import de.herrmann_engel.rbv.db.DB_Pack
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Update
-import de.herrmann_engel.rbv.utils.StringTools
-import de.herrmann_engel.rbv.utils.showConfirmDialog
-import kotlin.math.roundToInt
+import de.herrmann_engel.rbv.ui.CollectionOrPackForm
 
 /**
  * Form to edit the pack passed as "pack" extra: name, description, emoji and color.
  */
 class EditPack : RBVActivity() {
-    private lateinit var binding: ActivityEditCollectionOrPackBinding
+    private lateinit var form: CollectionOrPackForm
     private lateinit var pack: DB_Pack
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityEditCollectionOrPackBinding.inflate(layoutInflater)
+        val binding = ActivityCollectionOrPackFormBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        val dbHelperGet = DB_Helper_Get(this)
-        binding.editCollectionOrPackDescLayout.hint =
-            String.format(getString(R.string.optional), getString(R.string.collection_or_pack_desc))
-        // Emoji field: only emojis are allowed, entered via an emoji keyboard popup
-        val emojiPopup = EmojiPopup(
-            binding.root, binding.editCollectionOrPackEmoji,
-            EmojiTheming(
-                ContextCompat.getColor(this, R.color.light_grey_default),
-                ContextCompat.getColor(this, R.color.light_black),
-                ContextCompat.getColor(this, R.color.highlight),
-                ContextCompat.getColor(this, R.color.button),
-                ContextCompat.getColor(this, R.color.light_black),
-                ContextCompat.getColor(this, R.color.dark_grey)
-            )
-        )
-        binding.editCollectionOrPackEmoji.filters = arrayOf<InputFilter>(OnlyEmojisInputFilter())
-        binding.editCollectionOrPackEmoji.onFocusChangeListener =
-            OnFocusChangeListener { _, hasFocus: Boolean ->
-                if (hasFocus) {
-                    if (!emojiPopup.isShowing) {
-                        emojiPopup.show()
-                    }
-                } else if (emojiPopup.isShowing) {
-                    emojiPopup.dismiss()
-                }
-            }
-        binding.editCollectionOrPackEmoji.setOnClickListener {
-            if (!emojiPopup.isShowing) {
-                emojiPopup.show()
-            }
-        }
-        binding.editCollectionOrPackEmojiLayout.hint = String.format(
-            getString(R.string.optional),
-            getString(R.string.collection_or_pack_emoji)
-        )
         val packNo = intent.extras!!.getInt("pack")
         // Close if the pack no longer exists (e.g. deleted in the meantime)
-        pack = dbHelperGet.getSinglePack(packNo) ?: run {
+        pack = DB_Helper_Get(this).getSinglePack(packNo) ?: run {
             finish()
             return
         }
-        binding.editCollectionOrPackName.setText(pack.name)
-        binding.editCollectionOrPackDesc.setText(pack.desc)
-        binding.editCollectionOrPackEmoji.setText(pack.emoji)
-        // Keep only the newly entered emoji, so the field always contains a single emoji
-        binding.editCollectionOrPackEmoji.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(
-                s: CharSequence,
-                start: Int,
-                count: Int,
-                after: Int
-            ) {
-            }
-
-            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                binding.editCollectionOrPackEmoji.removeTextChangedListener(this)
-                binding.editCollectionOrPackEmoji.setText(s.subSequence(start, start + count))
-                binding.editCollectionOrPackEmoji.addTextChangedListener(this)
-            }
-
-            override fun afterTextChanged(s: Editable) {}
-        })
-        val colorNames = resources.obtainTypedArray(R.array.pack_color_names)
-        val colors = resources.obtainTypedArray(R.array.pack_color_main)
-        val colorsBackground = resources.obtainTypedArray(R.array.pack_color_background)
-        val minimalLength =
-            colorNames.length().coerceAtMost(colors.length())
-                .coerceAtMost(colorsBackground.length())
-        var i = 0
-        // Color picker: one button per available color; the current color is applied to the form
-        while (i < minimalLength) {
-            val colorName = colorNames.getString(i)
-            val color = colors.getColor(i, 0)
-            val colorBackground = colorsBackground.getColor(i, 0)
-            if (pack.colors == i) {
-                setColors(color, colorBackground)
-            }
-            val colorView = ImageButton(this)
-            colorView.setImageDrawable(color.toDrawable())
-            // 10dp in pixels
-            val margin =
-                (10 * (resources.displayMetrics.densityDpi.toFloat() / DisplayMetrics.DENSITY_DEFAULT)).roundToInt()
-            val lp = LinearLayout.LayoutParams(margin * 3, margin * 3)
-            lp.setMargins(margin, margin, margin, margin)
-            colorView.layoutParams = lp
-            colorView.setPadding(0, 0, 0, 0)
-            val finalI = i
-            colorView.setOnClickListener {
-                setColors(color, colorBackground)
-                pack.colors = finalI
-            }
-            colorView.contentDescription = colorName
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                colorView.tooltipText = colorName
-            }
-            binding.colorPicker.addView(colorView)
-            i++
-        }
-        colorNames.recycle()
-        colors.recycle()
-        colorsBackground.recycle()
-        // Ask before discarding changes
-        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                val name = binding.editCollectionOrPackName.text.toString()
-                val desc = binding.editCollectionOrPackDesc.text.toString()
-                if (pack.name == name && pack.desc == desc) {
-                    finish()
-                } else {
-                    showConfirmDialog(this@EditPack, getString(R.string.discard_changes)) {
-                        finish()
-                    }
-                }
-            }
-        })
-        setUpEdgeToEdge(binding.editCollectionOrPackLayout)
+        form = CollectionOrPackForm(
+            this,
+            binding,
+            R.string.pack_name,
+            CollectionOrPackForm.Values(pack.name, pack.desc ?: "", pack.emoji ?: "", pack.colors)
+        )
+        setUpEdgeToEdge(binding.collectionOrPackLayout)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_edit, menu)
         menu.findItem(R.id.menu_edit_save).setOnMenuItemClickListener {
-            pack.name = binding.editCollectionOrPackName.text.toString()
-            pack.desc = binding.editCollectionOrPackDesc.text.toString()
-            if (binding.editCollectionOrPackEmoji.text != null) {
-                pack.emoji =
-                    StringTools().firstEmoji(binding.editCollectionOrPackEmoji.text.toString())
-            } else {
-                pack.emoji = null
-            }
-            val dbHelperUpdate = DB_Helper_Update(this)
-            if (dbHelperUpdate.updatePack(pack)) {
+            pack.name = form.name
+            pack.desc = form.desc
+            pack.emoji = form.emoji
+            pack.colors = form.selectedColors
+            if (DB_Helper_Update(this).updatePack(pack)) {
                 finish()
             } else {
                 Toast.makeText(this, R.string.error_values, Toast.LENGTH_SHORT).show()
@@ -175,16 +51,5 @@ class EditPack : RBVActivity() {
             return@setOnMenuItemClickListener true
         }
         return true
-    }
-
-    // Colors the form like the selected color
-    private fun setColors(main: Int, background: Int) {
-        binding.editCollectionOrPackNameLayout.boxStrokeColor = main
-        binding.editCollectionOrPackNameLayout.hintTextColor = ColorStateList.valueOf(main)
-        binding.editCollectionOrPackDescLayout.boxStrokeColor = main
-        binding.editCollectionOrPackDescLayout.hintTextColor = ColorStateList.valueOf(main)
-        binding.editCollectionOrPackEmojiLayout.boxStrokeColor = main
-        binding.editCollectionOrPackEmojiLayout.hintTextColor = ColorStateList.valueOf(main)
-        binding.root.setBackgroundColor(background)
     }
 }
