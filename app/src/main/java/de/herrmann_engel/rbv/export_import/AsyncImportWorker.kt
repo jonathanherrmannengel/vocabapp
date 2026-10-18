@@ -72,6 +72,9 @@ class AsyncImportWorker(
     // Collection created for a simple list (null if an existing one is used)
     private var simpleListCreatedCollection: Int? = null
 
+    // True if rows of a simple list were skipped because they have the wrong number of columns
+    private var simpleListRowsSkipped = false
+
     // Settings rows of the file; they are only applied once the import has succeeded
     private val importedSettings = ArrayList<Array<String?>>()
 
@@ -172,7 +175,7 @@ class AsyncImportWorker(
                 }
             }
             // Only an error if nothing could be imported
-            if (readFailed && errorLevel == Globals.IMPORT_ERROR_LEVEL_OKAY) {
+            if ((readFailed || simpleListRowsSkipped) && errorLevel == Globals.IMPORT_ERROR_LEVEL_OKAY) {
                 errorLevel = Globals.IMPORT_ERROR_LEVEL_WARN
             }
         } finally {
@@ -288,7 +291,7 @@ class AsyncImportWorker(
     // Columns: front, back, notes (optional)
     private fun importSimpleListCard(line: Array<String?>) {
         if (line.size != 2 && line.size != 3) {
-            errorLevel = Globals.IMPORT_ERROR_LEVEL_WARN
+            simpleListRowsSkipped = true
             return
         }
         val front = line[0] ?: ""

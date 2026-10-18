@@ -28,7 +28,11 @@ import de.herrmann_engel.rbv.settings.AppSettings
 import de.herrmann_engel.rbv.utils.StringTools
 import de.herrmann_engel.rbv.utils.createDialog
 import de.herrmann_engel.rbv.utils.showConfirmDialog
+import org.commonmark.node.HtmlBlock
+import org.commonmark.node.HtmlInline
+import org.commonmark.node.Node
 import org.commonmark.parser.Parser
+import org.commonmark.renderer.NodeRenderer
 import org.commonmark.renderer.html.HtmlRenderer
 import java.util.Locale
 
@@ -240,8 +244,10 @@ class CardActions(
                         // Notes are formatted as Markdown
                         val parser = Parser.builder().build()
                         val document = parser.parse(notes)
-                        // Raw HTML in notes is printed as text instead of being interpreted
-                        val renderer = HtmlRenderer.builder().escapeHtml(true).build()
+                        // Raw HTML is left out, as in the app (Markwon without HTML support)
+                        val renderer = HtmlRenderer.builder()
+                            .nodeRendererFactory { OmitRawHtml }
+                            .build()
                         renderer.render(document)
                     } else {
                         notes.toSpanned().toHtml()
@@ -342,4 +348,12 @@ class CardActions(
         print(arrayListOf(card))
     }
 
+}
+
+// Renders raw HTML blocks and inline HTML of Markdown as nothing
+private object OmitRawHtml : NodeRenderer {
+    override fun getNodeTypes(): Set<Class<out Node>> =
+        setOf(HtmlBlock::class.java, HtmlInline::class.java)
+
+    override fun render(node: Node) {}
 }
