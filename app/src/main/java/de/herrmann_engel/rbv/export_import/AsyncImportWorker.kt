@@ -22,7 +22,7 @@ import java.util.TimeZone
  * Imports a CSV file, either in the format written by [AsyncExportWorker] or as a simple list
  * of cards (front, back, optional notes per row).
  *
- * The uids in the file are translated to new uids via [AsyncImportUidConvert], so packs, cards
+ * The uids in the file are translated to new uids via [AsyncImportIdConvert], so packs, cards
  * and links end up assigned to the right (newly created or existing) entries. How existing
  * entries are handled depends on mode (see the IMPORT_MODE_* constants in Globals).
  *
@@ -63,11 +63,11 @@ class AsyncImportWorker(
     private val helperDelete = DB_Helper_Delete(context)
 
     // Translation of the uids in the file to the uids in the database, per entry type
-    private val collectionUidConverter = AsyncImportUidConvert()
-    private val packUidConverter = AsyncImportUidConvert()
-    private val cardUidConverter = AsyncImportUidConvert()
-    private val mediaUidConverter = AsyncImportUidConvert()
-    private val tagsUidConverter = AsyncImportUidConvert()
+    private val collectionIdConverter = AsyncImportIdConvert()
+    private val packIdConverter = AsyncImportIdConvert()
+    private val cardIdConverter = AsyncImportIdConvert()
+    private val mediaIdConverter = AsyncImportIdConvert()
+    private val tagIdConverter = AsyncImportIdConvert()
 
     // Tags created by this import; those without card in the end are deleted again
     private val createdTags = mutableListOf<Int>()
@@ -291,7 +291,7 @@ class AsyncImportWorker(
     // Columns: uid, name, desc, date, colors (optional), emoji (optional)
     private fun importCollection(line: Array<String?>) {
         markImported()
-        val collectionUidOld = (line.column("uid", 1) ?: "0").toInt()
+        val collectionIdOld = (line.column("uid", 1) ?: "0").toInt()
         val name = line.column("name", 2) ?: ""
         val desc = line.column("desc", 3) ?: ""
         val date = parseDate(line.column("date", 4))
@@ -303,17 +303,17 @@ class AsyncImportWorker(
         // Create a new collection unless one with the same name exists; in integrate mode the
         // existing one is used instead, in skip mode its content is skipped
         if (sameNamed.isEmpty() || mode == Globals.IMPORT_MODE_DUPLICATES) {
-            val collectionUidNew =
+            val collectionIdNew =
                 helperCreate
                     .createCollection(name, desc, colors, emoji, date)
                     .toInt()
-            collectionUidConverter.insertPair(
-                collectionUidOld,
-                collectionUidNew
+            collectionIdConverter.insertPair(
+                collectionIdOld,
+                collectionIdNew
             )
         } else if (mode == Globals.IMPORT_MODE_INTEGRATE) {
-            collectionUidConverter.insertPair(
-                collectionUidOld,
+            collectionIdConverter.insertPair(
+                collectionIdOld,
                 sameNamed[0].uid
             )
         }
@@ -322,7 +322,7 @@ class AsyncImportWorker(
     // Columns: uid, name, desc, date, colors, collection (optional), emoji (optional)
     private fun importPack(line: Array<String?>) {
         // Files from old versions without collections: put the packs into a "_default" collection
-        if (collectionUidConverter.getSize() == 0 &&
+        if (collectionIdConverter.getSize() == 0 &&
             mode != Globals.IMPORT_MODE_SKIP
         ) {
             markImported()
@@ -333,7 +333,7 @@ class AsyncImportWorker(
             val emoji = null
             val sameNamed = helperGet.getAllCollectionsByName(name)
             if (sameNamed.isEmpty() || mode == Globals.IMPORT_MODE_DUPLICATES) {
-                val collectionUidNew =
+                val collectionIdNew =
                     helperCreate
                         .createCollection(
                             name,
@@ -343,16 +343,16 @@ class AsyncImportWorker(
                             date
                         )
                         .toInt()
-                collectionUidConverter.insertPair(0, collectionUidNew)
+                collectionIdConverter.insertPair(0, collectionIdNew)
             } else {
-                collectionUidConverter.insertPair(0, sameNamed[0].uid)
+                collectionIdConverter.insertPair(0, sameNamed[0].uid)
             }
         }
         // Without collection column, the pack goes into the "_default" collection (old uid 0)
-        val currentCollection = collectionUidConverter.getNewValue(
+        val collectionId = collectionIdConverter.getNewValue(
             line.column("collection", 6)?.toInt() ?: 0
         ) ?: return
-        val packUidOld = (line.column("uid", 1) ?: "0").toInt()
+        val packIdOld = (line.column("uid", 1) ?: "0").toInt()
         val name = line.column("name", 2) ?: ""
         val desc = line.column("desc", 3) ?: ""
         val date = parseDate(line.column("date", 4))
@@ -362,35 +362,35 @@ class AsyncImportWorker(
         }
         val sameNamed =
             helperGet.getAllPacksByCollectionAndNameAndDesc(
-                currentCollection,
+                collectionId,
                 name,
                 desc
             )
         if (sameNamed.isEmpty() || mode == Globals.IMPORT_MODE_DUPLICATES) {
-            val packUidNew =
+            val packIdNew =
                 helperCreate
                     .createPack(
                         name,
                         desc,
-                        currentCollection,
+                        collectionId,
                         colors,
                         emoji,
                         date
                     )
                     .toInt()
-            packUidConverter.insertPair(packUidOld, packUidNew)
+            packIdConverter.insertPair(packIdOld, packIdNew)
         } else if (mode == Globals.IMPORT_MODE_INTEGRATE) {
-            packUidConverter.insertPair(packUidOld, sameNamed[0].uid)
+            packIdConverter.insertPair(packIdOld, sameNamed[0].uid)
         }
     }
 
     // Columns: uid, front, back, pack, known, date, notes, last repetition (optional), repetition count (optional)
     private fun importCard(line: Array<String?>) {
-        val currentPack =
-            packUidConverter.getNewValue(
+        val packId =
+            packIdConverter.getNewValue(
                 (line.column("pack", 4) ?: "0").toInt()
             ) ?: return
-        val cardUidOld = (line.column("uid", 1) ?: "0").toInt()
+        val cardIdOld = (line.column("uid", 1) ?: "0").toInt()
         val front = line.column("front", 2) ?: ""
         val back = line.column("back", 3) ?: ""
         val known = (line.column("known", 5) ?: "0").toInt()
@@ -402,65 +402,65 @@ class AsyncImportWorker(
             (line.column("count_repetitions", 9) ?: "0").toInt()
         val sameNamed =
             helperGet.getSingleCardIdByPackAndFrontAndBackAndNotes(
-                currentPack,
+                packId,
                 front,
                 back,
                 notes
             )
         // Existing identical cards are skipped, or reused in integrate mode
         if (sameNamed == null || mode == Globals.IMPORT_MODE_DUPLICATES) {
-            val cardUidNew = helperCreate.createCard(
+            val cardIdNew = helperCreate.createCard(
                 front,
                 back,
                 notes,
-                currentPack,
+                packId,
                 known,
                 date,
                 lastRepetition,
                 countRepetitions
             ).toInt()
-            cardUidConverter.insertPair(cardUidOld, cardUidNew)
+            cardIdConverter.insertPair(cardIdOld, cardIdNew)
         } else if (mode == Globals.IMPORT_MODE_INTEGRATE) {
-            cardUidConverter.insertPair(cardUidOld, sameNamed)
+            cardIdConverter.insertPair(cardIdOld, sameNamed)
         }
     }
 
     // Columns: uid, file, mime. Only the database entries are imported; the files themselves are
     // expected in the media folder. Existing entries for the same file name are reused.
     private fun importMedia(line: Array<String?>) {
-        val mediaUidOld = (line.column("uid", 1) ?: "0").toInt()
+        val mediaIdOld = (line.column("uid", 1) ?: "0").toInt()
         val file = line.column("file", 2) ?: ""
         val mime = line.column("mime", 3) ?: ""
         if (file.isEmpty() || mime.isEmpty()) {
             return
         }
-        val mediaUidNew =
+        val mediaIdNew =
             helperGet.getSingleMedia(file)?.uid ?: helperCreate.createMedia(file, mime).toInt()
-        mediaUidConverter.insertPair(mediaUidOld, mediaUidNew)
+        mediaIdConverter.insertPair(mediaIdOld, mediaIdNew)
     }
 
     // Columns: uid, fileId, cardId
     private fun importMediaLink(line: Array<String?>) {
-        val currentMedia =
-            mediaUidConverter.getNewValue(
+        val mediaId =
+            mediaIdConverter.getNewValue(
                 (line.column("fileId", 2) ?: "0").toInt()
             ) ?: return
-        val currentCard =
-            cardUidConverter.getNewValue(
+        val cardId =
+            cardIdConverter.getNewValue(
                 (line.column("cardId", 3) ?: "0").toInt()
             ) ?: return
         if (!helperGet.existsMediaLinkCard(
-                currentMedia,
-                currentCard
+                mediaId,
+                cardId
             )
         ) {
-            helperCreate.createMediaLink(currentMedia, currentCard)
+            helperCreate.createMediaLink(mediaId, cardId)
         }
     }
 
     // Columns: uid, tag_name, emoji, color. Tags are identified by name; existing tags are reused.
     private fun importTag(line: Array<String?>) {
-        val tagUidOld = (line.column("uid", 1) ?: "0").toInt()
+        val tagIdOld = (line.column("uid", 1) ?: "0").toInt()
         val name = line.column("tag_name", 2) ?: ""
         val emoji = line.column("emoji", 3) ?: ""
         val color = line.column("color", 4) ?: ""
@@ -469,30 +469,30 @@ class AsyncImportWorker(
         }
         val existingTag = helperGet.getSingleTag(name)
         if (existingTag != null) {
-            tagsUidConverter.insertPair(tagUidOld, existingTag.uid)
+            tagIdConverter.insertPair(tagIdOld, existingTag.uid)
         } else {
-            val tagUidNew = helperCreate.createTag(name, emoji, color).toInt()
-            tagsUidConverter.insertPair(tagUidOld, tagUidNew)
-            createdTags.add(tagUidNew)
+            val tagIdNew = helperCreate.createTag(name, emoji, color).toInt()
+            tagIdConverter.insertPair(tagIdOld, tagIdNew)
+            createdTags.add(tagIdNew)
         }
     }
 
     // Columns: uid, tagId, cardId
     private fun importTagLink(line: Array<String?>) {
-        val currentTag =
-            tagsUidConverter.getNewValue(
+        val tagId =
+            tagIdConverter.getNewValue(
                 (line.column("tagId", 2) ?: "0").toInt()
             ) ?: return
-        val currentCard =
-            cardUidConverter.getNewValue(
+        val cardId =
+            cardIdConverter.getNewValue(
                 (line.column("cardId", 3) ?: "0").toInt()
             ) ?: return
         if (!helperGet.existsTagLinkCard(
-                currentTag,
-                currentCard
+                tagId,
+                cardId
             )
         ) {
-            helperCreate.createTagLink(currentTag, currentCard)
+            helperCreate.createTagLink(tagId, cardId)
         }
     }
 
