@@ -17,7 +17,7 @@ import de.herrmann_engel.rbv.media.MediaFiles
  */
 class AdapterMediaLinkCardAll(
     private val media: List<DB_Media>,
-    private val cardNo: Int,
+    private val cardId: Int,
     private val onlyImages: Boolean,
     private val dialog: Dialog,
     private val mediaFiles: MediaFiles
@@ -41,7 +41,7 @@ class AdapterMediaLinkCardAll(
             if (onlyImages) {
                 mediaFiles.showImageDialog(
                     fileId,
-                    cardNo,
+                    cardId,
                     dialog
                 )
             } else {

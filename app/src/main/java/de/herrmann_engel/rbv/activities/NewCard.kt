@@ -18,15 +18,15 @@ import de.herrmann_engel.rbv.utils.showConfirmDialog
  */
 class NewCard : RBVActivity() {
     private lateinit var binding: ActivityNewCardBinding
-    private var packNo = 0
+    private var packId = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityNewCardBinding.inflate(layoutInflater)
         setContentView(binding.root)
         val dbHelperGet = DB_Helper_Get(this)
-        packNo = intent.extras!!.getInt("pack")
+        packId = intent.extras!!.getInt("pack")
         // Close if the pack no longer exists (e.g. deleted in the meantime)
-        val pack = dbHelperGet.getSinglePack(packNo) ?: run {
+        val pack = dbHelperGet.getSinglePack(packId) ?: run {
             finish()
             return
         }
@@ -75,11 +75,11 @@ class NewCard : RBVActivity() {
             val notes = binding.newCardNotes.text.toString()
             try {
                 val dbHelperCreate = DB_Helper_Create(this)
-                val cardNo = dbHelperCreate.createCard(front, back, notes, packNo)
+                val cardId = dbHelperCreate.createCard(front, back, notes, packId)
                 // Return to the existing card list, which adds the new card to its list
                 val intent = Intent(this, ListCards::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-                intent.putExtra("cardAdded", cardNo.toInt())
+                intent.putExtra("cardAdded", cardId.toInt())
                 this.startActivity(intent)
             } catch (e: Exception) {
                 e.printStackTrace()

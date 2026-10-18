@@ -55,7 +55,7 @@ class ViewCard : RBVActivity(), CardActions.Listener {
     private var known = 0
     // The card list the card was opened from
     private var cardSource: CardSource = CardSource.AllCards
-    private var cardNo = 0
+    private var cardId = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityViewCardBinding.inflate(layoutInflater)
@@ -64,14 +64,14 @@ class ViewCard : RBVActivity(), CardActions.Listener {
         dbHelperUpdate = DB_Helper_Update(this)
 
         intent.getCardSource()?.let { cardSource = it }
-        cardNo = intent.extras!!.getInt("card")
+        cardId = intent.extras!!.getInt("card")
 
         // Return to the card list, which then reloads this card as it may have changed
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 val intent = Intent(this@ViewCard, ListCards::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-                intent.putExtra("cardUpdated", cardNo)
+                intent.putExtra("cardUpdated", cardId)
                 startActivity(intent)
             }
         })
@@ -86,7 +86,7 @@ class ViewCard : RBVActivity(), CardActions.Listener {
         val formatCards = settings.formatCards
         val increaseFontSize = settings.uiFontSizeBig
         // Close if the card no longer exists (e.g. deleted in the meantime)
-        card = dbHelperGet.getSingleCard(cardNo) ?: run {
+        card = dbHelperGet.getSingleCard(cardId) ?: run {
             finish()
             return
         }
@@ -208,7 +208,7 @@ class ViewCard : RBVActivity(), CardActions.Listener {
     // Missing media file: open the card's media settings
     private fun openCardMedia(id: Int) {
         val intent = Intent(this, EditCardMedia::class.java)
-        intent.putExtra("card", cardNo)
+        intent.putExtra("card", cardId)
         startActivity(intent)
     }
 
@@ -216,7 +216,7 @@ class ViewCard : RBVActivity(), CardActions.Listener {
         menuInflater.inflate(R.menu.menu_view_card, menu)
         menu.findItem(R.id.menu_view_card_edit).setOnMenuItemClickListener {
             val intent = Intent(this, EditCard::class.java)
-            intent.putExtra("card", cardNo)
+            intent.putExtra("card", cardId)
             startActivity(intent)
             return@setOnMenuItemClickListener true
         }
@@ -226,13 +226,13 @@ class ViewCard : RBVActivity(), CardActions.Listener {
         }
         menu.findItem(R.id.menu_view_card_edit_media).setOnMenuItemClickListener {
             val intent = Intent(this, EditCardMedia::class.java)
-            intent.putExtra("card", cardNo)
+            intent.putExtra("card", cardId)
             startActivity(intent)
             return@setOnMenuItemClickListener true
         }
         menu.findItem(R.id.menu_view_card_edit_tags).setOnMenuItemClickListener {
             val intent = Intent(this, EditCardTags::class.java)
-            intent.putExtra("card", cardNo)
+            intent.putExtra("card", cardId)
             startActivity(intent)
             return@setOnMenuItemClickListener true
         }
@@ -298,7 +298,7 @@ class ViewCard : RBVActivity(), CardActions.Listener {
     override fun movedCards(cardIds: ArrayList<Int>) {
         try {
             // Close if the card no longer exists (e.g. deleted in the meantime)
-            card = dbHelperGet.getSingleCard(cardNo) ?: run {
+            card = dbHelperGet.getSingleCard(cardId) ?: run {
                 finish()
                 return
             }
@@ -318,14 +318,14 @@ class ViewCard : RBVActivity(), CardActions.Listener {
     override fun deletedCards(cardIds: ArrayList<Int>) {
         val intent = Intent(this, ListCards::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-        intent.putExtra("cardDeleted", cardNo)
+        intent.putExtra("cardDeleted", cardId)
         startActivity(intent)
     }
 
     // Shows buttons for the card's images and other media only if there are any
     private fun setMediaButtons() {
         val imageList =
-            dbHelperGet.getCardImageMedia(cardNo)
+            dbHelperGet.getCardImageMedia(cardId)
         if (imageList.isEmpty()) {
             binding.viewCardImages.visibility = View.GONE
         } else {
@@ -334,10 +334,10 @@ class ViewCard : RBVActivity(), CardActions.Listener {
         binding.viewCardImages.setOnClickListener {
             mediaFileManager.showImageListDialog(
                 imageList,
-                cardNo
+                cardId
             )
         }
-        val mediaList = dbHelperGet.getCardMedia(cardNo)
+        val mediaList = dbHelperGet.getCardMedia(cardId)
         if (mediaList.isEmpty()) {
             binding.viewCardMedia.visibility = View.GONE
         } else {
@@ -346,7 +346,7 @@ class ViewCard : RBVActivity(), CardActions.Listener {
         binding.viewCardMedia.setOnClickListener {
             mediaFileManager.showMediaListDialog(
                 mediaList,
-                cardNo
+                cardId
             )
         }
     }

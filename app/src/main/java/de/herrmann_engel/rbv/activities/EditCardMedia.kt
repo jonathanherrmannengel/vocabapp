@@ -26,7 +26,7 @@ class EditCardMedia : RBVActivity() {
     private val mediaFileManager = MediaFileManager(this, onFolderSet = { setRecView() })
     private lateinit var binding: ActivityEditCardMediaBinding
     private lateinit var dbHelperGet: DB_Helper_Get
-    private var cardNo = 0
+    private var cardId = 0
     // Result of the file picker: copy the file into the media folder. If a file with the same name
     // already exists there, the user can link the existing file or copy the new one anyway
     // (the document provider then chooses a different name).
@@ -84,9 +84,9 @@ class EditCardMedia : RBVActivity() {
         binding = ActivityEditCardMediaBinding.inflate(layoutInflater)
         setContentView(binding.root)
         dbHelperGet = DB_Helper_Get(this)
-        cardNo = intent.extras!!.getInt("card")
+        cardId = intent.extras!!.getInt("card")
         // Close if the card no longer exists (e.g. deleted in the meantime)
-        val card = dbHelperGet.getSingleCard(cardNo) ?: run {
+        val card = dbHelperGet.getSingleCard(cardId) ?: run {
             finish()
             return
         }
@@ -150,7 +150,7 @@ class EditCardMedia : RBVActivity() {
             val dbHelperCreate = DB_Helper_Create(this)
             val fileId = dbHelperGet.getSingleMedia(outputFileName)?.uid
                 ?: dbHelperCreate.createMedia(outputFileName, mime).toInt()
-            dbHelperCreate.createMediaLink(fileId, cardNo)
+            dbHelperCreate.createMediaLink(fileId, cardId)
             setRecView()
             Toast.makeText(this, R.string.success, Toast.LENGTH_SHORT).show()
         } catch (e: Exception) {
@@ -160,8 +160,8 @@ class EditCardMedia : RBVActivity() {
     }
 
     private fun setRecView() {
-        val mediaList = dbHelperGet.getCardMedia(cardNo).toMutableList()
-        val adapter = AdapterMediaLinkCard(mediaList, cardNo, mediaFileManager.mediaFolder, mediaFileManager)
+        val mediaList = dbHelperGet.getCardMedia(cardId).toMutableList()
+        val adapter = AdapterMediaLinkCard(mediaList, cardId, mediaFileManager.mediaFolder, mediaFileManager)
         binding.recCardMedia.adapter = adapter
         binding.recCardMedia.layoutManager = LinearLayoutManager(this)
     }

@@ -18,7 +18,7 @@ import de.herrmann_engel.rbv.media.MediaFiles
  */
 class AdapterMediaLinkCardImages(
     private val media: List<DB_Media>,
-    private val cardNo: Int,
+    private val cardId: Int,
     private val dialog: Dialog,
     private val mediaFiles: MediaFiles
 ) : RecyclerView.Adapter<AdapterMediaLinkCardImages.ViewHolder>() {
@@ -50,7 +50,7 @@ class AdapterMediaLinkCardImages(
         viewHolder.binding.recImg.setOnClickListener {
             mediaFiles.showImageDialog(
                 fileId,
-                cardNo,
+                cardId,
                 dialog
             )
         }

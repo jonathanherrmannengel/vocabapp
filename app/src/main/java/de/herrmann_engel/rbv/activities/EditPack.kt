@@ -21,9 +21,9 @@ class EditPack : RBVActivity() {
         super.onCreate(savedInstanceState)
         val binding = ActivityCollectionOrPackFormBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        val packNo = intent.extras!!.getInt("pack")
+        val packId = intent.extras!!.getInt("pack")
         // Close if the pack no longer exists (e.g. deleted in the meantime)
-        pack = DB_Helper_Get(this).getSinglePack(packNo) ?: run {
+        pack = DB_Helper_Get(this).getSinglePack(packId) ?: run {
             finish()
             return
         }

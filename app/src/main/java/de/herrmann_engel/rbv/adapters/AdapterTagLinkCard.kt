@@ -29,7 +29,7 @@ import de.herrmann_engel.rbv.utils.createDialog
  */
 class AdapterTagLinkCard(
     private val tags: MutableList<DB_Tag>,
-    private val cardNo: Int,
+    private val cardId: Int,
 ) : RecyclerView.Adapter<AdapterTagLinkCard.ViewHolder>() {
     class ViewHolder(val binding: RecViewTagsBinding) : RecyclerView.ViewHolder(binding.root)
 
@@ -55,7 +55,7 @@ class AdapterTagLinkCard(
             viewHolder.binding.recTagsDelete.visibility = View.VISIBLE
             viewHolder.binding.recTagsDelete.setOnClickListener {
                 val dbHelperDelete = DB_Helper_Delete(context)
-                dbHelperDelete.deleteTagLink(currentTag.uid, cardNo)
+                dbHelperDelete.deleteTagLink(currentTag.uid, cardId)
                 tags.remove(currentTag)
                 notifyItemRemoved(viewHolder.bindingAdapterPosition)
                 notifyItemRangeChanged(viewHolder.bindingAdapterPosition, tags.size)

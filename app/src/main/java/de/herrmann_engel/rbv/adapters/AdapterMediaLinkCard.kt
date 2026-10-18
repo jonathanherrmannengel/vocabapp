@@ -19,7 +19,7 @@ import de.herrmann_engel.rbv.media.MediaFiles
  */
 class AdapterMediaLinkCard(
     private val media: MutableList<DB_Media>,
-    private val cardNo: Int,
+    private val cardId: Int,
     private val outputDirectory: DocumentFile?,
     private val mediaFiles: MediaFiles
 ) : RecyclerView.Adapter<AdapterMediaLinkCard.ViewHolder>() {
@@ -87,7 +87,7 @@ class AdapterMediaLinkCard(
         viewHolder: ViewHolder,
         context: Context
     ): Boolean {
-        val mediaDeleted = DB_Helper_Delete(context).deleteMediaLink(currentMedia.uid, cardNo)
+        val mediaDeleted = DB_Helper_Delete(context).deleteMediaLink(currentMedia.uid, cardId)
         media.remove(currentMedia)
         notifyItemRemoved(viewHolder.bindingAdapterPosition)
         notifyItemRangeChanged(viewHolder.bindingAdapterPosition, media.size)

@@ -25,7 +25,7 @@ class ViewPack : RBVActivity(), PackActions.Listener {
     private lateinit var binding: ActivityViewCollectionOrPackBinding
     private lateinit var dbHelperGet: DB_Helper_Get
     private lateinit var pack: DB_Pack
-    private var packNo = 0
+    private var packId = 0
     // Collection of the pack list the pack was opened from, null for the list of all packs
     private var listCollectionId: Int? = null
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,7 +34,7 @@ class ViewPack : RBVActivity(), PackActions.Listener {
         setContentView(binding.root)
         dbHelperGet = DB_Helper_Get(this)
         listCollectionId = intent.getListCollection()
-        packNo = intent.extras!!.getInt("pack")
+        packId = intent.extras!!.getInt("pack")
         setUpEdgeToEdge(binding.viewCollectionOrPackLayout)
     }
 
@@ -44,7 +44,7 @@ class ViewPack : RBVActivity(), PackActions.Listener {
         val settings = AppSettings(this)
         val increaseFontSize = settings.uiFontSizeBig
         // Close if the pack no longer exists (e.g. deleted in the meantime)
-        pack = dbHelperGet.getSinglePack(packNo) ?: run {
+        pack = dbHelperGet.getSinglePack(packId) ?: run {
             finish()
             return
         }
@@ -86,7 +86,7 @@ class ViewPack : RBVActivity(), PackActions.Listener {
         menuInflater.inflate(R.menu.menu_view_pack, menu)
         menu.findItem(R.id.menu_view_pack_edit).setOnMenuItemClickListener {
             val intent = Intent(this, EditPack::class.java)
-            intent.putExtra("pack", packNo)
+            intent.putExtra("pack", packId)
             startActivity(intent)
             return@setOnMenuItemClickListener true
         }
@@ -116,7 +116,7 @@ class ViewPack : RBVActivity(), PackActions.Listener {
     override fun movedPacks(packIds: ArrayList<Int>) {
         try {
             // Close if the pack no longer exists (e.g. deleted in the meantime)
-            pack = dbHelperGet.getSinglePack(packNo) ?: run {
+            pack = dbHelperGet.getSinglePack(packId) ?: run {
                 finish()
                 return
             }

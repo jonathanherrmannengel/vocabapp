@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 class AsyncExport {
     private val context: Context
     private val singleCollection: Boolean
-    private var collectionNo = 0
+    private var collectionId = 0
     private var includeSettings = false
     private var includeMedia: Boolean
     private val exportFileUri: Uri?
@@ -34,12 +34,12 @@ class AsyncExport {
     // Exports a single collection (e.g. for sharing it)
     constructor(
         context: Context,
-        collectionNo: Int,
+        collectionId: Int,
         includeMedia: Boolean
     ) {
         singleCollection = true
         this.context = context.applicationContext
-        this.collectionNo = collectionNo
+        this.collectionId = collectionId
         this.includeMedia = includeMedia
         exportFileUri = null
     }
@@ -57,7 +57,7 @@ class AsyncExport {
                 AsyncExportWorker(
                     context,
                     singleCollection,
-                    collectionNo,
+                    collectionId,
                     includeSettings,
                     includeMedia,
                     exportFileUri

@@ -28,10 +28,10 @@ class EditCard : RBVActivity() {
         binding = ActivityEditCardBinding.inflate(layoutInflater)
         setContentView(binding.root)
         val dbHelperGet = DB_Helper_Get(this)
-        val cardNo = intent.extras!!.getInt("card")
+        val cardId = intent.extras!!.getInt("card")
         backToList = intent.extras!!.getBoolean("backToList")
         // Close if the card no longer exists (e.g. deleted in the meantime)
-        card = dbHelperGet.getSingleCard(cardNo) ?: run {
+        card = dbHelperGet.getSingleCard(cardId) ?: run {
             finish()
             return
         }

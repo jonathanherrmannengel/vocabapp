@@ -141,13 +141,13 @@ class MediaFileManager(
      * Shows the images of a card: a single image directly, up to MAX_SIZE_CARD_IMAGE_PREVIEW images
      * as a grid of previews, more as a list of file names.
      */
-    fun showImageListDialog(imageList: List<DB_Media>, cardNo: Int) {
+    fun showImageListDialog(imageList: List<DB_Media>, cardId: Int) {
         if (imageList.size == 1) {
-            showImageDialog(imageList[0].uid, cardNo)
+            showImageDialog(imageList[0].uid, cardId)
         } else if (imageList.size > Globals.MAX_SIZE_CARD_IMAGE_PREVIEW) {
             showMediaListDialog(
                 imageList,
-                cardNo,
+                cardId,
                 true,
                 activity.getString(R.string.query_media_image_title)
             )
@@ -161,17 +161,17 @@ class MediaFileManager(
                 activity.getString(R.string.query_media_image_title)
             )
             imageListDialog.show()
-            val adapter = AdapterMediaLinkCardImages(imageList, cardNo, imageListDialog, this)
+            val adapter = AdapterMediaLinkCardImages(imageList, cardId, imageListDialog, this)
             bindingImageListDialog.diaRec.adapter = adapter
             bindingImageListDialog.diaRec.layoutManager = GridLayoutManager(activity, 3)
         }
     }
 
     // Shows all media files of a card as a list
-    fun showMediaListDialog(mediaList: List<DB_Media>, cardNo: Int) {
+    fun showMediaListDialog(mediaList: List<DB_Media>, cardId: Int) {
         showMediaListDialog(
             mediaList,
-            cardNo,
+            cardId,
             false,
             activity.getString(R.string.query_media_all_title)
         )
@@ -179,7 +179,7 @@ class MediaFileManager(
 
     private fun showMediaListDialog(
         mediaList: List<DB_Media>,
-        cardNo: Int,
+        cardId: Int,
         onlyImages: Boolean,
         title: String
     ) {
@@ -188,7 +188,7 @@ class MediaFileManager(
         )
         val mediaListDialog = createDialog(activity, bindingMediaListDialog.root, title)
         mediaListDialog.show()
-        val adapter = AdapterMediaLinkCardAll(mediaList, cardNo, onlyImages, mediaListDialog, this)
+        val adapter = AdapterMediaLinkCardAll(mediaList, cardId, onlyImages, mediaListDialog, this)
         bindingMediaListDialog.diaRec.adapter = adapter
         bindingMediaListDialog.diaRec.layoutManager = LinearLayoutManager(activity)
     }

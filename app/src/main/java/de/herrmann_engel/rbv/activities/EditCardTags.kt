@@ -18,16 +18,16 @@ import de.herrmann_engel.rbv.utils.colorAt
 class EditCardTags : RBVActivity() {
     private lateinit var binding: ActivityEditCardTagsBinding
     private lateinit var dbHelperGet: DB_Helper_Get
-    private var cardNo = 0
+    private var cardId = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityEditCardTagsBinding.inflate(layoutInflater)
         setContentView(binding.root)
         dbHelperGet = DB_Helper_Get(this)
-        cardNo = intent.extras!!.getInt("card")
+        cardId = intent.extras!!.getInt("card")
         // Close if the card no longer exists (e.g. deleted in the meantime)
-        val card = dbHelperGet.getSingleCard(cardNo) ?: run {
+        val card = dbHelperGet.getSingleCard(cardId) ?: run {
             finish()
             return
         }
@@ -59,7 +59,7 @@ class EditCardTags : RBVActivity() {
                 val dbHelperCreate = DB_Helper_Create(this)
                 dbHelperCreate.createTagLink(
                     tagName,
-                    cardNo
+                    cardId
                 )
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -71,8 +71,8 @@ class EditCardTags : RBVActivity() {
     }
 
     private fun setRecView() {
-        val tagList = dbHelperGet.getCardTags(cardNo)
-        val adapter = AdapterTagLinkCard(tagList, cardNo)
+        val tagList = dbHelperGet.getCardTags(cardId)
+        val adapter = AdapterTagLinkCard(tagList, cardId)
         binding.editCardTagsRec.adapter = adapter
         binding.editCardTagsRec.layoutManager = LinearLayoutManager(this)
     }

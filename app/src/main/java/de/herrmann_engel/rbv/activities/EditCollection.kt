@@ -21,9 +21,9 @@ class EditCollection : RBVActivity() {
         super.onCreate(savedInstanceState)
         val binding = ActivityCollectionOrPackFormBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        val collectionNo = intent.extras!!.getInt("collection")
+        val collectionId = intent.extras!!.getInt("collection")
         // Close if the collection no longer exists (e.g. deleted in the meantime)
-        collection = DB_Helper_Get(this).getSingleCollection(collectionNo) ?: run {
+        collection = DB_Helper_Get(this).getSingleCollection(collectionId) ?: run {
             finish()
             return
         }

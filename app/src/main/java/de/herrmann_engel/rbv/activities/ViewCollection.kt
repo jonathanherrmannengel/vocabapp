@@ -22,13 +22,13 @@ class ViewCollection : RBVActivity() {
     private lateinit var binding: ActivityViewCollectionOrPackBinding
     private lateinit var dbHelperGet: DB_Helper_Get
     private lateinit var collection: DB_Collection
-    private var collectionNo = 0
+    private var collectionId = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityViewCollectionOrPackBinding.inflate(layoutInflater)
         setContentView(binding.root)
         dbHelperGet = DB_Helper_Get(this)
-        collectionNo = intent.extras!!.getInt("collection")
+        collectionId = intent.extras!!.getInt("collection")
         setUpEdgeToEdge(binding.viewCollectionOrPackLayout)
     }
 
@@ -36,7 +36,7 @@ class ViewCollection : RBVActivity() {
         menuInflater.inflate(R.menu.menu_view_collection, menu)
         menu.findItem(R.id.menu_view_collection_edit).setOnMenuItemClickListener {
             val intent = Intent(this, EditCollection::class.java)
-            intent.putExtra("collection", collectionNo)
+            intent.putExtra("collection", collectionId)
             startActivity(intent)
             return@setOnMenuItemClickListener true
         }
@@ -53,7 +53,7 @@ class ViewCollection : RBVActivity() {
         val settings = AppSettings(this)
         val increaseFontSize = settings.uiFontSizeBig
         // Close if the collection no longer exists (e.g. deleted in the meantime)
-        collection = dbHelperGet.getSingleCollection(collectionNo) ?: run {
+        collection = dbHelperGet.getSingleCollection(collectionId) ?: run {
             finish()
             return
         }

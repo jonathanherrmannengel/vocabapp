@@ -15,15 +15,15 @@ import de.herrmann_engel.rbv.ui.CollectionOrPackForm
  */
 class NewPack : RBVActivity() {
     private lateinit var form: CollectionOrPackForm
-    private var collectionNo = 0
+    private var collectionId = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val binding = ActivityCollectionOrPackFormBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        collectionNo = intent.extras!!.getInt("collection")
+        collectionId = intent.extras!!.getInt("collection")
         // Close if the collection no longer exists (e.g. deleted in the meantime)
-        val collection = DB_Helper_Get(this).getSingleCollection(collectionNo) ?: run {
+        val collection = DB_Helper_Get(this).getSingleCollection(collectionId) ?: run {
             finish()
             return
         }
@@ -43,7 +43,7 @@ class NewPack : RBVActivity() {
                 DB_Helper_Create(this).createPack(
                     form.name,
                     form.desc,
-                    collectionNo,
+                    collectionId,
                     form.selectedColors,
                     form.emoji,
                     System.currentTimeMillis() / 1000L

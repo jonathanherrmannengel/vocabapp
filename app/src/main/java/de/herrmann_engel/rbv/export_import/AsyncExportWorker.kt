@@ -25,7 +25,7 @@ import java.util.Locale
 class AsyncExportWorker(
     val context: Context,
     private val singleCollection: Boolean,
-    private val collectionNo: Int,
+    private val collectionId: Int,
     private val includeSettings: Boolean,
     private val includeMedia: Boolean,
     private val exportFileUri: Uri?
@@ -104,12 +104,12 @@ class AsyncExportWorker(
         try {
             val dbHelperExport = DB_Helper_Export(context)
             val index: String
-            val collectionNos: List<Int>
+            val collectionIds: List<Int>
             if (singleCollection) {
-                index = collectionNo.toString()
-                collectionNos = listOf(collectionNo)
+                index = collectionId.toString()
+                collectionIds = listOf(collectionId)
             } else {
-                collectionNos = dbHelperExport.allCollectionIds
+                collectionIds = dbHelperExport.allCollectionIds
                 index = "all"
             }
             val file = File(
@@ -125,22 +125,22 @@ class AsyncExportWorker(
             // Collection, packs and cards are exported collection by collection; the first call
             // overwrites an existing file from a previous export, later calls append to it
             var isFirst = true
-            for (i in collectionNos.indices) {
-                val currentCollectionNo = collectionNos[i]
+            for (i in collectionIds.indices) {
+                val currentCollectionId = collectionIds[i]
                 if (!exportCSV(
                         "collection",
                         file.name,
-                        dbHelperExport.getSingleCollection(currentCollectionNo),
+                        dbHelperExport.getSingleCollection(currentCollectionId),
                         isFirst,
                         !isFirst
                     )
                     || !exportCSV(
                         "packs", file.name,
-                        dbHelperExport.getAllPacksByCollection(currentCollectionNo), isFirst
+                        dbHelperExport.getAllPacksByCollection(currentCollectionId), isFirst
                     )
                     || !exportCSV(
                         "cards", file.name,
-                        dbHelperExport.getAllCardsByCollection(currentCollectionNo), isFirst
+                        dbHelperExport.getAllCardsByCollection(currentCollectionId), isFirst
                     )
                 ) {
                     return null
@@ -152,7 +152,7 @@ class AsyncExportWorker(
                         "media",
                         file.name,
                         if (singleCollection) {
-                            dbHelperExport.getAllMediaByCollection(collectionNo)
+                            dbHelperExport.getAllMediaByCollection(collectionId)
                         } else dbHelperExport.allMedia,
                         true
                     )
@@ -160,7 +160,7 @@ class AsyncExportWorker(
                         "media_link_card",
                         file.name,
                         if (singleCollection) {
-                            dbHelperExport.getAllMediaLinksByCollection(collectionNo)
+                            dbHelperExport.getAllMediaLinksByCollection(collectionId)
                         } else dbHelperExport.allMediaLinks,
                         true
                     )
@@ -172,7 +172,7 @@ class AsyncExportWorker(
                     "tags",
                     file.name,
                     if (singleCollection) {
-                        dbHelperExport.getAllTagsByCollection(collectionNo)
+                        dbHelperExport.getAllTagsByCollection(collectionId)
                     } else dbHelperExport.allTags,
                     true
                 )
@@ -180,7 +180,7 @@ class AsyncExportWorker(
                     "tags_link_card",
                     file.name,
                     if (singleCollection) {
-                        dbHelperExport.getAllTagLinksByCollection(collectionNo)
+                        dbHelperExport.getAllTagLinksByCollection(collectionId)
                     } else dbHelperExport.allTagLinks,
                     true
                 )
