@@ -56,7 +56,7 @@ class DB_Helper_Create(context: Context) {
             pack.date = date
             pack.colors = colors
             pack.emoji = emoji
-            pack.collection = collectionId
+            pack.collectionId = collectionId
             return dbHelper.packDao.insert(pack)
         }
         throw InvalidEntryException("Pack name is empty or collection $collectionId does not exist")
@@ -93,7 +93,7 @@ class DB_Helper_Create(context: Context) {
             val card = DB_Card()
             card.front = front
             card.back = back
-            card.pack = packId
+            card.packId = packId
             card.known = known
             card.date = date
             card.notes = notes
@@ -119,8 +119,8 @@ class DB_Helper_Create(context: Context) {
         val dbHelperGet = DB_Helper_Get(dbHelper.context)
         if (!dbHelperGet.existsMediaLinkCard(fileId, cardId)) {
             val mediaLinkCard = DB_Media_Link_Card()
-            mediaLinkCard.file = fileId
-            mediaLinkCard.card = cardId
+            mediaLinkCard.fileId = fileId
+            mediaLinkCard.cardId = cardId
             return dbHelper.mediaLinkCardDao.insert(mediaLinkCard)
         }
         throw InvalidEntryException("Media file $fileId is already linked to card $cardId")
@@ -142,8 +142,8 @@ class DB_Helper_Create(context: Context) {
         val dbHelperGet = DB_Helper_Get(dbHelper.context)
         if (!dbHelperGet.existsTagLinkCard(tagId, cardId)) {
             val tagLinkCard = DB_Tag_Link_Card()
-            tagLinkCard.tag = tagId
-            tagLinkCard.card = cardId
+            tagLinkCard.tagId = tagId
+            tagLinkCard.cardId = cardId
             return dbHelper.tagLinkCardDao.insert(tagLinkCard)
         }
         throw InvalidEntryException("Tag $tagId is already linked to card $cardId")

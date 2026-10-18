@@ -74,9 +74,9 @@ class AdapterPacksMoveCard(
             // All cards are moved or none
             AppDatabase.getInstance(context).runInTransaction {
                 for (card in cards) {
-                    if (card.pack != currentPackId) {
+                    if (card.packId != currentPackId) {
                         cardIds.add(card.uid)
-                        card.pack = currentPackId
+                        card.packId = currentPackId
                         updateHelper.updateCard(card)
                     }
                 }

@@ -49,7 +49,7 @@ class EditCard : RBVActivity() {
         binding.editCardNotes.setText(card.notes)
         binding.editCardNotesLayout.hint =
             String.format(getString(R.string.optional), getString(R.string.card_notes))
-        val packColors = dbHelperGet.getSinglePack(card.pack)?.colors
+        val packColors = dbHelperGet.getSinglePack(card.packId)?.colors
         val color = resources.colorAt(R.array.pack_color_main, packColors)
         val colorBackground = resources.colorAt(R.array.pack_color_background, packColors)
         if (color != null && colorBackground != null) {

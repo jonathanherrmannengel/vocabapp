@@ -122,7 +122,7 @@ class ViewPack : RBVActivity(), PackActions.Listener {
             }
             val intent = Intent(this, ListPacks::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            intent.putListCollection(pack.collection)
+            intent.putListCollection(pack.collectionId)
             startActivity(intent)
         } catch (e: Exception) {
             e.printStackTrace()

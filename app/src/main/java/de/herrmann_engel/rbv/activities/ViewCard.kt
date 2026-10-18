@@ -255,7 +255,7 @@ class ViewCard : RBVActivity(), CardActions.Listener {
 
     // Colors the screen like the card's pack
     private fun updateColors() {
-        val packColors = dbHelperGet.getSinglePack(card.pack)?.colors
+        val packColors = dbHelperGet.getSinglePack(card.packId)?.colors
         val colorBackground = resources.colorAt(R.array.pack_color_background, packColors)
         val colorBackgroundLight =
             resources.colorAt(R.array.pack_color_background_light, packColors)
@@ -303,7 +303,7 @@ class ViewCard : RBVActivity(), CardActions.Listener {
                 return
             }
             val listCollectionId = (cardSource as? CardSource.Pack)?.listCollectionId
-            cardSource = CardSource.Pack(card.pack, listCollectionId)
+            cardSource = CardSource.Pack(card.packId, listCollectionId)
             updateColors()
             val intent = Intent(this, ListCards::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK

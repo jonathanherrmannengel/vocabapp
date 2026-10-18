@@ -31,7 +31,7 @@ class EditCardTags : RBVActivity() {
             finish()
             return
         }
-        resources.colorAt(R.array.pack_color_background, dbHelperGet.getSinglePack(card.pack)?.colors)
+        resources.colorAt(R.array.pack_color_background, dbHelperGet.getSinglePack(card.packId)?.colors)
             ?.let { binding.root.setBackgroundColor(it) }
         // Add the tag when the keyboard's done/next/enter key is pressed
         binding.editCardTagsAdd.setOnEditorActionListener { _, actionId, _ ->

@@ -37,7 +37,7 @@ data class DB_Pack(
 
     // uid of the collection the pack belongs to
     @ColumnInfo(name = "collection")
-    var collection: Int = 0,
+    var collectionId: Int = 0,
 
     @ColumnInfo(name = "emoji")
     var emoji: String? = null

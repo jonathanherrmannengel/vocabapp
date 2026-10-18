@@ -61,9 +61,9 @@ class AdapterCollectionsMovePack(
             // All packs are moved or none
             AppDatabase.getInstance(context).runInTransaction {
                 for (pack in packs) {
-                    if (pack.collection != targetCollectionId) {
+                    if (pack.collectionId != targetCollectionId) {
                         packIds.add(pack.uid)
-                        pack.collection = targetCollectionId
+                        pack.collectionId = targetCollectionId
                         updateHelper.updatePack(pack)
                     }
                 }

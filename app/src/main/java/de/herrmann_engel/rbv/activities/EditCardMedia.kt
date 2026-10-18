@@ -90,7 +90,7 @@ class EditCardMedia : RBVActivity() {
             finish()
             return
         }
-        resources.colorAt(R.array.pack_color_background, dbHelperGet.getSinglePack(card.pack)?.colors)
+        resources.colorAt(R.array.pack_color_background, dbHelperGet.getSinglePack(card.packId)?.colors)
             ?.let { binding.root.setBackgroundColor(it) }
         // A media folder has to be selected before files can be added
         binding.addMediaButton.setOnClickListener {

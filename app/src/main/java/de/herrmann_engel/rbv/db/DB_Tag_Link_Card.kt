@@ -27,8 +27,8 @@ class DB_Tag_Link_Card {
     var uid: Int = 0
 
     @ColumnInfo(name = "tagId")
-    var tag: Int = 0
+    var tagId: Int = 0
 
     @ColumnInfo(name = "cardId")
-    var card: Int = 0
+    var cardId: Int = 0
 }

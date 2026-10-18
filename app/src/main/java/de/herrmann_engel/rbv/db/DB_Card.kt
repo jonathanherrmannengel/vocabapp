@@ -29,7 +29,7 @@ data class DB_Card(
 
     // uid of the pack the card belongs to
     @ColumnInfo(name = "pack")
-    var pack: Int = 0,
+    var packId: Int = 0,
 
     // Learning progress: how often the card has been marked as known (decreases when it is not known)
     @ColumnInfo(name = "known")
