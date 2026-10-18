@@ -1,6 +1,5 @@
 package de.herrmann_engel.rbv.activities
 
-import android.app.Dialog
 import android.content.res.ColorStateList
 import android.os.Build
 import android.os.Bundle
@@ -10,7 +9,6 @@ import android.text.TextWatcher
 import android.util.DisplayMetrics
 import android.view.Menu
 import android.view.View.OnFocusChangeListener
-import android.view.WindowManager
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.Toast
@@ -22,11 +20,11 @@ import com.vanniktech.emoji.EmojiTheming
 import com.vanniktech.emoji.inputfilters.OnlyEmojisInputFilter
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.databinding.ActivityEditCollectionOrPackBinding
-import de.herrmann_engel.rbv.databinding.DiaConfirmBinding
 import de.herrmann_engel.rbv.db.DB_Collection
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Update
 import de.herrmann_engel.rbv.utils.StringTools
+import de.herrmann_engel.rbv.utils.showConfirmDialog
 import kotlin.math.roundToInt
 
 /**
@@ -148,17 +146,9 @@ class EditCollection : RBVActivity() {
                 if (collection.name == name && collection.desc == desc) {
                     finish()
                 } else {
-                    val confirmCancelDialog = Dialog(this@EditCollection, R.style.dia_view)
-                    val bindingConfirmCancelDialog = DiaConfirmBinding.inflate(layoutInflater)
-                    confirmCancelDialog.setContentView(bindingConfirmCancelDialog.root)
-                    confirmCancelDialog.setTitle(resources.getString(R.string.discard_changes))
-                    confirmCancelDialog.window!!.setLayout(
-                        WindowManager.LayoutParams.MATCH_PARENT,
-                        WindowManager.LayoutParams.MATCH_PARENT
-                    )
-                    bindingConfirmCancelDialog.diaConfirmYes.setOnClickListener { finish() }
-                    bindingConfirmCancelDialog.diaConfirmNo.setOnClickListener { confirmCancelDialog.dismiss() }
-                    confirmCancelDialog.show()
+                    showConfirmDialog(this@EditCollection, getString(R.string.discard_changes)) {
+                        finish()
+                    }
                 }
             }
         })

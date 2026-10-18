@@ -1,21 +1,19 @@
 package de.herrmann_engel.rbv.activities
 
-import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
 import android.util.TypedValue
 import android.view.Menu
 import android.view.View
-import android.view.WindowManager
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.databinding.ActivityViewCollectionOrPackBinding
-import de.herrmann_engel.rbv.databinding.DiaConfirmBinding
 import de.herrmann_engel.rbv.db.DB_Collection
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Delete
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.settings.AppSettings
 import de.herrmann_engel.rbv.utils.colorAt
 import de.herrmann_engel.rbv.utils.formatDateTime
+import de.herrmann_engel.rbv.utils.showConfirmDialog
 
 /**
  * Details of a collection (name, emoji, description, creation date) with options to edit and delete it.
@@ -99,19 +97,11 @@ class ViewCollection : RBVActivity() {
      * are deleted with all their cards.
      */
     private fun deleteCollection(forceDelete: Boolean) {
-        val confirmDeleteDialog = Dialog(this, R.style.dia_view)
-        val bindingConfirmDeleteDialog = DiaConfirmBinding.inflate(layoutInflater)
-        confirmDeleteDialog.setContentView(bindingConfirmDeleteDialog.root)
-        confirmDeleteDialog.setTitle(resources.getString(R.string.delete))
-        confirmDeleteDialog.window!!.setLayout(
-            WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.MATCH_PARENT
-        )
-        if (dbHelperGet.getAllPacksByCollection(collection.uid).isNotEmpty() && !forceDelete) {
-            bindingConfirmDeleteDialog.diaConfirmDesc.setText(R.string.delete_collection_with_packs)
-            bindingConfirmDeleteDialog.diaConfirmDesc.visibility = View.VISIBLE
-        }
-        bindingConfirmDeleteDialog.diaConfirmYes.setOnClickListener {
+        val hasPacks = dbHelperGet.getAllPacksByCollection(collection.uid).isNotEmpty()
+        val text = if (hasPacks && !forceDelete) {
+            getString(R.string.delete_collection_with_packs)
+        } else null
+        showConfirmDialog(this, getString(R.string.delete), text) {
             if (dbHelperGet.getAllPacksByCollection(collection.uid).isEmpty() || forceDelete) {
                 val dbHelperDelete = DB_Helper_Delete(this)
                 dbHelperDelete.deleteCollection(collection, forceDelete)
@@ -121,9 +111,6 @@ class ViewCollection : RBVActivity() {
             } else {
                 deleteCollection(true)
             }
-            confirmDeleteDialog.dismiss()
         }
-        bindingConfirmDeleteDialog.diaConfirmNo.setOnClickListener { confirmDeleteDialog.dismiss() }
-        confirmDeleteDialog.show()
     }
 }

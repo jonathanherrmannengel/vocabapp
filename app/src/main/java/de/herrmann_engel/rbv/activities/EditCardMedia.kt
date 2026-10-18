@@ -1,10 +1,8 @@
 package de.herrmann_engel.rbv.activities
 
-import android.app.Dialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -19,6 +17,7 @@ import de.herrmann_engel.rbv.db.utils.DB_Helper_Create
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.media.MediaFileManager
 import de.herrmann_engel.rbv.utils.colorAt
+import de.herrmann_engel.rbv.utils.createDialog
 
 /**
  * Manages the media files of the card passed as "card" extra. New files are picked by the user
@@ -53,15 +52,13 @@ class EditCardMedia : RBVActivity() {
                             } else if (outputDirectory.findFile(inputFileName) == null) {
                                 createMediaFile(outputDirectory, mime, inputFileName, fileUri)
                             } else {
-                                val fileExistsDialog = Dialog(this, R.style.dia_view)
                                 val bindingFileExistsDialog = DiaFileExistsBinding.inflate(
                                     layoutInflater
                                 )
-                                fileExistsDialog.setContentView(bindingFileExistsDialog.root)
-                                fileExistsDialog.setTitle(resources.getString(R.string.file_exists_title))
-                                fileExistsDialog.window!!.setLayout(
-                                    WindowManager.LayoutParams.MATCH_PARENT,
-                                    WindowManager.LayoutParams.MATCH_PARENT
+                                val fileExistsDialog = createDialog(
+                                    this,
+                                    bindingFileExistsDialog.root,
+                                    getString(R.string.file_exists_title)
                                 )
                                 bindingFileExistsDialog.diaFileExistsLink.setOnClickListener {
                                     addMediaLink(inputFileName, mime)

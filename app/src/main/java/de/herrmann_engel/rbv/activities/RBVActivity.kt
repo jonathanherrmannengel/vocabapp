@@ -1,13 +1,11 @@
 package de.herrmann_engel.rbv.activities
 
-import android.app.Dialog
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
-import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -20,9 +18,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.R
-import de.herrmann_engel.rbv.databinding.DiaInfoBinding
 import de.herrmann_engel.rbv.export_import.ImportExportEvents
 import de.herrmann_engel.rbv.settings.AppSettings
+import de.herrmann_engel.rbv.utils.showInfoDialog
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 
@@ -146,16 +144,7 @@ abstract class RBVActivity : AppCompatActivity() {
     // Shown as a dialog: the user explicitly tried to start something, so the explanation has to
     // stay visible until it has been read
     private fun showImportExportRunningDialog() {
-        val infoDialog = Dialog(this, R.style.dia_view)
-        val bindingInfoDialog = DiaInfoBinding.inflate(layoutInflater)
-        infoDialog.setContentView(bindingInfoDialog.root)
-        infoDialog.setTitle(getString(R.string.info))
-        infoDialog.window!!.setLayout(
-            WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.MATCH_PARENT
-        )
-        bindingInfoDialog.diaInfoText.setText(R.string.import_export_running)
-        infoDialog.show()
+        showInfoDialog(this, getString(R.string.info), getString(R.string.import_export_running))
     }
 
 }

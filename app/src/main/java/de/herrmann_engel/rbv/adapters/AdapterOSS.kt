@@ -1,11 +1,9 @@
 package de.herrmann_engel.rbv.adapters
 
-import android.app.Dialog
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import de.herrmann_engel.rbv.R
@@ -14,6 +12,7 @@ import de.herrmann_engel.rbv.databinding.RecViewBinding
 import de.herrmann_engel.rbv.oss.OSSLicenses
 import de.herrmann_engel.rbv.settings.AppSettings
 import de.herrmann_engel.rbv.utils.ContextTools
+import de.herrmann_engel.rbv.utils.createDialog
 
 /**
  * List of the open source projects used by the app. Clicking one shows its details and license.
@@ -46,15 +45,9 @@ class AdapterOSS(private val licenses: List<OSSLicenses>) :
         viewHolder.binding.recName.setOnClickListener {
             val activity = ContextTools().getActivity(context)
             if (activity != null) {
-                val ossDialog = Dialog(context, R.style.dia_view)
                 val bindingOssDialog: DiaOssBinding =
                     DiaOssBinding.inflate(activity.layoutInflater)
-                ossDialog.setContentView(bindingOssDialog.root)
-                ossDialog.setTitle(license.project.name)
-                ossDialog.window!!.setLayout(
-                    WindowManager.LayoutParams.MATCH_PARENT,
-                    WindowManager.LayoutParams.MATCH_PARENT
-                )
+                val ossDialog = createDialog(context, bindingOssDialog.root, license.project.name)
                 if (license.project.id.isBlank()) {
                     bindingOssDialog.diaOssProjectId.visibility = View.GONE
                 } else {

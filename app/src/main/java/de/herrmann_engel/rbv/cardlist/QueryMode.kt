@@ -5,7 +5,6 @@ import android.animation.AnimatorListenerAdapter
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.app.Dialog
 import android.content.Intent
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.LayerDrawable
@@ -15,7 +14,6 @@ import android.text.SpannableString
 import android.text.util.Linkify
 import android.util.TypedValue
 import android.view.View
-import android.view.WindowManager
 import androidx.core.view.isVisible
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.activities.EditCard
@@ -31,6 +29,7 @@ import de.herrmann_engel.rbv.settings.AppSettings
 import de.herrmann_engel.rbv.ui.SwipeEvents
 import de.herrmann_engel.rbv.utils.StringTools
 import de.herrmann_engel.rbv.utils.colorAt
+import de.herrmann_engel.rbv.utils.createDialog
 import io.noties.markwon.Markwon
 import io.noties.markwon.linkify.LinkifyPlugin
 import me.saket.bettermovementmethod.BetterLinkMovementMethod
@@ -57,8 +56,10 @@ class QueryMode(
     private val onCardChanged: (position: Int) -> Unit,
     private val onClosed: (lastPosition: Int) -> Unit
 ) {
-    private val dialog = Dialog(activity, R.style.dia_view)
     private val binding = DiaQueryBinding.inflate(activity.layoutInflater)
+
+    // The title is set for each card in showCard
+    private val dialog = createDialog(activity, binding.root, "")
     private val settings = AppSettings(activity)
     private val dbHelperGet = DB_Helper_Get(activity)
     private val dbHelperUpdate = DB_Helper_Update(activity)
@@ -86,11 +87,6 @@ class QueryMode(
         get() = cards.getOrNull(position)?.card?.uid
 
     init {
-        dialog.setContentView(binding.root)
-        dialog.window!!.setLayout(
-            WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.MATCH_PARENT
-        )
         dialog.setOnDismissListener { onClosed(position) }
         setTouchListener()
         binding.queryPlus.setOnClickListener { plusAction(cards[position].card) }
@@ -307,15 +303,11 @@ class QueryMode(
 
     // Shows the notes of the card, as Markdown if enabled in the settings
     private fun showNotes(notes: String) {
-        val infoDialog = Dialog(activity, R.style.dia_view)
-        val bindingInfoDialog = DiaInfoBinding.inflate(
-            activity.layoutInflater
-        )
-        infoDialog.setContentView(bindingInfoDialog.root)
-        infoDialog.setTitle(activity.getString(R.string.query_notes_title))
-        infoDialog.window!!.setLayout(
-            WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.MATCH_PARENT
+        val bindingInfoDialog = DiaInfoBinding.inflate(activity.layoutInflater)
+        val infoDialog = createDialog(
+            activity,
+            bindingInfoDialog.root,
+            activity.getString(R.string.query_notes_title)
         )
         bindingInfoDialog.diaInfoText.setTextIsSelectable(true)
         if (settings.formatCardNotes) {

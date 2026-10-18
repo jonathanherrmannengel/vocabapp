@@ -1,16 +1,14 @@
 package de.herrmann_engel.rbv.activities
 
-import android.app.Dialog
 import android.os.Bundle
 import android.view.View
-import android.view.WindowManager
 import androidx.appcompat.content.res.AppCompatResources
 import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.databinding.ActivitySettingsBinding
-import de.herrmann_engel.rbv.databinding.DiaInfoBinding
 import de.herrmann_engel.rbv.media.MediaFileManager
 import de.herrmann_engel.rbv.settings.AppSettings
+import de.herrmann_engel.rbv.utils.showInfoDialog
 
 /**
  * App settings screen. All changes are saved immediately (see [AppSettings]).
@@ -108,18 +106,11 @@ class Settings : RBVActivity() {
             settings.formatCards = c
         }
         binding.settingsFormatCardsInfo.setOnClickListener {
-            val infoDialog = Dialog(this, R.style.dia_view)
-            val bindingInfoDialog = DiaInfoBinding.inflate(
-                layoutInflater
+            showInfoDialog(
+                this,
+                getString(R.string.info),
+                getString(R.string.settings_format_cards_info)
             )
-            infoDialog.setContentView(bindingInfoDialog.root)
-            infoDialog.setTitle(resources.getString(R.string.info))
-            infoDialog.window!!.setLayout(
-                WindowManager.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.MATCH_PARENT
-            )
-            bindingInfoDialog.diaInfoText.setText(R.string.settings_format_cards_info)
-            infoDialog.show()
         }
         val formatCardNotes = settings.formatCardNotes
         binding.settingsFormatCardNotes.isChecked = formatCardNotes

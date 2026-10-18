@@ -49,16 +49,12 @@ class AdapterFilesManage(
                 mediaFiles.openFile(currentFile.name!!)
             }
             viewHolder.binding.recFilesDelete.setOnClickListener {
-                val dialog = mediaFiles.showDeleteDialog(
+                mediaFiles.showDeleteDialog(
                     currentFile.name!!,
                     context.resources.getString(R.string.delete_file_without_media_info)
-                )
-                // Remove the item if the file has actually been deleted
-                dialog.setOnDismissListener {
-                    if (!mediaFiles.existsMediaFile(
-                            currentFile.name
-                        )
-                    ) {
+                ) {
+                    // Remove the item if the file has actually been deleted
+                    if (!mediaFiles.existsMediaFile(currentFile.name)) {
                         files.remove(currentFile)
                         notifyItemRemoved(position)
                         notifyItemRangeChanged(position, files.size)

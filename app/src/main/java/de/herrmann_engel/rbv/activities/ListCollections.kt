@@ -1,11 +1,9 @@
 package de.herrmann_engel.rbv.activities
 
-import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.View
-import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -18,7 +16,6 @@ import de.herrmann_engel.rbv.Globals.MAX_SIZE_COLLECTIONS_OR_PACKS_LIST_COUNTER
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.adapters.AdapterCollections
 import de.herrmann_engel.rbv.databinding.ActivityDefaultRecBinding
-import de.herrmann_engel.rbv.databinding.DiaConfirmBinding
 import de.herrmann_engel.rbv.databinding.DiaExportBinding
 import de.herrmann_engel.rbv.databinding.DiaImportBinding
 import de.herrmann_engel.rbv.db.DB_Collection_With_Meta
@@ -27,6 +24,8 @@ import de.herrmann_engel.rbv.export_import.AsyncExport
 import de.herrmann_engel.rbv.export_import.AsyncImport
 import de.herrmann_engel.rbv.media.MediaFileManager
 import de.herrmann_engel.rbv.settings.AppSettings
+import de.herrmann_engel.rbv.utils.createDialog
+import de.herrmann_engel.rbv.utils.showConfirmDialog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -109,21 +108,15 @@ class ListCollections : RBVActivity() {
             if (showIfImportExportRunning()) {
                 return@setOnMenuItemClickListener true
             }
-            val startImportDialog = Dialog(this, R.style.dia_view)
-            val bindingStartImportDialog = DiaImportBinding.inflate(
-                layoutInflater
-            )
-            startImportDialog.setContentView(bindingStartImportDialog.root)
-            startImportDialog.setTitle(
+            val bindingStartImportDialog = DiaImportBinding.inflate(layoutInflater)
+            val startImportDialog = createDialog(
+                this,
+                bindingStartImportDialog.root,
                 String.format(
                     Locale.ROOT,
-                    resources.getString(R.string.import_export_options),
-                    resources.getString(R.string.import_title)
+                    getString(R.string.import_export_options),
+                    getString(R.string.import_title)
                 )
-            )
-            startImportDialog.window!!.setLayout(
-                WindowManager.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.MATCH_PARENT
             )
             // Defaults: merge into existing data; for an empty app, import everything including settings
             if (dbHelperGet.hasCollections()) {
@@ -173,49 +166,31 @@ class ListCollections : RBVActivity() {
             if (showIfImportExportRunning()) {
                 return@setOnMenuItemClickListener true
             }
-            val startImportDialog = Dialog(this, R.style.dia_view)
-            val bindingStartImportDialog = DiaConfirmBinding.inflate(
-                layoutInflater
-            )
-            startImportDialog.setContentView(bindingStartImportDialog.root)
-            startImportDialog.setTitle(resources.getString(R.string.import_simple_list))
-            startImportDialog.window!!.setLayout(
-                WindowManager.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.MATCH_PARENT
-            )
-            bindingStartImportDialog.diaConfirmDesc.text =
-                resources.getString(R.string.import_simple_list_info)
-            bindingStartImportDialog.diaConfirmDesc.visibility = View.VISIBLE
-            bindingStartImportDialog.diaConfirmYes.setOnClickListener {
+            showConfirmDialog(
+                this,
+                getString(R.string.import_simple_list),
+                getString(R.string.import_simple_list_info)
+            ) {
                 importMode = IMPORT_MODE_SIMPLE_LIST
                 importIncludeSettings = false
                 importIncludeMedia = false
                 startImport()
-                startImportDialog.dismiss()
             }
-            bindingStartImportDialog.diaConfirmNo.setOnClickListener { startImportDialog.dismiss() }
-            startImportDialog.show()
             return@setOnMenuItemClickListener true
         }
         menu.findItem(R.id.menu_list_collections_export).setOnMenuItemClickListener {
             if (showIfImportExportRunning()) {
                 return@setOnMenuItemClickListener true
             }
-            val startExportDialog = Dialog(this, R.style.dia_view)
-            val bindingStartExportDialog = DiaExportBinding.inflate(
-                layoutInflater
-            )
-            startExportDialog.setContentView(bindingStartExportDialog.root)
-            startExportDialog.setTitle(
+            val bindingStartExportDialog = DiaExportBinding.inflate(layoutInflater)
+            val startExportDialog = createDialog(
+                this,
+                bindingStartExportDialog.root,
                 String.format(
                     Locale.ROOT,
-                    resources.getString(R.string.import_export_options),
-                    resources.getString(R.string.export_title)
+                    getString(R.string.import_export_options),
+                    getString(R.string.export_title)
                 )
-            )
-            startExportDialog.window!!.setLayout(
-                WindowManager.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.MATCH_PARENT
             )
             bindingStartExportDialog.diaExportIncludeSettings.isChecked = false
             bindingStartExportDialog.diaExportIncludeMedia.isChecked = true

@@ -1,21 +1,19 @@
 package de.herrmann_engel.rbv.activities
 
-import android.app.Dialog
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.text.InputType
 import android.view.Menu
-import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.databinding.ActivityEditCardBinding
-import de.herrmann_engel.rbv.databinding.DiaConfirmBinding
 import de.herrmann_engel.rbv.db.DB_Card
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Update
 import de.herrmann_engel.rbv.utils.colorAt
+import de.herrmann_engel.rbv.utils.showConfirmDialog
 
 /**
  * Form to edit the card passed as "card" extra. The form is colored like the card's pack.
@@ -75,19 +73,9 @@ class EditCard : RBVActivity() {
                 if (card.front == front && card.back == back && card.notes == notes) {
                     close()
                 } else {
-                    val confirmCancelDialog = Dialog(this@EditCard, R.style.dia_view)
-                    val bindingConfirmCancelDialog = DiaConfirmBinding.inflate(
-                        layoutInflater
-                    )
-                    confirmCancelDialog.setContentView(bindingConfirmCancelDialog.root)
-                    confirmCancelDialog.setTitle(resources.getString(R.string.discard_changes))
-                    confirmCancelDialog.window!!.setLayout(
-                        WindowManager.LayoutParams.MATCH_PARENT,
-                        WindowManager.LayoutParams.MATCH_PARENT
-                    )
-                    bindingConfirmCancelDialog.diaConfirmYes.setOnClickListener { close() }
-                    bindingConfirmCancelDialog.diaConfirmNo.setOnClickListener { confirmCancelDialog.dismiss() }
-                    confirmCancelDialog.show()
+                    showConfirmDialog(this@EditCard, getString(R.string.discard_changes)) {
+                        close()
+                    }
                 }
             }
         })

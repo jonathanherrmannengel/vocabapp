@@ -1,12 +1,11 @@
 package de.herrmann_engel.rbv.cardlist
 
 import android.app.Activity
-import android.app.Dialog
-import android.view.WindowManager
 import android.widget.TextView
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.databinding.DiaListStatsBinding
 import de.herrmann_engel.rbv.db.DB_Card_With_Meta
+import de.herrmann_engel.rbv.utils.createDialog
 import kotlin.math.roundToInt
 
 /**
@@ -19,13 +18,11 @@ class ListStatsDialog(private val activity: Activity) {
     private class ProgressRow(val label: TextView?, val number: TextView, val percent: TextView)
 
     fun show(cards: List<DB_Card_With_Meta>) {
-        val listStatsDialog = Dialog(activity, R.style.dia_view)
         val binding = DiaListStatsBinding.inflate(activity.layoutInflater)
-        listStatsDialog.setContentView(binding.root)
-        listStatsDialog.setTitle(activity.getString(R.string.list_stats))
-        listStatsDialog.window!!.setLayout(
-            WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.MATCH_PARENT
+        val listStatsDialog = createDialog(
+            activity,
+            binding.root,
+            activity.getString(R.string.list_stats)
         )
 
         val progress = cards.map { it.card.known }

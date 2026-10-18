@@ -1,15 +1,13 @@
 package de.herrmann_engel.rbv.activities
 
-import android.app.Dialog
 import android.os.Bundle
 import android.view.Menu
-import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.databinding.ActivityNewCollectionOrPackBinding
-import de.herrmann_engel.rbv.databinding.DiaConfirmBinding
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Create
+import de.herrmann_engel.rbv.utils.showConfirmDialog
 
 /**
  * Form to create a new collection.
@@ -37,17 +35,9 @@ class NewCollection : RBVActivity() {
                 if (name.isBlank() && desc.isBlank()) {
                     finish()
                 } else {
-                    val confirmCancelDialog = Dialog(this@NewCollection, R.style.dia_view)
-                    val bindingConfirmCancelDialog = DiaConfirmBinding.inflate(layoutInflater)
-                    confirmCancelDialog.setContentView(bindingConfirmCancelDialog.root)
-                    confirmCancelDialog.setTitle(resources.getString(R.string.discard_changes))
-                    confirmCancelDialog.window!!.setLayout(
-                        WindowManager.LayoutParams.MATCH_PARENT,
-                        WindowManager.LayoutParams.MATCH_PARENT
-                    )
-                    bindingConfirmCancelDialog.diaConfirmYes.setOnClickListener { finish() }
-                    bindingConfirmCancelDialog.diaConfirmNo.setOnClickListener { confirmCancelDialog.dismiss() }
-                    confirmCancelDialog.show()
+                    showConfirmDialog(this@NewCollection, getString(R.string.discard_changes)) {
+                        finish()
+                    }
                 }
             }
         })

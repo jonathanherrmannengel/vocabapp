@@ -1,11 +1,9 @@
 package de.herrmann_engel.rbv.actions
 
 import android.app.Activity
-import android.app.Dialog
 import android.print.PrintAttributes
 import android.print.PrintManager
 import android.view.View
-import android.view.WindowManager
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -18,7 +16,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.adapters.AdapterPacksMoveCard
-import de.herrmann_engel.rbv.databinding.DiaConfirmBinding
 import de.herrmann_engel.rbv.databinding.DiaPrintBinding
 import de.herrmann_engel.rbv.databinding.DiaRecBinding
 import de.herrmann_engel.rbv.db.AppDatabase
@@ -31,6 +28,8 @@ import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.media.MediaFiles
 import de.herrmann_engel.rbv.settings.AppSettings
 import de.herrmann_engel.rbv.utils.StringTools
+import de.herrmann_engel.rbv.utils.createDialog
+import de.herrmann_engel.rbv.utils.showConfirmDialog
 import org.commonmark.parser.Parser
 import org.commonmark.renderer.html.HtmlRenderer
 import java.util.Locale
@@ -60,25 +59,10 @@ class CardActions(
      * confirmation (forceDelete is set for the second dialog).
      */
     private fun delete(cards: ArrayList<DB_Card>, forceDelete: Boolean) {
-        val confirmDeleteDialog = Dialog(activity, R.style.dia_view)
-        val bindingConfirmDeleteDialog = DiaConfirmBinding.inflate(
-            activity.layoutInflater
-        )
-        confirmDeleteDialog.setContentView(bindingConfirmDeleteDialog.root)
-        confirmDeleteDialog.setTitle(activity.resources.getString(R.string.delete))
-        confirmDeleteDialog.window!!.setLayout(
-            WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.MATCH_PARENT
-        )
-        if (cards.size > 1 && !forceDelete) {
-            bindingConfirmDeleteDialog.diaConfirmDesc.text =
-                String.format(
-                    activity.resources.getString(R.string.delete_multiple_cards),
-                    cards.size
-                )
-            bindingConfirmDeleteDialog.diaConfirmDesc.visibility = View.VISIBLE
-        }
-        bindingConfirmDeleteDialog.diaConfirmYes.setOnClickListener {
+        val text = if (cards.size > 1 && !forceDelete) {
+            String.format(activity.getString(R.string.delete_multiple_cards), cards.size)
+        } else null
+        showConfirmDialog(activity, activity.getString(R.string.delete), text) {
             if (cards.size <= 1 || forceDelete) {
                 val dbHelperDelete = DB_Helper_Delete(activity)
                 val cardIds = arrayListOf<Int>()
@@ -93,10 +77,7 @@ class CardActions(
             } else {
                 delete(cards, true)
             }
-            confirmDeleteDialog.dismiss()
         }
-        bindingConfirmDeleteDialog.diaConfirmNo.setOnClickListener { confirmDeleteDialog.dismiss() }
-        confirmDeleteDialog.show()
     }
 
     fun delete(cards: ArrayList<DB_Card>) {
@@ -112,15 +93,13 @@ class CardActions(
      * offered, unless collectionNo is LIST_CARDS_GET_DB_COLLECTIONS_ALL.
      */
     fun move(cards: ArrayList<DB_Card>, collectionNo: Int) {
-        val moveDialog = Dialog(activity, R.style.dia_view)
         val bindingMoveDialog = DiaRecBinding.inflate(
             activity.layoutInflater
         )
-        moveDialog.setContentView(bindingMoveDialog.root)
-        moveDialog.setTitle(activity.resources.getString(R.string.move_card))
-        moveDialog.window!!.setLayout(
-            WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.MATCH_PARENT
+        val moveDialog = createDialog(
+            activity,
+            bindingMoveDialog.root,
+            activity.getString(R.string.move_card)
         )
         val dbHelperGet = DB_Helper_Get(activity)
         // Includes the collection names, which are shown for packs of all collections
@@ -144,15 +123,13 @@ class CardActions(
      * rendered in a WebView, which is then passed to the print manager.
      */
     fun print(cards: ArrayList<DB_Card>) {
-        val printDialog = Dialog(activity, R.style.dia_view)
         val bindingPrintDialog = DiaPrintBinding.inflate(
             activity.layoutInflater
         )
-        printDialog.setContentView(bindingPrintDialog.root)
-        printDialog.setTitle(activity.resources.getString(R.string.print))
-        printDialog.window!!.setLayout(
-            WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.MATCH_PARENT
+        val printDialog = createDialog(
+            activity,
+            bindingPrintDialog.root,
+            activity.getString(R.string.print)
         )
         val settings = AppSettings(activity)
         val formatCards = settings.formatCards

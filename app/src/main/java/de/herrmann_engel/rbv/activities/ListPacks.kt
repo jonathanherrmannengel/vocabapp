@@ -1,11 +1,9 @@
 package de.herrmann_engel.rbv.activities
 
-import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.View
-import android.view.WindowManager
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,6 +18,7 @@ import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.export_import.AsyncExport
 import de.herrmann_engel.rbv.settings.AppSettings
 import de.herrmann_engel.rbv.utils.colorAt
+import de.herrmann_engel.rbv.utils.createDialog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -74,21 +73,15 @@ class ListPacks : RBVActivity(), PackActions.Listener {
                 if (showIfImportExportRunning()) {
                     return@setOnMenuItemClickListener true
                 }
-                val startExportDialog = Dialog(this, R.style.dia_view)
-                val bindingStartExportDialog = DiaExportBinding.inflate(
-                    layoutInflater
-                )
-                startExportDialog.setContentView(bindingStartExportDialog.root)
-                startExportDialog.setTitle(
+                val bindingStartExportDialog = DiaExportBinding.inflate(layoutInflater)
+                val startExportDialog = createDialog(
+                    this,
+                    bindingStartExportDialog.root,
                     String.format(
                         Locale.ROOT,
-                        resources.getString(R.string.import_export_options),
-                        resources.getString(R.string.export_title)
+                        getString(R.string.import_export_options),
+                        getString(R.string.export_title)
                     )
-                )
-                startExportDialog.window!!.setLayout(
-                    WindowManager.LayoutParams.MATCH_PARENT,
-                    WindowManager.LayoutParams.MATCH_PARENT
                 )
                 bindingStartExportDialog.diaExportIncludeSettings.isChecked = false
                 bindingStartExportDialog.diaExportIncludeSettings.visibility = View.GONE

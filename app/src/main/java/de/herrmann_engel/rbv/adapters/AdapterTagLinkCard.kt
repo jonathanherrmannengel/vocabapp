@@ -1,13 +1,11 @@
 package de.herrmann_engel.rbv.adapters
 
-import android.app.Dialog
 import android.text.Editable
 import android.text.InputFilter
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.toColorInt
@@ -23,6 +21,7 @@ import de.herrmann_engel.rbv.db.utils.DB_Helper_Delete
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Update
 import de.herrmann_engel.rbv.utils.ContextTools
 import de.herrmann_engel.rbv.utils.StringTools
+import de.herrmann_engel.rbv.utils.createDialog
 
 /**
  * List of the tags of a card (in the card's tag settings). Tags can be removed from the card
@@ -65,14 +64,12 @@ class AdapterTagLinkCard(
             viewHolder.binding.recTagsEdit.setOnClickListener {
                 val activity = ContextTools().getActivity(context)
                 if (activity != null) {
-                    val editDialog = Dialog(context, R.style.dia_view)
                     val bindingEditDialog: DiaEditTagBinding =
                         DiaEditTagBinding.inflate(activity.layoutInflater)
-                    editDialog.setContentView(bindingEditDialog.root)
-                    editDialog.setTitle(R.string.edit)
-                    editDialog.window!!.setLayout(
-                        WindowManager.LayoutParams.MATCH_PARENT,
-                        WindowManager.LayoutParams.MATCH_PARENT
+                    val editDialog = createDialog(
+                        context,
+                        bindingEditDialog.root,
+                        context.getString(R.string.edit)
                     )
                     bindingEditDialog.editTagName.setText(currentTag.name)
                     bindingEditDialog.editTagEmoji.setText(currentTag.emoji)

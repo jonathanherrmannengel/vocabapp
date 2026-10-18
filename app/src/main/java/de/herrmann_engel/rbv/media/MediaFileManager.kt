@@ -5,8 +5,6 @@ import android.app.Dialog
 import android.content.Intent
 import android.net.Uri
 import android.provider.DocumentsContract
-import android.view.View
-import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResult
@@ -20,13 +18,14 @@ import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.adapters.AdapterMediaLinkCardAll
 import de.herrmann_engel.rbv.adapters.AdapterMediaLinkCardImages
-import de.herrmann_engel.rbv.databinding.DiaConfirmBinding
 import de.herrmann_engel.rbv.databinding.DiaImageBinding
 import de.herrmann_engel.rbv.databinding.DiaRecBinding
 import de.herrmann_engel.rbv.db.DB_Media
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.settings.AppConfig
 import de.herrmann_engel.rbv.settings.AppSettings
+import de.herrmann_engel.rbv.utils.createDialog
+import de.herrmann_engel.rbv.utils.showConfirmDialog
 
 /**
  * Media file handling for an activity that works with media files.
@@ -103,62 +102,33 @@ class MediaFileManager(
 
     // Explains why a media folder is needed and lets the user select one
     fun showSelectDialog(text: String?) {
-        val selectFolderInfoDialog = Dialog(activity, R.style.dia_view)
-        val bindingSelectFolderInfoDialog = DiaConfirmBinding.inflate(
-            activity.layoutInflater
-        )
-        selectFolderInfoDialog.setContentView(bindingSelectFolderInfoDialog.root)
-        selectFolderInfoDialog.setTitle(activity.getString(R.string.select_folder_title))
-        selectFolderInfoDialog.window!!.setLayout(
-            WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.MATCH_PARENT
-        )
-        bindingSelectFolderInfoDialog.diaConfirmDesc.text = text
-        bindingSelectFolderInfoDialog.diaConfirmDesc.visibility = View.VISIBLE
-        bindingSelectFolderInfoDialog.diaConfirmYes.setOnClickListener {
+        showConfirmDialog(activity, activity.getString(R.string.select_folder_title), text) {
             startSelectMediaFolder()
-            selectFolderInfoDialog.dismiss()
         }
-        bindingSelectFolderInfoDialog.diaConfirmNo.setOnClickListener { selectFolderInfoDialog.dismiss() }
-        selectFolderInfoDialog.show()
     }
 
     // Informs the user that a media file linked to the card is missing; on confirmation onMissingFileAction is called
     private fun showMissingDialog(card: Int, parentDialog: Dialog?) {
-        val selectFolderInfoDialog = Dialog(activity, R.style.dia_view)
-        val bindingSelectFolderInfoDialog = DiaConfirmBinding.inflate(
-            activity.layoutInflater
-        )
-        selectFolderInfoDialog.setContentView(bindingSelectFolderInfoDialog.root)
-        selectFolderInfoDialog.setTitle(activity.getString(R.string.media_missing_dialog))
-        selectFolderInfoDialog.window!!.setLayout(
-            WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.MATCH_PARENT
-        )
-        bindingSelectFolderInfoDialog.diaConfirmDesc.text =
+        showConfirmDialog(
+            activity,
+            activity.getString(R.string.media_missing_dialog),
             activity.getString(R.string.media_missing_dialog_text)
-        bindingSelectFolderInfoDialog.diaConfirmDesc.visibility = View.VISIBLE
-        bindingSelectFolderInfoDialog.diaConfirmYes.setOnClickListener {
+        ) {
             parentDialog?.dismiss()
-            selectFolderInfoDialog.dismiss()
             onMissingFileAction(card)
         }
-        bindingSelectFolderInfoDialog.diaConfirmNo.setOnClickListener { selectFolderInfoDialog.dismiss() }
-        selectFolderInfoDialog.show()
     }
 
     override fun showImageDialog(fileId: Int, cardId: Int, dialog: Dialog?) {
         val uri = getImageUri(fileId)
         if (uri != null) {
-            val imageDialog = Dialog(activity, R.style.dia_view)
             val bindingImageDialog = DiaImageBinding.inflate(
                 activity.layoutInflater
             )
-            imageDialog.setContentView(bindingImageDialog.root)
-            imageDialog.setTitle(activity.getString(R.string.image_media))
-            imageDialog.window!!.setLayout(
-                WindowManager.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.MATCH_PARENT
+            val imageDialog = createDialog(
+                activity,
+                bindingImageDialog.root,
+                activity.getString(R.string.image_media)
             )
             bindingImageDialog.diaImageView.load(uri)
             imageDialog.show()
@@ -182,15 +152,13 @@ class MediaFileManager(
                 activity.getString(R.string.query_media_image_title)
             )
         } else {
-            val imageListDialog = Dialog(activity, R.style.dia_view)
             val bindingImageListDialog = DiaRecBinding.inflate(
                 activity.layoutInflater
             )
-            imageListDialog.setContentView(bindingImageListDialog.root)
-            imageListDialog.setTitle(activity.getString(R.string.query_media_image_title))
-            imageListDialog.window!!.setLayout(
-                WindowManager.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.MATCH_PARENT
+            val imageListDialog = createDialog(
+                activity,
+                bindingImageListDialog.root,
+                activity.getString(R.string.query_media_image_title)
             )
             imageListDialog.show()
             val adapter = AdapterMediaLinkCardImages(imageList, cardNo, imageListDialog, this)
@@ -215,46 +183,25 @@ class MediaFileManager(
         onlyImages: Boolean,
         title: String
     ) {
-        val mediaListDialog = Dialog(activity, R.style.dia_view)
         val bindingMediaListDialog = DiaRecBinding.inflate(
             activity.layoutInflater
         )
-        mediaListDialog.setContentView(bindingMediaListDialog.root)
-        mediaListDialog.setTitle(title)
-        mediaListDialog.window!!.setLayout(
-            WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.MATCH_PARENT
-        )
+        val mediaListDialog = createDialog(activity, bindingMediaListDialog.root, title)
         mediaListDialog.show()
         val adapter = AdapterMediaLinkCardAll(mediaList, cardNo, onlyImages, mediaListDialog, this)
         bindingMediaListDialog.diaRec.adapter = adapter
         bindingMediaListDialog.diaRec.layoutManager = LinearLayoutManager(activity)
     }
 
-    override fun showDeleteDialog(
-        fileName: String,
-        text: String?
-    ): Dialog {
-        val deleteFileDialog = Dialog(activity, R.style.dia_view)
-        val bindingDeleteFileDialog = DiaConfirmBinding.inflate(
-            activity.layoutInflater
-        )
-        deleteFileDialog.setContentView(bindingDeleteFileDialog.root)
-        deleteFileDialog.setTitle(activity.getString(R.string.delete_file_title))
-        deleteFileDialog.window!!.setLayout(
-            WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.MATCH_PARENT
-        )
-        bindingDeleteFileDialog.diaConfirmDesc.text =
+    override fun showDeleteDialog(fileName: String, text: String?, onDeleted: () -> Unit) {
+        showConfirmDialog(
+            activity,
+            activity.getString(R.string.delete_file_title),
             text ?: activity.getString(R.string.delete_file_info)
-        bindingDeleteFileDialog.diaConfirmDesc.visibility = View.VISIBLE
-        bindingDeleteFileDialog.diaConfirmYes.setOnClickListener {
+        ) {
             deleteMediaFile(fileName)
-            deleteFileDialog.dismiss()
+            onDeleted()
         }
-        bindingDeleteFileDialog.diaConfirmNo.setOnClickListener { deleteFileDialog.dismiss() }
-        deleteFileDialog.show()
-        return deleteFileDialog
     }
 
     /**

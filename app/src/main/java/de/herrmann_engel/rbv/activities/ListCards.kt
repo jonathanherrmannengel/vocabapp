@@ -1,13 +1,11 @@
 package de.herrmann_engel.rbv.activities
 
 import android.annotation.SuppressLint
-import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.view.WindowManager
 import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.SearchView
@@ -26,7 +24,6 @@ import de.herrmann_engel.rbv.adapters.AdapterCards
 import de.herrmann_engel.rbv.cardlist.ListStatsDialog
 import de.herrmann_engel.rbv.cardlist.QueryMode
 import de.herrmann_engel.rbv.databinding.ActivityDefaultRecBinding
-import de.herrmann_engel.rbv.databinding.DiaInfoBinding
 import de.herrmann_engel.rbv.db.DB_Card_With_Meta
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.media.MediaFileManager
@@ -36,6 +33,7 @@ import de.herrmann_engel.rbv.utils.FormatCards
 import de.herrmann_engel.rbv.utils.SearchCards
 import de.herrmann_engel.rbv.utils.SortCards
 import de.herrmann_engel.rbv.utils.colorAt
+import de.herrmann_engel.rbv.utils.showInfoDialog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -290,16 +288,6 @@ class ListCards : RBVActivity(), CardActions.Listener {
                 val warnInaccurateNoFormat =
                     !formatCardsActivated && config.showInaccurateWarningNoFormat
                 if (warnInaccurateFormat || warnInaccurateNoFormat) {
-                    val infoDialog = Dialog(this@ListCards, R.style.dia_view)
-                    val bindingInfoDialog = DiaInfoBinding.inflate(
-                        layoutInflater
-                    )
-                    infoDialog.setContentView(bindingInfoDialog.root)
-                    infoDialog.setTitle(resources.getString(R.string.info))
-                    infoDialog.window!!.setLayout(
-                        WindowManager.LayoutParams.MATCH_PARENT,
-                        WindowManager.LayoutParams.MATCH_PARENT
-                    )
                     val warnings: MutableList<String> = ArrayList()
                     warnings.add(
                         String.format(
@@ -316,11 +304,11 @@ class ListCards : RBVActivity(), CardActions.Listener {
                     }
                     warnings.add(resources.getString(R.string.warn_inaccurate_search))
                     warnings.add(resources.getString(R.string.warn_inaccurate_note))
-                    bindingInfoDialog.diaInfoText.text = java.lang.String.join(
-                        System.lineSeparator().plus(System.lineSeparator()),
-                        warnings
+                    showInfoDialog(
+                        this@ListCards,
+                        getString(R.string.info),
+                        warnings.joinToString(System.lineSeparator() + System.lineSeparator())
                     )
-                    infoDialog.show()
                 }
             }
 
