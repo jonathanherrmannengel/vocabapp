@@ -20,7 +20,6 @@ import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.actions.CardActions
 import de.herrmann_engel.rbv.databinding.ActivityViewCardBinding
 import de.herrmann_engel.rbv.db.DB_Card
-import de.herrmann_engel.rbv.db.DB_Media
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Update
 import de.herrmann_engel.rbv.media.MediaFileManager
@@ -322,7 +321,7 @@ class ViewCard : RBVActivity(), CardActions.Listener {
     // Shows buttons for the card's images and other media only if there are any
     private fun setMediaButtons() {
         val imageList =
-            dbHelperGet.getCardImageMedia(cardNo) as ArrayList<DB_Media>
+            dbHelperGet.getCardImageMedia(cardNo)
         if (imageList.isEmpty()) {
             binding.viewCardImages.visibility = View.GONE
         } else {
@@ -334,7 +333,7 @@ class ViewCard : RBVActivity(), CardActions.Listener {
                 cardNo
             )
         }
-        val mediaList = dbHelperGet.getCardMedia(cardNo) as ArrayList<DB_Media>
+        val mediaList = dbHelperGet.getCardMedia(cardNo)
         if (mediaList.isEmpty()) {
             binding.viewCardMedia.visibility = View.GONE
         } else {

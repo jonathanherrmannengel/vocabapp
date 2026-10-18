@@ -12,7 +12,6 @@ import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.adapters.AdapterMediaLinkCard
 import de.herrmann_engel.rbv.databinding.ActivityEditCardMediaBinding
 import de.herrmann_engel.rbv.databinding.DiaFileExistsBinding
-import de.herrmann_engel.rbv.db.DB_Media
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Create
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.media.MediaFileManager
@@ -161,7 +160,7 @@ class EditCardMedia : RBVActivity() {
     }
 
     private fun setRecView() {
-        val mediaList = dbHelperGet.getCardMedia(cardNo) as ArrayList<DB_Media>
+        val mediaList = dbHelperGet.getCardMedia(cardNo).toMutableList()
         val adapter = AdapterMediaLinkCard(mediaList, cardNo, mediaFileManager.mediaFolder, mediaFileManager)
         binding.recCardMedia.adapter = adapter
         binding.recCardMedia.layoutManager = LinearLayoutManager(this)

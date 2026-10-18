@@ -206,7 +206,7 @@ class ListCards : RBVActivity(), CardActions.Listener {
                         )
                     }
                     cardsList?.let {
-                        val index = it.indexOf(cardWithMetaOld)
+                        val index = it.indexOfFirst { c -> c.card.uid == cardUpdated }
                         if (index != -1) {
                             it[index] = cardWithMetaNew
                         }
@@ -214,7 +214,7 @@ class ListCards : RBVActivity(), CardActions.Listener {
                     // If the activity was recreated, the displayed list does not exist yet; it is
                     // then built from cardsList in onResume
                     cardsListFiltered?.let {
-                        val index = it.indexOf(cardWithMetaOld)
+                        val index = it.indexOfFirst { c -> c.card.uid == cardUpdated }
                         if (index != -1) {
                             it[index] = cardWithMetaNew
                             adapter?.notifyItemChanged(index)

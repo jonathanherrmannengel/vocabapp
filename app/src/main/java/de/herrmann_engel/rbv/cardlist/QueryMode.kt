@@ -21,7 +21,6 @@ import de.herrmann_engel.rbv.databinding.DiaInfoBinding
 import de.herrmann_engel.rbv.databinding.DiaQueryBinding
 import de.herrmann_engel.rbv.db.DB_Card
 import de.herrmann_engel.rbv.db.DB_Card_With_Meta
-import de.herrmann_engel.rbv.db.DB_Media
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Update
 import de.herrmann_engel.rbv.media.MediaFileManager
@@ -247,7 +246,7 @@ class QueryMode(
             }
 
             val imageList =
-                dbHelperGet.getCardImageMedia(card.uid) as ArrayList<DB_Media>
+                dbHelperGet.getCardImageMedia(card.uid)
             if (imageList.isEmpty()) {
                 binding.queryButtonMediaImage.visibility = View.GONE
             } else {
@@ -260,7 +259,7 @@ class QueryMode(
                 }
             }
             val mediaList =
-                dbHelperGet.getCardMedia(card.uid) as ArrayList<DB_Media>
+                dbHelperGet.getCardMedia(card.uid)
             if (mediaList.isEmpty()) {
                 binding.queryButtonMediaOther.visibility = View.GONE
             } else {

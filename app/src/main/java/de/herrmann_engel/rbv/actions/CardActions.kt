@@ -20,9 +20,7 @@ import de.herrmann_engel.rbv.databinding.DiaPrintBinding
 import de.herrmann_engel.rbv.databinding.DiaRecBinding
 import de.herrmann_engel.rbv.db.AppDatabase
 import de.herrmann_engel.rbv.db.DB_Card
-import de.herrmann_engel.rbv.db.DB_Media
 import de.herrmann_engel.rbv.db.DB_Pack_With_Meta
-import de.herrmann_engel.rbv.db.DB_Tag
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Delete
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.media.MediaFiles
@@ -145,19 +143,19 @@ class CardActions(
                 bindingPrintDialog.diaPrintIncludeNotes.isChecked = false
             }
             val imageList =
-                dbHelperGet.getCardImageMedia(cards[0].uid) as ArrayList<DB_Media>
+                dbHelperGet.getCardImageMedia(cards[0].uid)
             if (imageList.isEmpty() || imageList.size > Globals.MAX_SIZE_CARD_IMAGE_PRINT) {
                 bindingPrintDialog.diaPrintIncludeImagesLayout.visibility = View.GONE
                 bindingPrintDialog.diaPrintIncludeImages.isChecked = false
             }
             val mediaList =
-                dbHelperGet.getCardMedia(cards[0].uid) as ArrayList<DB_Media>
+                dbHelperGet.getCardMedia(cards[0].uid)
             if (mediaList.isEmpty()) {
                 bindingPrintDialog.diaPrintIncludeMediaLayout.visibility = View.GONE
                 bindingPrintDialog.diaPrintIncludeMedia.isChecked = false
             }
             val tagList =
-                dbHelperGet.getCardTags(cards[0].uid) as ArrayList<DB_Tag>
+                dbHelperGet.getCardTags(cards[0].uid)
             if (tagList.isEmpty()) {
                 bindingPrintDialog.diaPrintIncludeTagsLayout.visibility = View.GONE
                 bindingPrintDialog.diaPrintIncludeTags.isChecked = false
@@ -252,7 +250,7 @@ class CardActions(
                 }
 
                 val imageList =
-                    dbHelperGet.getCardImageMedia(card.uid) as ArrayList<DB_Media>
+                    dbHelperGet.getCardImageMedia(card.uid)
                 if (imageList.isNotEmpty() && bindingPrintDialog.diaPrintIncludeImages.isChecked) {
                     htmlDocument += "<article>"
                     if (bindingPrintDialog.diaPrintIncludeHeadings.isChecked) {
@@ -294,7 +292,7 @@ class CardActions(
                     htmlDocument += "</div></article>"
                 }
                 val mediaList =
-                    dbHelperGet.getCardMedia(card.uid) as ArrayList<DB_Media>
+                    dbHelperGet.getCardMedia(card.uid)
                 if (mediaList.isNotEmpty() && bindingPrintDialog.diaPrintIncludeMedia.isChecked) {
                     htmlDocument += "<article>"
                     if (bindingPrintDialog.diaPrintIncludeHeadings.isChecked) {
@@ -309,7 +307,7 @@ class CardActions(
                     htmlDocument += "</div></article>"
                 }
                 val tagList =
-                    dbHelperGet.getCardTags(card.uid) as ArrayList<DB_Tag>
+                    dbHelperGet.getCardTags(card.uid)
                 if (tagList.isNotEmpty() && bindingPrintDialog.diaPrintIncludeTags.isChecked) {
                     htmlDocument += "<article>"
                     if (bindingPrintDialog.diaPrintIncludeHeadings.isChecked) {

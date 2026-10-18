@@ -25,9 +25,6 @@ class ListCardCompare(
         if (oldList.size == 1 || newList.size == 1) {
             return false
         }
-        if (oldList[oldItemPosition].card == null || newList[newItemPosition].card == null) {
-            return oldList[oldItemPosition].card == newList[newItemPosition].card
-        }
         return oldList[oldItemPosition].card.uid == newList[newItemPosition].card.uid
     }
 

@@ -141,7 +141,7 @@ class MediaFileManager(
      * Shows the images of a card: a single image directly, up to MAX_SIZE_CARD_IMAGE_PREVIEW images
      * as a grid of previews, more as a list of file names.
      */
-    fun showImageListDialog(imageList: ArrayList<DB_Media>, cardNo: Int) {
+    fun showImageListDialog(imageList: List<DB_Media>, cardNo: Int) {
         if (imageList.size == 1) {
             showImageDialog(imageList[0].uid, cardNo)
         } else if (imageList.size > Globals.MAX_SIZE_CARD_IMAGE_PREVIEW) {
@@ -168,7 +168,7 @@ class MediaFileManager(
     }
 
     // Shows all media files of a card as a list
-    fun showMediaListDialog(mediaList: ArrayList<DB_Media>, cardNo: Int) {
+    fun showMediaListDialog(mediaList: List<DB_Media>, cardNo: Int) {
         showMediaListDialog(
             mediaList,
             cardNo,
@@ -178,7 +178,7 @@ class MediaFileManager(
     }
 
     private fun showMediaListDialog(
-        mediaList: ArrayList<DB_Media>,
+        mediaList: List<DB_Media>,
         cardNo: Int,
         onlyImages: Boolean,
         title: String

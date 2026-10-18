@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.adapters.AdapterMediaManage
 import de.herrmann_engel.rbv.databinding.ActivityManageMediaBinding
-import de.herrmann_engel.rbv.db.DB_Media
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.media.MediaFileManager
 import de.herrmann_engel.rbv.settings.AppSettings
@@ -50,7 +49,7 @@ class ManageMedia : RBVActivity() {
 
     private fun setRecView() {
         val dbHelperGet = DB_Helper_Get(this)
-        val mediaList = dbHelperGet.allMedia as ArrayList<DB_Media>
+        val mediaList = dbHelperGet.allMedia.toMutableList()
         val adapter = AdapterMediaManage(mediaList, mediaFileManager)
         binding.recMediaManage.adapter = adapter
         binding.recMediaManage.layoutManager = LinearLayoutManager(this)
