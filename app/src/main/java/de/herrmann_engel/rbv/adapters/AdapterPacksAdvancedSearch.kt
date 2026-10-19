@@ -43,7 +43,7 @@ class AdapterPacksAdvancedSearch(
             viewHolder.binding.recSmallDesc.visibility = View.GONE
             viewHolder.binding.recSmallCheckbox.visibility = View.GONE
         } else {
-            val pack = packs[position].pack!!
+            val pack = packs[position].pack
             context.resources.colorAt(R.array.pack_color_list, pack.colors)
                 ?.let { viewHolder.binding.recSmallName.setTextColor(it) }
             val size = packs[position].counter

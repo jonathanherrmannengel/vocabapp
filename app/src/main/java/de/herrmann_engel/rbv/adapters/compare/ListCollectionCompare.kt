@@ -20,17 +20,7 @@ class ListCollectionCompare(
     }
 
     override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-        // An empty list is displayed as a single placeholder item, so single items are always redrawn
-        if (oldList.size == 1 || newList.size == 1) {
-            return false
-        }
-        // The first item ("all packs") is a placeholder without collection
-        val oldCollection = oldList[oldItemPosition].collection
-        val newCollection = newList[newItemPosition].collection
-        if (oldCollection == null || newCollection == null) {
-            return oldCollection == newCollection
-        }
-        return oldCollection.uid == newCollection.uid
+        return oldList[oldItemPosition].collection.uid == newList[newItemPosition].collection.uid
     }
 
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {

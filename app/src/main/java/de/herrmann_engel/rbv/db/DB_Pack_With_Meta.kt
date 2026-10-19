@@ -8,7 +8,7 @@ import java.util.Objects
  */
 class DB_Pack_With_Meta {
     @Embedded
-    var pack: DB_Pack? = null
+    lateinit var pack: DB_Pack
 
     // Number of cards in the pack, -1 if not counted
     var counter: Int = 0

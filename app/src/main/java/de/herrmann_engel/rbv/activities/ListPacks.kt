@@ -6,11 +6,15 @@ import android.view.Menu
 import android.view.View
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.actions.PackActions
+import de.herrmann_engel.rbv.adapters.AdapterListHeader
 import de.herrmann_engel.rbv.adapters.AdapterPacks
+import de.herrmann_engel.rbv.adapters.iconText
+import de.herrmann_engel.rbv.cardlist.CardSource
 import de.herrmann_engel.rbv.databinding.ActivityDefaultRecBinding
 import de.herrmann_engel.rbv.databinding.DiaExportBinding
 import de.herrmann_engel.rbv.db.DB_Pack_With_Meta
@@ -20,6 +24,7 @@ import de.herrmann_engel.rbv.settings.AppSettings
 import de.herrmann_engel.rbv.utils.colorAt
 import de.herrmann_engel.rbv.utils.createDialog
 import de.herrmann_engel.rbv.utils.getListCollection
+import de.herrmann_engel.rbv.utils.putCardSource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -33,6 +38,8 @@ class ListPacks : RBVActivity(), PackActions.Listener {
     private lateinit var binding: ActivityDefaultRecBinding
     private lateinit var dbHelperGet: DB_Helper_Get
     private var adapter: AdapterPacks? = null
+    // First row: all cards of the listed packs, or a welcome message without packs
+    private var headerAdapter: AdapterListHeader? = null
     // null: packs of all collections
     private var collectionId: Int? = null
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -138,29 +145,75 @@ class ListPacks : RBVActivity(), PackActions.Listener {
         }
     }
 
-    // Load the packs in the background; create the adapter on first load, update it (and the
+    // Load the packs in the background; create the adapters on first load, update them (and the
     // font size setting) afterwards
     private fun refreshContent() {
         val settings = AppSettings(this)
         val uiFontSizeBig = settings.uiFontSizeBig
         lifecycleScope.launch {
-            val content = withContext(Dispatchers.IO) { loadContent() }
-            adapter?.updateSettingsAndContent(content, uiFontSizeBig) ?: run {
-                adapter = AdapterPacks(
-                    content, uiFontSizeBig, collectionId, PackActions(this@ListPacks, this@ListPacks)
+            val (packs, cardCount) = withContext(Dispatchers.IO) { Pair(loadPacks(), countCards()) }
+            headerAdapter?.update(cardCount, packs.isEmpty(), uiFontSizeBig)
+            adapter?.updateSettingsAndContent(packs, uiFontSizeBig) ?: run {
+                val header = createHeaderAdapter(cardCount, packs.isEmpty(), uiFontSizeBig)
+                val packsAdapter = AdapterPacks(
+                    packs, uiFontSizeBig, collectionId, PackActions(this@ListPacks, this@ListPacks)
                 )
-                binding.recDefault.adapter = adapter
+                headerAdapter = header
+                adapter = packsAdapter
+                binding.recDefault.adapter = ConcatAdapter(header, packsAdapter)
                 binding.recDefault.layoutManager =
                     LinearLayoutManager(this@ListPacks)
             }
         }
     }
 
-    /**
-     * Loads the packs including the placeholder for "all cards" as first item. For long lists,
-     * the cards per pack are not counted to save time.
-     */
-    private fun loadContent(): MutableList<DB_Pack_With_Meta> {
+    private fun createHeaderAdapter(
+        cardCount: Int,
+        noPacks: Boolean,
+        uiFontSizeBig: Boolean
+    ): AdapterListHeader {
+        val collectionId = collectionId
+        return AdapterListHeader(
+            name = getString(R.string.all_cards),
+            desc = getString(
+                if (collectionId == null) {
+                    R.string.all_cards_desc
+                } else {
+                    R.string.all_cards_desc_by_pack
+                }
+            ),
+            // Only in a single collection packs can be created here ("+" button)
+            welcomeText = { context ->
+                if (collectionId == null) {
+                    context.getString(R.string.welcome_pack)
+                } else {
+                    iconText(
+                        context,
+                        context.getString(R.string.welcome_pack) + " " +
+                            context.getString(R.string.welcome_pack_create),
+                        mapOf('+' to R.drawable.outline_add_24)
+                    )
+                }
+            },
+            onClick = {
+                val intent = Intent(this, ListCards::class.java)
+                intent.putCardSource(
+                    collectionId?.let { CardSource.Collection(it) } ?: CardSource.AllCards
+                )
+                startActivity(intent)
+            },
+            counter = cardCount,
+            listEmpty = noPacks,
+            uiFontSizeBig = uiFontSizeBig
+        )
+    }
+
+    // Number of cards in the listed packs
+    private fun countCards(): Int =
+        collectionId?.let { dbHelperGet.countCardsInCollection(it) } ?: dbHelperGet.countCards()
+
+    // Loads the packs; for long lists, the cards per pack are not counted to save time
+    private fun loadPacks(): MutableList<DB_Pack_With_Meta> {
         val collectionId = collectionId
         val packs: MutableList<DB_Pack_With_Meta> =
             if (collectionId == null) {
@@ -176,13 +229,6 @@ class ListPacks : RBVActivity(), PackActions.Listener {
                     dbHelperGet.getAllPacksWithMetaByCollection(collectionId)
                 }
             }
-        val fixedFirstItemPlaceholder = DB_Pack_With_Meta()
-        if (collectionId == null) {
-            fixedFirstItemPlaceholder.counter = dbHelperGet.countCards()
-        } else {
-            fixedFirstItemPlaceholder.counter = dbHelperGet.countCardsInCollection(collectionId)
-        }
-        packs.add(0, fixedFirstItemPlaceholder)
         return packs
     }
 

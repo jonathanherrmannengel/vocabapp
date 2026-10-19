@@ -20,17 +20,7 @@ class ListPackCompare(
     }
 
     override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-        // An empty list is displayed as a single placeholder item, so single items are always redrawn
-        if (oldList.size == 1 || newList.size == 1) {
-            return false
-        }
-        // The first item ("all cards") is a placeholder without pack
-        val oldPack = oldList[oldItemPosition].pack
-        val newPack = newList[newItemPosition].pack
-        if (oldPack == null || newPack == null) {
-            return oldPack == newPack
-        }
-        return oldPack.uid == newPack.uid
+        return oldList[oldItemPosition].pack.uid == newList[newItemPosition].pack.uid
     }
 
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {

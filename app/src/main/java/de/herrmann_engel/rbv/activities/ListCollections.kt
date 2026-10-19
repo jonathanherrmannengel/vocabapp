@@ -9,12 +9,15 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.Globals.IMPORT_MODE_SIMPLE_LIST
 import de.herrmann_engel.rbv.Globals.MAX_SIZE_COLLECTIONS_OR_PACKS_LIST_COUNTER
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.adapters.AdapterCollections
+import de.herrmann_engel.rbv.adapters.AdapterListHeader
+import de.herrmann_engel.rbv.adapters.iconText
 import de.herrmann_engel.rbv.databinding.ActivityDefaultRecBinding
 import de.herrmann_engel.rbv.databinding.DiaExportBinding
 import de.herrmann_engel.rbv.databinding.DiaImportBinding
@@ -25,6 +28,7 @@ import de.herrmann_engel.rbv.export_import.AsyncImport
 import de.herrmann_engel.rbv.media.MediaFileManager
 import de.herrmann_engel.rbv.settings.AppSettings
 import de.herrmann_engel.rbv.utils.createDialog
+import de.herrmann_engel.rbv.utils.putListCollection
 import de.herrmann_engel.rbv.utils.showConfirmDialog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -40,6 +44,8 @@ class ListCollections : RBVActivity() {
     private lateinit var binding: ActivityDefaultRecBinding
     private lateinit var dbHelperGet: DB_Helper_Get
     private var adapter: AdapterCollections? = null
+    // First row: all packs, or a welcome message without collections
+    private var headerAdapter: AdapterListHeader? = null
     // Import options chosen in the import dialog, used once the user has picked the file
     private var importMode = 0
     private var importIncludeSettings = false
@@ -267,7 +273,7 @@ class ListCollections : RBVActivity() {
         } else {
             binding.backgroundImage.visibility = View.GONE
         }
-        updateSettingsAndContent()
+        refreshContent()
     }
 
     /**
@@ -286,43 +292,64 @@ class ListCollections : RBVActivity() {
         }
     }
 
-    /**
-     * Loads the collections including the placeholder for "all packs" as first item. For long
-     * lists, the packs per collection are not counted to save time.
-     */
-    private fun loadContent(): MutableList<DB_Collection_With_Meta> {
-        val collections =
-            if (dbHelperGet.countCollections() > MAX_SIZE_COLLECTIONS_OR_PACKS_LIST_COUNTER) {
-                dbHelperGet.allCollectionsWithMetaNoCounter
-            } else {
-                dbHelperGet.allCollectionsWithMeta
-            }
-        val fixedFirstItemPlaceholder = DB_Collection_With_Meta()
-        fixedFirstItemPlaceholder.counter = dbHelperGet.countPacks()
-        collections.add(0, fixedFirstItemPlaceholder)
-        return collections
-    }
-
-    // Load the collections in the background; create the adapter on first load, update it afterwards
-    private fun updateSettingsAndContent() {
+    // Load the collections in the background; create the adapters on first load, update them
+    // afterwards
+    private fun refreshContent() {
         val settings = AppSettings(this)
         val uiFontSizeBig = settings.uiFontSizeBig
-
         lifecycleScope.launch {
-            val content = withContext(Dispatchers.IO) { loadContent() }
-            adapter?.updateSettingsAndContent(content, uiFontSizeBig) ?: run {
-                adapter =
-                    AdapterCollections(content, uiFontSizeBig)
-                binding.recDefault.adapter = adapter
+            val (collections, packCount) = withContext(Dispatchers.IO) {
+                Pair(loadCollections(), dbHelperGet.countPacks())
+            }
+            headerAdapter?.update(packCount, collections.isEmpty(), uiFontSizeBig)
+            adapter?.updateSettingsAndContent(collections, uiFontSizeBig) ?: run {
+                val header = createHeaderAdapter(packCount, collections.isEmpty(), uiFontSizeBig)
+                val collectionsAdapter = AdapterCollections(collections, uiFontSizeBig)
+                headerAdapter = header
+                adapter = collectionsAdapter
+                binding.recDefault.adapter = ConcatAdapter(header, collectionsAdapter)
                 binding.recDefault.layoutManager =
                     LinearLayoutManager(this@ListCollections)
             }
         }
     }
 
+    private fun createHeaderAdapter(
+        packCount: Int,
+        noCollections: Boolean,
+        uiFontSizeBig: Boolean
+    ): AdapterListHeader = AdapterListHeader(
+        name = getString(R.string.all_packs),
+        desc = getString(R.string.all_packs_desc),
+        // Refers to the "+" (new collection) and "↓" (import) buttons
+        welcomeText = { context ->
+            iconText(
+                context,
+                context.getString(R.string.welcome_collection),
+                mapOf('+' to R.drawable.outline_add_24, '↓' to R.drawable.outline_file_download_24)
+            )
+        },
+        onClick = {
+            val intent = Intent(this, ListPacks::class.java)
+            intent.putListCollection(null)
+            startActivity(intent)
+        },
+        counter = packCount,
+        listEmpty = noCollections,
+        uiFontSizeBig = uiFontSizeBig
+    )
+
+    // Loads the collections; for long lists, the packs per collection are not counted to save time
+    private fun loadCollections(): MutableList<DB_Collection_With_Meta> =
+        if (dbHelperGet.countCollections() > MAX_SIZE_COLLECTIONS_OR_PACKS_LIST_COUNTER) {
+            dbHelperGet.allCollectionsWithMetaNoCounter
+        } else {
+            dbHelperGet.allCollectionsWithMeta
+        }
+
     // Reload the list after an import (started here or elsewhere)
     override fun onImportFinished() {
-        updateSettingsAndContent()
+        refreshContent()
     }
 
 

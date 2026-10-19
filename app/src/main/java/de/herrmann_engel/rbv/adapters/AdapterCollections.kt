@@ -2,12 +2,6 @@ package de.herrmann_engel.rbv.adapters
 
 import android.content.Intent
 import android.graphics.Color
-import android.graphics.drawable.GradientDrawable
-import android.graphics.drawable.LayerDrawable
-import android.text.Spannable
-import android.text.SpannableString
-import android.text.style.ImageSpan
-import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,10 +19,8 @@ import de.herrmann_engel.rbv.utils.putListCollection
 import java.util.Locale
 
 /**
- * Collection list of the start screen.
- *
- * The first item is a placeholder for "all packs". If it is the only item (no collections yet),
- * a welcome message is shown instead.
+ * Collection list of the start screen. The row for all packs and the welcome message are shown by
+ * [AdapterListHeader].
  */
 class AdapterCollections(
     private val collections: MutableList<DB_Collection_With_Meta>,
@@ -79,229 +71,64 @@ class AdapterCollections(
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         val context = viewHolder.binding.root.context
-        if (uiFontSizeBig) {
-            viewHolder.binding.recCollectionsName.setTextSize(
-                TypedValue.COMPLEX_UNIT_PX,
-                context.resources.getDimension(R.dimen.rec_view_font_size_big)
+        viewHolder.binding.applyFontSize(uiFontSizeBig)
+        val (background, backgroundBehind) = viewHolder.binding.backgroundLayers()
+        val currentCollection = collections[position].collection
+        val collectionId = currentCollection.uid
+        viewHolder.binding.root.setOnClickListener {
+            val intent = Intent(
+                context,
+                ListPacks::class.java
             )
-            viewHolder.binding.recCollectionsDesc.setTextSize(
-                TypedValue.COMPLEX_UNIT_PX,
-                context.resources.getDimension(R.dimen.rec_view_font_size_below_big)
+            intent.putListCollection(collectionId)
+            context.startActivity(intent)
+        }
+        viewHolder.binding.recCollectionsName.text =
+            stringTools.shorten(currentCollection.name)
+        val desc = currentCollection.desc
+        if (desc.isNullOrBlank()) {
+            viewHolder.binding.recCollectionsDesc.visibility = View.GONE
+        } else {
+            viewHolder.binding.recCollectionsDesc.visibility = View.VISIBLE
+            viewHolder.binding.recCollectionsDesc.text = stringTools.shorten(desc)
+        }
+        viewHolder.binding.recCollectionsPreviewText.text =
+            if (currentCollection.emoji.isNullOrBlank()) {
+                // Without emoji, show the first character of the name (including combining marks)
+                val pattern = Regex("^(\\P{M}\\p{M}*+).*")
+                currentCollection.name.replace(pattern, "$1")
+            } else {
+                currentCollection.emoji
+            }
+        if (collections[position].counter != -1) {
+            viewHolder.binding.recCollectionsNumberText.visibility = View.VISIBLE
+            viewHolder.binding.recCollectionsNumberText.text =
+                collections[position].counter.toString()
+            viewHolder.binding.recCollectionsNumberText.contentDescription = String.format(
+                Locale.ROOT, "%d %s",
+                collections[position].counter,
+                context.resources.getString(R.string.items)
             )
         } else {
-            viewHolder.binding.recCollectionsName.setTextSize(
-                TypedValue.COMPLEX_UNIT_PX,
-                context.resources.getDimension(R.dimen.rec_view_font_size_default)
-            )
-            viewHolder.binding.recCollectionsDesc.setTextSize(
-                TypedValue.COMPLEX_UNIT_PX,
-                context.resources.getDimension(R.dimen.rec_view_font_size_below_default)
-            )
+            viewHolder.binding.recCollectionsNumberText.visibility = View.GONE
         }
-        val backgroundLayerList =
-            viewHolder.binding.root.background as LayerDrawable
-        val background =
-            backgroundLayerList.findDrawableByLayerId(R.id.rec_view_collection_or_pack_background_main) as GradientDrawable
-        val backgroundBehind =
-            backgroundLayerList.findDrawableByLayerId(R.id.rec_view_collection_or_pack_background_behind) as GradientDrawable
-        viewHolder.binding.recCollectionsName.textAlignment = View.TEXT_ALIGNMENT_INHERIT
-        viewHolder.binding.recCollectionsPreviewText.visibility = View.VISIBLE
-        viewHolder.binding.recCollectionsNumberText.visibility = View.VISIBLE
-        when (position) {
-            // No collections: welcome message, with icons replacing the "+" and "↓" characters
-            0 if collections.size == 1 -> {
-                val welcomeText =
-                    SpannableString(context.resources.getString(R.string.welcome_collection))
-                val welcomeTextDrawableAdd = ContextCompat.getDrawable(
-                    context,
-                    R.drawable.outline_add_24
-                )
-                welcomeTextDrawableAdd?.setTint(context.getColor(R.color.light_black))
-                welcomeTextDrawableAdd?.setBounds(
-                    0,
-                    0,
-                    welcomeTextDrawableAdd.intrinsicWidth,
-                    welcomeTextDrawableAdd.intrinsicHeight
-                )
-                val welcomeTextImageAdd =
-                    welcomeTextDrawableAdd?.let { ImageSpan(it, ImageSpan.ALIGN_BOTTOM) }
-                val indexAdd = welcomeText.indexOf("+")
-                welcomeText.setSpan(
-                    welcomeTextImageAdd,
-                    indexAdd,
-                    indexAdd + 1,
-                    Spannable.SPAN_INCLUSIVE_EXCLUSIVE
-                )
-                val welcomeTextDrawableImport =
-                    ContextCompat.getDrawable(
-                        context,
-                        R.drawable.outline_file_download_24
-                    )
-                welcomeTextDrawableImport?.setTint(
-                    context.getColor(
-                        R.color.light_black
-                    )
-                )
-                welcomeTextDrawableImport?.setBounds(
-                    0,
-                    0,
-                    welcomeTextDrawableImport.intrinsicWidth,
-                    welcomeTextDrawableImport.intrinsicHeight
-                )
-                val welcomeTextImageImport =
-                    welcomeTextDrawableImport?.let { ImageSpan(it, ImageSpan.ALIGN_BOTTOM) }
-                val indexImport = welcomeText.indexOf("↓")
-                welcomeText.setSpan(
-                    welcomeTextImageImport,
-                    indexImport,
-                    indexImport + 1,
-                    Spannable.SPAN_INCLUSIVE_EXCLUSIVE
-                )
-                viewHolder.binding.recCollectionsName.text = welcomeText
-                viewHolder.binding.recCollectionsName.textAlignment = View.TEXT_ALIGNMENT_CENTER
-                viewHolder.binding.recCollectionsDesc.visibility = View.GONE
-                viewHolder.binding.recCollectionsPreviewText.visibility = View.GONE
-                viewHolder.binding.recCollectionsNumberText.visibility = View.GONE
-                viewHolder.binding.recCollectionsName.setTextColor(
-                    ContextCompat.getColor(
-                        context,
-                        R.color.default_text
-                    )
-                )
-                background.mutate()
-                background.setStroke(0, Color.rgb(0, 0, 0))
-                background.setColor(Color.argb(0, 0, 0, 0))
-                backgroundBehind.mutate()
-                backgroundBehind.setStroke(0, Color.rgb(0, 0, 0))
-            }
-
-            // "All packs" item
-            0 -> {
-                viewHolder.binding.root.setOnClickListener {
-                    val intent = Intent(
-                        context,
-                        ListPacks::class.java
-                    )
-                    intent.putListCollection(null)
-                    context.startActivity(intent)
-                }
-                viewHolder.binding.recCollectionsName.text =
-                    context.resources.getString(R.string.all_packs)
-                viewHolder.binding.recCollectionsDesc.visibility = View.VISIBLE
-                viewHolder.binding.recCollectionsDesc.text =
-                    viewHolder.binding.recCollectionsDesc.resources.getString(R.string.all_packs_desc)
-                viewHolder.binding.recCollectionsPreviewText.text = "…"
-                if (collections[position].counter != -1) {
-                    viewHolder.binding.recCollectionsNumberText.visibility = View.VISIBLE
-                    viewHolder.binding.recCollectionsNumberText.text =
-                        collections[position].counter.toString()
-                    viewHolder.binding.recCollectionsNumberText.contentDescription = String.format(
-                        Locale.ROOT, "%d %s",
-                        collections[position].counter,
-                        context.resources.getString(R.string.items)
-                    )
-                } else {
-                    viewHolder.binding.recCollectionsNumberText.visibility = View.GONE
-                }
-                viewHolder.binding.recCollectionsName.setTextColor(
-                    ContextCompat.getColor(
-                        context,
-                        R.color.default_text
-                    )
-                )
-                viewHolder.binding.recCollectionsPreviewText.setTextColor(
-                    ContextCompat.getColor(
-                        context,
-                        R.color.default_text
-                    )
-                )
-                viewHolder.binding.recCollectionsPreviewText.setBackgroundColor(
-                    ContextCompat.getColor(
-                        context,
-                        R.color.pack_default_item_background
-                    )
-                )
-                background.mutate()
-                background.setStroke(
-                    2, ContextCompat.getColor(
-                        context,
-                        R.color.pack_default_item_stroke
-                    )
-                )
-                background.setColor(
-                    ContextCompat.getColor(
-                        context,
-                        R.color.pack_default_item_background_alpha
-                    )
-                )
-                backgroundBehind.mutate()
-                backgroundBehind.setStroke(
-                    1, ContextCompat.getColor(
-                        context,
-                        R.color.pack_default_item_background
-                    )
-                )
-            }
-
-            else -> {
-                val currentCollection = collections[position].collection!!
-                val collectionId = currentCollection.uid
-                viewHolder.binding.root.setOnClickListener {
-                    val intent = Intent(
-                        context,
-                        ListPacks::class.java
-                    )
-                    intent.putListCollection(collectionId)
-                    context.startActivity(intent)
-                }
-                viewHolder.binding.recCollectionsName.text =
-                    stringTools.shorten(currentCollection.name)
-                val desc = currentCollection.desc
-                if (desc.isNullOrBlank()) {
-                    viewHolder.binding.recCollectionsDesc.visibility = View.GONE
-                } else {
-                    viewHolder.binding.recCollectionsDesc.visibility = View.VISIBLE
-                    viewHolder.binding.recCollectionsDesc.text = stringTools.shorten(desc)
-                }
-                viewHolder.binding.recCollectionsPreviewText.text =
-                    if (currentCollection.emoji.isNullOrBlank()) {
-                        // Without emoji, show the first character of the name (including combining marks)
-                        val pattern = Regex("^(\\P{M}\\p{M}*+).*")
-                        currentCollection.name.replace(pattern, "$1")
-                    } else {
-                        currentCollection.emoji
-                    }
-                if (collections[position].counter != -1) {
-                    viewHolder.binding.recCollectionsNumberText.visibility = View.VISIBLE
-                    viewHolder.binding.recCollectionsNumberText.text =
-                        collections[position].counter.toString()
-                    viewHolder.binding.recCollectionsNumberText.contentDescription = String.format(
-                        Locale.ROOT, "%d %s",
-                        collections[position].counter,
-                        context.resources.getString(R.string.items)
-                    )
-                } else {
-                    viewHolder.binding.recCollectionsNumberText.visibility = View.GONE
-                }
-                val resources = context.resources
-                val color = resources.colorAt(R.array.pack_color_list, currentCollection.colors)
-                val colorBackground =
-                    resources.colorAt(R.array.pack_color_background_light, currentCollection.colors)
-                val colorBackgroundAlpha = resources.colorAt(
-                    R.array.pack_color_background_light_alpha,
-                    currentCollection.colors
-                )
-                if (color != null && colorBackground != null && colorBackgroundAlpha != null) {
-                    viewHolder.binding.recCollectionsName.setTextColor(color)
-                    viewHolder.binding.recCollectionsPreviewText.setTextColor(color)
-                    viewHolder.binding.recCollectionsPreviewText.setBackgroundColor(colorBackground)
-                    background.mutate()
-                    background.setStroke(2, color)
-                    background.setColor(colorBackgroundAlpha)
-                    backgroundBehind.mutate()
-                    backgroundBehind.setStroke(1, colorBackground)
-                }
-            }
+        val resources = context.resources
+        val color = resources.colorAt(R.array.pack_color_list, currentCollection.colors)
+        val colorBackground =
+            resources.colorAt(R.array.pack_color_background_light, currentCollection.colors)
+        val colorBackgroundAlpha = resources.colorAt(
+            R.array.pack_color_background_light_alpha,
+            currentCollection.colors
+        )
+        if (color != null && colorBackground != null && colorBackgroundAlpha != null) {
+            viewHolder.binding.recCollectionsName.setTextColor(color)
+            viewHolder.binding.recCollectionsPreviewText.setTextColor(color)
+            viewHolder.binding.recCollectionsPreviewText.setBackgroundColor(colorBackground)
+            background.mutate()
+            background.setStroke(2, color)
+            background.setColor(colorBackgroundAlpha)
+            backgroundBehind.mutate()
+            backgroundBehind.setStroke(1, colorBackground)
         }
     }
 

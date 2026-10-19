@@ -8,7 +8,7 @@ import java.util.Objects
  */
 class DB_Collection_With_Meta {
     @Embedded
-    var collection: DB_Collection? = null
+    lateinit var collection: DB_Collection
 
     // Number of packs in the collection, -1 if not counted
     var counter: Int = 0

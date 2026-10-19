@@ -55,7 +55,7 @@ class AdapterPacksMoveCard(
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         val context = viewHolder.binding.root.context
-        val pack = packs[position].pack!!
+        val pack = packs[position].pack
         context.resources.colorAt(R.array.pack_color_list, pack.colors)
             ?.let { viewHolder.binding.recName.setTextColor(it) }
         viewHolder.binding.recName.text = pack.name
