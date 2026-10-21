@@ -95,15 +95,17 @@ abstract class RBVActivity : AppCompatActivity() {
     }
 
     private fun importFinished(result: ImportExportEvents.Result.ImportFinished) {
-        if (result.errorLevel >= Globals.IMPORT_ERROR_LEVEL_ERROR) {
-            Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show()
-            return
+        when {
+            result.errorLevel >= Globals.IMPORT_ERROR_LEVEL_ERROR ->
+                Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show()
+
+            result.errorLevel == Globals.IMPORT_ERROR_LEVEL_OKAY ->
+                Toast.makeText(this, R.string.success, Toast.LENGTH_SHORT).show()
+
+            else -> Toast.makeText(this, R.string.import_warn, Toast.LENGTH_LONG).show()
         }
-        if (result.errorLevel == Globals.IMPORT_ERROR_LEVEL_OKAY) {
-            Toast.makeText(this, R.string.success, Toast.LENGTH_SHORT).show()
-        } else {
-            Toast.makeText(this, R.string.import_warn, Toast.LENGTH_LONG).show()
-        }
+        // Also after a failed import: it may have removed entries it created, and settings from
+        // the file are applied even if no entry could be imported
         onImportFinished()
         // Apply the theme setting, which may have been changed by the import
         AppSettings(this).applyUiMode()
@@ -124,7 +126,7 @@ abstract class RBVActivity : AppCompatActivity() {
         }
     }
 
-    // Called after a successful import, e.g. to reload displayed data
+    // Called after every import (also a failed one), e.g. to reload displayed data
     protected open fun onImportFinished() {}
 
     // Shows a dialog and returns true if an import or export is already running (only one at a time)
