@@ -186,7 +186,8 @@ class Importer(
                     helperDelete.deletePack(it, true)
                 }
                 simpleListCreatedCollectionId?.let { uid ->
-                    helperGet.getSingleCollection(uid)?.let { helperDelete.deleteCollection(it, true) }
+                    helperGet.getSingleCollection(uid)
+                        ?.let { helperDelete.deleteCollection(it, true) }
                 }
             }
         }
@@ -379,7 +380,8 @@ class Importer(
         }
     }
 
-    // Columns: uid, front, back, pack, known, date, notes, last repetition (optional), repetition count (optional)
+    // Columns: uid, front, back, pack, known, date, notes, last repetition (optional),
+    // repetition count (optional)
     private fun importCard(line: Array<String?>) {
         val packId =
             packIdConverter.getNewValue(
