@@ -57,6 +57,11 @@
     <string name="import_export_include_media">Medien-Referenzen einschließen</string>
     <string name="import_export_include_media_warn_no_files">Die Sicherung enthält nur die Medien-Referenzen, nicht die Dateien selbst. Diese musst Du selbstständig sichern und wiederherstellen.</string>
     <string name="import_export_lines_progress">~%d Zeilen.</string>
+    <string name="import_export_notification_channel">Import und Export</string>
+    <string name="import_running">Import läuft</string>
+    <string name="export_running">Export läuft</string>
+    <string name="notification_permission_title">Fortschrittsanzeige</string>
+    <string name="notification_permission_text">Während eines Imports oder Exports zeigt eine Benachrichtigung den Fortschritt. Erlaube daher im nächsten Schritt Benachrichtigungen (Import und Export funktionieren auch ohne).</string>
     <string name="import_export_options">%s-Optionen</string>
     <string name="edit_pack">Kartenstapel bearbeiten</string>
     <string name="edit_card">Karteikarte bearbeiten</string>

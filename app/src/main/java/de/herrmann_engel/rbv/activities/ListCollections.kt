@@ -23,8 +23,7 @@ import de.herrmann_engel.rbv.databinding.DiaExportBinding
 import de.herrmann_engel.rbv.databinding.DiaImportBinding
 import de.herrmann_engel.rbv.db.DB_Collection_With_Meta
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
-import de.herrmann_engel.rbv.export_import.AsyncExport
-import de.herrmann_engel.rbv.export_import.AsyncImport
+import de.herrmann_engel.rbv.export_import.ImportExportWork
 import de.herrmann_engel.rbv.media.MediaFileManager
 import de.herrmann_engel.rbv.settings.AppSettings
 import de.herrmann_engel.rbv.utils.createDialog
@@ -56,13 +55,13 @@ class ListCollections : RBVActivity() {
     ) { result: ActivityResult ->
         if (result.resultCode == RESULT_OK) {
             showImportExportStarted(
-                AsyncImport(
+                ImportExportWork.startImport(
                     this,
                     result.data?.data!!,
                     importMode,
                     importIncludeSettings,
                     importIncludeMedia
-                ).execute()
+                )
             )
         } else {
             Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show()
@@ -77,12 +76,13 @@ class ListCollections : RBVActivity() {
     ) { result: ActivityResult ->
         if (result.resultCode == RESULT_OK) {
             val uri = result.data?.data
-            contentResolver.takePersistableUriPermission(
-                uri!!,
-                Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-            )
             showImportExportStarted(
-                AsyncExport(this, exportIncludeSettings, exportIncludeMedia, uri).execute()
+                ImportExportWork.startExport(
+                    this,
+                    uri!!,
+                    exportIncludeSettings,
+                    exportIncludeMedia
+                )
             )
         } else {
             Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show()
@@ -111,121 +111,15 @@ class ListCollections : RBVActivity() {
             return@setOnMenuItemClickListener true
         }
         menu.findItem(R.id.menu_list_collections_import).setOnMenuItemClickListener {
-            if (showIfImportExportRunning()) {
-                return@setOnMenuItemClickListener true
-            }
-            val bindingStartImportDialog = DiaImportBinding.inflate(layoutInflater)
-            val startImportDialog = createDialog(
-                this,
-                bindingStartImportDialog.root,
-                String.format(
-                    Locale.ROOT,
-                    getString(R.string.import_export_options),
-                    getString(R.string.import_title)
-                )
-            )
-            // Defaults: merge into existing data; for an empty app, import everything including settings
-            if (dbHelperGet.hasCollections()) {
-                bindingStartImportDialog.diaImportRadioIntegrate.isChecked = true
-                bindingStartImportDialog.diaImportRadioDuplicates.isChecked = false
-                bindingStartImportDialog.diaImportIncludeSettings.isChecked = false
-            } else {
-                bindingStartImportDialog.diaImportRadioIntegrate.isChecked = false
-                bindingStartImportDialog.diaImportRadioDuplicates.isChecked = true
-                bindingStartImportDialog.diaImportIncludeSettings.isChecked = true
-            }
-            bindingStartImportDialog.diaImportRadioSkip.isChecked = false
-            bindingStartImportDialog.diaImportIncludeMedia.isChecked = true
-            bindingStartImportDialog.diaImportIncludeMedia.setOnCheckedChangeListener { _, c: Boolean ->
-                if (c) {
-                    bindingStartImportDialog.diaImportIncludeMediaWarnNoFiles.visibility =
-                        View.VISIBLE
-                } else {
-                    bindingStartImportDialog.diaImportIncludeMediaWarnNoFiles.visibility = View.GONE
-                }
-            }
-            bindingStartImportDialog.diaImportStart.setOnClickListener {
-                importMode =
-                    when (bindingStartImportDialog.diaImportRadio.checkedRadioButtonId) {
-                        R.id.dia_import_radio_integrate -> {
-                            Globals.IMPORT_MODE_INTEGRATE
-                        }
-
-                        R.id.dia_import_radio_duplicates -> {
-                            Globals.IMPORT_MODE_DUPLICATES
-                        }
-
-                        else -> {
-                            Globals.IMPORT_MODE_SKIP
-                        }
-                    }
-                importIncludeSettings = bindingStartImportDialog.diaImportIncludeSettings.isChecked
-                importIncludeMedia = bindingStartImportDialog.diaImportIncludeMedia.isChecked
-                startImport()
-                startImportDialog.dismiss()
-            }
-            startImportDialog.show()
+            prepareImportExport(::showImportOptions)
             return@setOnMenuItemClickListener true
         }
-        // Import of a simple CSV list of cards into a new pack
         menu.findItem(R.id.menu_list_collections_import_simple_list).setOnMenuItemClickListener {
-            if (showIfImportExportRunning()) {
-                return@setOnMenuItemClickListener true
-            }
-            showConfirmDialog(
-                this,
-                getString(R.string.import_simple_list),
-                getString(R.string.import_simple_list_info)
-            ) {
-                importMode = IMPORT_MODE_SIMPLE_LIST
-                importIncludeSettings = false
-                importIncludeMedia = false
-                startImport()
-            }
+            prepareImportExport(::confirmSimpleListImport)
             return@setOnMenuItemClickListener true
         }
         menu.findItem(R.id.menu_list_collections_export).setOnMenuItemClickListener {
-            if (showIfImportExportRunning()) {
-                return@setOnMenuItemClickListener true
-            }
-            val bindingStartExportDialog = DiaExportBinding.inflate(layoutInflater)
-            val startExportDialog = createDialog(
-                this,
-                bindingStartExportDialog.root,
-                String.format(
-                    Locale.ROOT,
-                    getString(R.string.import_export_options),
-                    getString(R.string.export_title)
-                )
-            )
-            bindingStartExportDialog.diaExportIncludeSettings.isChecked = false
-            bindingStartExportDialog.diaExportIncludeMedia.isChecked = true
-            bindingStartExportDialog.diaExportIncludeMediaWarnNoFiles.visibility =
-                if (bindingStartExportDialog.diaExportIncludeMedia.isChecked) View.VISIBLE else View.GONE
-            bindingStartExportDialog.diaExportIncludeMedia.setOnCheckedChangeListener { _, c: Boolean ->
-                if (c) {
-                    bindingStartExportDialog.diaExportIncludeMediaWarnNoFiles.visibility =
-                        View.VISIBLE
-                } else {
-                    bindingStartExportDialog.diaExportIncludeMediaWarnNoFiles.visibility = View.GONE
-                }
-            }
-            bindingStartExportDialog.diaExportStart.setOnClickListener {
-                exportIncludeSettings = bindingStartExportDialog.diaExportIncludeSettings.isChecked
-                exportIncludeMedia = bindingStartExportDialog.diaExportIncludeMedia.isChecked
-                val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
-                intent.addCategory(Intent.CATEGORY_OPENABLE)
-                intent.flags =
-                    Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION
-                intent.type = Globals.EXPORT_FILE_TYPE
-                intent.putExtra(
-                    Intent.EXTRA_TITLE,
-                    Globals.EXPORT_FILE_NAME + "." + Globals.EXPORT_FILE_EXTENSION
-                )
-                launcherExportFile.launch(intent)
-                startExportDialog.dismiss()
-            }
-            startExportDialog.show()
+            prepareImportExport(::showExportOptions)
             return@setOnMenuItemClickListener true
         }
         menu.findItem(R.id.menu_list_collections_start_advanced_search).setOnMenuItemClickListener {
@@ -354,6 +248,117 @@ class ListCollections : RBVActivity() {
 
 
     // Lets the user pick the file to import
+    // Options of an import from a backup; the file is chosen afterwards
+    private fun showImportOptions() {
+        val bindingStartImportDialog = DiaImportBinding.inflate(layoutInflater)
+        val startImportDialog = createDialog(
+            this,
+            bindingStartImportDialog.root,
+            String.format(
+                Locale.ROOT,
+                getString(R.string.import_export_options),
+                getString(R.string.import_title)
+            )
+        )
+        // Defaults: merge into existing data; for an empty app, import everything including settings
+        if (dbHelperGet.hasCollections()) {
+            bindingStartImportDialog.diaImportRadioIntegrate.isChecked = true
+            bindingStartImportDialog.diaImportRadioDuplicates.isChecked = false
+            bindingStartImportDialog.diaImportIncludeSettings.isChecked = false
+        } else {
+            bindingStartImportDialog.diaImportRadioIntegrate.isChecked = false
+            bindingStartImportDialog.diaImportRadioDuplicates.isChecked = true
+            bindingStartImportDialog.diaImportIncludeSettings.isChecked = true
+        }
+        bindingStartImportDialog.diaImportRadioSkip.isChecked = false
+        bindingStartImportDialog.diaImportIncludeMedia.isChecked = true
+        bindingStartImportDialog.diaImportIncludeMedia.setOnCheckedChangeListener { _, c: Boolean ->
+            if (c) {
+                bindingStartImportDialog.diaImportIncludeMediaWarnNoFiles.visibility =
+                    View.VISIBLE
+            } else {
+                bindingStartImportDialog.diaImportIncludeMediaWarnNoFiles.visibility = View.GONE
+            }
+        }
+        bindingStartImportDialog.diaImportStart.setOnClickListener {
+            importMode =
+                when (bindingStartImportDialog.diaImportRadio.checkedRadioButtonId) {
+                    R.id.dia_import_radio_integrate -> {
+                        Globals.IMPORT_MODE_INTEGRATE
+                    }
+
+                    R.id.dia_import_radio_duplicates -> {
+                        Globals.IMPORT_MODE_DUPLICATES
+                    }
+
+                    else -> {
+                        Globals.IMPORT_MODE_SKIP
+                    }
+                }
+            importIncludeSettings = bindingStartImportDialog.diaImportIncludeSettings.isChecked
+            importIncludeMedia = bindingStartImportDialog.diaImportIncludeMedia.isChecked
+            startImport()
+            startImportDialog.dismiss()
+        }
+        startImportDialog.show()
+    }
+
+    // Import of a simple CSV list of cards into a new pack
+    private fun confirmSimpleListImport() {
+        showConfirmDialog(
+            this,
+            getString(R.string.import_simple_list),
+            getString(R.string.import_simple_list_info)
+        ) {
+            importMode = IMPORT_MODE_SIMPLE_LIST
+            importIncludeSettings = false
+            importIncludeMedia = false
+            startImport()
+        }
+    }
+
+    // Options of an export of all data; the destination file is chosen afterwards
+    private fun showExportOptions() {
+        val bindingStartExportDialog = DiaExportBinding.inflate(layoutInflater)
+        val startExportDialog = createDialog(
+            this,
+            bindingStartExportDialog.root,
+            String.format(
+                Locale.ROOT,
+                getString(R.string.import_export_options),
+                getString(R.string.export_title)
+            )
+        )
+        bindingStartExportDialog.diaExportIncludeSettings.isChecked = false
+        bindingStartExportDialog.diaExportIncludeMedia.isChecked = true
+        bindingStartExportDialog.diaExportIncludeMediaWarnNoFiles.visibility =
+            if (bindingStartExportDialog.diaExportIncludeMedia.isChecked) View.VISIBLE else View.GONE
+        bindingStartExportDialog.diaExportIncludeMedia.setOnCheckedChangeListener { _, c: Boolean ->
+            if (c) {
+                bindingStartExportDialog.diaExportIncludeMediaWarnNoFiles.visibility =
+                    View.VISIBLE
+            } else {
+                bindingStartExportDialog.diaExportIncludeMediaWarnNoFiles.visibility = View.GONE
+            }
+        }
+        bindingStartExportDialog.diaExportStart.setOnClickListener {
+            exportIncludeSettings = bindingStartExportDialog.diaExportIncludeSettings.isChecked
+            exportIncludeMedia = bindingStartExportDialog.diaExportIncludeMedia.isChecked
+            val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
+            intent.addCategory(Intent.CATEGORY_OPENABLE)
+            intent.flags =
+                Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION
+            intent.type = Globals.EXPORT_FILE_TYPE
+            intent.putExtra(
+                Intent.EXTRA_TITLE,
+                Globals.EXPORT_FILE_NAME + "." + Globals.EXPORT_FILE_EXTENSION
+            )
+            launcherExportFile.launch(intent)
+            startExportDialog.dismiss()
+        }
+        startExportDialog.show()
+    }
+
     private fun startImport() {
         val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
         intent.addCategory(Intent.CATEGORY_OPENABLE)

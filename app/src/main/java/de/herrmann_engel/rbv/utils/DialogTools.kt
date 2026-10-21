@@ -48,6 +48,27 @@ fun showConfirmDialog(
     dialog.show()
 }
 
+/**
+ * Shows a text with an OK button. onClose is called when the dialog is closed, by the button or
+ * the back button.
+ */
+fun showMessageDialog(
+    context: Context,
+    title: CharSequence,
+    text: CharSequence,
+    onClose: () -> Unit
+) {
+    val binding = DiaConfirmBinding.inflate(LayoutInflater.from(context))
+    val dialog = createDialog(context, binding.root, title)
+    binding.diaConfirmDesc.text = text
+    binding.diaConfirmDesc.visibility = View.VISIBLE
+    binding.diaConfirmYes.setText(android.R.string.ok)
+    binding.diaConfirmYes.setOnClickListener { dialog.dismiss() }
+    binding.diaConfirmNo.visibility = View.GONE
+    dialog.setOnDismissListener { onClose() }
+    dialog.show()
+}
+
 // Shows a text in a dialog that is closed with the back button
 fun showInfoDialog(context: Context, title: CharSequence, text: CharSequence) {
     val binding = DiaInfoBinding.inflate(LayoutInflater.from(context))

@@ -17,10 +17,14 @@ class AppConfig(context: Context) : Preferences(context, Globals.CONFIG_NAME) {
     var showInaccurateWarningFormat by SHOW_INACCURATE_WARNING_FORMAT
     var showInaccurateWarningNoFormat by SHOW_INACCURATE_WARNING_NO_FORMAT
 
+    // Id of the import or export whose result was shown last (see ImportExportWork)
+    var shownImportExportResult by SHOWN_IMPORT_EXPORT_RESULT
+
     companion object {
         private val MEDIA_FOLDER = StringValue("card_media_folder", null)
         private val SHOW_INACCURATE_WARNING_FORMAT = BooleanValue("inaccurate_warning_format", true)
         private val SHOW_INACCURATE_WARNING_NO_FORMAT =
             BooleanValue("inaccurate_warning_no_format", true)
+        private val SHOWN_IMPORT_EXPORT_RESULT = StringValue("shown_import_export_result", null)
     }
 }

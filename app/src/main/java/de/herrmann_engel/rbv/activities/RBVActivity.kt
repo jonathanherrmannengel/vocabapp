@@ -1,6 +1,8 @@
 package de.herrmann_engel.rbv.activities
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
@@ -8,6 +10,7 @@ import android.view.View
 import android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.core.view.ViewCompat
@@ -16,40 +19,53 @@ import androidx.core.view.updatePadding
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.work.WorkInfo
 import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.R
-import de.herrmann_engel.rbv.export_import.ImportExportEvents
+import de.herrmann_engel.rbv.export_import.ImportExportWork
 import de.herrmann_engel.rbv.settings.AppSettings
 import de.herrmann_engel.rbv.utils.showInfoDialog
+import de.herrmann_engel.rbv.utils.showMessageDialog
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
+import java.io.File
 
 /**
  * Base class of all activities.
  *
- * While an activity is in the foreground, it shows the progress and results of running imports
- * and exports (see [ImportExportEvents]), no matter which screen started them.
+ * While an activity is in the foreground, it shows the results of imports and exports (see
+ * [ImportExportWork]), no matter which screen started them.
  */
 abstract class RBVActivity : AppCompatActivity() {
+    // The answer does not matter: imports and exports run with or without notification
+    private val notificationPermissionRequest =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) {}
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch {
-                    ImportExportEvents.progress.collect { progress ->
-                        Toast.makeText(this@RBVActivity, progress, Toast.LENGTH_SHORT).show()
-                    }
-                }
-                ImportExportEvents.result.filterNotNull().collect { result ->
-                    if (ImportExportEvents.consumeResult(result)) {
-                        when (result) {
-                            is ImportExportEvents.Result.ExportFinished -> exportFinished(result)
-                            is ImportExportEvents.Result.ImportFinished -> importFinished(result)
-                        }
-                    }
+                ImportExportWork.observe(this@RBVActivity).filterNotNull().collect { work ->
+                    showImportExportWork(work)
                 }
             }
+        }
+    }
+
+    // Shows the result of a finished import or export (once); the progress is shown by the
+    // notification of the running work
+    private fun showImportExportWork(work: WorkInfo) {
+        if (!work.state.isFinished || !ImportExportWork.consumeResult(this, work.id)) {
+            return
+        }
+        // Failed or cancelled work has no output: shown as error
+        val output = work.outputData
+        if (ImportExportWork.TAG_EXPORT in work.tags) {
+            exportFinished(output.getString(ImportExportWork.KEY_FILE)?.let { File(it) })
+        } else {
+            importFinished(
+                output.getInt(ImportExportWork.KEY_ERROR_LEVEL, Globals.IMPORT_ERROR_LEVEL_ERROR)
+            )
         }
     }
 
@@ -70,9 +86,8 @@ abstract class RBVActivity : AppCompatActivity() {
         }
     }
 
-    // Offers to share the exported file
-    private fun exportFinished(result: ImportExportEvents.Result.ExportFinished) {
-        val file = result.file
+    // Offers to share the exported file (null if the export failed)
+    private fun exportFinished(file: File?) {
         if (file == null) {
             Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show()
             return
@@ -94,12 +109,13 @@ abstract class RBVActivity : AppCompatActivity() {
         )
     }
 
-    private fun importFinished(result: ImportExportEvents.Result.ImportFinished) {
+    // errorLevel: one of the IMPORT_ERROR_LEVEL_* constants
+    private fun importFinished(errorLevel: Int) {
         when {
-            result.errorLevel >= Globals.IMPORT_ERROR_LEVEL_ERROR ->
+            errorLevel >= Globals.IMPORT_ERROR_LEVEL_ERROR ->
                 Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show()
 
-            result.errorLevel == Globals.IMPORT_ERROR_LEVEL_OKAY ->
+            errorLevel == Globals.IMPORT_ERROR_LEVEL_OKAY ->
                 Toast.makeText(this, R.string.success, Toast.LENGTH_SHORT).show()
 
             else -> Toast.makeText(this, R.string.import_warn, Toast.LENGTH_LONG).show()
@@ -129,16 +145,45 @@ abstract class RBVActivity : AppCompatActivity() {
     // Called after every import (also a failed one), e.g. to reload displayed data
     protected open fun onImportFinished() {}
 
-    // Shows a dialog and returns true if an import or export is already running (only one at a time)
-    protected fun showIfImportExportRunning(): Boolean {
-        if (ImportExportEvents.isRunning) {
+    /**
+     * Called when the user wants to start an import or export; showOptions then shows its options
+     * dialog. If an import or export is already running (only one at a time), a dialog says so
+     * instead.
+     *
+     * Before, the permission to show notifications is asked for (Android 13+), which is needed for
+     * the progress notification. If the user has denied it before, an explanation comes first.
+     * Android itself stops showing its question after the second denial.
+     */
+    protected fun prepareImportExport(showOptions: () -> Unit) {
+        if (ImportExportWork.isRunning(this)) {
             showImportExportRunningDialog()
-            return true
+            return
         }
-        return false
+        val permission = Manifest.permission.POST_NOTIFICATIONS
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
+            checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED
+        ) {
+            showOptions()
+            return
+        }
+        // The options dialog is opened below the system's question, so it is shown once that is
+        // answered
+        if (shouldShowRequestPermissionRationale(permission)) {
+            showMessageDialog(
+                this,
+                getString(R.string.notification_permission_title),
+                getString(R.string.notification_permission_text)
+            ) {
+                notificationPermissionRequest.launch(permission)
+                showOptions()
+            }
+        } else {
+            notificationPermissionRequest.launch(permission)
+            showOptions()
+        }
     }
 
-    // Shows whether an import or export was started (execute() returns false if one is already running)
+    // Shows whether an import or export was started (false if one is already running)
     protected fun showImportExportStarted(started: Boolean) {
         if (started) {
             Toast.makeText(this, R.string.wait, Toast.LENGTH_LONG).show()

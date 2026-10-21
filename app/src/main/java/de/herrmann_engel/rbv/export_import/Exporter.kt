@@ -5,7 +5,6 @@ import android.database.Cursor
 import android.net.Uri
 import com.opencsv.CSVWriter
 import de.herrmann_engel.rbv.Globals
-import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Export
 import de.herrmann_engel.rbv.settings.AppSettings
 import java.io.File
@@ -20,21 +19,19 @@ import java.util.Locale
  * Every row starts with the type of the entry (e.g. "collection", "packs", "cards", "tags",
  * "app_setting"), followed by the database columns. Before the first row of a type, a
  * "<type>_schema" row lists the column names. Only database entries are exported, not the
- * media files themselves.
+ * media files themselves. Progress (the number of written rows) is reported to onProgress.
  */
-class AsyncExportWorker(
+class Exporter(
     val context: Context,
     private val singleCollection: Boolean,
     private val collectionId: Int,
     private val includeSettings: Boolean,
     private val includeMedia: Boolean,
-    private val exportFileUri: Uri?
+    private val exportFileUri: Uri?,
+    private val onProgress: (rows: Int) -> Unit
 ) {
     private var progress = 0
     private var lastProgressSentTime = 0L
-    fun execute(): ImportExportEvents.Result {
-        return ImportExportEvents.Result.ExportFinished(exportFile())
-    }
 
     // Appends a single setting as an "app_setting" row (name, type, value)
     private fun exportSetting(name: String, filename: String, type: String, value: String) {
@@ -78,15 +75,13 @@ class AsyncExportWorker(
                             cursor.moveToNext()
                             progress++
                             val currentTime = System.currentTimeMillis()
-                            // Report progress every 1000 rows, at most once per three seconds
-                            if (progress % 1000 == 0 && currentTime - lastProgressSentTime > 3000) {
+                            // Report progress every 1000 rows, at most once per progress interval
+                            if (progress % 1000 == 0 &&
+                                currentTime - lastProgressSentTime >
+                                ImportExportWork.PROGRESS_INTERVAL_MILLIS
+                            ) {
                                 lastProgressSentTime = currentTime
-                                ImportExportEvents.reportProgress(
-                                    String.format(
-                                        context.getString(R.string.import_export_lines_progress),
-                                        progress
-                                    )
-                                )
+                                onProgress(progress)
                             }
                         }
                     }
@@ -99,8 +94,8 @@ class AsyncExportWorker(
         return true
     }
 
-    // Returns the exported file or null on errors
-    private fun exportFile(): File? {
+    // Exports and returns the file in the cache directory, null if the export failed
+    fun execute(): File? {
         try {
             val dbHelperExport = DB_Helper_Export(context)
             val index: String

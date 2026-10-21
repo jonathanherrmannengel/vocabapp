@@ -19,7 +19,7 @@ import de.herrmann_engel.rbv.databinding.ActivityDefaultRecBinding
 import de.herrmann_engel.rbv.databinding.DiaExportBinding
 import de.herrmann_engel.rbv.db.DB_Pack_With_Meta
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
-import de.herrmann_engel.rbv.export_import.AsyncExport
+import de.herrmann_engel.rbv.export_import.ImportExportWork
 import de.herrmann_engel.rbv.settings.AppSettings
 import de.herrmann_engel.rbv.utils.colorAt
 import de.herrmann_engel.rbv.utils.createDialog
@@ -75,46 +75,8 @@ class ListPacks : RBVActivity(), PackActions.Listener {
                 this.startActivity(intent)
                 return@setOnMenuItemClickListener true
             }
-            // Export dialog for this collection (settings are never included)
             export.setOnMenuItemClickListener {
-                if (showIfImportExportRunning()) {
-                    return@setOnMenuItemClickListener true
-                }
-                val bindingStartExportDialog = DiaExportBinding.inflate(layoutInflater)
-                val startExportDialog = createDialog(
-                    this,
-                    bindingStartExportDialog.root,
-                    String.format(
-                        Locale.ROOT,
-                        getString(R.string.import_export_options),
-                        getString(R.string.export_title)
-                    )
-                )
-                bindingStartExportDialog.diaExportIncludeSettings.isChecked = false
-                bindingStartExportDialog.diaExportIncludeSettings.visibility = View.GONE
-                bindingStartExportDialog.diaExportIncludeMedia.isChecked = true
-                bindingStartExportDialog.diaExportIncludeMediaWarnNoFiles.visibility =
-                    if (bindingStartExportDialog.diaExportIncludeMedia.isChecked) View.VISIBLE else View.GONE
-                bindingStartExportDialog.diaExportIncludeMedia.setOnCheckedChangeListener { _, c: Boolean ->
-                    if (c) {
-                        bindingStartExportDialog.diaExportIncludeMediaWarnNoFiles.visibility =
-                            View.VISIBLE
-                    } else {
-                        bindingStartExportDialog.diaExportIncludeMediaWarnNoFiles.visibility =
-                            View.GONE
-                    }
-                }
-                bindingStartExportDialog.diaExportStart.setOnClickListener {
-                    showImportExportStarted(
-                        AsyncExport(
-                            this,
-                            collectionId,
-                            bindingStartExportDialog.diaExportIncludeMedia.isChecked
-                        ).execute()
-                    )
-                    startExportDialog.dismiss()
-                }
-                startExportDialog.show()
+                prepareImportExport { showExportOptions(collectionId) }
                 return@setOnMenuItemClickListener true
             }
         }
@@ -143,6 +105,45 @@ class ListPacks : RBVActivity(), PackActions.Listener {
                 dbHelperGet.getSingleCollection(it)?.colors
             )?.let { binding.root.setBackgroundColor(it) }
         }
+    }
+
+    // Export dialog for the collection (settings are never included)
+    private fun showExportOptions(collectionId: Int) {
+        val bindingStartExportDialog = DiaExportBinding.inflate(layoutInflater)
+        val startExportDialog = createDialog(
+            this,
+            bindingStartExportDialog.root,
+            String.format(
+                Locale.ROOT,
+                getString(R.string.import_export_options),
+                getString(R.string.export_title)
+            )
+        )
+        bindingStartExportDialog.diaExportIncludeSettings.isChecked = false
+        bindingStartExportDialog.diaExportIncludeSettings.visibility = View.GONE
+        bindingStartExportDialog.diaExportIncludeMedia.isChecked = true
+        bindingStartExportDialog.diaExportIncludeMediaWarnNoFiles.visibility =
+            if (bindingStartExportDialog.diaExportIncludeMedia.isChecked) View.VISIBLE else View.GONE
+        bindingStartExportDialog.diaExportIncludeMedia.setOnCheckedChangeListener { _, c: Boolean ->
+            if (c) {
+                bindingStartExportDialog.diaExportIncludeMediaWarnNoFiles.visibility =
+                    View.VISIBLE
+            } else {
+                bindingStartExportDialog.diaExportIncludeMediaWarnNoFiles.visibility =
+                    View.GONE
+            }
+        }
+        bindingStartExportDialog.diaExportStart.setOnClickListener {
+            showImportExportStarted(
+                ImportExportWork.startCollectionExport(
+                    this,
+                    collectionId,
+                    bindingStartExportDialog.diaExportIncludeMedia.isChecked
+                )
+            )
+            startExportDialog.dismiss()
+        }
+        startExportDialog.show()
     }
 
     // Load the packs in the background; create the adapters on first load, update them (and the

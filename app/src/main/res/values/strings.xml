@@ -62,6 +62,11 @@
     <string name="import_export_include_media">Include media links</string>
     <string name="import_export_include_media_warn_no_files">Backup only contains media references, no files. You need to backup and restore them on your own.</string>
     <string name="import_export_lines_progress">~%d lines.</string>
+    <string name="import_export_notification_channel">Import and export</string>
+    <string name="import_running">Import running</string>
+    <string name="export_running">Export running</string>
+    <string name="notification_permission_title">Progress notification</string>
+    <string name="notification_permission_text">During import or export, a notification shows the progress. Therefore allow notifications in the next step (import and export also work without it).</string>
     <string name="import_export_options">%s options</string>
     <string name="edit_collection">Edit filing box</string>
     <string name="edit_pack">Edit deck</string>

@@ -19,7 +19,7 @@ import java.util.Locale
 import java.util.TimeZone
 
 /**
- * Imports a CSV file, either in the format written by [AsyncExportWorker] or as a simple list
+ * Imports a CSV file, either in the format written by [Exporter] or as a simple list
  * of cards (front, back, optional notes per row).
  *
  * The uids in the file are translated to new uids via [AsyncImportIdConvert], so packs, cards
@@ -36,14 +36,16 @@ import java.util.TimeZone
  * until then are kept. If the file cannot be read to the end (e.g. a cut-off file), the rows
  * before the unreadable part are imported (result "warn").
  *
- * A worker imports a single file; its fields hold the state of that import.
+ * An importer imports a single file; its fields hold the state of that import. Progress (the
+ * number of processed rows) is reported to onProgress.
  */
-class AsyncImportWorker(
+class Importer(
     val context: Context,
     private val uri: Uri,
     private val mode: Int,
     private val includeSettings: Boolean,
-    private val includeMedia: Boolean
+    private val includeMedia: Boolean,
+    private val onProgress: (rows: Int) -> Unit
 ) {
 
     private var progress = 0
@@ -115,12 +117,8 @@ class AsyncImportWorker(
         }
     }
 
-    fun execute(): ImportExportEvents.Result {
-        return ImportExportEvents.Result.ImportFinished(execute2())
-    }
-
-    // Returns one of the IMPORT_ERROR_LEVEL_* constants
-    private fun execute2(): Int {
+    // Imports the file and returns one of the IMPORT_ERROR_LEVEL_* constants
+    fun execute(): Int {
         try {
             val inputStream = context.contentResolver.openInputStream(uri)
                 ?: return Globals.IMPORT_ERROR_LEVEL_ERROR
@@ -218,18 +216,15 @@ class AsyncImportWorker(
         }
     }
 
-    // Reports the number of processed rows, at most every 1000 rows and 3 seconds
+    // Reports the number of processed rows every 1000 rows, at most once per progress interval
     private fun reportProgress() {
         progress++
         val currentTime = System.currentTimeMillis()
-        if (progress % 1000 == 0 && currentTime - lastProgressSentTime > 3000) {
+        if (progress % 1000 == 0 &&
+            currentTime - lastProgressSentTime > ImportExportWork.PROGRESS_INTERVAL_MILLIS
+        ) {
             lastProgressSentTime = currentTime
-            ImportExportEvents.reportProgress(
-                String.format(
-                    context.getString(R.string.import_export_lines_progress),
-                    progress
-                )
-            )
+            onProgress(progress)
         }
     }
 
