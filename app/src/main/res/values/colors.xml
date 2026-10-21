@@ -4,11 +4,11 @@
     <color name="default_text">#10111a</color>
     <color name="background_select">#77b9bcd1</color>
     <color name="button">#161850</color>
-    <color name="warn_red">#d4029b</color>
+    <color name="warn_red">#cf0197</color>
     <color name="highlight">#9746dc</color>
     <color name="hyperlink">#670e78</color>
     <color name="light_black">#383a57</color>
-    <color name="dark_grey">#5e617d</color>
+    <color name="dark_grey">#555874</color>
     <color name="ijblue">#232d6d</color>
     <color name="ijred">#650e12</color>
     <color name="ijgreen">#18491c</color>
