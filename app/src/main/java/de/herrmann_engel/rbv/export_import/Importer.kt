@@ -22,7 +22,7 @@ import java.util.TimeZone
  * Imports a CSV file, either in the format written by [Exporter] or as a simple list
  * of cards (front, back, optional notes per row).
  *
- * The uids in the file are translated to new uids via [AsyncImportIdConvert], so packs, cards
+ * The uids in the file are translated to new uids via [ImportIdConverter], so packs, cards
  * and links end up assigned to the right (newly created or existing) entries. How existing
  * entries are handled depends on mode (see the IMPORT_MODE_* constants in Globals).
  *
@@ -65,11 +65,11 @@ class Importer(
     private val helperDelete = DB_Helper_Delete(context)
 
     // Translation of the uids in the file to the uids in the database, per entry type
-    private val collectionIdConverter = AsyncImportIdConvert()
-    private val packIdConverter = AsyncImportIdConvert()
-    private val cardIdConverter = AsyncImportIdConvert()
-    private val mediaIdConverter = AsyncImportIdConvert()
-    private val tagIdConverter = AsyncImportIdConvert()
+    private val collectionIdConverter = ImportIdConverter()
+    private val packIdConverter = ImportIdConverter()
+    private val cardIdConverter = ImportIdConverter()
+    private val mediaIdConverter = ImportIdConverter()
+    private val tagIdConverter = ImportIdConverter()
 
     // Tags created by this import; those without card in the end are deleted again
     private val createdTags = mutableListOf<Int>()

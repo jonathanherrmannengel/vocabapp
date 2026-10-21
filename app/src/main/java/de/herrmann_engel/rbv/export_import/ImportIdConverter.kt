@@ -6,7 +6,7 @@ import android.util.ArrayMap
  * Maps uids from an imported file to the uids of the newly created database entries,
  * so that references (e.g. card -> pack) can be translated during the import.
  */
-class AsyncImportIdConvert {
+class ImportIdConverter {
     private val map: MutableMap<Int, Int> = ArrayMap()
     fun insertPair(oldValue: Int, newValue: Int) {
         map[oldValue] = newValue
