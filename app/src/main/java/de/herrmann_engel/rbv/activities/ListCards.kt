@@ -28,12 +28,15 @@ import de.herrmann_engel.rbv.settings.AppSettings
 import de.herrmann_engel.rbv.utils.FormatCards
 import de.herrmann_engel.rbv.utils.SearchCards
 import de.herrmann_engel.rbv.utils.SortCards
+import de.herrmann_engel.rbv.utils.WAIT_INDICATOR_DELAY_MILLIS
+import de.herrmann_engel.rbv.utils.WaitDots
 import de.herrmann_engel.rbv.utils.colorAt
 import de.herrmann_engel.rbv.utils.getCardSource
 import de.herrmann_engel.rbv.utils.getIntExtraOrNull
 import de.herrmann_engel.rbv.utils.putListCollection
 import de.herrmann_engel.rbv.utils.showInfoDialog
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -147,6 +150,10 @@ class ListCards : RBVActivity(), CardActions.Listener {
                 }
             }
         )
+        // The dots shown while loading are hidden from screen readers; announce the loading
+        // instead when they appear (not in the layout: in the wait dialog, the title says it)
+        binding.waitDots.root.contentDescription = getString(R.string.wait)
+        binding.waitDots.root.accessibilityLiveRegion = View.ACCESSIBILITY_LIVE_REGION_POLITE
         setUpEdgeToEdge(binding.recDefault)
     }
 
@@ -249,7 +256,19 @@ class ListCards : RBVActivity(), CardActions.Listener {
                 // Loaded into a local list in the background; cardsList itself is only accessed
                 // on the main thread
                 val sort = listSort
-                val loadedCards = withContext(Dispatchers.IO) { loadCards(sort) }
+                // Large lists take a while: show that they are loading
+                val waitDots = WaitDots(binding.waitDots)
+                val showWaitDots = launch {
+                    delay(WAIT_INDICATOR_DELAY_MILLIS)
+                    waitDots.show()
+                }
+                val loadedCards = try {
+                    withContext(Dispatchers.IO) { loadCards(sort) }
+                } finally {
+                    // Also if the activity is closed while loading
+                    showWaitDots.cancel()
+                    waitDots.hide()
+                }
                 if (cardsList == null) {
                     cardsList = loadedCards
                 }

@@ -19,4 +19,12 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:layout_margin="20dp" />
+
+    <!-- Shown while the list is loading (only used by ListCards) -->
+    <include
+        android:id="@+id/wait_dots"
+        layout="@layout/wait_dots"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
 </RelativeLayout>
