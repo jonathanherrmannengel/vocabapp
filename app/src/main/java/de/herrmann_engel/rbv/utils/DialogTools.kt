@@ -1,13 +1,10 @@
 package de.herrmann_engel.rbv.utils
 
-import android.animation.ObjectAnimator
-import android.animation.ValueAnimator
 import android.app.Dialog
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
-import android.view.animation.AccelerateDecelerateInterpolator
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.databinding.DiaConfirmBinding
 import de.herrmann_engel.rbv.databinding.DiaInfoBinding
@@ -15,11 +12,6 @@ import de.herrmann_engel.rbv.databinding.DiaWaitBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-
-// Operations that finish faster are not worth a message
-private const val WAIT_DIALOG_DELAY_MILLIS = 500L
-// Time for one way of a jump of the dots in the wait dialog (up or down)
-private const val WAIT_DOT_JUMP_MILLIS = 300L
 
 /**
  * Creates a dialog in the app's dialog style that fills the screen and shows the given view.
@@ -90,8 +82,8 @@ fun showInfoDialog(context: Context, title: CharSequence, text: CharSequence) {
 
 /**
  * Shows a "please wait" dialog with jumping dots that cannot be closed by the user. It blocks the
- * activity at once, but stays invisible until WAIT_DIALOG_DELAY_MILLIS have passed. Closing it is
- * up to the caller.
+ * activity at once, but stays invisible until WAIT_INDICATOR_DELAY_MILLIS have passed. Closing it
+ * is up to the caller.
  */
 fun CoroutineScope.showWaitDialog(context: Context): Dialog {
     val binding = DiaWaitBinding.inflate(LayoutInflater.from(context))
@@ -105,28 +97,17 @@ fun CoroutineScope.showWaitDialog(context: Context): Dialog {
     }
     dialog.show()
     val showJob = launch {
-        delay(WAIT_DIALOG_DELAY_MILLIS)
+        delay(WAIT_INDICATOR_DELAY_MILLIS)
         window?.attributes = window.attributes.apply {
             alpha = 1f
             this.dimAmount = dimAmount
         }
     }
-    // The dots jump one after the other, half a jump apart, so they move like a wave
-    val jumpHeight = context.resources.getDimension(R.dimen.wait_dot_jump)
-    val dots = listOf(binding.diaWaitDotRed, binding.diaWaitDotBlue, binding.diaWaitDotYellow)
-    val jumps = dots.mapIndexed { index, dot ->
-        ObjectAnimator.ofFloat(dot, View.TRANSLATION_Y, 0f, -jumpHeight).apply {
-            duration = WAIT_DOT_JUMP_MILLIS
-            startDelay = index * WAIT_DOT_JUMP_MILLIS / 2
-            repeatCount = ValueAnimator.INFINITE
-            repeatMode = ValueAnimator.REVERSE
-            interpolator = AccelerateDecelerateInterpolator()
-            start()
-        }
-    }
+    val waitDots = WaitDots(binding.diaWaitDots)
+    waitDots.show()
     dialog.setOnDismissListener {
         showJob.cancel()
-        jumps.forEach { it.cancel() }
+        waitDots.hide()
     }
     return dialog
 }

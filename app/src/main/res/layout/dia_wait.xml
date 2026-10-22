@@ -1,34 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- The dots of the app colors side by side, overlapping as in rbv_colors; they are animated by
-     showWaitDialog -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:theme="@style/Theme.RBV">
 
-    <View
-        android:id="@+id/dia_wait_dot_red"
-        android:layout_width="112dp"
-        android:layout_height="112dp"
-        android:layout_gravity="center"
-        android:background="@drawable/wait_dot_red"
-        android:importantForAccessibility="no"
-        android:translationX="-54dp" />
-
-    <View
-        android:id="@+id/dia_wait_dot_blue"
-        android:layout_width="112dp"
-        android:layout_height="112dp"
-        android:layout_gravity="center"
-        android:background="@drawable/wait_dot_blue"
-        android:importantForAccessibility="no" />
-
-    <View
-        android:id="@+id/dia_wait_dot_yellow"
-        android:layout_width="112dp"
-        android:layout_height="112dp"
-        android:layout_gravity="center"
-        android:background="@drawable/wait_dot_yellow"
-        android:importantForAccessibility="no"
-        android:translationX="54dp" />
+    <include
+        android:id="@+id/dia_wait_dots"
+        layout="@layout/wait_dots"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 </FrameLayout>
