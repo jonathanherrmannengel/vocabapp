@@ -1,6 +1,5 @@
 package de.herrmann_engel.rbv.adapters
 
-import android.app.Dialog
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -8,25 +7,19 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.databinding.RecViewBinding
-import de.herrmann_engel.rbv.db.AppDatabase
-import de.herrmann_engel.rbv.db.DB_Card
 import de.herrmann_engel.rbv.db.DB_Pack_With_Meta
-import de.herrmann_engel.rbv.db.utils.DB_Helper_Update
 import de.herrmann_engel.rbv.settings.AppSettings
 import de.herrmann_engel.rbv.utils.StringTools
 import de.herrmann_engel.rbv.utils.colorAt
 
 /**
- * Pack list in the "move card" dialog. Clicking a pack moves the cards there and reports the
- * ids of the moved cards to onMoved.
+ * Pack list in the "move card" dialog. Clicking a pack reports its id to onSelected.
  */
 class AdapterPacksMoveCard(
     private val packs: List<DB_Pack_With_Meta>,
     // null: packs of all collections are listed
     private val collectionId: Int?,
-    private val cards: List<DB_Card>,
-    private val dialog: Dialog,
-    private val onMoved: (ArrayList<Int>) -> Unit
+    private val onSelected: (packId: Int) -> Unit
 ) : RecyclerView.Adapter<AdapterPacksMoveCard.ViewHolder>() {
     class ViewHolder(val binding: RecViewBinding) : RecyclerView.ViewHolder(binding.root)
 
@@ -65,25 +58,7 @@ class AdapterPacksMoveCard(
             viewHolder.binding.recDesc.visibility = View.VISIBLE
             viewHolder.binding.recDesc.text = collectionName
         }
-        val currentPackId = pack.uid
-        viewHolder.binding.recName.setOnClickListener {
-            val updateHelper =
-                DB_Helper_Update(context)
-            val cardIds = arrayListOf<Int>()
-            // Only cards not already in the target pack are moved and reported
-            // All cards are moved or none
-            AppDatabase.getInstance(context).runInTransaction {
-                for (card in cards) {
-                    if (card.packId != currentPackId) {
-                        cardIds.add(card.uid)
-                        card.packId = currentPackId
-                        updateHelper.updateCard(card)
-                    }
-                }
-            }
-            onMoved(cardIds)
-            dialog.dismiss()
-        }
+        viewHolder.binding.recName.setOnClickListener { onSelected(pack.uid) }
     }
 
     override fun getItemCount(): Int {

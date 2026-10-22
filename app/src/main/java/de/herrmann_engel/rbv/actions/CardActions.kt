@@ -1,6 +1,5 @@
 package de.herrmann_engel.rbv.actions
 
-import android.app.Activity
 import android.print.PrintAttributes
 import android.print.PrintManager
 import android.view.View
@@ -8,6 +7,7 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
+import androidx.activity.ComponentActivity
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.text.htmlEncode
 import androidx.core.text.toHtml
@@ -23,10 +23,12 @@ import de.herrmann_engel.rbv.db.DB_Card
 import de.herrmann_engel.rbv.db.DB_Pack_With_Meta
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Delete
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
+import de.herrmann_engel.rbv.db.utils.DB_Helper_Update
 import de.herrmann_engel.rbv.media.MediaFiles
 import de.herrmann_engel.rbv.settings.AppSettings
 import de.herrmann_engel.rbv.utils.StringTools
 import de.herrmann_engel.rbv.utils.createDialog
+import de.herrmann_engel.rbv.utils.runInBackground
 import de.herrmann_engel.rbv.utils.showConfirmDialog
 import org.commonmark.node.HtmlBlock
 import org.commonmark.node.HtmlInline
@@ -42,7 +44,7 @@ import java.util.Locale
  * images for printing.
  */
 class CardActions(
-    val activity: Activity,
+    val activity: ComponentActivity,
     private val listener: Listener,
     private val mediaFiles: MediaFiles
 ) {
@@ -67,15 +69,13 @@ class CardActions(
         showConfirmDialog(activity, activity.getString(R.string.delete), text) {
             if (cards.size <= 1 || forceDelete) {
                 val dbHelperDelete = DB_Helper_Delete(activity)
-                val cardIds = arrayListOf<Int>()
-                // All cards are deleted or none
-                AppDatabase.getInstance(activity).runInTransaction {
-                    for (card in cards) {
-                        cardIds.add(card.uid)
-                        dbHelperDelete.deleteCard(card)
+                val cardIds = ArrayList(cards.map { it.uid })
+                runInBackground(activity, {
+                    // All cards are deleted or none
+                    AppDatabase.getInstance(activity).runInTransaction {
+                        cards.forEach { dbHelperDelete.deleteCard(it) }
                     }
-                }
-                listener.deletedCards(cardIds)
+                }) { listener.deletedCards(cardIds) }
             } else {
                 delete(cards, true)
             }
@@ -110,10 +110,26 @@ class CardActions(
         } else {
             dbHelperGet.getAllPacksWithMetaNoCounterByCollection(collectionId)
         }
-        val adapter = AdapterPacksMoveCard(packs, collectionId, cards, moveDialog, listener::movedCards)
+        val adapter = AdapterPacksMoveCard(packs, collectionId) { packId ->
+            moveDialog.dismiss()
+            moveToPack(cards, packId)
+        }
         bindingMoveDialog.diaRec.adapter = adapter
         bindingMoveDialog.diaRec.layoutManager = LinearLayoutManager(activity)
         moveDialog.show()
+    }
+
+    // Only cards not already in the pack are moved and reported
+    private fun moveToPack(cards: List<DB_Card>, packId: Int) {
+        val dbHelperUpdate = DB_Helper_Update(activity)
+        val movedCards = cards.filter { it.packId != packId }
+        movedCards.forEach { it.packId = packId }
+        runInBackground(activity, {
+            // All cards are moved or none
+            AppDatabase.getInstance(activity).runInTransaction {
+                movedCards.forEach { dbHelperUpdate.updateCard(it) }
+            }
+        }) { listener.movedCards(ArrayList(movedCards.map { it.uid })) }
     }
 
     fun move(card: DB_Card, collectionId: Int?) {

@@ -1,6 +1,6 @@
 package de.herrmann_engel.rbv.actions
 
-import android.app.Activity
+import androidx.activity.ComponentActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.adapters.AdapterCollectionsMovePack
@@ -10,13 +10,14 @@ import de.herrmann_engel.rbv.db.DB_Pack
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Delete
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.utils.createDialog
+import de.herrmann_engel.rbv.utils.runInBackground
 import de.herrmann_engel.rbv.utils.showConfirmDialog
 
 /**
  * Dialogs for actions on one or more packs: delete and move to another collection.
  * The listener is notified after packs have been deleted or moved.
  */
-class PackActions(val activity: Activity, private val listener: Listener) {
+class PackActions(val activity: ComponentActivity, private val listener: Listener) {
     interface Listener {
         fun deletedPacks(packIds: ArrayList<Int>)
         fun movedPacks(packIds: ArrayList<Int>)
@@ -49,15 +50,13 @@ class PackActions(val activity: Activity, private val listener: Listener) {
         showConfirmDialog(activity, activity.getString(R.string.delete), text) {
             if ((packs.size <= 1 && dbHelperGet.countCardsInPack(packs[0].uid) == 0) || forceDelete) {
                 val dbHelperDelete = DB_Helper_Delete(activity)
-                val packIds = arrayListOf<Int>()
-                // All packs are deleted or none
-                AppDatabase.getInstance(activity).runInTransaction {
-                    for (pack in packs) {
-                        packIds.add(pack.uid)
-                        dbHelperDelete.deletePack(pack, forceDelete)
+                val packIds = ArrayList(packs.map { it.uid })
+                runInBackground(activity, {
+                    // All packs are deleted or none
+                    AppDatabase.getInstance(activity).runInTransaction {
+                        packs.forEach { dbHelperDelete.deletePack(it, forceDelete) }
                     }
-                }
-                listener.deletedPacks(packIds)
+                }) { listener.deletedPacks(packIds) }
             } else {
                 delete(packs, true)
             }

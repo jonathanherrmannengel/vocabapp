@@ -18,4 +18,5 @@
     <dimen name="details_desc_size_big">20sp</dimen>
     <dimen name="title_size_default">23sp</dimen>
     <dimen name="title_size_big">26sp</dimen>
+    <dimen name="wait_dot_jump">40dp</dimen>
 </resources>

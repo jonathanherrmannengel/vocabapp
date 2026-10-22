@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A dot of the app colors (as in rbv_colors), fading out to the edge -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <gradient
+        android:centerColor="#32557FE2"
+        android:endColor="#00557FE2"
+        android:gradientRadius="50%"
+        android:startColor="#78557FE2"
+        android:type="radial" />
+</shape>
