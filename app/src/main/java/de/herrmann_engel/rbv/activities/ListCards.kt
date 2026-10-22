@@ -74,6 +74,8 @@ class ListCards : RBVActivity(), CardActions.Listener {
             viewModel.cardsList = value
         }
     private var cardsListFiltered: MutableList<DB_Card_With_Meta>? = null
+    // The cards are being loaded (see onResume)
+    private var loadingCards = false
     private var cardSource: CardSource = CardSource.AllCards
     private var frontBackReverse: Boolean
         get() = viewModel.frontBackReverse
@@ -253,6 +255,12 @@ class ListCards : RBVActivity(), CardActions.Listener {
             // Get cards
             // Cards are only loaded once; later changes are applied via onNewIntent and the callbacks
             if (cardsList == null) {
+                // Resumed again while loading (e.g. after switching apps): the running load
+                // shows the list when it is done
+                if (loadingCards) {
+                    return@launch
+                }
+                loadingCards = true
                 // Loaded into a local list in the background; cardsList itself is only accessed
                 // on the main thread
                 val sort = listSort
@@ -268,10 +276,9 @@ class ListCards : RBVActivity(), CardActions.Listener {
                     // Also if the activity is closed while loading
                     showWaitDots.cancel()
                     waitDots.hide()
+                    loadingCards = false
                 }
-                if (cardsList == null) {
-                    cardsList = loadedCards
-                }
+                cardsList = loadedCards
             }
 
             // Warning: Big lists
