@@ -3,7 +3,6 @@ package de.herrmann_engel.rbv.activities
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.documentfile.provider.DocumentFile
 import androidx.recyclerview.widget.LinearLayoutManager
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.adapters.AdapterFilesManage
@@ -45,15 +44,12 @@ class ManageFiles : RBVActivity() {
     private fun setRecView() {
         val files = mediaFileManager.listFiles()
         if (files != null) {
-            val filesWithoutMedia = ArrayList<DocumentFile>()
-            val dbHelperGet = DB_Helper_Get(this)
+            // Names of all media entries, so the files can be checked without a database query each
+            val mediaNames = DB_Helper_Get(this).allMedia.mapTo(HashSet()) { it.file }
             // Ignore directories and the .nomedia file
-            for (file in files) {
-                val name = file.name ?: continue
-                if (!dbHelperGet.existsMedia(name) && file.isFile && name != ".nomedia") {
-                    filesWithoutMedia.add(file)
-                }
-            }
+            val filesWithoutMedia = files.filter {
+                it.isFile && it.name != ".nomedia" && it.name !in mediaNames
+            }.toMutableList()
             val adapter = AdapterFilesManage(filesWithoutMedia, mediaFileManager)
             binding.recFilesManage.adapter = adapter
             binding.recFilesManage.layoutManager = LinearLayoutManager(this)

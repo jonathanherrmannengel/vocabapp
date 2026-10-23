@@ -3,11 +3,11 @@ package de.herrmann_engel.rbv.adapters
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.documentfile.provider.DocumentFile
 import androidx.recyclerview.widget.RecyclerView
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.databinding.RecViewFilesBinding
 import de.herrmann_engel.rbv.media.MediaFiles
+import de.herrmann_engel.rbv.media.MediaFolderFile
 
 
 /**
@@ -15,7 +15,7 @@ import de.herrmann_engel.rbv.media.MediaFiles
  * with buttons to open, share and delete them.
  */
 class AdapterFilesManage(
-    private val files: MutableList<DocumentFile>,
+    private val files: MutableList<MediaFolderFile>,
     private val mediaFiles: MediaFiles
 ) : RecyclerView.Adapter<AdapterFilesManage.ViewHolder>() {
     class ViewHolder(val binding: RecViewFilesBinding) : RecyclerView.ViewHolder(binding.root)
@@ -43,14 +43,14 @@ class AdapterFilesManage(
             val currentFile = files[position]
             viewHolder.binding.recFilesName.text = currentFile.name
             viewHolder.binding.recFilesShare.setOnClickListener {
-                mediaFiles.shareFile(currentFile.name!!)
+                mediaFiles.shareFile(currentFile.name)
             }
             viewHolder.binding.recFilesOpen.setOnClickListener {
-                mediaFiles.openFile(currentFile.name!!)
+                mediaFiles.openFile(currentFile.name)
             }
             viewHolder.binding.recFilesDelete.setOnClickListener {
                 mediaFiles.showDeleteDialog(
-                    currentFile.name!!,
+                    currentFile.name,
                     context.resources.getString(R.string.delete_file_without_media_info)
                 ) {
                     // Remove the item if the file has actually been deleted

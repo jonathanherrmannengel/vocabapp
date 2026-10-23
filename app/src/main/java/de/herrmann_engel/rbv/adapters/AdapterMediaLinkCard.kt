@@ -4,7 +4,6 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.documentfile.provider.DocumentFile
 import androidx.recyclerview.widget.RecyclerView
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.databinding.RecViewFilesBinding
@@ -20,7 +19,6 @@ import de.herrmann_engel.rbv.media.MediaFiles
 class AdapterMediaLinkCard(
     private val media: MutableList<DB_Media>,
     private val cardId: Int,
-    private val outputDirectory: DocumentFile?,
     private val mediaFiles: MediaFiles
 ) : RecyclerView.Adapter<AdapterMediaLinkCard.ViewHolder>() {
     class ViewHolder(val binding: RecViewFilesBinding) : RecyclerView.ViewHolder(binding.root)
@@ -50,7 +48,7 @@ class AdapterMediaLinkCard(
             val fileName = currentMedia.file
             viewHolder.binding.recFilesName.text = fileName
             // Without a media folder, all files count as missing
-            if (outputDirectory?.findFile(fileName) != null) {
+            if (mediaFiles.existsMediaFile(fileName)) {
                 viewHolder.binding.recFilesShare.visibility = View.VISIBLE
                 viewHolder.binding.recFilesShare.setOnClickListener {
                     mediaFiles.shareFile(fileId)

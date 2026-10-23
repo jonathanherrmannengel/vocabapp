@@ -11,6 +11,8 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.net.toUri
 import androidx.documentfile.provider.DocumentFile
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil3.load
@@ -37,6 +39,10 @@ import de.herrmann_engel.rbv.utils.showConfirmDialog
  * It has to be created while the activity is constructed (e.g. as a property initializer),
  * because it registers the folder picker for an activity result.
  *
+ * The files of the folder are listed with a single query and kept until the activity is started
+ * again or the folder changes: asking the document provider for each file separately is slow in
+ * large folders.
+ *
  * @param onFolderSet called after the user has selected a new media folder
  * @param onMissingFileAction called if the user wants to handle a missing file of the card with
  * the given id
@@ -46,6 +52,17 @@ class MediaFileManager(
     private val onFolderSet: () -> Unit = {},
     private val onMissingFileAction: (cardId: Int) -> Unit = {}
 ) : MediaFiles {
+    // Files of the media folder by name; null until listed (see filesByName)
+    private var cachedFiles: Map<String, MediaFolderFile>? = null
+
+    init {
+        // Files may have been added or deleted (e.g. by another app) while the activity was stopped
+        activity.lifecycle.addObserver(LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_START) {
+                clearCachedFiles()
+            }
+        })
+    }
 
     // Result of the folder picker: save the folder and keep the access permission across restarts
     private val selectMediaFolder = activity.registerForActivityResult(
@@ -60,6 +77,7 @@ class MediaFileManager(
                 takeFlags =
                     takeFlags and (Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
                 activity.contentResolver.takePersistableUriPermission(destination, takeFlags)
+                clearCachedFiles()
                 onFolderSet()
             } else {
                 Toast.makeText(activity, R.string.error, Toast.LENGTH_LONG).show()
@@ -216,14 +234,16 @@ class MediaFileManager(
             }
             val settings = AppSettings(activity)
             val mediaInGallery = settings.mediaInGallery
-            val noMediaFile = outputDirectory.findFile(".nomedia")
-            if (mediaInGallery && noMediaFile != null && noMediaFile.exists() && noMediaFile.isFile) {
+            val noMediaFile = getFile(".nomedia")
+            if (mediaInGallery && noMediaFile != null && noMediaFile.isFile) {
                 DocumentsContract.deleteDocument(
                     activity.contentResolver,
                     noMediaFile.uri
                 )
-            } else if (!mediaInGallery && (noMediaFile == null || !noMediaFile.exists())) {
+                clearCachedFiles()
+            } else if (!mediaInGallery && noMediaFile == null) {
                 outputDirectory.createFile("application/octet-stream", ".nomedia")
+                clearCachedFiles()
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -236,25 +256,72 @@ class MediaFileManager(
     }
 
     // Lists all files in the media folder, null if no folder is selected
-    fun listFiles(): Array<DocumentFile>? {
-        return mediaFolder?.listFiles()
+    fun listFiles(): List<MediaFolderFile>? {
+        if (!isFolderSelected) {
+            return null
+        }
+        return filesByName().values.toList()
     }
 
-    private fun getFile(name: String): DocumentFile? {
-        return mediaFolder?.findFile(name)
+    // Has to be called after files were added to the media folder by other code (e.g.
+    // EditCardMedia)
+    fun clearCachedFiles() {
+        cachedFiles = null
     }
 
-    private fun getFile(fileId: Int): DocumentFile? {
+    /**
+     * Returns the files of the media folder by name, listed with a single query (name and type
+     * included) on first use. Empty if no folder is selected or it is inaccessible.
+     */
+    private fun filesByName(): Map<String, MediaFolderFile> {
+        cachedFiles?.let { return it }
+        val files = LinkedHashMap<String, MediaFolderFile>()
+        val folder = cardMediaFolder?.takeIf { it.isNotEmpty() }?.toUri()
+        if (folder != null) {
+            try {
+                val childrenUri = DocumentsContract.buildChildDocumentsUriUsingTree(
+                    folder,
+                    DocumentsContract.getTreeDocumentId(folder)
+                )
+                val projection = arrayOf(
+                    DocumentsContract.Document.COLUMN_DOCUMENT_ID,
+                    DocumentsContract.Document.COLUMN_DISPLAY_NAME,
+                    DocumentsContract.Document.COLUMN_MIME_TYPE
+                )
+                activity.contentResolver.query(childrenUri, projection, null, null, null)
+                    ?.use { cursor ->
+                        while (cursor.moveToNext()) {
+                            val name = cursor.getString(1) ?: continue
+                            val documentId = cursor.getString(0)
+                            val uri =
+                                DocumentsContract.buildDocumentUriUsingTree(folder, documentId)
+                            files.putIfAbsent(name, MediaFolderFile(name, uri, cursor.getString(2)))
+                        }
+                    }
+            } catch (e: Exception) {
+                // E.g. the folder has been deleted or the permission has been revoked
+                e.printStackTrace()
+            }
+        }
+        cachedFiles = files
+        return files
+    }
+
+    private fun getFile(name: String): MediaFolderFile? {
+        return filesByName()[name]
+    }
+
+    private fun getFile(fileId: Int): MediaFolderFile? {
         val dbHelperGet = DB_Helper_Get(activity)
         val fileName = dbHelperGet.getSingleMedia(fileId)?.file ?: return null
         return getFile(fileName)
     }
 
-    private fun openFile(file: DocumentFile) {
+    private fun openFile(file: MediaFolderFile) {
         try {
             val intent = Intent()
             intent.action = Intent.ACTION_VIEW
-            intent.setDataAndType(file.uri, file.type)
+            intent.setDataAndType(file.uri, file.mimeType)
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             activity.startActivity(intent)
         } catch (e: Exception) {
@@ -281,10 +348,10 @@ class MediaFileManager(
         }
     }
 
-    private fun shareFile(file: DocumentFile) {
+    private fun shareFile(file: MediaFolderFile) {
         val intent = Intent()
         intent.action = Intent.ACTION_SEND
-        intent.type = file.type
+        intent.type = file.mimeType
         intent.putExtra(Intent.EXTRA_STREAM, file.uri)
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         activity.startActivity(Intent.createChooser(intent, file.name))
@@ -315,6 +382,7 @@ class MediaFileManager(
                 activity.contentResolver,
                 file.uri
             )
+            clearCachedFiles()
         } else {
             Toast.makeText(activity, R.string.error, Toast.LENGTH_SHORT).show()
         }
@@ -343,7 +411,7 @@ class MediaFileManager(
     }
 
     override fun existsMediaFile(name: String?): Boolean {
-        return name?.let { mediaFolder?.findFile(it)?.exists() } == true
+        return name != null && getFile(name) != null
     }
 
     private fun existsMediaFile(fileId: Int): Boolean {

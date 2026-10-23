@@ -48,7 +48,7 @@ class EditCardMedia : RBVActivity() {
                             val mime = input.type
                             if (inputFileName == null || mime == null) {
                                 Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show()
-                            } else if (outputDirectory.findFile(inputFileName) == null) {
+                            } else if (!mediaFileManager.existsMediaFile(inputFileName)) {
                                 createMediaFile(outputDirectory, mime, inputFileName, fileUri)
                             } else {
                                 val bindingFileExistsDialog = DiaFileExistsBinding.inflate(
@@ -137,6 +137,7 @@ class EditCardMedia : RBVActivity() {
             inputStream.close()
             outputStream.flush()
             outputStream.close()
+            mediaFileManager.clearCachedFiles()
             addMediaLink(outputFileName, mime)
         } catch (e: Exception) {
             e.printStackTrace()
@@ -161,7 +162,7 @@ class EditCardMedia : RBVActivity() {
 
     private fun setRecView() {
         val mediaList = dbHelperGet.getCardMedia(cardId).toMutableList()
-        val adapter = AdapterMediaLinkCard(mediaList, cardId, mediaFileManager.mediaFolder, mediaFileManager)
+        val adapter = AdapterMediaLinkCard(mediaList, cardId, mediaFileManager)
         binding.recCardMedia.adapter = adapter
         binding.recCardMedia.layoutManager = LinearLayoutManager(this)
     }
