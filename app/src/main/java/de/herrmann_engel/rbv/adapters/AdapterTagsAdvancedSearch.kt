@@ -32,7 +32,7 @@ class AdapterTagsAdvancedSearch(
         // Not recyclable, so that checkbox listeners are not triggered for recycled views
         viewHolder.setIsRecyclable(false)
         viewHolder.binding.recSmallName.text = stringTools.shorten(tags[position].name)
-        if (tags[position].emoji.isNullOrBlank()) {
+        if (tags[position].emoji.isBlank()) {
             viewHolder.binding.recSmallDesc.visibility = View.GONE
         } else {
             viewHolder.binding.recSmallDesc.visibility = View.VISIBLE

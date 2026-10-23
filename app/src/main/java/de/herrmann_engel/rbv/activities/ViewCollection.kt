@@ -60,13 +60,13 @@ class ViewCollection : RBVActivity() {
         }
         title = getString(R.string.collection_details)
         binding.collectionOrPackName.text = collection.name
-        if (collection.emoji.isNullOrBlank()) {
+        if (collection.emoji.isBlank()) {
             binding.collectionOrPackEmoji.visibility = View.GONE
         } else {
             binding.collectionOrPackEmoji.visibility = View.VISIBLE
             binding.collectionOrPackEmoji.text = collection.emoji
         }
-        if (collection.desc.isNullOrBlank()) {
+        if (collection.desc.isBlank()) {
             binding.collectionOrPackDesc.visibility = View.GONE
         } else {
             binding.collectionOrPackDesc.visibility = View.VISIBLE

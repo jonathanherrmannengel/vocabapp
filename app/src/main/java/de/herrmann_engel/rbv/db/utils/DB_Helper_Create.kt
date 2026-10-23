@@ -23,9 +23,9 @@ class DB_Helper_Create(context: Context) {
     // Creates a collection; by default without color and emoji, dated now
     fun createCollection(
         name: String,
-        desc: String?,
+        desc: String,
         colors: Int = 0,
-        emoji: String? = null,
+        emoji: String = "",
         date: Long = System.currentTimeMillis() / 1000L
     ): Long {
         if (name.isNotEmpty()) {
@@ -42,10 +42,10 @@ class DB_Helper_Create(context: Context) {
 
     fun createPack(
         name: String,
-        desc: String?,
+        desc: String,
         collectionId: Int,
         colors: Int,
-        emoji: String?,
+        emoji: String,
         date: Long
     ): Long {
         val dbHelperGet = DB_Helper_Get(dbHelper.context)
@@ -63,7 +63,7 @@ class DB_Helper_Create(context: Context) {
     }
 
     // Creates a pack without emoji, dated now, inheriting the color of its collection
-    fun createPack(name: String, desc: String?, collectionId: Int): Long {
+    fun createPack(name: String, desc: String, collectionId: Int): Long {
         val dbHelperGet = DB_Helper_Get(dbHelper.context)
         val parent = dbHelperGet.getSingleCollection(collectionId)
             ?: throw InvalidEntryException("Collection $collectionId does not exist")
@@ -72,7 +72,7 @@ class DB_Helper_Create(context: Context) {
             desc,
             collectionId,
             parent.colors,
-            null,
+            "",
             System.currentTimeMillis() / 1000L
         )
     }
@@ -81,7 +81,7 @@ class DB_Helper_Create(context: Context) {
     fun createCard(
         front: String,
         back: String,
-        notes: String?,
+        notes: String,
         packId: Int,
         known: Int = 0,
         date: Long = System.currentTimeMillis() / 1000L,
@@ -126,7 +126,7 @@ class DB_Helper_Create(context: Context) {
         throw InvalidEntryException("Media file $fileId is already linked to card $cardId")
     }
 
-    fun createTag(tagName: String, emoji: String? = null, color: String? = null): Long {
+    fun createTag(tagName: String, emoji: String = "", color: String = ""): Long {
         val dbHelperGet = DB_Helper_Get(dbHelper.context)
         if (!dbHelperGet.existsTag(tagName)) {
             val newTag = DB_Tag()

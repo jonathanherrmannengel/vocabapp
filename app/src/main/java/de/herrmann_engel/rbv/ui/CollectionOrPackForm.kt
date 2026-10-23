@@ -49,8 +49,8 @@ class CollectionOrPackForm(
     val desc: String
         get() = binding.collectionOrPackDesc.text.toString()
 
-    // The single emoji entered, null if there is none
-    val emoji: String?
+    // The single emoji entered, empty if there is none
+    val emoji: String
         get() = StringTools().firstEmoji(binding.collectionOrPackEmoji.text.toString())
 
     // Index of the selected color (see R.array.pack_color_main)

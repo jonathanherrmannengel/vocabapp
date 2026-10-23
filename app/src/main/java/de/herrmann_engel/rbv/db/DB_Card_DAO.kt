@@ -86,7 +86,7 @@ interface DB_Card_DAO {
         packId: Int,
         front: String,
         back: String,
-        notes: String?
+        notes: String
     ): Int?
 
     @Update
@@ -101,6 +101,6 @@ interface DB_Card_DAO {
     companion object {
         // Cards with the color of their pack and their tags' emojis and names (used for search and display)
         const val SELECT_WITH_META: String =
-            "SELECT db_card.*, (SELECT colors FROM db_pack WHERE uid=db_card.pack) AS packColor, (SELECT (CASE WHEN group_concat(emoji,' ') IS NOT NULL THEN group_concat(emoji,' ') ELSE '' END || ' ' || group_concat(tag_name,' ')) FROM db_tag WHERE db_tag.uid IN (SELECT tagId FROM db_tag_link_card WHERE cardId=db_card.uid)) AS tagNames FROM db_card"
+            "SELECT db_card.*, (SELECT colors FROM db_pack WHERE uid=db_card.pack) AS packColor, (SELECT (CASE WHEN group_concat(NULLIF(emoji,''),' ') IS NOT NULL THEN group_concat(NULLIF(emoji,''),' ') ELSE '' END || ' ' || group_concat(tag_name,' ')) FROM db_tag WHERE db_tag.uid IN (SELECT tagId FROM db_tag_link_card WHERE cardId=db_card.uid)) AS tagNames FROM db_card"
     }
 }

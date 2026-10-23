@@ -206,7 +206,7 @@ class AdapterPacks(
             viewHolder.binding.recCollectionsName.setTypeface(null, Typeface.BOLD)
         }
         val desc = currentPack.desc
-        if (desc.isNullOrBlank()) {
+        if (desc.isBlank()) {
             viewHolder.binding.recCollectionsDesc.visibility = View.GONE
         } else {
             viewHolder.binding.recCollectionsDesc.visibility = View.VISIBLE
@@ -218,7 +218,7 @@ class AdapterPacks(
                 )
             ) {
                 "✓"
-            } else if (currentPack.emoji.isNullOrBlank()) {
+            } else if (currentPack.emoji.isBlank()) {
                 val pattern = Regex("^(\\P{M}\\p{M}*+).*")
                 currentPack.name.replace(pattern, "$1")
             } else {

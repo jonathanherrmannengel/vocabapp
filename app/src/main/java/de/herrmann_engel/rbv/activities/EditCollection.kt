@@ -33,8 +33,8 @@ class EditCollection : RBVActivity() {
             R.string.collection_name,
             CollectionOrPackForm.Values(
                 collection.name,
-                collection.desc ?: "",
-                collection.emoji ?: "",
+                collection.desc,
+                collection.emoji,
                 collection.colors
             )
         )

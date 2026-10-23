@@ -49,14 +49,14 @@ class ViewPack : RBVActivity(), PackActions.Listener {
             return
         }
         title = getString(R.string.pack_details)
-        if (pack.emoji.isNullOrBlank()) {
+        if (pack.emoji.isBlank()) {
             binding.collectionOrPackEmoji.visibility = View.GONE
         } else {
             binding.collectionOrPackEmoji.visibility = View.VISIBLE
             binding.collectionOrPackEmoji.text = pack.emoji
         }
         binding.collectionOrPackName.text = pack.name
-        if (pack.desc.isNullOrBlank()) {
+        if (pack.desc.isBlank()) {
             binding.collectionOrPackDesc.visibility = View.GONE
         } else {
             binding.collectionOrPackDesc.visibility = View.VISIBLE

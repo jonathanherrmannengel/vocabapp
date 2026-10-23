@@ -64,7 +64,7 @@ class DB_Helper_Get(context: Context) {
         packId: Int,
         front: String,
         back: String,
-        notes: String?
+        notes: String
     ): Int? = dbHelper.cardDao.getOneIdByPackAndFrontAndBackAndNotes(packId, front, back, notes)
 
     fun getSingleMedia(file: String): DB_Media? = dbHelper.mediaDao.getSingleMedia(file)
@@ -94,7 +94,7 @@ class DB_Helper_Get(context: Context) {
     fun getAllPacksByCollectionAndNameAndDesc(
         collectionId: Int,
         name: String,
-        desc: String?
+        desc: String
     ): List<DB_Pack> = dbHelper.packDao.getAllByCollectionAndNameAndDesc(collectionId, name, desc)
 
     val allPacksWithMeta: MutableList<DB_Pack_With_Meta>

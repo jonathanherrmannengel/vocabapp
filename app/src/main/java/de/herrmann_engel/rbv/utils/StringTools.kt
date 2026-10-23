@@ -219,11 +219,12 @@ class StringTools {
     }
 
     /**
-     * Returns the first grapheme of the input (e.g. a single emoji), or null if the input is empty.
+     * Returns the first grapheme of the input (e.g. a single emoji), or an empty string if the
+     * input is empty.
      */
-    fun firstEmoji(input: String): String? {
+    fun firstEmoji(input: String): String {
         if (input.isEmpty()) {
-            return null
+            return ""
         }
         val iterator = BreakIterator.getCharacterInstance(Locale.ROOT)
         iterator.setText(input)

@@ -86,14 +86,14 @@ class AdapterCollections(
         viewHolder.binding.recCollectionsName.text =
             stringTools.shorten(currentCollection.name)
         val desc = currentCollection.desc
-        if (desc.isNullOrBlank()) {
+        if (desc.isBlank()) {
             viewHolder.binding.recCollectionsDesc.visibility = View.GONE
         } else {
             viewHolder.binding.recCollectionsDesc.visibility = View.VISIBLE
             viewHolder.binding.recCollectionsDesc.text = stringTools.shorten(desc)
         }
         viewHolder.binding.recCollectionsPreviewText.text =
-            if (currentCollection.emoji.isNullOrBlank()) {
+            if (currentCollection.emoji.isBlank()) {
                 // Without emoji, show the first character of the name (including combining marks)
                 val pattern = Regex("^(\\P{M}\\p{M}*+).*")
                 currentCollection.name.replace(pattern, "$1")

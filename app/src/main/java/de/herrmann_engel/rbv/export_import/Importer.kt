@@ -292,9 +292,7 @@ class Importer(
         val desc = line.column("desc", 3) ?: ""
         val date = parseDate(line.column("date", 4))
         val colors = (line.column("colors", 5) ?: "0").toInt()
-        val emoji = line.column("emoji", 6)?.let {
-            StringTools().firstEmoji(it)
-        }
+        val emoji = StringTools().firstEmoji(line.column("emoji", 6) ?: "")
         val sameNamed = helperGet.getAllCollectionsByName(name)
         // Create a new collection unless one with the same name exists; in integrate mode the
         // existing one is used instead, in skip mode its content is skipped
@@ -326,7 +324,7 @@ class Importer(
             val desc = "_default"
             val date = System.currentTimeMillis() / 1000L
             val colors = 0
-            val emoji = null
+            val emoji = ""
             val sameNamed = helperGet.getAllCollectionsByName(name)
             if (sameNamed.isEmpty() || mode == Globals.IMPORT_MODE_DUPLICATES) {
                 val collectionIdNew =
@@ -353,9 +351,7 @@ class Importer(
         val desc = line.column("desc", 3) ?: ""
         val date = parseDate(line.column("date", 4))
         val colors = (line.column("colors", 5) ?: "0").toInt()
-        val emoji = line.column("emoji", 7)?.let {
-            StringTools().firstEmoji(it)
-        }
+        val emoji = StringTools().firstEmoji(line.column("emoji", 7) ?: "")
         val sameNamed =
             helperGet.getAllPacksByCollectionAndNameAndDesc(
                 collectionId,

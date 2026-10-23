@@ -40,7 +40,7 @@ data class DB_Card(
     var date: Long = 0,
 
     @ColumnInfo(name = "notes")
-    var notes: String? = null,
+    var notes: String = "",
 
     // Date of the last repetition (Unix time in seconds, 0 if never repeated)
     @ColumnInfo(name = "last_repetition")

@@ -111,7 +111,7 @@ class ViewCard : RBVActivity(), CardActions.Listener {
                     R.color.tag_background
                 )
                 val tagColor = it.color
-                if (!tagColor.isNullOrBlank()) {
+                if (tagColor.isNotBlank()) {
                     try {
                         color = tagColor.toColorInt()
                     } catch (e: Exception) {
@@ -119,7 +119,7 @@ class ViewCard : RBVActivity(), CardActions.Listener {
                     }
                 }
                 var tagText = it.name
-                if (!it.emoji.isNullOrBlank()) {
+                if (it.emoji.isNotBlank()) {
                     tagText = it.emoji + " " + tagText
                 }
                 val spannableString = SpannableString(tagText)
@@ -140,7 +140,7 @@ class ViewCard : RBVActivity(), CardActions.Listener {
         }
         val formatCardNotes = settings.formatCardNotes
         val notes = card.notes
-        if (!notes.isNullOrBlank()) {
+        if (notes.isNotBlank()) {
             binding.cardNotesContainer.visibility = View.VISIBLE
             // Notes are rendered as Markdown; links are clickable in both modes
             if (formatCardNotes) {

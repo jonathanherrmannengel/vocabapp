@@ -158,7 +158,7 @@ class CardActions(
         // For a single card, hide the options for content the card does not have
         if (cards.size == 1) {
             jobName = "rbv_flashcard_" + cards[0].uid
-            if (cards[0].notes.isNullOrBlank()) {
+            if (cards[0].notes.isBlank()) {
                 bindingPrintDialog.diaPrintIncludeNotesLayout.visibility = View.GONE
                 bindingPrintDialog.diaPrintIncludeNotes.isChecked = false
             }
@@ -248,7 +248,7 @@ class CardActions(
                 }.toHtml()
                 htmlDocument += "</div></article>"
                 val notes = card.notes
-                if (!notes.isNullOrBlank() && bindingPrintDialog.diaPrintIncludeNotes.isChecked) {
+                if (notes.isNotBlank() && bindingPrintDialog.diaPrintIncludeNotes.isChecked) {
                     htmlDocument += "<article>"
                     if (bindingPrintDialog.diaPrintIncludeHeadings.isChecked) {
                         htmlDocument += "<h2 class=\"title border-top\" dir=\"auto\">" + escapeHtml(activity.getString(R.string.card_notes)) + "</h2>"
@@ -341,11 +341,11 @@ class CardActions(
                     for (tag in tagList) {
                         htmlDocument += "<div class=\"tag-div\""
                         // Only accept hex colors (as stored by the tag editor) in the style attribute
-                        if (tag.color?.matches(Regex("#[0-9a-fA-F]{3,8}")) == true) {
+                        if (tag.color.matches(Regex("#[0-9a-fA-F]{3,8}"))) {
                             htmlDocument += " style=\"border-color:" + tag.color + ";\""
                         }
                         htmlDocument += ">"
-                        if (!tag.emoji.isNullOrBlank()) {
+                        if (tag.emoji.isNotBlank()) {
                             htmlDocument += "<span class=\"tag-emoji\">" + escapeHtml(tag.emoji) + "</span>"
                         }
                         htmlDocument += "<span>" + escapeHtml(tag.name) + "</span></div>"

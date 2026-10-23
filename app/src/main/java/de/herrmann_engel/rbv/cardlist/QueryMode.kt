@@ -212,7 +212,7 @@ class QueryMode(
         }
 
         val notes = card.notes
-        if (notes.isNullOrBlank()) {
+        if (notes.isBlank()) {
             binding.queryButtonNotes.visibility = View.GONE
         } else {
             binding.queryButtonNotes.visibility = View.VISIBLE

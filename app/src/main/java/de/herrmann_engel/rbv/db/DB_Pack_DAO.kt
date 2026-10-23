@@ -37,7 +37,7 @@ interface DB_Pack_DAO {
     fun getAllByCollectionAndNameAndDesc(
         collectionId: Int,
         name: String,
-        desc: String?
+        desc: String
     ): List<DB_Pack>
 
     @Query("SELECT *, (SELECT COUNT(*) FROM db_card WHERE pack=db_pack.uid) AS counter, (SELECT name FROM db_collection WHERE uid=db_pack.collection) AS collectionName FROM db_pack WHERE collection=:collectionId ORDER BY name COLLATE NOCASE ASC, uid DESC")

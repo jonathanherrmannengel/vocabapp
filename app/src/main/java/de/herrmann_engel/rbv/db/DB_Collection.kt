@@ -16,7 +16,7 @@ data class DB_Collection(
     var name: String = "",
 
     @ColumnInfo(name = "desc")
-    var desc: String? = null,
+    var desc: String = "",
 
     // Creation date (Unix time in seconds)
     @ColumnInfo(name = "date")
@@ -27,5 +27,5 @@ data class DB_Collection(
     var colors: Int = 0,
 
     @ColumnInfo(name = "emoji")
-    var emoji: String? = null
+    var emoji: String = ""
 )

@@ -31,7 +31,7 @@ class EditPack : RBVActivity() {
             this,
             binding,
             R.string.pack_name,
-            CollectionOrPackForm.Values(pack.name, pack.desc ?: "", pack.emoji ?: "", pack.colors)
+            CollectionOrPackForm.Values(pack.name, pack.desc, pack.emoji, pack.colors)
         )
         setUpEdgeToEdge(binding.collectionOrPackLayout)
     }

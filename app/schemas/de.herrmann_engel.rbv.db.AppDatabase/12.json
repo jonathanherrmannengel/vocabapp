@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 12,
-    "identityHash": "d1d4ba892bb301f94ed72e0ff748ea01",
+    "identityHash": "9565a1d70b07e851b311294eec700ded",
     "entities": [
       {
         "tableName": "DB_Pack",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `desc` TEXT, `date` INTEGER NOT NULL, `colors` INTEGER NOT NULL, `collection` INTEGER NOT NULL, `emoji` TEXT, FOREIGN KEY(`collection`) REFERENCES `DB_Collection`(`uid`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `desc` TEXT NOT NULL, `date` INTEGER NOT NULL, `colors` INTEGER NOT NULL, `collection` INTEGER NOT NULL, `emoji` TEXT NOT NULL, FOREIGN KEY(`collection`) REFERENCES `DB_Collection`(`uid`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "uid",
@@ -23,7 +23,8 @@
           {
             "fieldPath": "desc",
             "columnName": "desc",
-            "affinity": "TEXT"
+            "affinity": "TEXT",
+            "notNull": true
           },
           {
             "fieldPath": "date",
@@ -38,7 +39,7 @@
             "notNull": true
           },
           {
-            "fieldPath": "collection",
+            "fieldPath": "collectionId",
             "columnName": "collection",
             "affinity": "INTEGER",
             "notNull": true
@@ -46,7 +47,8 @@
           {
             "fieldPath": "emoji",
             "columnName": "emoji",
-            "affinity": "TEXT"
+            "affinity": "TEXT",
+            "notNull": true
           }
         ],
         "primaryKey": {
@@ -82,7 +84,7 @@
       },
       {
         "tableName": "DB_Card",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `front` TEXT NOT NULL, `back` TEXT NOT NULL, `pack` INTEGER NOT NULL, `known` INTEGER NOT NULL, `date` INTEGER NOT NULL, `notes` TEXT, `last_repetition` INTEGER NOT NULL, `count_repetitions` INTEGER NOT NULL, FOREIGN KEY(`pack`) REFERENCES `DB_Pack`(`uid`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `front` TEXT NOT NULL, `back` TEXT NOT NULL, `pack` INTEGER NOT NULL, `known` INTEGER NOT NULL, `date` INTEGER NOT NULL, `notes` TEXT NOT NULL, `last_repetition` INTEGER NOT NULL, `count_repetitions` INTEGER NOT NULL, FOREIGN KEY(`pack`) REFERENCES `DB_Pack`(`uid`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "uid",
@@ -103,7 +105,7 @@
             "notNull": true
           },
           {
-            "fieldPath": "pack",
+            "fieldPath": "packId",
             "columnName": "pack",
             "affinity": "INTEGER",
             "notNull": true
@@ -123,7 +125,8 @@
           {
             "fieldPath": "notes",
             "columnName": "notes",
-            "affinity": "TEXT"
+            "affinity": "TEXT",
+            "notNull": true
           },
           {
             "fieldPath": "lastRepetition",
@@ -171,7 +174,7 @@
       },
       {
         "tableName": "DB_Collection",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `desc` TEXT, `date` INTEGER NOT NULL, `colors` INTEGER NOT NULL, `emoji` TEXT)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `desc` TEXT NOT NULL, `date` INTEGER NOT NULL, `colors` INTEGER NOT NULL, `emoji` TEXT NOT NULL)",
         "fields": [
           {
             "fieldPath": "uid",
@@ -188,7 +191,8 @@
           {
             "fieldPath": "desc",
             "columnName": "desc",
-            "affinity": "TEXT"
+            "affinity": "TEXT",
+            "notNull": true
           },
           {
             "fieldPath": "date",
@@ -205,7 +209,8 @@
           {
             "fieldPath": "emoji",
             "columnName": "emoji",
-            "affinity": "TEXT"
+            "affinity": "TEXT",
+            "notNull": true
           }
         ],
         "primaryKey": {
@@ -256,13 +261,13 @@
             "notNull": true
           },
           {
-            "fieldPath": "file",
+            "fieldPath": "fileId",
             "columnName": "fileId",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "card",
+            "fieldPath": "cardId",
             "columnName": "cardId",
             "affinity": "INTEGER",
             "notNull": true
@@ -322,7 +327,7 @@
       },
       {
         "tableName": "DB_Tag",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `tag_name` TEXT NOT NULL, `emoji` TEXT, `color` TEXT)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `tag_name` TEXT NOT NULL, `emoji` TEXT NOT NULL, `color` TEXT NOT NULL)",
         "fields": [
           {
             "fieldPath": "uid",
@@ -339,12 +344,14 @@
           {
             "fieldPath": "emoji",
             "columnName": "emoji",
-            "affinity": "TEXT"
+            "affinity": "TEXT",
+            "notNull": true
           },
           {
             "fieldPath": "color",
             "columnName": "color",
-            "affinity": "TEXT"
+            "affinity": "TEXT",
+            "notNull": true
           }
         ],
         "primaryKey": {
@@ -376,13 +383,13 @@
             "notNull": true
           },
           {
-            "fieldPath": "tag",
+            "fieldPath": "tagId",
             "columnName": "tagId",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "card",
+            "fieldPath": "cardId",
             "columnName": "cardId",
             "affinity": "INTEGER",
             "notNull": true
@@ -443,7 +450,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd1d4ba892bb301f94ed72e0ff748ea01')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9565a1d70b07e851b311294eec700ded')"
     ]
   }
 }

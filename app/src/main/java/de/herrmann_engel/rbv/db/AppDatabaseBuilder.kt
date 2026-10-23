@@ -149,21 +149,21 @@ class AppDatabaseBuilder {
             // become empty.
             recreateTable(
                 database, "DB_Collection",
-                "CREATE TABLE IF NOT EXISTS `_new_DB_Collection` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `desc` TEXT, `date` INTEGER NOT NULL, `colors` INTEGER NOT NULL, `emoji` TEXT)",
+                "CREATE TABLE IF NOT EXISTS `_new_DB_Collection` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `desc` TEXT NOT NULL, `date` INTEGER NOT NULL, `colors` INTEGER NOT NULL, `emoji` TEXT NOT NULL)",
                 "`uid`, `name`, `desc`, `date`, `colors`, `emoji`",
-                "`uid`, COALESCE(`name`, ''), `desc`, `date`, `colors`, `emoji`"
+                "`uid`, COALESCE(`name`, ''), COALESCE(`desc`, ''), `date`, `colors`, COALESCE(`emoji`, '')"
             )
             recreateTable(
                 database, "DB_Pack",
-                "CREATE TABLE IF NOT EXISTS `_new_DB_Pack` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `desc` TEXT, `date` INTEGER NOT NULL, `colors` INTEGER NOT NULL, `collection` INTEGER NOT NULL, `emoji` TEXT, FOREIGN KEY(`collection`) REFERENCES `DB_Collection`(`uid`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+                "CREATE TABLE IF NOT EXISTS `_new_DB_Pack` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `desc` TEXT NOT NULL, `date` INTEGER NOT NULL, `colors` INTEGER NOT NULL, `collection` INTEGER NOT NULL, `emoji` TEXT NOT NULL, FOREIGN KEY(`collection`) REFERENCES `DB_Collection`(`uid`) ON UPDATE NO ACTION ON DELETE CASCADE )",
                 "`uid`, `name`, `desc`, `date`, `colors`, `collection`, `emoji`",
-                "`uid`, COALESCE(`name`, ''), `desc`, `date`, `colors`, `collection`, `emoji`"
+                "`uid`, COALESCE(`name`, ''), COALESCE(`desc`, ''), `date`, `colors`, `collection`, COALESCE(`emoji`, '')"
             )
             recreateTable(
                 database, "DB_Card",
-                "CREATE TABLE IF NOT EXISTS `_new_DB_Card` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `front` TEXT NOT NULL, `back` TEXT NOT NULL, `pack` INTEGER NOT NULL, `known` INTEGER NOT NULL, `date` INTEGER NOT NULL, `notes` TEXT, `last_repetition` INTEGER NOT NULL, `count_repetitions` INTEGER NOT NULL, FOREIGN KEY(`pack`) REFERENCES `DB_Pack`(`uid`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+                "CREATE TABLE IF NOT EXISTS `_new_DB_Card` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `front` TEXT NOT NULL, `back` TEXT NOT NULL, `pack` INTEGER NOT NULL, `known` INTEGER NOT NULL, `date` INTEGER NOT NULL, `notes` TEXT NOT NULL, `last_repetition` INTEGER NOT NULL, `count_repetitions` INTEGER NOT NULL, FOREIGN KEY(`pack`) REFERENCES `DB_Pack`(`uid`) ON UPDATE NO ACTION ON DELETE CASCADE )",
                 "`uid`, `front`, `back`, `pack`, `known`, `date`, `notes`, `last_repetition`, `count_repetitions`",
-                "`uid`, COALESCE(`front`, ''), COALESCE(`back`, ''), `pack`, `known`, `date`, `notes`, `last_repetition`, `count_repetitions`"
+                "`uid`, COALESCE(`front`, ''), COALESCE(`back`, ''), `pack`, `known`, `date`, COALESCE(`notes`, ''), `last_repetition`, `count_repetitions`"
             )
             recreateTable(
                 database, "DB_Media",
@@ -173,8 +173,9 @@ class AppDatabaseBuilder {
             )
             recreateTable(
                 database, "DB_Tag",
-                "CREATE TABLE IF NOT EXISTS `_new_DB_Tag` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `tag_name` TEXT NOT NULL, `emoji` TEXT, `color` TEXT)",
-                "`uid`, `tag_name`, `emoji`, `color`"
+                "CREATE TABLE IF NOT EXISTS `_new_DB_Tag` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `tag_name` TEXT NOT NULL, `emoji` TEXT NOT NULL, `color` TEXT NOT NULL)",
+                "`uid`, `tag_name`, `emoji`, `color`",
+                "`uid`, `tag_name`, COALESCE(`emoji`, ''), COALESCE(`color`, '')"
             )
             recreateTable(
                 database, "DB_Media_Link_Card",

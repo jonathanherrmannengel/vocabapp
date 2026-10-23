@@ -17,8 +17,8 @@ class DB_Tag {
     var name: String = ""
 
     @ColumnInfo(name = "emoji")
-    var emoji: String? = null
+    var emoji: String = ""
 
     @ColumnInfo(name = "color")
-    var color: String? = null
+    var color: String = ""
 }
