@@ -251,8 +251,8 @@ class MediaFileManager(
     }
 
     override fun getImageUri(fileId: Int): Uri? {
-        val file = getFile(fileId) ?: return null
-        return file.uri
+        val file = getFile(fileId)
+        return if (file != null && file.isFile) file.uri else null
     }
 
     // Lists all files in the media folder, null if no folder is selected
@@ -411,7 +411,8 @@ class MediaFileManager(
     }
 
     override fun existsMediaFile(name: String?): Boolean {
-        return name != null && getFile(name) != null
+        val file = name?.let { getFile(it) }
+        return file != null && file.isFile
     }
 
     private fun existsMediaFile(fileId: Int): Boolean {

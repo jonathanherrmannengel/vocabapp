@@ -14,13 +14,15 @@ interface MediaFiles {
      */
     fun showImageDialog(fileId: Int, cardId: Int, dialog: Dialog? = null)
 
-    // Returns the URI of a media file by its database id, or null if it cannot be found
+    // Returns the URI of a media file by its database id, or null if there is no such file
     fun getImageUri(fileId: Int): Uri?
 
     fun openFile(name: String)
     fun openFile(fileId: Int)
     fun shareFile(name: String)
     fun shareFile(fileId: Int)
+
+    // True if the media folder contains a file (not a folder) with this name
     fun existsMediaFile(name: String?): Boolean
 
     /**
