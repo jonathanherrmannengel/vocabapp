@@ -148,10 +148,11 @@ class AdapterTagLinkCard(
                             newTag.name = bindingEditDialog.editTagName.text.toString()
                             newTag.emoji =
                                 StringTools().firstEmoji(bindingEditDialog.editTagEmoji.text.toString())
-                            // Store the color as hex string without alpha (#RRGGBB)
+                            // Store the color as hex string without alpha (#RRGGBB); if no
+                            // color was picked, the tag keeps its color
                             newTag.color =
                                 color?.let { it1 -> "#" + Integer.toHexString(it1).substring(2) }
-                                    ?: ""
+                                    ?: currentTag.color
                             val dbHelperUpdate = DB_Helper_Update(context)
                             if (dbHelperUpdate.updateTag(newTag)) {
                                 tags[tags.indexOf(currentTag)] = newTag
