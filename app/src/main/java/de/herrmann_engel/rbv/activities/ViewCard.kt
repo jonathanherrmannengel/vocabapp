@@ -29,8 +29,12 @@ import de.herrmann_engel.rbv.ui.TagSpan
 import de.herrmann_engel.rbv.utils.StringTools
 import de.herrmann_engel.rbv.utils.colorAt
 import de.herrmann_engel.rbv.utils.formatDateTime
+import de.herrmann_engel.rbv.utils.getCardId
 import de.herrmann_engel.rbv.utils.getCardSource
+import de.herrmann_engel.rbv.utils.putCardId
 import de.herrmann_engel.rbv.utils.putCardSource
+import de.herrmann_engel.rbv.utils.putDeletedCardId
+import de.herrmann_engel.rbv.utils.putUpdatedCardId
 import io.noties.markwon.Markwon
 import io.noties.markwon.linkify.LinkifyPlugin
 import me.saket.bettermovementmethod.BetterLinkMovementMethod
@@ -64,14 +68,17 @@ class ViewCard : RBVActivity(), CardActions.Listener {
         dbHelperUpdate = DB_Helper_Update(this)
 
         intent.getCardSource()?.let { cardSource = it }
-        cardId = intent.extras!!.getInt("card")
+        cardId = intent.getCardId() ?: run {
+            finish()
+            return
+        }
 
         // Return to the card list, which then reloads this card as it may have changed
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 val intent = Intent(this@ViewCard, ListCards::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-                intent.putExtra("cardUpdated", cardId)
+                intent.putUpdatedCardId(cardId)
                 startActivity(intent)
             }
         })
@@ -208,7 +215,7 @@ class ViewCard : RBVActivity(), CardActions.Listener {
     // Missing media file: open the card's media settings
     private fun openCardMedia(cardId: Int) {
         val intent = Intent(this, EditCardMedia::class.java)
-        intent.putExtra("card", cardId)
+        intent.putCardId(cardId)
         startActivity(intent)
     }
 
@@ -216,7 +223,7 @@ class ViewCard : RBVActivity(), CardActions.Listener {
         menuInflater.inflate(R.menu.menu_view_card, menu)
         menu.findItem(R.id.menu_view_card_edit).setOnMenuItemClickListener {
             val intent = Intent(this, EditCard::class.java)
-            intent.putExtra("card", cardId)
+            intent.putCardId(cardId)
             startActivity(intent)
             return@setOnMenuItemClickListener true
         }
@@ -226,13 +233,13 @@ class ViewCard : RBVActivity(), CardActions.Listener {
         }
         menu.findItem(R.id.menu_view_card_edit_media).setOnMenuItemClickListener {
             val intent = Intent(this, EditCardMedia::class.java)
-            intent.putExtra("card", cardId)
+            intent.putCardId(cardId)
             startActivity(intent)
             return@setOnMenuItemClickListener true
         }
         menu.findItem(R.id.menu_view_card_edit_tags).setOnMenuItemClickListener {
             val intent = Intent(this, EditCardTags::class.java)
-            intent.putExtra("card", cardId)
+            intent.putCardId(cardId)
             startActivity(intent)
             return@setOnMenuItemClickListener true
         }
@@ -318,7 +325,7 @@ class ViewCard : RBVActivity(), CardActions.Listener {
     override fun deletedCards(cardIds: ArrayList<Int>) {
         val intent = Intent(this, ListCards::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-        intent.putExtra("cardDeleted", cardId)
+        intent.putDeletedCardId(cardId)
         startActivity(intent)
     }
 

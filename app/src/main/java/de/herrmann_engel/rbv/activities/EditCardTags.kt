@@ -10,6 +10,7 @@ import de.herrmann_engel.rbv.databinding.ActivityEditCardTagsBinding
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Create
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.utils.colorAt
+import de.herrmann_engel.rbv.utils.getCardId
 
 /**
  * Manages the tags of the card passed as "card" extra: add tags by name (creating them
@@ -25,7 +26,10 @@ class EditCardTags : RBVActivity() {
         binding = ActivityEditCardTagsBinding.inflate(layoutInflater)
         setContentView(binding.root)
         dbHelperGet = DB_Helper_Get(this)
-        cardId = intent.extras!!.getInt("card")
+        cardId = intent.getCardId() ?: run {
+            finish()
+            return
+        }
         // Close if the card no longer exists (e.g. deleted in the meantime)
         val card = dbHelperGet.getSingleCard(cardId) ?: run {
             finish()

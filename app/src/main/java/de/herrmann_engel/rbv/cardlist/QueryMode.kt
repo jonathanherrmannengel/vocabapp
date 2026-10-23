@@ -29,6 +29,8 @@ import de.herrmann_engel.rbv.ui.SwipeEvents
 import de.herrmann_engel.rbv.utils.StringTools
 import de.herrmann_engel.rbv.utils.colorAt
 import de.herrmann_engel.rbv.utils.createDialog
+import de.herrmann_engel.rbv.utils.putBackToList
+import de.herrmann_engel.rbv.utils.putCardId
 import io.noties.markwon.Markwon
 import io.noties.markwon.linkify.LinkifyPlugin
 import me.saket.bettermovementmethod.BetterLinkMovementMethod
@@ -292,8 +294,8 @@ class QueryMode(
                 binding.queryButtonEdit.visibility = View.VISIBLE
                 binding.queryButtonEdit.setOnClickListener {
                     val intent = Intent(activity, EditCard::class.java)
-                    intent.putExtra("card", card.uid)
-                    intent.putExtra("backToList", true)
+                    intent.putCardId(card.uid)
+                    intent.putBackToList(true)
                     activity.startActivity(intent)
                 }
             }

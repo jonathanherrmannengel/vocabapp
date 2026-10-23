@@ -9,6 +9,7 @@ import de.herrmann_engel.rbv.db.DB_Pack
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Update
 import de.herrmann_engel.rbv.ui.CollectionOrPackForm
+import de.herrmann_engel.rbv.utils.getPackId
 
 /**
  * Form to edit the pack passed as "pack" extra: name, description, emoji and color.
@@ -21,7 +22,10 @@ class EditPack : RBVActivity() {
         super.onCreate(savedInstanceState)
         val binding = ActivityCollectionOrPackFormBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        val packId = intent.extras!!.getInt("pack")
+        val packId = intent.getPackId() ?: run {
+            finish()
+            return
+        }
         // Close if the pack no longer exists (e.g. deleted in the meantime)
         pack = DB_Helper_Get(this).getSinglePack(packId) ?: run {
             finish()

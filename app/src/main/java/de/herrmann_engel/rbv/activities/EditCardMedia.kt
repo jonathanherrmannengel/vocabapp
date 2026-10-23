@@ -17,6 +17,7 @@ import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.media.MediaFileManager
 import de.herrmann_engel.rbv.utils.colorAt
 import de.herrmann_engel.rbv.utils.createDialog
+import de.herrmann_engel.rbv.utils.getCardId
 
 /**
  * Manages the media files of the card passed as "card" extra. New files are picked by the user
@@ -84,7 +85,10 @@ class EditCardMedia : RBVActivity() {
         binding = ActivityEditCardMediaBinding.inflate(layoutInflater)
         setContentView(binding.root)
         dbHelperGet = DB_Helper_Get(this)
-        cardId = intent.extras!!.getInt("card")
+        cardId = intent.getCardId() ?: run {
+            finish()
+            return
+        }
         // Close if the card no longer exists (e.g. deleted in the meantime)
         val card = dbHelperGet.getSingleCard(cardId) ?: run {
             finish()

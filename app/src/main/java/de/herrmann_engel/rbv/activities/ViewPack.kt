@@ -15,7 +15,9 @@ import de.herrmann_engel.rbv.settings.AppSettings
 import de.herrmann_engel.rbv.utils.colorAt
 import de.herrmann_engel.rbv.utils.formatDateTime
 import de.herrmann_engel.rbv.utils.getListCollection
+import de.herrmann_engel.rbv.utils.getPackId
 import de.herrmann_engel.rbv.utils.putListCollection
+import de.herrmann_engel.rbv.utils.putPackId
 
 /**
  * Details of a pack (name, emoji, description, creation date) with options to edit,
@@ -34,7 +36,10 @@ class ViewPack : RBVActivity(), PackActions.Listener {
         setContentView(binding.root)
         dbHelperGet = DB_Helper_Get(this)
         listCollectionId = intent.getListCollection()
-        packId = intent.extras!!.getInt("pack")
+        packId = intent.getPackId() ?: run {
+            finish()
+            return
+        }
         setUpEdgeToEdge(binding.viewCollectionOrPackLayout)
     }
 
@@ -86,7 +91,7 @@ class ViewPack : RBVActivity(), PackActions.Listener {
         menuInflater.inflate(R.menu.menu_view_pack, menu)
         menu.findItem(R.id.menu_view_pack_edit).setOnMenuItemClickListener {
             val intent = Intent(this, EditPack::class.java)
-            intent.putExtra("pack", packId)
+            intent.putPackId(packId)
             startActivity(intent)
             return@setOnMenuItemClickListener true
         }

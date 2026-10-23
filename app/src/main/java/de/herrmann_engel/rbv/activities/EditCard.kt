@@ -13,6 +13,9 @@ import de.herrmann_engel.rbv.db.DB_Card
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Update
 import de.herrmann_engel.rbv.utils.colorAt
+import de.herrmann_engel.rbv.utils.getBackToList
+import de.herrmann_engel.rbv.utils.getCardId
+import de.herrmann_engel.rbv.utils.putUpdatedCardId
 import de.herrmann_engel.rbv.utils.showConfirmDialog
 
 /**
@@ -28,8 +31,11 @@ class EditCard : RBVActivity() {
         binding = ActivityEditCardBinding.inflate(layoutInflater)
         setContentView(binding.root)
         val dbHelperGet = DB_Helper_Get(this)
-        val cardId = intent.extras!!.getInt("card")
-        backToList = intent.extras!!.getBoolean("backToList")
+        val cardId = intent.getCardId() ?: run {
+            finish()
+            return
+        }
+        backToList = intent.getBackToList()
         // Close if the card no longer exists (e.g. deleted in the meantime)
         card = dbHelperGet.getSingleCard(cardId) ?: run {
             finish()
@@ -104,7 +110,7 @@ class EditCard : RBVActivity() {
         if (backToList) {
             val intent = Intent(this, ListCards::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-            intent.putExtra("cardUpdated", card.uid)
+            intent.putUpdatedCardId(card.uid)
             startActivity(intent)
         } else {
             finish()

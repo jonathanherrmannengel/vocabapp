@@ -25,6 +25,7 @@ import de.herrmann_engel.rbv.utils.colorAt
 import de.herrmann_engel.rbv.utils.createDialog
 import de.herrmann_engel.rbv.utils.getListCollection
 import de.herrmann_engel.rbv.utils.putCardSource
+import de.herrmann_engel.rbv.utils.putCollectionId
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -65,13 +66,13 @@ class ListPacks : RBVActivity(), PackActions.Listener {
         } else {
             startNewPack.setOnMenuItemClickListener {
                 val intent = Intent(this, NewPack::class.java)
-                intent.putExtra("collection", collectionId)
+                intent.putCollectionId(collectionId)
                 this.startActivity(intent)
                 return@setOnMenuItemClickListener true
             }
             packDetails.setOnMenuItemClickListener {
                 val intent = Intent(this, ViewCollection::class.java)
-                intent.putExtra("collection", collectionId)
+                intent.putCollectionId(collectionId)
                 this.startActivity(intent)
                 return@setOnMenuItemClickListener true
             }

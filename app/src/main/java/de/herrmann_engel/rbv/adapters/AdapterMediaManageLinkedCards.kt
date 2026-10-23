@@ -9,6 +9,7 @@ import de.herrmann_engel.rbv.activities.EditCardMedia
 import de.herrmann_engel.rbv.databinding.RecViewBinding
 import de.herrmann_engel.rbv.db.DB_Card_With_Meta
 import de.herrmann_engel.rbv.utils.StringTools
+import de.herrmann_engel.rbv.utils.putCardId
 
 
 /**
@@ -36,7 +37,7 @@ class AdapterMediaManageLinkedCards(
         val cardId = cards[position].card.uid
         viewHolder.binding.recName.setOnClickListener {
             val intent = Intent(context, EditCardMedia::class.java)
-            intent.putExtra("card", cardId)
+            intent.putCardId(cardId)
             context.startActivity(intent)
             dialog.dismiss()
         }

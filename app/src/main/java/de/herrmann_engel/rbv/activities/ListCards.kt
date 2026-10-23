@@ -31,9 +31,13 @@ import de.herrmann_engel.rbv.utils.SortCards
 import de.herrmann_engel.rbv.utils.WAIT_INDICATOR_DELAY_MILLIS
 import de.herrmann_engel.rbv.utils.WaitDots
 import de.herrmann_engel.rbv.utils.colorAt
+import de.herrmann_engel.rbv.utils.getAddedCardId
 import de.herrmann_engel.rbv.utils.getCardSource
-import de.herrmann_engel.rbv.utils.getIntExtraOrNull
+import de.herrmann_engel.rbv.utils.getDeletedCardId
+import de.herrmann_engel.rbv.utils.getUpdatedCardId
+import de.herrmann_engel.rbv.utils.putCardId
 import de.herrmann_engel.rbv.utils.putListCollection
+import de.herrmann_engel.rbv.utils.putPackId
 import de.herrmann_engel.rbv.utils.showInfoDialog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -166,8 +170,8 @@ class ListCards : RBVActivity(), CardActions.Listener {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         if (cardsList != null) {
-            intent.getIntExtraOrNull("cardDeleted")?.let { deleteCardFromList(it) }
-            val cardAdded = intent.getIntExtraOrNull("cardAdded")
+            intent.getDeletedCardId()?.let { deleteCardFromList(it) }
+            val cardAdded = intent.getAddedCardId()
             if (cardAdded != null && cardsList?.let {
                     it.stream().noneMatch { i -> i.card.uid == cardAdded }
                 } == true
@@ -179,7 +183,7 @@ class ListCards : RBVActivity(), CardActions.Listener {
                     cardsList?.add(it)
                 } ?: Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show()
             }
-            val cardUpdated = intent.getIntExtraOrNull("cardUpdated")
+            val cardUpdated = intent.getUpdatedCardId()
             if (cardUpdated != null) {
                 val cardWithMetaNew = dbHelperGet.getSingleCardWithMeta(cardUpdated)
                 val cardWithMetaOld = cardsList?.stream()
@@ -218,7 +222,7 @@ class ListCards : RBVActivity(), CardActions.Listener {
     private fun openCardMedia(cardId: Int) {
         try {
             val intent = Intent(this, EditCardMedia::class.java)
-            intent.putExtra("card", cardId)
+            intent.putCardId(cardId)
             startActivity(intent)
         } catch (e: Exception) {
             e.printStackTrace()
@@ -383,14 +387,14 @@ class ListCards : RBVActivity(), CardActions.Listener {
         } else {
             startNewCardMenuItem.setOnMenuItemClickListener {
                 val intent = Intent(this, NewCard::class.java)
-                intent.putExtra("pack", cardSource.packId)
+                intent.putPackId(cardSource.packId)
                 this.startActivity(intent)
                 false
             }
             startPackDetailsMenuItem.setOnMenuItemClickListener {
                 val intent = Intent(this, ViewPack::class.java)
                 intent.putListCollection(cardSource.listCollectionId)
-                intent.putExtra("pack", cardSource.packId)
+                intent.putPackId(cardSource.packId)
                 this.startActivity(intent)
                 false
             }

@@ -33,6 +33,7 @@ import de.herrmann_engel.rbv.db.DB_Card_With_Meta
 import de.herrmann_engel.rbv.utils.ContextTools
 import de.herrmann_engel.rbv.utils.StringTools
 import de.herrmann_engel.rbv.utils.colorAt
+import de.herrmann_engel.rbv.utils.putCardId
 import de.herrmann_engel.rbv.utils.putCardSource
 import java.util.Locale
 
@@ -357,7 +358,7 @@ class AdapterCards(
             } else {
                 val intent = Intent(context, ViewCard::class.java)
                 intent.putCardSource(cardSource)
-                intent.putExtra("card", cardId)
+                intent.putCardId(cardId)
                 context.startActivity(intent)
             }
         }

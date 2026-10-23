@@ -11,6 +11,8 @@ import de.herrmann_engel.rbv.databinding.ActivityNewCardBinding
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Create
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.utils.colorAt
+import de.herrmann_engel.rbv.utils.getPackId
+import de.herrmann_engel.rbv.utils.putAddedCardId
 import de.herrmann_engel.rbv.utils.showConfirmDialog
 
 /**
@@ -24,7 +26,10 @@ class NewCard : RBVActivity() {
         binding = ActivityNewCardBinding.inflate(layoutInflater)
         setContentView(binding.root)
         val dbHelperGet = DB_Helper_Get(this)
-        packId = intent.extras!!.getInt("pack")
+        packId = intent.getPackId() ?: run {
+            finish()
+            return
+        }
         // Close if the pack no longer exists (e.g. deleted in the meantime)
         val pack = dbHelperGet.getSinglePack(packId) ?: run {
             finish()
@@ -79,7 +84,7 @@ class NewCard : RBVActivity() {
                 // Return to the existing card list, which adds the new card to its list
                 val intent = Intent(this, ListCards::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-                intent.putExtra("cardAdded", cardId.toInt())
+                intent.putAddedCardId(cardId.toInt())
                 this.startActivity(intent)
             } catch (e: Exception) {
                 e.printStackTrace()

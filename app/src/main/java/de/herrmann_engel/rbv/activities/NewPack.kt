@@ -8,6 +8,7 @@ import de.herrmann_engel.rbv.databinding.ActivityCollectionOrPackFormBinding
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Create
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.ui.CollectionOrPackForm
+import de.herrmann_engel.rbv.utils.getCollectionId
 
 /**
  * Form to create a new pack in the collection passed as "collection" extra: name, description,
@@ -21,7 +22,10 @@ class NewPack : RBVActivity() {
         super.onCreate(savedInstanceState)
         val binding = ActivityCollectionOrPackFormBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        collectionId = intent.extras!!.getInt("collection")
+        collectionId = intent.getCollectionId() ?: run {
+            finish()
+            return
+        }
         // Close if the collection no longer exists (e.g. deleted in the meantime)
         val collection = DB_Helper_Get(this).getSingleCollection(collectionId) ?: run {
             finish()

@@ -13,6 +13,8 @@ import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.settings.AppSettings
 import de.herrmann_engel.rbv.utils.colorAt
 import de.herrmann_engel.rbv.utils.formatDateTime
+import de.herrmann_engel.rbv.utils.getCollectionId
+import de.herrmann_engel.rbv.utils.putCollectionId
 import de.herrmann_engel.rbv.utils.runInBackground
 import de.herrmann_engel.rbv.utils.showConfirmDialog
 
@@ -29,7 +31,10 @@ class ViewCollection : RBVActivity() {
         binding = ActivityViewCollectionOrPackBinding.inflate(layoutInflater)
         setContentView(binding.root)
         dbHelperGet = DB_Helper_Get(this)
-        collectionId = intent.extras!!.getInt("collection")
+        collectionId = intent.getCollectionId() ?: run {
+            finish()
+            return
+        }
         setUpEdgeToEdge(binding.viewCollectionOrPackLayout)
     }
 
@@ -37,7 +42,7 @@ class ViewCollection : RBVActivity() {
         menuInflater.inflate(R.menu.menu_view_collection, menu)
         menu.findItem(R.id.menu_view_collection_edit).setOnMenuItemClickListener {
             val intent = Intent(this, EditCollection::class.java)
-            intent.putExtra("collection", collectionId)
+            intent.putCollectionId(collectionId)
             startActivity(intent)
             return@setOnMenuItemClickListener true
         }
