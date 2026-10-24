@@ -1,6 +1,5 @@
 package de.herrmann_engel.rbv.adapters
 
-import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface.BOLD
@@ -9,11 +8,8 @@ import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ImageSpan
 import android.util.TypedValue
-import android.view.ActionMode
 import android.view.LayoutInflater
 import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
@@ -32,7 +28,6 @@ import de.herrmann_engel.rbv.db.DB_Card
 import de.herrmann_engel.rbv.db.DB_Card_With_Meta
 import de.herrmann_engel.rbv.utils.StringTools
 import de.herrmann_engel.rbv.utils.colorAt
-import de.herrmann_engel.rbv.utils.findActivity
 import de.herrmann_engel.rbv.utils.putCardId
 import de.herrmann_engel.rbv.utils.putCardSource
 import java.util.Locale
@@ -53,90 +48,52 @@ class AdapterCards(
 ) : RecyclerView.Adapter<AdapterCards.ViewHolder>() {
     class ViewHolder(val binding: RecViewCardBinding) : RecyclerView.ViewHolder(binding.root)
 
-    // Contextual action mode (started by long click) to select multiple cards and delete, move or print them
-    private var contextualMenuMode: ActionMode? = null
-    private val contextualMenuModePayload = "contextualMode"
-    private var contextualMenuModeActivity: Activity? = null
-    private val contextualMenuModeCardIdList: ArrayList<Int> = ArrayList()
-    private val contextualMenuModeCallback = object : ActionMode.Callback {
-        override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
-            val inflater: MenuInflater = mode.menuInflater
-            inflater.inflate(R.menu.menu_list_cards_context, menu)
-            return true
-        }
+    // Selection of several cards (started by long click) to delete, move or print them
+    private val selection = SelectionMode(
+        R.menu.menu_list_cards_context,
+        itemCount = { cards.size },
+        redrawItem = { id ->
+            notifyItemChanged(cards.indexOfFirst { it.card.uid == id }, SelectionMode.PAYLOAD)
+        },
+        prepareMenu = ::prepareSelectionMenu,
+        onAction = ::onSelectionAction
+    )
 
-        // Moving is only possible inside a pack; printing and "select all" are limited to a maximum number of cards
-        override fun onPrepareActionMode(mode: ActionMode, menu: Menu): Boolean {
-            menu.findItem(R.id.menu_list_cards_context_delete).isVisible =
-                contextualMenuModeCardIdList.isNotEmpty()
-            menu.findItem(R.id.menu_list_cards_context_move).isVisible =
-                contextualMenuModeCardIdList.isNotEmpty() && cardSource is CardSource.Pack
-            menu.findItem(R.id.menu_list_cards_context_print).isVisible =
-                contextualMenuModeCardIdList.isNotEmpty() && contextualMenuModeCardIdList.size <= MAX_SIZE_CARDS_CONTEXTUAL_MENU_PRINT
-            menu.findItem(R.id.menu_list_cards_context_select_all).isVisible =
-                contextualMenuModeCardIdList.size < cards.size && cards.size <= MAX_SIZE_CARDS_CONTEXTUAL_MENU_SELECT
-            return true
-        }
-
-        override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
-            return when (item.itemId) {
-                R.id.menu_list_cards_context_delete -> {
-                    val contextualMenuModeCardList: ArrayList<DB_Card> = ArrayList()
-                    for (id in contextualMenuModeCardIdList) {
-                        cards.find { c -> c.card.uid == id }
-                            ?.let { contextualMenuModeCardList.add(it.card) }
-                    }
-                    cardActions.delete(contextualMenuModeCardList)
-                    mode.finish()
-                    true
-                }
-
-                R.id.menu_list_cards_context_move -> {
-                    val contextualMenuModeCardList: ArrayList<DB_Card> = ArrayList()
-                    for (id in contextualMenuModeCardIdList) {
-                        cards.find { c -> c.card.uid == id }
-                            ?.let { contextualMenuModeCardList.add(it.card) }
-                    }
-                    if (cardSource is CardSource.Pack) {
-                        cardActions.move(contextualMenuModeCardList, cardSource.listCollectionId)
-                    }
-                    mode.finish()
-                    true
-                }
-
-                R.id.menu_list_cards_context_print -> {
-                    val contextualMenuModeCardList: ArrayList<DB_Card> = ArrayList()
-                    for (id in contextualMenuModeCardIdList) {
-                        cards.find { c -> c.card.uid == id }
-                            ?.let { contextualMenuModeCardList.add(it.card) }
-                    }
-                    cardActions.print(contextualMenuModeCardList)
-                    mode.finish()
-                    true
-                }
-
-                R.id.menu_list_cards_context_select_all -> {
-                    cards.forEach {
-                        val card = it.card.uid
-                        if (!contextualMenuModeCardIdList.contains(card)
-                        ) {
-                            contextualMenuModeSelectItem(card)
-                        }
-                    }
-                    true
-                }
-
-                else -> false
-            }
-        }
-
-        override fun onDestroyActionMode(mode: ActionMode) {
-            for (id in contextualMenuModeCardIdList) {
-                contextualMenuModeFormatCard(id)
-            }
-            contextualMenuMode = null
-        }
+    // Moving is only possible inside a pack; printing and "select all" are limited to a maximum
+    // number of cards
+    private fun prepareSelectionMenu(menu: Menu, selectedIds: List<Int>) {
+        menu.findItem(R.id.menu_list_cards_context_delete).isVisible = selectedIds.isNotEmpty()
+        menu.findItem(R.id.menu_list_cards_context_move).isVisible =
+            selectedIds.isNotEmpty() && cardSource is CardSource.Pack
+        menu.findItem(R.id.menu_list_cards_context_print).isVisible =
+            selectedIds.isNotEmpty() && selectedIds.size <= MAX_SIZE_CARDS_CONTEXTUAL_MENU_PRINT
+        menu.findItem(R.id.menu_list_cards_context_select_all).isVisible =
+            selectedIds.size < cards.size && cards.size <= MAX_SIZE_CARDS_CONTEXTUAL_MENU_SELECT
     }
+
+    private fun onSelectionAction(itemId: Int, selectedIds: List<Int>): Boolean {
+        when (itemId) {
+            R.id.menu_list_cards_context_delete -> cardActions.delete(selectedCards(selectedIds))
+
+            R.id.menu_list_cards_context_move -> if (cardSource is CardSource.Pack) {
+                cardActions.move(selectedCards(selectedIds), cardSource.listCollectionId)
+            }
+
+            R.id.menu_list_cards_context_print -> cardActions.print(selectedCards(selectedIds))
+
+            R.id.menu_list_cards_context_select_all -> {
+                selection.selectAll(cards.map { it.card.uid })
+                return true
+            }
+
+            else -> return false
+        }
+        selection.finish()
+        return true
+    }
+
+    private fun selectedCards(ids: List<Int>): ArrayList<DB_Card> =
+        ArrayList(ids.mapNotNull { id -> cards.find { it.card.uid == id }?.card })
 
     // Replaces the list content, using DiffUtil to only update changed items; all items are
     // redrawn if the displayed side(s) or the font size setting changed
@@ -247,7 +204,8 @@ class AdapterCards(
             prepareCardSide(false, cards[position], viewHolder)
             prepareCardSide(true, cards[position], viewHolder)
         }
-        if (contextualMenuMode != null && contextualMenuModeCardIdList.contains(cards[position].card.uid)) {
+        // The welcome item of an empty list cannot be selected
+        if (cards.isNotEmpty() && selection.isSelected(cards[position].card.uid)) {
             viewHolder.binding.recFront.contentDescription = String.format(
                 Locale.ROOT,
                 "%s: %s",
@@ -277,31 +235,6 @@ class AdapterCards(
 
     override fun getItemCount(): Int {
         return 1.coerceAtLeast(cards.size)
-    }
-
-    // Selects a card; the menu is updated when the visibility of its items may change
-    private fun contextualMenuModeSelectItem(id: Int) {
-        contextualMenuModeCardIdList.add(id)
-        if (contextualMenuModeCardIdList.size == 1 || contextualMenuModeCardIdList.size == cards.size || contextualMenuModeCardIdList.size > MAX_SIZE_CARDS_CONTEXTUAL_MENU_PRINT) {
-            contextualMenuMode?.invalidate()
-        }
-        contextualMenuModeFormatCard(id)
-        contextualMenuModeSelectedTitle()
-    }
-
-    // Redraws a card to show its selection state
-    private fun contextualMenuModeFormatCard(id: Int) {
-        notifyItemChanged(cards.indexOfFirst { c -> c.card.uid == id }, contextualMenuModePayload)
-    }
-
-    private fun contextualMenuModeSelectedTitle() {
-        contextualMenuMode?.title = contextualMenuModeActivity?.resources?.let {
-            String.format(
-                it.getString(R.string.selected_title),
-                contextualMenuModeCardIdList.size,
-                cards.size
-            )
-        }
     }
 
     /**
@@ -340,20 +273,8 @@ class AdapterCards(
         val cardId = card.card.uid
         recText.setOnClickListener {
             // In selection mode a click toggles the selection, otherwise it opens the card
-            if (contextualMenuMode != null) {
-                if (contextualMenuModeCardIdList.contains(cardId)) {
-                    contextualMenuModeCardIdList.remove(cardId)
-                    if (contextualMenuModeCardIdList.size == cards.size - 1 || contextualMenuModeCardIdList.size == MAX_SIZE_CARDS_CONTEXTUAL_MENU_PRINT) {
-                        contextualMenuMode?.invalidate()
-                    }
-                    contextualMenuModeFormatCard(cardId)
-                    contextualMenuModeSelectedTitle()
-                    if (contextualMenuModeCardIdList.isEmpty()) {
-                        contextualMenuMode?.finish()
-                    }
-                } else {
-                    contextualMenuModeSelectItem(cardId)
-                }
+            if (selection.isActive) {
+                selection.toggle(cardId)
             } else {
                 val intent = Intent(context, ViewCard::class.java)
                 intent.putCardSource(cardSource)
@@ -361,16 +282,6 @@ class AdapterCards(
                 context.startActivity(intent)
             }
         }
-        recText.setOnLongClickListener {
-            if (contextualMenuMode != null) {
-                return@setOnLongClickListener false
-            }
-            contextualMenuModeCardIdList.clear()
-            contextualMenuModeActivity = context.findActivity()
-            contextualMenuMode =
-                contextualMenuModeActivity?.startActionMode(contextualMenuModeCallback)
-            contextualMenuModeSelectItem(cardId)
-            return@setOnLongClickListener true
-        }
+        recText.setOnLongClickListener { selection.start(context, cardId) }
     }
 }
