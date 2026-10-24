@@ -106,9 +106,9 @@ class CardActions(
         val dbHelperGet = DB_Helper_Get(activity)
         // Includes the collection names, which are shown for packs of all collections
         val packs: List<DB_Pack_With_Meta> = if (collectionId == null) {
-            dbHelperGet.allPacksWithMetaNoCounter
+            dbHelperGet.allPacksWithMeta
         } else {
-            dbHelperGet.getAllPacksWithMetaNoCounterByCollection(collectionId)
+            dbHelperGet.getAllPacksWithMetaByCollection(collectionId)
         }
         val adapter = AdapterPacksMoveCard(packs, collectionId) { packId ->
             moveDialog.dismiss()

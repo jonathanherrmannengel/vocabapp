@@ -8,7 +8,6 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
-import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.actions.PackActions
 import de.herrmann_engel.rbv.adapters.AdapterListHeader
@@ -214,25 +213,10 @@ class ListPacks : RBVActivity(), PackActions.Listener {
     private fun countCards(): Int =
         collectionId?.let { dbHelperGet.countCardsInCollection(it) } ?: dbHelperGet.countCards()
 
-    // Loads the packs; for long lists, the cards per pack are not counted to save time
-    private fun loadPacks(): MutableList<DB_Pack_With_Meta> {
-        val collectionId = collectionId
-        val packs: MutableList<DB_Pack_With_Meta> =
-            if (collectionId == null) {
-                if (dbHelperGet.countPacks() > Globals.MAX_SIZE_COLLECTIONS_OR_PACKS_LIST_COUNTER) {
-                    dbHelperGet.allPacksWithMetaNoCounter
-                } else {
-                    dbHelperGet.allPacksWithMeta
-                }
-            } else {
-                if (dbHelperGet.countPacksInCollection(collectionId) > Globals.MAX_SIZE_COLLECTIONS_OR_PACKS_LIST_COUNTER) {
-                    dbHelperGet.getAllPacksWithMetaNoCounterByCollection(collectionId)
-                } else {
-                    dbHelperGet.getAllPacksWithMetaByCollection(collectionId)
-                }
-            }
-        return packs
-    }
+    // Loads the packs with the number of cards in each
+    private fun loadPacks(): MutableList<DB_Pack_With_Meta> =
+        collectionId?.let { dbHelperGet.getAllPacksWithMetaByCollection(it) }
+            ?: dbHelperGet.allPacksWithMeta
 
     // Reload the list after an import, which may have added packs or changed the font size setting
     override fun onImportFinished() {

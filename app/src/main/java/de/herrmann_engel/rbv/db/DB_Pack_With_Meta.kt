@@ -10,7 +10,7 @@ class DB_Pack_With_Meta {
     @Embedded
     lateinit var pack: DB_Pack
 
-    // Number of cards in the pack, -1 if not counted
+    // Number of cards in the pack
     var counter: Int = 0
     var collectionName: String? = null
 

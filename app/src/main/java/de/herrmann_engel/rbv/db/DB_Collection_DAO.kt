@@ -15,9 +15,6 @@ interface DB_Collection_DAO {
     @Query("SELECT EXISTS (SELECT 1 FROM db_collection LIMIT 1)")
     fun hasCollections(): Boolean
 
-    @Query("SELECT COUNT(*) FROM db_collection")
-    fun countCollections(): Int
-
     @Query("SELECT EXISTS (SELECT 1 FROM db_collection WHERE uid=:collectionId LIMIT 1)")
     fun existsCollection(collectionId: Int): Boolean
 
@@ -29,9 +26,6 @@ interface DB_Collection_DAO {
 
     @get:Query("SELECT *, (SELECT COUNT(*) FROM db_pack WHERE collection=db_collection.uid) AS counter FROM db_collection ORDER BY name COLLATE NOCASE ASC, uid DESC")
     val allWithMeta: MutableList<DB_Collection_With_Meta>
-
-    @get:Query("SELECT *, -1 AS counter FROM db_collection ORDER BY name COLLATE NOCASE ASC, uid DESC")
-    val allWithMetaNoCounter: MutableList<DB_Collection_With_Meta>
 
     @get:Query("SELECT uid FROM db_collection ORDER BY name COLLATE NOCASE ASC, uid DESC")
     val allIds: List<Int>

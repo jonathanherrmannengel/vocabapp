@@ -12,7 +12,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import de.herrmann_engel.rbv.Globals
-import de.herrmann_engel.rbv.Globals.MAX_SIZE_COLLECTIONS_OR_PACKS_LIST_COUNTER
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.adapters.AdapterCollections
 import de.herrmann_engel.rbv.adapters.AdapterListHeader
@@ -233,13 +232,9 @@ class ListCollections : RBVActivity() {
         uiFontSizeBig = uiFontSizeBig
     )
 
-    // Loads the collections; for long lists, the packs per collection are not counted to save time
+    // Loads the collections with the number of packs in each
     private fun loadCollections(): MutableList<DB_Collection_With_Meta> =
-        if (dbHelperGet.countCollections() > MAX_SIZE_COLLECTIONS_OR_PACKS_LIST_COUNTER) {
-            dbHelperGet.allCollectionsWithMetaNoCounter
-        } else {
-            dbHelperGet.allCollectionsWithMeta
-        }
+        dbHelperGet.allCollectionsWithMeta
 
     // Reload the list after an import (started here or elsewhere)
     override fun onImportFinished() {

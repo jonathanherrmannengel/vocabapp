@@ -26,11 +26,7 @@ class DB_Helper_Get(context: Context) {
     fun hasTags(): Boolean = dbHelper.tagDao.hasTags()
 
     // Count
-    fun countCollections(): Int = dbHelper.collectionDao.countCollections()
-
     fun countPacks(): Int = dbHelper.packDao.countPacks()
-
-    fun countPacksInCollection(collectionId: Int): Int = dbHelper.packDao.countPacksInCollection(collectionId)
 
     fun countCards(): Int = dbHelper.cardDao.countCards()
 
@@ -82,9 +78,6 @@ class DB_Helper_Get(context: Context) {
     val allCollectionsWithMeta: MutableList<DB_Collection_With_Meta>
         get() = dbHelper.collectionDao.allWithMeta
 
-    val allCollectionsWithMetaNoCounter: MutableList<DB_Collection_With_Meta>
-        get() = dbHelper.collectionDao.allWithMetaNoCounter
-
     // Get All: Packs
     val allPacks: List<DB_Pack>
         get() = dbHelper.packDao.all
@@ -100,12 +93,7 @@ class DB_Helper_Get(context: Context) {
     val allPacksWithMeta: MutableList<DB_Pack_With_Meta>
         get() = dbHelper.packDao.allWithMeta
 
-    val allPacksWithMetaNoCounter: MutableList<DB_Pack_With_Meta>
-        get() = dbHelper.packDao.allWithMetaNoCounter
-
     fun getAllPacksWithMetaByCollection(collectionId: Int): MutableList<DB_Pack_With_Meta> = dbHelper.packDao.getAllByCollectionWithMeta(collectionId)
-
-    fun getAllPacksWithMetaNoCounterByCollection(collectionId: Int): MutableList<DB_Pack_With_Meta> = dbHelper.packDao.getAllByCollectionWithMetaNoCounter(collectionId)
 
     // Get All: Cards
     val allCardsWithMeta: MutableList<DB_Card_With_Meta>

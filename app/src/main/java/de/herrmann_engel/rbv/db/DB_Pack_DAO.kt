@@ -15,9 +15,6 @@ interface DB_Pack_DAO {
     @Query("SELECT COUNT(*) FROM db_pack")
     fun countPacks(): Int
 
-    @Query("SELECT COUNT(*) FROM db_pack WHERE collection=:collectionId")
-    fun countPacksInCollection(collectionId: Int): Int
-
     @Query("SELECT EXISTS (SELECT 1 FROM db_pack WHERE uid=:packId LIMIT 1)")
     fun existsPack(packId: Int): Boolean
 
@@ -26,9 +23,6 @@ interface DB_Pack_DAO {
 
     @get:Query("SELECT *, (SELECT COUNT(*) FROM db_card WHERE pack=db_pack.uid) AS counter, (SELECT name FROM db_collection WHERE uid=db_pack.collection) AS collectionName FROM db_pack ORDER BY name COLLATE NOCASE ASC, uid DESC")
     val allWithMeta: MutableList<DB_Pack_With_Meta>
-
-    @get:Query("SELECT *, -1 AS counter, (SELECT name FROM db_collection WHERE uid=db_pack.collection) AS collectionName FROM db_pack ORDER BY name COLLATE NOCASE ASC, uid DESC")
-    val allWithMetaNoCounter: MutableList<DB_Pack_With_Meta>
 
     @Query("SELECT * FROM db_pack WHERE collection=:collectionId ORDER BY name COLLATE NOCASE ASC, uid DESC")
     fun getAllByCollection(collectionId: Int): List<DB_Pack>
@@ -42,9 +36,6 @@ interface DB_Pack_DAO {
 
     @Query("SELECT *, (SELECT COUNT(*) FROM db_card WHERE pack=db_pack.uid) AS counter, (SELECT name FROM db_collection WHERE uid=db_pack.collection) AS collectionName FROM db_pack WHERE collection=:collectionId ORDER BY name COLLATE NOCASE ASC, uid DESC")
     fun getAllByCollectionWithMeta(collectionId: Int): MutableList<DB_Pack_With_Meta>
-
-    @Query("SELECT *, -1 AS counter, (SELECT name FROM db_collection WHERE uid=db_pack.collection) AS collectionName FROM db_pack WHERE collection=:collectionId ORDER BY name COLLATE NOCASE ASC, uid DESC")
-    fun getAllByCollectionWithMetaNoCounter(collectionId: Int): MutableList<DB_Pack_With_Meta>
 
     // Raw cursor used by the CSV export
     @Query("SELECT * FROM db_pack WHERE collection=:collectionId")

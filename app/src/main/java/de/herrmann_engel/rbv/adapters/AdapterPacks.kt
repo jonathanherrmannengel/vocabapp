@@ -166,18 +166,12 @@ class AdapterPacks(
             } else {
                 currentPack.emoji
             }
-        if (packs[position].counter != -1) {
-            viewHolder.binding.recCollectionsNumberText.visibility = View.VISIBLE
-            viewHolder.binding.recCollectionsNumberText.text =
-                packs[position].counter.toString()
-            viewHolder.binding.recCollectionsNumberText.contentDescription = String.format(
-                Locale.ROOT, "%d %s",
-                packs[position].counter,
-                context.resources.getString(R.string.items)
-            )
-        } else {
-            viewHolder.binding.recCollectionsNumberText.visibility = View.GONE
-        }
+        viewHolder.binding.recCollectionsNumberText.text = packs[position].counter.toString()
+        viewHolder.binding.recCollectionsNumberText.contentDescription = String.format(
+            Locale.ROOT, "%d %s",
+            packs[position].counter,
+            context.resources.getString(R.string.items)
+        )
         // Packs of all collections are listed: show the collection name as well
         if (collectionId == null) {
             viewHolder.binding.recCollectionsParent.visibility = View.VISIBLE

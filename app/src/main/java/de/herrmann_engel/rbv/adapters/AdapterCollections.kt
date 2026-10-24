@@ -1,11 +1,9 @@
 package de.herrmann_engel.rbv.adapters
 
 import android.content.Intent
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import de.herrmann_engel.rbv.R
@@ -98,18 +96,12 @@ class AdapterCollections(
             } else {
                 currentCollection.emoji
             }
-        if (collections[position].counter != -1) {
-            viewHolder.binding.recCollectionsNumberText.visibility = View.VISIBLE
-            viewHolder.binding.recCollectionsNumberText.text =
-                collections[position].counter.toString()
-            viewHolder.binding.recCollectionsNumberText.contentDescription = String.format(
-                Locale.ROOT, "%d %s",
-                collections[position].counter,
-                context.resources.getString(R.string.items)
-            )
-        } else {
-            viewHolder.binding.recCollectionsNumberText.visibility = View.GONE
-        }
+        viewHolder.binding.recCollectionsNumberText.text = collections[position].counter.toString()
+        viewHolder.binding.recCollectionsNumberText.contentDescription = String.format(
+            Locale.ROOT, "%d %s",
+            collections[position].counter,
+            context.resources.getString(R.string.items)
+        )
         val resources = context.resources
         val color = resources.colorAt(R.array.pack_color_list, currentCollection.colors)
         val colorBackground =

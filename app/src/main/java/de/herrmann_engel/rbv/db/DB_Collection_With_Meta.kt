@@ -10,7 +10,7 @@ class DB_Collection_With_Meta {
     @Embedded
     lateinit var collection: DB_Collection
 
-    // Number of packs in the collection, -1 if not counted
+    // Number of packs in the collection
     var counter: Int = 0
 
     override fun equals(other: Any?): Boolean {
