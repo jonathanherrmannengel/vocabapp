@@ -17,6 +17,5 @@ object Globals {
     const val MAX_SIZE_CARDS_LIST_ACCURATE = 15000
     const val MAX_SIZE_CARDS_CONTEXTUAL_MENU_PRINT = 100
     const val MAX_SIZE_CARDS_CONTEXTUAL_MENU_SELECT = 1000
-    const val MAX_SIZE_PACKS_CONTEXTUAL_MENU_SELECT = 75
     const val ONLINE_HELP = "https://herrmann-engel.de/projekte/rbv/info/?lang=%s"
 }

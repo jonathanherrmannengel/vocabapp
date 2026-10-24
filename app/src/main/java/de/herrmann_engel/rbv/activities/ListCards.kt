@@ -173,7 +173,7 @@ class ListCards : RBVActivity(), CardActions.Listener {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         if (cardsList != null) {
-            intent.getDeletedCardId()?.let { deleteCardFromList(it) }
+            intent.getDeletedCardId()?.let { deleteCardsFromList(listOf(it)) }
             val cardAdded = intent.getAddedCardId()
             if (cardAdded != null && cardsList?.let {
                     it.stream().noneMatch { i -> i.card.uid == cardAdded }
@@ -560,22 +560,20 @@ class ListCards : RBVActivity(), CardActions.Listener {
         updateContent()
     }
 
-    private fun deleteCardFromList(cardId: Int) {
-        cardsList?.removeIf { c -> c.card.uid == cardId }
+    // A single pass over the list, also for many cards
+    private fun deleteCardsFromList(cardIds: Collection<Int>) {
+        val ids = cardIds.toHashSet()
+        cardsList?.removeIf { c -> c.card.uid in ids }
     }
 
     override fun deletedCards(cardIds: ArrayList<Int>) {
-        for (cardId in cardIds) {
-            deleteCardFromList(cardId)
-        }
+        deleteCardsFromList(cardIds)
         updateContent()
     }
 
     // Moving is only possible in pack lists, so moved cards no longer belong to this list
     override fun movedCards(cardIds: ArrayList<Int>) {
-        for (cardId in cardIds) {
-            deleteCardFromList(cardId)
-        }
+        deleteCardsFromList(cardIds)
         updateContent()
     }
 }

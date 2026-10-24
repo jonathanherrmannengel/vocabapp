@@ -12,7 +12,6 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import de.herrmann_engel.rbv.Globals.MAX_SIZE_PACKS_CONTEXTUAL_MENU_SELECT
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.actions.PackActions
 import de.herrmann_engel.rbv.activities.ListCards
@@ -46,19 +45,19 @@ class AdapterPacks(
         redrawItem = { id ->
             notifyItemChanged(packs.indexOfFirst { it.pack.uid == id }, SelectionMode.PAYLOAD)
         },
+        redrawAll = { notifyItemRangeChanged(0, packs.size, SelectionMode.PAYLOAD) },
         prepareMenu = ::prepareSelectionMenu,
         onAction = ::onSelectionAction
     )
 
-    // Moving is only possible inside a collection; "select all" only for lists that are not too
-    // long
-    private fun prepareSelectionMenu(menu: Menu, selectedIds: List<Int>) {
+    // Moving is only possible inside a collection
+    private fun prepareSelectionMenu(menu: Menu, selectedIds: Set<Int>) {
         menu.findItem(R.id.menu_list_cards_context_delete).isVisible = selectedIds.isNotEmpty()
         menu.findItem(R.id.menu_list_cards_context_move).isVisible =
             selectedIds.isNotEmpty() && collectionId != null
         menu.findItem(R.id.menu_list_cards_context_print).isVisible = false
         menu.findItem(R.id.menu_list_cards_context_select_all).isVisible =
-            selectedIds.size < packs.size && packs.size <= MAX_SIZE_PACKS_CONTEXTUAL_MENU_SELECT
+            selectedIds.size < packs.size
     }
 
     private fun onSelectionAction(itemId: Int, selectedIds: List<Int>): Boolean {
@@ -78,8 +77,11 @@ class AdapterPacks(
         return true
     }
 
-    private fun selectedPacks(ids: List<Int>): ArrayList<DB_Pack> =
-        ArrayList(ids.mapNotNull { id -> packs.find { it.pack.uid == id }?.pack })
+    // In the order of the ids
+    private fun selectedPacks(ids: List<Int>): ArrayList<DB_Pack> {
+        val packsById = packs.associateBy { it.pack.uid }
+        return ArrayList(ids.mapNotNull { packsById[it]?.pack })
+    }
 
     // Updates the list; all items are redrawn if the font size setting has changed
     fun updateSettingsAndContent(

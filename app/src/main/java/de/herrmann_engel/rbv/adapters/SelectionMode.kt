@@ -15,19 +15,21 @@ import de.herrmann_engel.rbv.utils.findActivity
  *
  * The adapter provides the menu: prepareMenu sets which actions are visible for the current
  * selection, onAction runs an action and returns false if the item id is not handled. The adapter
- * also redraws an item whose selection changed (redrawItem, see PAYLOAD) and tells the number of
- * items for the title ("x of y selected").
+ * also redraws an item whose selection changed (redrawItem) or all items (redrawAll, e.g. after
+ * selecting all), see PAYLOAD, and tells the number of items for the title ("x of y selected").
  */
 class SelectionMode(
     @MenuRes private val menuId: Int,
     private val itemCount: () -> Int,
     private val redrawItem: (id: Int) -> Unit,
-    private val prepareMenu: (menu: Menu, selectedIds: List<Int>) -> Unit,
+    private val redrawAll: () -> Unit,
+    private val prepareMenu: (menu: Menu, selectedIds: Set<Int>) -> Unit,
     private val onAction: (itemId: Int, selectedIds: List<Int>) -> Boolean
 ) {
     private var actionMode: ActionMode? = null
     private var activity: Activity? = null
-    private val selectedIds = ArrayList<Int>()
+    // In the order of selection (e.g. the order of printed cards)
+    private val selectedIds = LinkedHashSet<Int>()
 
     private val callback = object : ActionMode.Callback {
         override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
@@ -41,29 +43,30 @@ class SelectionMode(
         }
 
         override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean =
-            onAction(item.itemId, ArrayList(selectedIds))
+            onAction(item.itemId, selectedIds.toList())
 
         // The selected items are drawn as unselected again
         override fun onDestroyActionMode(mode: ActionMode) {
             actionMode = null
-            selectedIds.forEach { redrawItem(it) }
+            selectedIds.clear()
+            redrawAll()
         }
     }
 
     val isActive: Boolean
         get() = actionMode != null
 
-    fun isSelected(id: Int): Boolean = isActive && id in selectedIds
+    fun isSelected(id: Int): Boolean = id in selectedIds
 
     // Long click on an item: starts the selection with it; false if a selection is already running
+    // or cannot be started
     fun start(context: Context, id: Int): Boolean {
         if (isActive) {
             return false
         }
-        selectedIds.clear()
         activity = context.findActivity()
-        actionMode = activity?.startActionMode(callback)
-        select(listOf(id))
+        actionMode = activity?.startActionMode(callback) ?: return false
+        toggle(id)
         return true
     }
 
@@ -71,36 +74,32 @@ class SelectionMode(
     fun toggle(id: Int) {
         if (id in selectedIds) {
             selectedIds.remove(id)
-            redrawItem(id)
-            if (selectedIds.isEmpty()) {
-                finish()
-                return
-            }
-            updateMenuAndTitle()
         } else {
-            select(listOf(id))
+            selectedIds.add(id)
         }
+        redrawItem(id)
+        if (selectedIds.isEmpty()) {
+            finish()
+            return
+        }
+        updateMenuAndTitle()
     }
 
     fun selectAll(ids: List<Int>) {
-        select(ids.filter { it !in selectedIds })
+        selectedIds.addAll(ids)
+        redrawAll()
+        updateMenuAndTitle()
     }
 
     fun finish() {
         actionMode?.finish()
     }
 
-    private fun select(ids: List<Int>) {
-        selectedIds.addAll(ids)
-        ids.forEach { redrawItem(it) }
-        updateMenuAndTitle()
-    }
-
     // The visible actions may depend on the number of selected items
     private fun updateMenuAndTitle() {
-        actionMode?.invalidate()
-        actionMode?.title = activity?.resources?.let {
-            String.format(it.getString(R.string.selected_title), selectedIds.size, itemCount())
+        actionMode?.apply {
+            invalidate()
+            title = activity?.getString(R.string.selected_title, selectedIds.size, itemCount())
         }
     }
 

@@ -55,13 +55,14 @@ class AdapterCards(
         redrawItem = { id ->
             notifyItemChanged(cards.indexOfFirst { it.card.uid == id }, SelectionMode.PAYLOAD)
         },
+        redrawAll = { notifyItemRangeChanged(0, cards.size, SelectionMode.PAYLOAD) },
         prepareMenu = ::prepareSelectionMenu,
         onAction = ::onSelectionAction
     )
 
     // Moving is only possible inside a pack; printing and "select all" are limited to a maximum
     // number of cards
-    private fun prepareSelectionMenu(menu: Menu, selectedIds: List<Int>) {
+    private fun prepareSelectionMenu(menu: Menu, selectedIds: Set<Int>) {
         menu.findItem(R.id.menu_list_cards_context_delete).isVisible = selectedIds.isNotEmpty()
         menu.findItem(R.id.menu_list_cards_context_move).isVisible =
             selectedIds.isNotEmpty() && cardSource is CardSource.Pack
@@ -92,8 +93,11 @@ class AdapterCards(
         return true
     }
 
-    private fun selectedCards(ids: List<Int>): ArrayList<DB_Card> =
-        ArrayList(ids.mapNotNull { id -> cards.find { it.card.uid == id }?.card })
+    // In the order of the ids
+    private fun selectedCards(ids: List<Int>): ArrayList<DB_Card> {
+        val cardsById = cards.associateBy { it.card.uid }
+        return ArrayList(ids.mapNotNull { cardsById[it]?.card })
+    }
 
     // Replaces the list content, using DiffUtil to only update changed items; all items are
     // redrawn if the displayed side(s) or the font size setting changed
