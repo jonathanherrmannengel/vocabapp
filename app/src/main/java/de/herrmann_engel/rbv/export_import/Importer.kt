@@ -140,6 +140,11 @@ class Importer(
         else -> ImportErrorLevel.OKAY
     }
 
+    // Looks up existing entries the imported one would duplicate; null in duplicates mode, which
+    // creates new entries in any case
+    private fun <T> findExisting(find: () -> T): T? =
+        if (mode == ImportMode.DUPLICATES) null else find()
+
     private fun importRows(csvReader: CSVReader) {
         if (mode == ImportMode.SIMPLE_LIST) {
             createSimpleListPack()
@@ -292,10 +297,10 @@ class Importer(
         val date = parseDate(line.column("date", 4))
         val colors = (line.column("colors", 5) ?: "0").toInt()
         val emoji = StringTools.firstEmoji(line.column("emoji", 6) ?: "")
-        val sameNamed = helperGet.getAllCollectionsByName(name)
+        val sameNamed = findExisting { helperGet.getAllCollectionsByName(name) }
         // Create a new collection unless one with the same name exists; in integrate mode the
         // existing one is used instead, in skip mode its content is skipped
-        if (sameNamed.isEmpty() || mode == ImportMode.DUPLICATES) {
+        if (sameNamed.isNullOrEmpty()) {
             val collectionIdNew =
                 helperCreate
                     .createCollection(name, desc, colors, emoji, date)
@@ -324,8 +329,8 @@ class Importer(
             val date = System.currentTimeMillis() / 1000L
             val colors = 0
             val emoji = ""
-            val sameNamed = helperGet.getAllCollectionsByName(name)
-            if (sameNamed.isEmpty() || mode == ImportMode.DUPLICATES) {
+            val sameNamed = findExisting { helperGet.getAllCollectionsByName(name) }
+            if (sameNamed.isNullOrEmpty()) {
                 val collectionIdNew =
                     helperCreate
                         .createCollection(
@@ -351,13 +356,10 @@ class Importer(
         val date = parseDate(line.column("date", 4))
         val colors = (line.column("colors", 5) ?: "0").toInt()
         val emoji = StringTools.firstEmoji(line.column("emoji", 7) ?: "")
-        val sameNamed =
-            helperGet.getAllPacksByCollectionAndNameAndDesc(
-                collectionId,
-                name,
-                desc
-            )
-        if (sameNamed.isEmpty() || mode == ImportMode.DUPLICATES) {
+        val sameNamed = findExisting {
+            helperGet.getAllPacksByCollectionAndNameAndDesc(collectionId, name, desc)
+        }
+        if (sameNamed.isNullOrEmpty()) {
             val packIdNew =
                 helperCreate
                     .createPack(
@@ -392,15 +394,11 @@ class Importer(
             parseDate(line.column("last_repetition", 8))
         val countRepetitions =
             (line.column("count_repetitions", 9) ?: "0").toInt()
-        val sameNamed =
-            helperGet.getSingleCardIdByPackAndFrontAndBackAndNotes(
-                packId,
-                front,
-                back,
-                notes
-            )
+        val sameNamed = findExisting {
+            helperGet.getSingleCardIdByPackAndFrontAndBackAndNotes(packId, front, back, notes)
+        }
         // Existing identical cards are skipped, or reused in integrate mode
-        if (sameNamed == null || mode == ImportMode.DUPLICATES) {
+        if (sameNamed == null) {
             val cardIdNew = helperCreate.createCard(
                 front,
                 back,

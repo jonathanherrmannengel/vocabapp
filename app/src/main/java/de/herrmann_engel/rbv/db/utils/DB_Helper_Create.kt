@@ -10,9 +10,9 @@ import de.herrmann_engel.rbv.db.DB_Tag
 import de.herrmann_engel.rbv.db.DB_Tag_Link_Card
 
 /**
- * Inserts new entries into the database. All methods validate their input and throw an
- * InvalidEntryException if the entry cannot be created (e.g. empty name, missing parent,
- * duplicate). They return the uid of the new entry.
+ * Inserts new entries into the database and returns their uid. Invalid values (e.g. an empty name)
+ * are rejected with an InvalidEntryException. A missing parent or an entry that already exists is
+ * rejected by the database (foreign keys and unique indices) with an SQLiteConstraintException.
  */
 class DB_Helper_Create(context: Context) {
     // Thrown if an entry cannot be created; the message says why
@@ -48,8 +48,7 @@ class DB_Helper_Create(context: Context) {
         emoji: String,
         date: Long
     ): Long {
-        val dbHelperGet = DB_Helper_Get(dbHelper.context)
-        if (dbHelperGet.getSingleCollection(collectionId) != null && name.isNotEmpty()) {
+        if (name.isNotEmpty()) {
             val pack = DB_Pack()
             pack.name = name
             pack.desc = desc
@@ -59,7 +58,7 @@ class DB_Helper_Create(context: Context) {
             pack.collectionId = collectionId
             return dbHelper.packDao.insert(pack)
         }
-        throw InvalidEntryException("Pack name is empty or collection $collectionId does not exist")
+        throw InvalidEntryException("Pack name is empty")
     }
 
     // Creates a pack without emoji, dated now, inheriting the color of its collection
@@ -88,8 +87,7 @@ class DB_Helper_Create(context: Context) {
         lastRepetition: Long = 0,
         countRepetitions: Int = 0
     ): Long {
-        val dbHelperGet = DB_Helper_Get(dbHelper.context)
-        if (dbHelperGet.getSinglePack(packId) != null && front.isNotEmpty() && back.isNotEmpty()) {
+        if (front.isNotEmpty() && back.isNotEmpty()) {
             val card = DB_Card()
             card.front = front
             card.back = back
@@ -101,7 +99,7 @@ class DB_Helper_Create(context: Context) {
             card.countRepetitions = countRepetitions
             return dbHelper.cardDao.insert(card)
         }
-        throw InvalidEntryException("Card front or back is empty or pack $packId does not exist")
+        throw InvalidEntryException("Card front or back is empty")
     }
 
     fun createMedia(file: String, mime: String): Long {
@@ -116,37 +114,25 @@ class DB_Helper_Create(context: Context) {
     }
 
     fun createMediaLink(fileId: Int, cardId: Int): Long {
-        val dbHelperGet = DB_Helper_Get(dbHelper.context)
-        if (!dbHelperGet.existsMediaLinkCard(fileId, cardId)) {
-            val mediaLinkCard = DB_Media_Link_Card()
-            mediaLinkCard.fileId = fileId
-            mediaLinkCard.cardId = cardId
-            return dbHelper.mediaLinkCardDao.insert(mediaLinkCard)
-        }
-        throw InvalidEntryException("Media file $fileId is already linked to card $cardId")
+        val mediaLinkCard = DB_Media_Link_Card()
+        mediaLinkCard.fileId = fileId
+        mediaLinkCard.cardId = cardId
+        return dbHelper.mediaLinkCardDao.insert(mediaLinkCard)
     }
 
     fun createTag(tagName: String, emoji: String = "", color: String = ""): Long {
-        val dbHelperGet = DB_Helper_Get(dbHelper.context)
-        if (!dbHelperGet.existsTag(tagName)) {
-            val newTag = DB_Tag()
-            newTag.name = tagName
-            newTag.emoji = emoji
-            newTag.color = color
-            return dbHelper.tagDao.insert(newTag)
-        }
-        throw InvalidEntryException("Tag $tagName already exists")
+        val newTag = DB_Tag()
+        newTag.name = tagName
+        newTag.emoji = emoji
+        newTag.color = color
+        return dbHelper.tagDao.insert(newTag)
     }
 
     fun createTagLink(tagId: Int, cardId: Int): Long {
-        val dbHelperGet = DB_Helper_Get(dbHelper.context)
-        if (!dbHelperGet.existsTagLinkCard(tagId, cardId)) {
-            val tagLinkCard = DB_Tag_Link_Card()
-            tagLinkCard.tagId = tagId
-            tagLinkCard.cardId = cardId
-            return dbHelper.tagLinkCardDao.insert(tagLinkCard)
-        }
-        throw InvalidEntryException("Tag $tagId is already linked to card $cardId")
+        val tagLinkCard = DB_Tag_Link_Card()
+        tagLinkCard.tagId = tagId
+        tagLinkCard.cardId = cardId
+        return dbHelper.tagLinkCardDao.insert(tagLinkCard)
     }
 
     // Links a tag to a card by name, creating the tag first if it does not exist yet

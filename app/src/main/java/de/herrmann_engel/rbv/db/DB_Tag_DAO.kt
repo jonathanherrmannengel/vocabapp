@@ -14,9 +14,6 @@ interface DB_Tag_DAO {
     @Query("SELECT EXISTS (SELECT 1 FROM db_tag LIMIT 1)")
     fun hasTags(): Boolean
 
-    @Query("SELECT EXISTS (SELECT 1 FROM db_tag WHERE tag_name=:tagName LIMIT 1)")
-    fun existsTag(tagName: String): Boolean
-
     @get:Query("SELECT * FROM db_tag ORDER BY tag_name ASC")
     val all: List<DB_Tag>
 

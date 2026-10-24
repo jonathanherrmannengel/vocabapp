@@ -41,8 +41,6 @@ class DB_Helper_Get(context: Context) {
 
     fun existsMedia(file: String): Boolean = dbHelper.mediaDao.existsMedia(file)
 
-    fun existsTag(tagName: String): Boolean = dbHelper.tagDao.existsTag(tagName)
-
     fun existsMediaLinkCard(fileId: Int, cardId: Int): Boolean = dbHelper.mediaLinkCardDao.existsMediaLinkCard(fileId, cardId)
 
     fun existsTagLinkCard(tagId: Int, cardId: Int): Boolean = dbHelper.tagLinkCardDao.existsTagLinkCard(tagId, cardId)
