@@ -190,12 +190,11 @@ class QueryMode(
 
         val front: SpannableString
         val back: SpannableString
-        val formatString = StringTools()
         val frontString = if (reverse) card.back else card.front
         val backString = if (reverse) card.front else card.back
         if (settings.formatCards) {
-            front = formatString.format(frontString)
-            back = formatString.format(backString)
+            front = StringTools.format(frontString)
+            back = StringTools.format(backString)
         } else {
             front = SpannableString(frontString)
             back = SpannableString(backString)

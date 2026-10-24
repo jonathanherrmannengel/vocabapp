@@ -11,8 +11,8 @@ import de.herrmann_engel.rbv.databinding.DiaOssBinding
 import de.herrmann_engel.rbv.databinding.RecViewBinding
 import de.herrmann_engel.rbv.oss.OSSLicenses
 import de.herrmann_engel.rbv.settings.AppSettings
-import de.herrmann_engel.rbv.utils.ContextTools
 import de.herrmann_engel.rbv.utils.createDialog
+import de.herrmann_engel.rbv.utils.findActivity
 
 /**
  * List of the open source projects used by the app. Clicking one shows its details and license.
@@ -43,7 +43,7 @@ class AdapterOSS(private val licenses: List<OSSLicenses>) :
         val license = licenses[position]
         viewHolder.binding.recName.text = license.project.name
         viewHolder.binding.recName.setOnClickListener {
-            val activity = ContextTools().getActivity(context)
+            val activity = context.findActivity()
             if (activity != null) {
                 val bindingOssDialog: DiaOssBinding =
                     DiaOssBinding.inflate(activity.layoutInflater)

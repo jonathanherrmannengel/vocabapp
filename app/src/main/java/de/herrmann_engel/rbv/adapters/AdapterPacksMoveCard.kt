@@ -23,8 +23,6 @@ class AdapterPacksMoveCard(
 ) : RecyclerView.Adapter<AdapterPacksMoveCard.ViewHolder>() {
     class ViewHolder(val binding: RecViewBinding) : RecyclerView.ViewHolder(binding.root)
 
-    private val stringTools = StringTools()
-
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         val binding = RecViewBinding.inflate(
             LayoutInflater.from(viewGroup.context),
@@ -54,7 +52,7 @@ class AdapterPacksMoveCard(
         viewHolder.binding.recName.text = pack.name
         // Packs of all collections are listed: show the collection name as well
         if (collectionId == null) {
-            val collectionName = stringTools.shorten(packs[position].collectionName ?: "")
+            val collectionName = StringTools.shorten(packs[position].collectionName ?: "")
             viewHolder.binding.recDesc.visibility = View.VISIBLE
             viewHolder.binding.recDesc.text = collectionName
         }

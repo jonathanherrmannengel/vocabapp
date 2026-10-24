@@ -15,11 +15,11 @@ import de.herrmann_engel.rbv.db.utils.DB_Helper_Delete
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.media.MediaFiles
 import de.herrmann_engel.rbv.settings.AppSettings
-import de.herrmann_engel.rbv.utils.ContextTools
-import de.herrmann_engel.rbv.utils.FormatCards
-import de.herrmann_engel.rbv.utils.SortCards
 import de.herrmann_engel.rbv.utils.createDialog
+import de.herrmann_engel.rbv.utils.fillFormattedTexts
+import de.herrmann_engel.rbv.utils.findActivity
 import de.herrmann_engel.rbv.utils.showConfirmDialog
+import de.herrmann_engel.rbv.utils.sortCards
 
 
 /**
@@ -44,16 +44,16 @@ class AdapterMediaManage(
         val fileName = currentMedia.file
         viewHolder.binding.recName.text = fileName
         viewHolder.binding.recName.setOnClickListener {
-            val activity = ContextTools().getActivity(context)
+            val activity = context.findActivity()
             if (activity != null) {
                 val dbHelperGet = DB_Helper_Get(context)
                 val cards: MutableList<DB_Card_With_Meta> =
                     dbHelperGet.getAllCardsByMediaWithMeta(currentMedia.uid)
                 val settings = AppSettings(context)
                 if (settings.formatCards) {
-                    FormatCards().formatCards(cards)
+                    fillFormattedTexts(cards)
                 }
-                SortCards().sortCards(
+                sortCards(
                     cards,
                     CardSort.ALPHABETICAL
                 )

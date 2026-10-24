@@ -20,8 +20,6 @@ class AdapterTagsAdvancedSearch(
 ) : RecyclerView.Adapter<AdapterTagsAdvancedSearch.ViewHolder>() {
     class ViewHolder(val binding: RecViewSmallBinding) : RecyclerView.ViewHolder(binding.root)
 
-    private val stringTools = StringTools()
-
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         val binding =
             RecViewSmallBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false)
@@ -31,7 +29,7 @@ class AdapterTagsAdvancedSearch(
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         // Not recyclable, so that checkbox listeners are not triggered for recycled views
         viewHolder.setIsRecyclable(false)
-        viewHolder.binding.recSmallName.text = stringTools.shorten(tags[position].name)
+        viewHolder.binding.recSmallName.text = StringTools.shorten(tags[position].name)
         if (tags[position].emoji.isBlank()) {
             viewHolder.binding.recSmallDesc.visibility = View.GONE
         } else {

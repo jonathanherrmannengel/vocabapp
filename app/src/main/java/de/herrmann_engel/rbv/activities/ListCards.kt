@@ -27,12 +27,11 @@ import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.media.MediaFileManager
 import de.herrmann_engel.rbv.settings.AppConfig
 import de.herrmann_engel.rbv.settings.AppSettings
-import de.herrmann_engel.rbv.utils.FormatCards
-import de.herrmann_engel.rbv.utils.SearchCards
-import de.herrmann_engel.rbv.utils.SortCards
 import de.herrmann_engel.rbv.utils.WAIT_INDICATOR_DELAY_MILLIS
 import de.herrmann_engel.rbv.utils.WaitDots
 import de.herrmann_engel.rbv.utils.colorAt
+import de.herrmann_engel.rbv.utils.fillFormattedText
+import de.herrmann_engel.rbv.utils.fillFormattedTexts
 import de.herrmann_engel.rbv.utils.getAddedCardId
 import de.herrmann_engel.rbv.utils.getCardSource
 import de.herrmann_engel.rbv.utils.getDeletedCardId
@@ -40,7 +39,9 @@ import de.herrmann_engel.rbv.utils.getUpdatedCardId
 import de.herrmann_engel.rbv.utils.putCardId
 import de.herrmann_engel.rbv.utils.putListCollection
 import de.herrmann_engel.rbv.utils.putPackId
+import de.herrmann_engel.rbv.utils.searchCards
 import de.herrmann_engel.rbv.utils.showInfoDialog
+import de.herrmann_engel.rbv.utils.sortCards
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -180,7 +181,7 @@ class ListCards : RBVActivity(), CardActions.Listener {
             ) {
                 dbHelperGet.getSingleCardWithMeta(cardAdded)?.let {
                     if (settings.formatCards) {
-                        FormatCards().formatCard(it, false)
+                        fillFormattedText(it, false)
                     }
                     cardsList?.add(it)
                 } ?: Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show()
@@ -193,7 +194,7 @@ class ListCards : RBVActivity(), CardActions.Listener {
                     ?.findFirst()?.orElse(null)
                 if (cardWithMetaNew != null && cardWithMetaOld != null) {
                     if (settings.formatCards) {
-                        FormatCards().formatCard(
+                        fillFormattedText(
                             cardWithMetaNew,
                             cardWithMetaOld.formattingIsInaccurate
                         )
@@ -371,9 +372,9 @@ class ListCards : RBVActivity(), CardActions.Listener {
             )
         }
         if (settings.formatCards) {
-            FormatCards().formatCards(cards)
+            fillFormattedTexts(cards)
         }
-        SortCards().sortCards(cards, sort)
+        sortCards(cards, sort)
         return cards
     }
 
@@ -506,7 +507,7 @@ class ListCards : RBVActivity(), CardActions.Listener {
 
     private fun sortList() {
         cardsList?.let {
-            SortCards().sortCards(it, listSort)
+            sortCards(it, listSort)
         }
     }
 
@@ -521,7 +522,7 @@ class ListCards : RBVActivity(), CardActions.Listener {
             val searchQueryLocal = searchQuery
             if (!searchQueryLocal.isNullOrEmpty()) {
                 val searchResults: MutableList<DB_Card_With_Meta> = ArrayList(shownCards)
-                SearchCards().searchCards(searchResults, searchQueryLocal)
+                searchCards(searchResults, searchQueryLocal)
                 if (searchResults.isEmpty()) {
                     searchQuery = ""
                     Toast.makeText(this, R.string.search_no_results, Toast.LENGTH_LONG).show()

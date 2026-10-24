@@ -24,8 +24,6 @@ class AdapterPacksAdvancedSearch(
 ) : RecyclerView.Adapter<AdapterPacksAdvancedSearch.ViewHolder>() {
     class ViewHolder(val binding: RecViewSmallBinding) : RecyclerView.ViewHolder(binding.root)
 
-    private val stringTools = StringTools()
-
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         val binding =
             RecViewSmallBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false)
@@ -52,10 +50,10 @@ class AdapterPacksAdvancedSearch(
                 String.format(
                     Locale.ROOT,
                     "%s (%d)",
-                    stringTools.shorten(pack.name),
+                    StringTools.shorten(pack.name),
                     size
                 )
-            val collectionName = stringTools.shorten(packs[position].collectionName ?: "")
+            val collectionName = StringTools.shorten(packs[position].collectionName ?: "")
             viewHolder.binding.recSmallDesc.visibility = View.VISIBLE
             viewHolder.binding.recSmallDesc.text = collectionName
             checkBoxContentDescription = String.format(

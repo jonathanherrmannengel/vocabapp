@@ -98,9 +98,8 @@ class ViewCard : RBVActivity(), CardActions.Listener {
             return
         }
         if (formatCards) {
-            val formatString = StringTools()
-            binding.cardFront.text = formatString.format(card.front)
-            binding.cardBack.text = formatString.format(card.back)
+            binding.cardFront.text = StringTools.format(card.front)
+            binding.cardBack.text = StringTools.format(card.back)
         } else {
             binding.cardFront.text = card.front
             binding.cardBack.text = card.back

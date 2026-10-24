@@ -2,25 +2,15 @@ package de.herrmann_engel.rbv.utils
 
 import de.herrmann_engel.rbv.Globals.MAX_SIZE_CARDS_LIST_ACCURATE
 import de.herrmann_engel.rbv.db.DB_Card_With_Meta
-import java.util.function.Consumer
 
-/**
- * Fills the formatted (markup-free) front and back of cards, used for searching and sorting.
- */
-class FormatCards {
+// Fills the formatted (markup-free) front and back of a card, used for searching and sorting
+fun fillFormattedText(card: DB_Card_With_Meta, inaccurate: Boolean) {
+    card.formattingIsInaccurate = inaccurate
+    card.formattedFront = StringTools.unformat(card.card.front, inaccurate)
+    card.formattedBack = StringTools.unformat(card.card.back, inaccurate)
+}
 
-    private val formatString = StringTools()
-
-    fun formatCard(card: DB_Card_With_Meta, inaccurate: Boolean) {
-        card.formattingIsInaccurate = inaccurate
-        card.formattedFront = formatString.unformat(card.card.front, inaccurate)
-        card.formattedBack = formatString.unformat(card.card.back, inaccurate)
-    }
-
-    // Large lists use the faster, less accurate unformatting
-    fun formatCards(list: MutableList<DB_Card_With_Meta>) {
-        list.forEach(Consumer { l: DB_Card_With_Meta ->
-            formatCard(l, list.size > MAX_SIZE_CARDS_LIST_ACCURATE)
-        })
-    }
+// Formats all cards of the list; large lists use the faster, less accurate unformatting
+fun fillFormattedTexts(list: MutableList<DB_Card_With_Meta>) {
+    list.forEach { fillFormattedText(it, list.size > MAX_SIZE_CARDS_LIST_ACCURATE) }
 }

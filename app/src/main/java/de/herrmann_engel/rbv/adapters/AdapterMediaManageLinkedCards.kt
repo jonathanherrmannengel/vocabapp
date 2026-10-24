@@ -32,7 +32,7 @@ class AdapterMediaManageLinkedCards(
         val context = viewHolder.binding.root.context
         var cardText = cards[position].formattedFront ?: cards[position].card.front
         cardText = cardText.replace(System.lineSeparator(), " ")
-        cardText = StringTools().shorten(cardText)
+        cardText = StringTools.shorten(cardText)
         viewHolder.binding.recName.text = cardText
         val cardId = cards[position].card.uid
         viewHolder.binding.recName.setOnClickListener {

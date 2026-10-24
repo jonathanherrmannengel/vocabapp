@@ -25,9 +25,9 @@ import de.herrmann_engel.rbv.cardlist.CardSource
 import de.herrmann_engel.rbv.databinding.RecViewCollectionOrPackBinding
 import de.herrmann_engel.rbv.db.DB_Pack
 import de.herrmann_engel.rbv.db.DB_Pack_With_Meta
-import de.herrmann_engel.rbv.utils.ContextTools
 import de.herrmann_engel.rbv.utils.StringTools
 import de.herrmann_engel.rbv.utils.colorAt
+import de.herrmann_engel.rbv.utils.findActivity
 import de.herrmann_engel.rbv.utils.putCardSource
 import java.util.Locale
 
@@ -44,7 +44,6 @@ class AdapterPacks(
     class ViewHolder(val binding: RecViewCollectionOrPackBinding) :
         RecyclerView.ViewHolder(binding.root)
 
-    private val stringTools = StringTools()
     // Contextual action mode (started by long click) to select multiple packs and delete or move them
     private var contextualMenuMode: ActionMode? = null
     private val contextualMenuModePayload = "contextualMode"
@@ -190,14 +189,14 @@ class AdapterPacks(
                 return@setOnLongClickListener false
             }
             contextualMenuModePackIdList.clear()
-            contextualMenuModeActivity = ContextTools().getActivity(context)
+            contextualMenuModeActivity = context.findActivity()
             contextualMenuMode =
                 contextualMenuModeActivity?.startActionMode(contextualMenuModeCallback)
             contextualMenuModeSelectItem(packId)
             return@setOnLongClickListener true
         }
         viewHolder.binding.recCollectionsName.text =
-            stringTools.shorten(currentPack.name)
+            StringTools.shorten(currentPack.name)
         if (contextualMenuMode != null && contextualMenuModePackIdList.contains(currentPack.uid)) {
             viewHolder.binding.recCollectionsPreviewText.contentDescription =
                 context.resources.getString(R.string.selected)
@@ -210,7 +209,7 @@ class AdapterPacks(
             viewHolder.binding.recCollectionsDesc.visibility = View.GONE
         } else {
             viewHolder.binding.recCollectionsDesc.visibility = View.VISIBLE
-            viewHolder.binding.recCollectionsDesc.text = stringTools.shorten(desc)
+            viewHolder.binding.recCollectionsDesc.text = StringTools.shorten(desc)
         }
         viewHolder.binding.recCollectionsPreviewText.text =
             if (contextualMenuMode != null && contextualMenuModePackIdList.contains(

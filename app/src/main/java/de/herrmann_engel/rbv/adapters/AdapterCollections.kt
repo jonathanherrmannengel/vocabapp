@@ -31,8 +31,6 @@ class AdapterCollections(
     class ViewHolder(val binding: RecViewCollectionOrPackBinding) :
         RecyclerView.ViewHolder(binding.root)
 
-    private val stringTools = StringTools()
-
     // Updates the list; all items are redrawn if the font size setting has changed
     fun updateSettingsAndContent(
         collectionListNew: List<DB_Collection_With_Meta>,
@@ -84,13 +82,13 @@ class AdapterCollections(
             context.startActivity(intent)
         }
         viewHolder.binding.recCollectionsName.text =
-            stringTools.shorten(currentCollection.name)
+            StringTools.shorten(currentCollection.name)
         val desc = currentCollection.desc
         if (desc.isBlank()) {
             viewHolder.binding.recCollectionsDesc.visibility = View.GONE
         } else {
             viewHolder.binding.recCollectionsDesc.visibility = View.VISIBLE
-            viewHolder.binding.recCollectionsDesc.text = stringTools.shorten(desc)
+            viewHolder.binding.recCollectionsDesc.text = StringTools.shorten(desc)
         }
         viewHolder.binding.recCollectionsPreviewText.text =
             if (currentCollection.emoji.isBlank()) {

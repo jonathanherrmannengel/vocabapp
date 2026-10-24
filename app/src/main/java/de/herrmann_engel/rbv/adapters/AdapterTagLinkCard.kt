@@ -19,9 +19,9 @@ import de.herrmann_engel.rbv.databinding.RecViewTagsBinding
 import de.herrmann_engel.rbv.db.DB_Tag
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Delete
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Update
-import de.herrmann_engel.rbv.utils.ContextTools
 import de.herrmann_engel.rbv.utils.StringTools
 import de.herrmann_engel.rbv.utils.createDialog
+import de.herrmann_engel.rbv.utils.findActivity
 
 /**
  * List of the tags of a card (in the card's tag settings). Tags can be removed from the card
@@ -62,7 +62,7 @@ class AdapterTagLinkCard(
             }
             viewHolder.binding.recTagsEdit.visibility = View.VISIBLE
             viewHolder.binding.recTagsEdit.setOnClickListener {
-                val activity = ContextTools().getActivity(context)
+                val activity = context.findActivity()
                 if (activity != null) {
                     val bindingEditDialog: DiaEditTagBinding =
                         DiaEditTagBinding.inflate(activity.layoutInflater)
@@ -146,8 +146,9 @@ class AdapterTagLinkCard(
                             val newTag = DB_Tag()
                             newTag.uid = currentTag.uid
                             newTag.name = bindingEditDialog.editTagName.text.toString()
-                            newTag.emoji =
-                                StringTools().firstEmoji(bindingEditDialog.editTagEmoji.text.toString())
+                            newTag.emoji = StringTools.firstEmoji(
+                                bindingEditDialog.editTagEmoji.text.toString()
+                            )
                             // Store the color as hex string without alpha (#RRGGBB); if no
                             // color was picked, the tag keeps its color
                             newTag.color =

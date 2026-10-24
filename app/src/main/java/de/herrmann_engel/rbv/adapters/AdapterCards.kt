@@ -30,9 +30,9 @@ import de.herrmann_engel.rbv.cardlist.CardSource
 import de.herrmann_engel.rbv.databinding.RecViewCardBinding
 import de.herrmann_engel.rbv.db.DB_Card
 import de.herrmann_engel.rbv.db.DB_Card_With_Meta
-import de.herrmann_engel.rbv.utils.ContextTools
 import de.herrmann_engel.rbv.utils.StringTools
 import de.herrmann_engel.rbv.utils.colorAt
+import de.herrmann_engel.rbv.utils.findActivity
 import de.herrmann_engel.rbv.utils.putCardId
 import de.herrmann_engel.rbv.utils.putCardSource
 import java.util.Locale
@@ -53,7 +53,6 @@ class AdapterCards(
 ) : RecyclerView.Adapter<AdapterCards.ViewHolder>() {
     class ViewHolder(val binding: RecViewCardBinding) : RecyclerView.ViewHolder(binding.root)
 
-    private val stringTools = StringTools()
     // Contextual action mode (started by long click) to select multiple cards and delete, move or print them
     private var contextualMenuMode: ActionMode? = null
     private val contextualMenuModePayload = "contextualMode"
@@ -318,7 +317,7 @@ class AdapterCards(
             card.formattedBack ?: card.card.back
         } else card.formattedFront ?: card.card.front
         cardText = cardText.replace(System.lineSeparator(), " ")
-        cardText = stringTools.shorten(cardText)
+        cardText = StringTools.shorten(cardText)
         if (showBothSides) {
             recText.text = cardText
             recText.contentDescription = cardText
@@ -367,7 +366,7 @@ class AdapterCards(
                 return@setOnLongClickListener false
             }
             contextualMenuModeCardIdList.clear()
-            contextualMenuModeActivity = ContextTools().getActivity(context)
+            contextualMenuModeActivity = context.findActivity()
             contextualMenuMode =
                 contextualMenuModeActivity?.startActionMode(contextualMenuModeCallback)
             contextualMenuModeSelectItem(cardId)

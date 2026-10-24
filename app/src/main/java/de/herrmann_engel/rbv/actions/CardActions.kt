@@ -153,7 +153,6 @@ class CardActions(
         val formatCards = settings.formatCards
         val formatCardNotes = settings.formatCardNotes
         val dbHelperGet = DB_Helper_Get(activity)
-        val stringTools = StringTools()
         val jobName: String
         // For a single card, hide the options for content the card does not have
         if (cards.size == 1) {
@@ -212,12 +211,12 @@ class CardActions(
             // One section per card: title, front, back, and optionally notes, images, other media and tags
             for (card in cards) {
                 val cardFront = if (formatCards) {
-                    stringTools.format(card.front)
+                    StringTools.format(card.front)
                 } else {
                     card.front.toSpanned()
                 }
                 val maxTitleLength = 30
-                var title = escapeHtml(stringTools.shorten(cardFront.toString(), maxTitleLength))
+                var title = escapeHtml(StringTools.shorten(cardFront.toString(), maxTitleLength))
                 if (bindingPrintDialog.diaPrintIncludeProgress.isChecked) {
                     title += " (" + card.known + ")"
                 }
@@ -242,7 +241,7 @@ class CardActions(
                     htmlDocument += "<div class=\"border-top\">"
                 }
                 htmlDocument += if (formatCards) {
-                    stringTools.format(card.back)
+                    StringTools.format(card.back)
                 } else {
                     card.back.toSpanned()
                 }.toHtml()
