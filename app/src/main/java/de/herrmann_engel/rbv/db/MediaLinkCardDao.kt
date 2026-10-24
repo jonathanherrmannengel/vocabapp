@@ -9,7 +9,7 @@ import androidx.room.Query
  * Data access for the links between media files and cards.
  */
 @Dao
-interface DB_Media_Link_Card_DAO {
+interface MediaLinkCardDao {
     @Query("SELECT fileId FROM db_media_link_card WHERE cardId=:cardId")
     fun getAllMediaIdsByCard(cardId: Int): List<Int>
 
@@ -29,5 +29,5 @@ interface DB_Media_Link_Card_DAO {
     fun deleteMediaLinkCard(fileId: Int, cardId: Int)
 
     @Insert
-    fun insert(dbMediaLinkCard: DB_Media_Link_Card): Long
+    fun insert(dbMediaLinkCard: DbMediaLinkCard): Long
 }

@@ -7,8 +7,8 @@ import androidx.room.PrimaryKey
 /**
  * A media file (e.g. an image) in the media folder chosen by the user, identified by its file name.
  */
-@Entity
-class DB_Media {
+@Entity(tableName = "DB_Media")
+class DbMedia {
     @PrimaryKey(autoGenerate = true)
     var uid: Int = 0
 

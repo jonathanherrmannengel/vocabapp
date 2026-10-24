@@ -12,7 +12,7 @@ import de.herrmann_engel.rbv.adapters.AdapterPacksAdvancedSearch
 import de.herrmann_engel.rbv.adapters.AdapterTagsAdvancedSearch
 import de.herrmann_engel.rbv.cardlist.CardSource
 import de.herrmann_engel.rbv.databinding.ActivityAdvancedSearchBinding
-import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
+import de.herrmann_engel.rbv.db.utils.DbHelperGet
 import de.herrmann_engel.rbv.settings.AppSettings
 import de.herrmann_engel.rbv.utils.putCardSource
 import kotlinx.coroutines.Dispatchers
@@ -33,7 +33,7 @@ class AdvancedSearch : RBVActivity() {
         get() = viewModel.packList
     private val tagList: ArrayList<Int>
         get() = viewModel.tagList
-    private lateinit var dbHelperGet: DB_Helper_Get
+    private lateinit var dbHelperGet: DbHelperGet
     private lateinit var binding: ActivityAdvancedSearchBinding
     private var allPacks: Boolean
         get() = viewModel.allPacks
@@ -61,7 +61,7 @@ class AdvancedSearch : RBVActivity() {
             layoutInflater
         )
         setContentView(binding.root)
-        dbHelperGet = DB_Helper_Get(this)
+        dbHelperGet = DbHelperGet(this)
         // Packs including card counts and collection names, loaded in the background
         lifecycleScope.launch {
             val packs = withContext(Dispatchers.IO) { dbHelperGet.getAllPacksWithMeta() }

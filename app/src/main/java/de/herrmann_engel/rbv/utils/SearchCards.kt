@@ -1,7 +1,7 @@
 package de.herrmann_engel.rbv.utils
 
 import de.herrmann_engel.rbv.Globals
-import de.herrmann_engel.rbv.db.DB_Card_With_Meta
+import de.herrmann_engel.rbv.db.CardWithMeta
 import java.util.Locale
 import java.util.regex.Pattern
 
@@ -18,10 +18,10 @@ private fun hasNoMatchInaccurate(source: String?, query: String): Boolean {
  * Removes all cards from the given list that do not match the query (case-insensitive) in front,
  * back, notes or tags.
  */
-fun searchCards(input: MutableList<DB_Card_With_Meta>, query: String) {
+fun searchCards(input: MutableList<CardWithMeta>, query: String) {
     if (input.size > Globals.MAX_SIZE_CARDS_LIST_ACCURATE) {
         val queryLower = query.lowercase(Locale.ROOT)
-        input.removeIf { l: DB_Card_With_Meta ->
+        input.removeIf { l: CardWithMeta ->
             hasNoMatchInaccurate(
                 l.formattedFront ?: l.card.front,
                 queryLower
@@ -42,7 +42,7 @@ fun searchCards(input: MutableList<DB_Card_With_Meta>, query: String) {
             Pattern.quote(query),
             Pattern.CASE_INSENSITIVE or Pattern.UNICODE_CASE
         )
-        input.removeIf { l: DB_Card_With_Meta ->
+        input.removeIf { l: CardWithMeta ->
             hasNoMatch(
                 l.formattedFront ?: l.card.front,
                 pattern

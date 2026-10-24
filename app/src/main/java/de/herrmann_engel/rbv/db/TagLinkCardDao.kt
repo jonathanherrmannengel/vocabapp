@@ -9,7 +9,7 @@ import androidx.room.Query
  * Data access for the links between tags and cards.
  */
 @Dao
-interface DB_Tag_Link_Card_DAO {
+interface TagLinkCardDao {
     @Query("SELECT EXISTS (SELECT 1 FROM db_tag_link_card WHERE tagId=:tagId AND cardId=:cardId LIMIT 1)")
     fun existsTagLinkCard(tagId: Int, cardId: Int): Boolean
 
@@ -29,5 +29,5 @@ interface DB_Tag_Link_Card_DAO {
     fun getAllTagIdsByPack(packId: Int): List<Int>
 
     @Insert
-    fun insert(dbTagLinkCard: DB_Tag_Link_Card): Long
+    fun insert(dbTagLinkCard: DbTagLinkCard): Long
 }

@@ -5,14 +5,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import de.herrmann_engel.rbv.databinding.RecViewSmallBinding
-import de.herrmann_engel.rbv.db.DB_Tag
+import de.herrmann_engel.rbv.db.DbTag
 import de.herrmann_engel.rbv.utils.StringTools
 
 /**
  * Tag list with checkboxes in the advanced search. Changes are reported to onCheckedChange.
  */
 class AdapterTagsAdvancedSearch(
-    private val tags: List<DB_Tag>,
+    private val tags: List<DbTag>,
     // Called on every bind: rows are rebound (e.g. when scrolled back into view) and must then
     // show the current selection
     private val isChecked: (tagId: Int) -> Boolean,

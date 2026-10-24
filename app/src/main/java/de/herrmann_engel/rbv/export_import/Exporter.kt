@@ -5,7 +5,7 @@ import android.database.Cursor
 import android.net.Uri
 import com.opencsv.CSVWriter
 import de.herrmann_engel.rbv.Globals
-import de.herrmann_engel.rbv.db.utils.DB_Helper_Export
+import de.herrmann_engel.rbv.db.utils.DbHelperExport
 import de.herrmann_engel.rbv.settings.AppSettings
 import java.io.File
 import java.io.FileInputStream
@@ -97,7 +97,7 @@ class Exporter(
     // Exports and returns the file in the cache directory, null if the export failed
     fun execute(): File? {
         try {
-            val dbHelperExport = DB_Helper_Export(context)
+            val dbHelperExport = DbHelperExport(context)
             val index: String
             val collectionIds: List<Int>
             if (singleCollection) {

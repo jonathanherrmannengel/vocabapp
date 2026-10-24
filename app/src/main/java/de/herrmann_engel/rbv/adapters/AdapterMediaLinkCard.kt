@@ -7,8 +7,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.databinding.RecViewFilesBinding
-import de.herrmann_engel.rbv.db.DB_Media
-import de.herrmann_engel.rbv.db.utils.DB_Helper_Delete
+import de.herrmann_engel.rbv.db.DbMedia
+import de.herrmann_engel.rbv.db.utils.DbHelperDelete
 import de.herrmann_engel.rbv.media.MediaFiles
 
 /**
@@ -17,7 +17,7 @@ import de.herrmann_engel.rbv.media.MediaFiles
  * is deleted too and the user is asked whether to delete the file.
  */
 class AdapterMediaLinkCard(
-    private val media: MutableList<DB_Media>,
+    private val media: MutableList<DbMedia>,
     private val cardId: Int,
     private val mediaFiles: MediaFiles
 ) : RecyclerView.Adapter<AdapterMediaLinkCard.ViewHolder>() {
@@ -81,11 +81,11 @@ class AdapterMediaLinkCard(
 
     // Removes the link to the card; returns true if the media entry was deleted because it is no longer used
     private fun deleteItem(
-        currentMedia: DB_Media,
+        currentMedia: DbMedia,
         viewHolder: ViewHolder,
         context: Context
     ): Boolean {
-        val mediaDeleted = DB_Helper_Delete(context).deleteMediaLink(currentMedia.uid, cardId)
+        val mediaDeleted = DbHelperDelete(context).deleteMediaLink(currentMedia.uid, cardId)
         media.remove(currentMedia)
         notifyItemRemoved(viewHolder.bindingAdapterPosition)
         notifyItemRangeChanged(viewHolder.bindingAdapterPosition, media.size)

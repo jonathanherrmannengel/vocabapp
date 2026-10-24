@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import coil3.load
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.databinding.RecViewImageBinding
-import de.herrmann_engel.rbv.db.DB_Media
+import de.herrmann_engel.rbv.db.DbMedia
 import de.herrmann_engel.rbv.media.MediaFiles
 
 
@@ -17,7 +17,7 @@ import de.herrmann_engel.rbv.media.MediaFiles
  * Grid of image previews of a card. Clicking an image shows it fullscreen.
  */
 class AdapterMediaLinkCardImages(
-    private val media: List<DB_Media>,
+    private val media: List<DbMedia>,
     private val cardId: Int,
     private val dialog: Dialog,
     private val mediaFiles: MediaFiles

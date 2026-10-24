@@ -9,21 +9,21 @@ import androidx.room.Query
  * Data access for media files.
  */
 @Dao
-interface DB_Media_DAO {
+interface MediaDao {
     @Query("SELECT EXISTS (SELECT 1 FROM db_media LIMIT 1)")
     fun hasMedia(): Boolean
 
     @get:Query("SELECT * FROM db_media ORDER BY file COLLATE NOCASE ASC")
-    val all: List<DB_Media>
+    val all: List<DbMedia>
 
     @Query("SELECT * FROM db_media WHERE db_media.uid IN (SELECT fileId FROM db_media_link_card WHERE cardId=:cardId) ORDER BY file COLLATE NOCASE ASC")
-    fun getAllByCard(cardId: Int): List<DB_Media>
+    fun getAllByCard(cardId: Int): List<DbMedia>
 
     @Query("SELECT * FROM db_media WHERE file=:file LIMIT 1")
-    fun getSingleMedia(file: String): DB_Media?
+    fun getSingleMedia(file: String): DbMedia?
 
     @Query("SELECT * FROM db_media WHERE uid=:fileId LIMIT 1")
-    fun getSingleMedia(fileId: Int): DB_Media?
+    fun getSingleMedia(fileId: Int): DbMedia?
 
     @Query("SELECT EXISTS (SELECT 1 FROM db_media WHERE file=:file LIMIT 1)")
     fun existsMedia(file: String): Boolean
@@ -43,5 +43,5 @@ interface DB_Media_DAO {
     fun deleteUnusedMedia(fileIds: List<Int>): Int
 
     @Insert
-    fun insert(media: DB_Media): Long
+    fun insert(media: DbMedia): Long
 }

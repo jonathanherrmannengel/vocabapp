@@ -5,8 +5,8 @@ import android.view.Menu
 import android.widget.Toast
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.databinding.ActivityCollectionOrPackFormBinding
-import de.herrmann_engel.rbv.db.utils.DB_Helper_Create
-import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
+import de.herrmann_engel.rbv.db.utils.DbHelperCreate
+import de.herrmann_engel.rbv.db.utils.DbHelperGet
 import de.herrmann_engel.rbv.ui.CollectionOrPackForm
 import de.herrmann_engel.rbv.utils.getCollectionId
 
@@ -27,7 +27,7 @@ class NewPack : RBVActivity() {
             return
         }
         // Close if the collection no longer exists (e.g. deleted in the meantime)
-        val collection = DB_Helper_Get(this).getSingleCollection(collectionId) ?: run {
+        val collection = DbHelperGet(this).getSingleCollection(collectionId) ?: run {
             finish()
             return
         }
@@ -44,7 +44,7 @@ class NewPack : RBVActivity() {
         menuInflater.inflate(R.menu.menu_add, menu)
         menu.findItem(R.id.menu_add_insert).setOnMenuItemClickListener {
             try {
-                DB_Helper_Create(this).createPack(
+                DbHelperCreate(this).createPack(
                     form.name,
                     form.desc,
                     collectionId,

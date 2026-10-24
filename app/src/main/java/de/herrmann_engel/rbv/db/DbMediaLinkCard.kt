@@ -10,19 +10,20 @@ import androidx.room.PrimaryKey
  * Link table: assigns a media file to a card (many-to-many).
  */
 @Entity(
+    tableName = "DB_Media_Link_Card",
     foreignKeys = [ForeignKey(
-        entity = DB_Media::class,
+        entity = DbMedia::class,
         parentColumns = ["uid"],
         childColumns = ["fileId"],
         onDelete = ForeignKey.CASCADE
     ), ForeignKey(
-        entity = DB_Card::class,
+        entity = DbCard::class,
         parentColumns = ["uid"],
         childColumns = ["cardId"],
         onDelete = ForeignKey.CASCADE
     )], indices = [Index(value = ["fileId", "cardId"], unique = true), Index("cardId")]
 )
-class DB_Media_Link_Card {
+class DbMediaLinkCard {
     @PrimaryKey(autoGenerate = true)
     var uid: Int = 0
 

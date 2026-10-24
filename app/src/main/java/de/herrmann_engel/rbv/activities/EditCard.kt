@@ -9,9 +9,9 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.databinding.ActivityEditCardBinding
-import de.herrmann_engel.rbv.db.DB_Card
-import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
-import de.herrmann_engel.rbv.db.utils.DB_Helper_Update
+import de.herrmann_engel.rbv.db.DbCard
+import de.herrmann_engel.rbv.db.utils.DbHelperGet
+import de.herrmann_engel.rbv.db.utils.DbHelperUpdate
 import de.herrmann_engel.rbv.utils.colorAt
 import de.herrmann_engel.rbv.utils.getBackToList
 import de.herrmann_engel.rbv.utils.getCardId
@@ -23,14 +23,14 @@ import de.herrmann_engel.rbv.utils.showConfirmDialog
  */
 class EditCard : RBVActivity() {
     private lateinit var binding: ActivityEditCardBinding
-    private lateinit var card: DB_Card
+    private lateinit var card: DbCard
     // If set, return to the card list after closing instead of the previous screen
     private var backToList = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityEditCardBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        val dbHelperGet = DB_Helper_Get(this)
+        val dbHelperGet = DbHelperGet(this)
         val cardId = intent.getCardId() ?: run {
             finish()
             return
@@ -94,7 +94,7 @@ class EditCard : RBVActivity() {
             card.front = binding.editCardFront.text.toString()
             card.back = binding.editCardBack.text.toString()
             card.notes = binding.editCardNotes.text.toString()
-            val dbHelperUpdate = DB_Helper_Update(this)
+            val dbHelperUpdate = DbHelperUpdate(this)
             if (dbHelperUpdate.updateCard(card)) {
                 close()
             } else {

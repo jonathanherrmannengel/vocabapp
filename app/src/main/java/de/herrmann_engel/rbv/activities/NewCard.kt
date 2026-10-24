@@ -8,8 +8,8 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.databinding.ActivityNewCardBinding
-import de.herrmann_engel.rbv.db.utils.DB_Helper_Create
-import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
+import de.herrmann_engel.rbv.db.utils.DbHelperCreate
+import de.herrmann_engel.rbv.db.utils.DbHelperGet
 import de.herrmann_engel.rbv.utils.colorAt
 import de.herrmann_engel.rbv.utils.getPackId
 import de.herrmann_engel.rbv.utils.putAddedCardId
@@ -25,7 +25,7 @@ class NewCard : RBVActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityNewCardBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        val dbHelperGet = DB_Helper_Get(this)
+        val dbHelperGet = DbHelperGet(this)
         packId = intent.getPackId() ?: run {
             finish()
             return
@@ -79,7 +79,7 @@ class NewCard : RBVActivity() {
             val back = binding.newCardBack.text.toString()
             val notes = binding.newCardNotes.text.toString()
             try {
-                val dbHelperCreate = DB_Helper_Create(this)
+                val dbHelperCreate = DbHelperCreate(this)
                 val cardId = dbHelperCreate.createCard(front, back, notes, packId)
                 // Return to the existing card list, which adds the new card to its list
                 val intent = Intent(this, ListCards::class.java)

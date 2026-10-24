@@ -6,9 +6,9 @@ import java.util.Objects
 /**
  * A pack together with the name of its collection and the number of cards in it.
  */
-class DB_Pack_With_Meta {
+class PackWithMeta {
     @Embedded
-    lateinit var pack: DB_Pack
+    lateinit var pack: DbPack
 
     // Number of cards in the pack
     var counter: Int = 0
@@ -16,7 +16,7 @@ class DB_Pack_With_Meta {
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is DB_Pack_With_Meta) return false
+        if (other !is PackWithMeta) return false
         return counter == other.counter &&
             pack == other.pack &&
             collectionName == other.collectionName

@@ -12,8 +12,8 @@ import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.adapters.AdapterMediaLinkCard
 import de.herrmann_engel.rbv.databinding.ActivityEditCardMediaBinding
 import de.herrmann_engel.rbv.databinding.DiaFileExistsBinding
-import de.herrmann_engel.rbv.db.utils.DB_Helper_Create
-import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
+import de.herrmann_engel.rbv.db.utils.DbHelperCreate
+import de.herrmann_engel.rbv.db.utils.DbHelperGet
 import de.herrmann_engel.rbv.media.MediaFileManager
 import de.herrmann_engel.rbv.utils.colorAt
 import de.herrmann_engel.rbv.utils.createDialog
@@ -26,7 +26,7 @@ import de.herrmann_engel.rbv.utils.getCardId
 class EditCardMedia : RBVActivity() {
     private val mediaFileManager = MediaFileManager(this, onFolderSet = { setRecView() })
     private lateinit var binding: ActivityEditCardMediaBinding
-    private lateinit var dbHelperGet: DB_Helper_Get
+    private lateinit var dbHelperGet: DbHelperGet
     private var cardId = 0
     // Result of the file picker: copy the file into the media folder. If a file with the same name
     // already exists there, the user can link the existing file or copy the new one anyway
@@ -84,7 +84,7 @@ class EditCardMedia : RBVActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityEditCardMediaBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        dbHelperGet = DB_Helper_Get(this)
+        dbHelperGet = DbHelperGet(this)
         cardId = intent.getCardId() ?: run {
             finish()
             return
@@ -152,7 +152,7 @@ class EditCardMedia : RBVActivity() {
     // Creates the media entry for the file name (if it does not exist yet) and links it to the card
     private fun addMediaLink(outputFileName: String, mime: String) {
         try {
-            val dbHelperCreate = DB_Helper_Create(this)
+            val dbHelperCreate = DbHelperCreate(this)
             val fileId = dbHelperGet.getSingleMedia(outputFileName)?.uid
                 ?: dbHelperCreate.createMedia(outputFileName, mime).toInt()
             dbHelperCreate.createMediaLink(fileId, cardId)

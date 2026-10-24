@@ -20,9 +20,9 @@ import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.actions.CardActions
 import de.herrmann_engel.rbv.cardlist.CardSource
 import de.herrmann_engel.rbv.databinding.ActivityViewCardBinding
-import de.herrmann_engel.rbv.db.DB_Card
-import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
-import de.herrmann_engel.rbv.db.utils.DB_Helper_Update
+import de.herrmann_engel.rbv.db.DbCard
+import de.herrmann_engel.rbv.db.utils.DbHelperGet
+import de.herrmann_engel.rbv.db.utils.DbHelperUpdate
 import de.herrmann_engel.rbv.media.MediaFileManager
 import de.herrmann_engel.rbv.settings.AppSettings
 import de.herrmann_engel.rbv.ui.TagSpan
@@ -52,9 +52,9 @@ class ViewCard : RBVActivity(), CardActions.Listener {
         onMissingFileAction = { openCardMedia(it) }
     )
     private lateinit var binding: ActivityViewCardBinding
-    private lateinit var dbHelperGet: DB_Helper_Get
-    private lateinit var dbHelperUpdate: DB_Helper_Update
-    private lateinit var card: DB_Card
+    private lateinit var dbHelperGet: DbHelperGet
+    private lateinit var dbHelperUpdate: DbHelperUpdate
+    private lateinit var card: DbCard
     // Current progress of the card
     private var known = 0
     // The card list the card was opened from
@@ -64,8 +64,8 @@ class ViewCard : RBVActivity(), CardActions.Listener {
         super.onCreate(savedInstanceState)
         binding = ActivityViewCardBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        dbHelperGet = DB_Helper_Get(this)
-        dbHelperUpdate = DB_Helper_Update(this)
+        dbHelperGet = DbHelperGet(this)
+        dbHelperUpdate = DbHelperUpdate(this)
 
         intent.getCardSource()?.let { cardSource = it }
         cardId = intent.getCardId() ?: run {

@@ -5,7 +5,7 @@ import android.view.Menu
 import android.widget.Toast
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.databinding.ActivityCollectionOrPackFormBinding
-import de.herrmann_engel.rbv.db.utils.DB_Helper_Create
+import de.herrmann_engel.rbv.db.utils.DbHelperCreate
 import de.herrmann_engel.rbv.ui.CollectionOrPackForm
 
 /**
@@ -31,7 +31,7 @@ class NewCollection : RBVActivity() {
         menuInflater.inflate(R.menu.menu_add, menu)
         menu.findItem(R.id.menu_add_insert).setOnMenuItemClickListener {
             try {
-                DB_Helper_Create(this).createCollection(
+                DbHelperCreate(this).createCollection(
                     form.name,
                     form.desc,
                     form.selectedColors,

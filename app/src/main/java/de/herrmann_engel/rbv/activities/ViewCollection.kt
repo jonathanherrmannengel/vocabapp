@@ -7,9 +7,9 @@ import android.view.Menu
 import android.view.View
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.databinding.ActivityViewCollectionOrPackBinding
-import de.herrmann_engel.rbv.db.DB_Collection
-import de.herrmann_engel.rbv.db.utils.DB_Helper_Delete
-import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
+import de.herrmann_engel.rbv.db.DbCollection
+import de.herrmann_engel.rbv.db.utils.DbHelperDelete
+import de.herrmann_engel.rbv.db.utils.DbHelperGet
 import de.herrmann_engel.rbv.settings.AppSettings
 import de.herrmann_engel.rbv.utils.colorAt
 import de.herrmann_engel.rbv.utils.formatDateTime
@@ -23,14 +23,14 @@ import de.herrmann_engel.rbv.utils.showConfirmDialog
  */
 class ViewCollection : RBVActivity() {
     private lateinit var binding: ActivityViewCollectionOrPackBinding
-    private lateinit var dbHelperGet: DB_Helper_Get
-    private lateinit var collection: DB_Collection
+    private lateinit var dbHelperGet: DbHelperGet
+    private lateinit var collection: DbCollection
     private var collectionId = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityViewCollectionOrPackBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        dbHelperGet = DB_Helper_Get(this)
+        dbHelperGet = DbHelperGet(this)
         collectionId = intent.getCollectionId() ?: run {
             finish()
             return
@@ -109,7 +109,7 @@ class ViewCollection : RBVActivity() {
         } else null
         showConfirmDialog(this, getString(R.string.delete), text) {
             if (dbHelperGet.getAllPacksByCollection(collection.uid).isEmpty() || forceDelete) {
-                val dbHelperDelete = DB_Helper_Delete(this)
+                val dbHelperDelete = DbHelperDelete(this)
                 val collection = collection
                 runInBackground(this, {
                     dbHelperDelete.deleteCollection(collection, forceDelete)

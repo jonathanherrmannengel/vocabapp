@@ -22,8 +22,8 @@ import de.herrmann_engel.rbv.cardlist.CardSource
 import de.herrmann_engel.rbv.cardlist.ListStatsDialog
 import de.herrmann_engel.rbv.cardlist.QueryMode
 import de.herrmann_engel.rbv.databinding.ActivityDefaultRecBinding
-import de.herrmann_engel.rbv.db.DB_Card_With_Meta
-import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
+import de.herrmann_engel.rbv.db.CardWithMeta
+import de.herrmann_engel.rbv.db.utils.DbHelperGet
 import de.herrmann_engel.rbv.media.MediaFileManager
 import de.herrmann_engel.rbv.settings.AppConfig
 import de.herrmann_engel.rbv.settings.AppSettings
@@ -60,7 +60,7 @@ class ListCards : RBVActivity(), CardActions.Listener {
         onMissingFileAction = { openCardMedia(it) }
     )
     private lateinit var binding: ActivityDefaultRecBinding
-    private lateinit var dbHelperGet: DB_Helper_Get
+    private lateinit var dbHelperGet: DbHelperGet
     private lateinit var settings: AppSettings
     private lateinit var queryMode: QueryMode
     private lateinit var showCardSideMenuItem: MenuItem
@@ -75,12 +75,12 @@ class ListCards : RBVActivity(), CardActions.Listener {
         ViewModelProvider(this)[ListCardsViewModel::class.java]
     }
     // All cards of this list (sorted) and the currently displayed cards (after search)
-    private var cardsList: MutableList<DB_Card_With_Meta>?
+    private var cardsList: MutableList<CardWithMeta>?
         get() = viewModel.cardsList
         set(value) {
             viewModel.cardsList = value
         }
-    private var cardsListFiltered: MutableList<DB_Card_With_Meta>? = null
+    private var cardsListFiltered: MutableList<CardWithMeta>? = null
     // The cards are being loaded (see onResume)
     private var loadingCards = false
     private var cardSource: CardSource = CardSource.AllCards
@@ -109,7 +109,7 @@ class ListCards : RBVActivity(), CardActions.Listener {
         super.onCreate(savedInstanceState)
         binding = ActivityDefaultRecBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        dbHelperGet = DB_Helper_Get(this)
+        dbHelperGet = DbHelperGet(this)
         settings = AppSettings(this)
         // Initial sort order and side(s) to show, can be changed via the menu. If the activity
         // is recreated, the values chosen before are kept.
@@ -351,7 +351,7 @@ class ListCards : RBVActivity(), CardActions.Listener {
     }
 
     // Loads, formats and sorts the cards of this list
-    private fun loadCards(sort: CardSort): MutableList<DB_Card_With_Meta> {
+    private fun loadCards(sort: CardSort): MutableList<CardWithMeta> {
         val cards = when (val cardSource = cardSource) {
             CardSource.AllCards -> dbHelperGet.getAllCardsWithMeta()
             is CardSource.Collection ->
@@ -512,11 +512,11 @@ class ListCards : RBVActivity(), CardActions.Listener {
      */
     private fun updateContent(recreate: Boolean) {
         cardsList?.let {
-            var shownCards: MutableList<DB_Card_With_Meta> = ArrayList(it)
+            var shownCards: MutableList<CardWithMeta> = ArrayList(it)
             // Search
             val searchQueryLocal = searchQuery
             if (!searchQueryLocal.isNullOrEmpty()) {
-                val searchResults: MutableList<DB_Card_With_Meta> = ArrayList(shownCards)
+                val searchResults: MutableList<CardWithMeta> = ArrayList(shownCards)
                 searchCards(searchResults, searchQueryLocal)
                 if (searchResults.isEmpty()) {
                     searchQuery = ""

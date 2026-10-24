@@ -4,7 +4,7 @@ import android.app.Activity
 import android.widget.TextView
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.databinding.DiaListStatsBinding
-import de.herrmann_engel.rbv.db.DB_Card_With_Meta
+import de.herrmann_engel.rbv.db.CardWithMeta
 import de.herrmann_engel.rbv.utils.createDialog
 import kotlin.math.roundToInt
 
@@ -17,7 +17,7 @@ class ListStatsDialog(private val activity: Activity) {
     // One row of the progress table; rows without label view have a fixed label in the layout
     private class ProgressRow(val label: TextView?, val number: TextView, val percent: TextView)
 
-    fun show(cards: List<DB_Card_With_Meta>) {
+    fun show(cards: List<CardWithMeta>) {
         val binding = DiaListStatsBinding.inflate(activity.layoutInflater)
         val listStatsDialog = createDialog(
             activity,

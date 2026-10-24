@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import de.herrmann_engel.rbv.activities.EditCardMedia
 import de.herrmann_engel.rbv.databinding.RecViewBinding
-import de.herrmann_engel.rbv.db.DB_Card_With_Meta
+import de.herrmann_engel.rbv.db.CardWithMeta
 import de.herrmann_engel.rbv.utils.StringTools
 import de.herrmann_engel.rbv.utils.putCardId
 
@@ -17,7 +17,7 @@ import de.herrmann_engel.rbv.utils.putCardId
  * Clicking a card opens its media settings.
  */
 class AdapterMediaManageLinkedCards(
-    private val cards: List<DB_Card_With_Meta>,
+    private val cards: List<CardWithMeta>,
     private val dialog: Dialog
 ) : RecyclerView.Adapter<AdapterMediaManageLinkedCards.ViewHolder>() {
     class ViewHolder(val binding: RecViewBinding) : RecyclerView.ViewHolder(binding.root)

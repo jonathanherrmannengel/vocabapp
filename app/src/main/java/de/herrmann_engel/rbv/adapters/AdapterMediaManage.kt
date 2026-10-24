@@ -4,15 +4,15 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import de.herrmann_engel.rbv.databinding.RecViewBinding
-import de.herrmann_engel.rbv.db.DB_Media
+import de.herrmann_engel.rbv.db.DbMedia
 
 
 /**
  * List of all media entries. Clicking one reports it to onSelected (see ManageMedia).
  */
 class AdapterMediaManage(
-    private val media: MutableList<DB_Media>,
-    private val onSelected: (media: DB_Media) -> Unit
+    private val media: MutableList<DbMedia>,
+    private val onSelected: (media: DbMedia) -> Unit
 ) : RecyclerView.Adapter<AdapterMediaManage.ViewHolder>() {
     class ViewHolder(val binding: RecViewBinding) : RecyclerView.ViewHolder(binding.root)
 
@@ -33,7 +33,7 @@ class AdapterMediaManage(
     }
 
     // Removes a deleted media entry from the list
-    fun remove(item: DB_Media) {
+    fun remove(item: DbMedia) {
         val position = media.indexOf(item)
         if (position >= 0) {
             media.removeAt(position)

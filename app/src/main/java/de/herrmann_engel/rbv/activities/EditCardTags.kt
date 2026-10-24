@@ -7,10 +7,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.adapters.AdapterTagLinkCard
 import de.herrmann_engel.rbv.databinding.ActivityEditCardTagsBinding
-import de.herrmann_engel.rbv.db.utils.DB_Helper_Create
-import de.herrmann_engel.rbv.db.utils.DB_Helper_Delete
-import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
-import de.herrmann_engel.rbv.db.utils.DB_Helper_Update
+import de.herrmann_engel.rbv.db.utils.DbHelperCreate
+import de.herrmann_engel.rbv.db.utils.DbHelperDelete
+import de.herrmann_engel.rbv.db.utils.DbHelperGet
+import de.herrmann_engel.rbv.db.utils.DbHelperUpdate
 import de.herrmann_engel.rbv.utils.colorAt
 import de.herrmann_engel.rbv.utils.getCardId
 
@@ -20,14 +20,14 @@ import de.herrmann_engel.rbv.utils.getCardId
  */
 class EditCardTags : RBVActivity() {
     private lateinit var binding: ActivityEditCardTagsBinding
-    private lateinit var dbHelperGet: DB_Helper_Get
+    private lateinit var dbHelperGet: DbHelperGet
     private var cardId = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityEditCardTagsBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        dbHelperGet = DB_Helper_Get(this)
+        dbHelperGet = DbHelperGet(this)
         cardId = intent.getCardId() ?: run {
             finish()
             return
@@ -62,7 +62,7 @@ class EditCardTags : RBVActivity() {
         val tagName = binding.editCardTagsAdd.text.toString()
         if (tagName.isNotBlank()) {
             try {
-                val dbHelperCreate = DB_Helper_Create(this)
+                val dbHelperCreate = DbHelperCreate(this)
                 dbHelperCreate.createTagLink(
                     tagName,
                     cardId
@@ -80,8 +80,8 @@ class EditCardTags : RBVActivity() {
         val tagList = dbHelperGet.getCardTags(cardId)
         val adapter = AdapterTagLinkCard(
             tagList,
-            onRemove = { DB_Helper_Delete(this).deleteTagLink(it.uid, cardId) },
-            onSave = { DB_Helper_Update(this).updateTag(it) }
+            onRemove = { DbHelperDelete(this).deleteTagLink(it.uid, cardId) },
+            onSave = { DbHelperUpdate(this).updateTag(it) }
         )
         binding.editCardTagsRec.adapter = adapter
         binding.editCardTagsRec.layoutManager = LinearLayoutManager(this)

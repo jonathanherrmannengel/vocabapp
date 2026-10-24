@@ -1,23 +1,23 @@
 package de.herrmann_engel.rbv.db.utils
 
 import android.content.Context
-import de.herrmann_engel.rbv.db.DB_Card
-import de.herrmann_engel.rbv.db.DB_Collection
-import de.herrmann_engel.rbv.db.DB_Pack
+import de.herrmann_engel.rbv.db.DbCard
+import de.herrmann_engel.rbv.db.DbCollection
+import de.herrmann_engel.rbv.db.DbPack
 
 /**
  * Deletes entries from the database.
  */
-class DB_Helper_Delete(context: Context) {
-    private val dbHelper = DB_Helper(context)
+class DbHelperDelete(context: Context) {
+    private val dbHelper = DbHelper(context)
 
     /**
      * Deletes a collection. If it still contains packs, these are deleted as well if force is set,
      * otherwise nothing is deleted and false is returned.
      */
-    fun deleteCollection(collection: DB_Collection, force: Boolean): Boolean =
+    fun deleteCollection(collection: DbCollection, force: Boolean): Boolean =
         dbHelper.database.runInTransaction<Boolean> {
-            val dbHelperGet = DB_Helper_Get(dbHelper.context)
+            val dbHelperGet = DbHelperGet(dbHelper.context)
             val packs = dbHelperGet.getAllPacksByCollection(collection.uid)
             if (packs.isNotEmpty() && !force) {
                 return@runInTransaction false
@@ -32,9 +32,9 @@ class DB_Helper_Delete(context: Context) {
      * otherwise nothing is deleted and false is returned. As with deleteCard, media files no
      * longer linked to any card are deleted too, and so are tags no longer assigned to any card.
      */
-    fun deletePack(pack: DB_Pack, force: Boolean): Boolean =
+    fun deletePack(pack: DbPack, force: Boolean): Boolean =
         dbHelper.database.runInTransaction<Boolean> {
-            val dbHelperGet = DB_Helper_Get(dbHelper.context)
+            val dbHelperGet = DbHelperGet(dbHelper.context)
             val containsCards = dbHelperGet.countCardsInPack(pack.uid) > 0
             if (containsCards && !force) {
                 return@runInTransaction false
@@ -52,7 +52,7 @@ class DB_Helper_Delete(context: Context) {
      * Deletes a card and its media and tag links. Media files and tags no longer linked to any card
      * are deleted too.
      */
-    fun deleteCard(card: DB_Card): Boolean =
+    fun deleteCard(card: DbCard): Boolean =
         dbHelper.database.runInTransaction<Boolean> {
             val fileIds = dbHelper.mediaLinkCardDao.getAllMediaIdsByCard(card.uid)
             val tagIds = dbHelper.tagLinkCardDao.getAllTagIdsByCard(card.uid)

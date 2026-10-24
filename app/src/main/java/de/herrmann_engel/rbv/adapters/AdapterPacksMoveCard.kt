@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.databinding.RecViewBinding
-import de.herrmann_engel.rbv.db.DB_Pack_With_Meta
+import de.herrmann_engel.rbv.db.PackWithMeta
 import de.herrmann_engel.rbv.settings.AppSettings
 import de.herrmann_engel.rbv.utils.StringTools
 import de.herrmann_engel.rbv.utils.colorAt
@@ -16,7 +16,7 @@ import de.herrmann_engel.rbv.utils.colorAt
  * Pack list in the "move card" dialog. Clicking a pack reports its id to onSelected.
  */
 class AdapterPacksMoveCard(
-    private val packs: List<DB_Pack_With_Meta>,
+    private val packs: List<PackWithMeta>,
     // null: packs of all collections are listed
     private val collectionId: Int?,
     private val onSelected: (packId: Int) -> Unit

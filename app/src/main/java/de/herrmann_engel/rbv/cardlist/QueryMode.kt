@@ -19,10 +19,10 @@ import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.activities.EditCard
 import de.herrmann_engel.rbv.databinding.DiaInfoBinding
 import de.herrmann_engel.rbv.databinding.DiaQueryBinding
-import de.herrmann_engel.rbv.db.DB_Card
-import de.herrmann_engel.rbv.db.DB_Card_With_Meta
-import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
-import de.herrmann_engel.rbv.db.utils.DB_Helper_Update
+import de.herrmann_engel.rbv.db.CardWithMeta
+import de.herrmann_engel.rbv.db.DbCard
+import de.herrmann_engel.rbv.db.utils.DbHelperGet
+import de.herrmann_engel.rbv.db.utils.DbHelperUpdate
 import de.herrmann_engel.rbv.media.MediaFileManager
 import de.herrmann_engel.rbv.settings.AppSettings
 import de.herrmann_engel.rbv.ui.SwipeEvents
@@ -62,8 +62,8 @@ class QueryMode(
     // The title is set for each card in showCard
     private val dialog = createDialog(activity, binding.root, "")
     private val settings = AppSettings(activity)
-    private val dbHelperGet = DB_Helper_Get(activity)
-    private val dbHelperUpdate = DB_Helper_Update(activity)
+    private val dbHelperGet = DbHelperGet(activity)
+    private val dbHelperUpdate = DbHelperUpdate(activity)
 
     // The colored edges of the dialog hint at the available swipe directions
     private val rootBackground = binding.root.background as LayerDrawable
@@ -74,7 +74,7 @@ class QueryMode(
     private val rootBackgroundBottom =
         rootBackground.findDrawableByLayerId(R.id.dia_query_root_background_bottom) as GradientDrawable
 
-    private var cards: List<DB_Card_With_Meta> = emptyList()
+    private var cards: List<CardWithMeta> = emptyList()
     // Position of the current card
     private var position = 0
     // Show the back side first
@@ -106,7 +106,7 @@ class QueryMode(
      *
      * @param reverse show the back side first
      */
-    fun start(cards: List<DB_Card_With_Meta>, startPosition: Int, reverse: Boolean) {
+    fun start(cards: List<CardWithMeta>, startPosition: Int, reverse: Boolean) {
         this.cards = cards
         this.reverse = reverse
         position = startPosition
@@ -126,7 +126,7 @@ class QueryMode(
      * Updates the current card (e.g. after returning from editing it), keeping its state such as
      * the revealed side.
      */
-    fun update(cards: List<DB_Card_With_Meta>) {
+    fun update(cards: List<CardWithMeta>) {
         this.cards = cards
         if (position !in cards.indices) {
             dialog.dismiss()
@@ -155,7 +155,7 @@ class QueryMode(
     }
 
     // Saves the new progress as a repetition of the card
-    private fun cardKnownChanged(card: DB_Card, known: Int) {
+    private fun cardKnownChanged(card: DbCard, known: Int) {
         card.known = known
         card.lastRepetition = System.currentTimeMillis() / 1000L
         card.countRepetitions++
@@ -163,13 +163,13 @@ class QueryMode(
         onCardChanged(position)
     }
 
-    private fun plusAction(card: DB_Card) {
+    private fun plusAction(card: DbCard) {
         cardKnownChanged(card, card.known + 1)
         nextAction()
     }
 
     // Card not known: decrease the progress by 1 or reset it to 0, depending on the settings
-    private fun minusAction(card: DB_Card) {
+    private fun minusAction(card: DbCard) {
         val known = if (settings.queryModeResetProgress) {
             0
         } else {

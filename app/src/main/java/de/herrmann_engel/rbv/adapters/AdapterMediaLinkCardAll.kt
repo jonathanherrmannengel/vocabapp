@@ -7,7 +7,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import de.herrmann_engel.rbv.databinding.RecViewBinding
-import de.herrmann_engel.rbv.db.DB_Media
+import de.herrmann_engel.rbv.db.DbMedia
 import de.herrmann_engel.rbv.media.MediaFiles
 
 
@@ -16,7 +16,7 @@ import de.herrmann_engel.rbv.media.MediaFiles
  * (if onlyImages is set) or opens it in another app.
  */
 class AdapterMediaLinkCardAll(
-    private val media: List<DB_Media>,
+    private val media: List<DbMedia>,
     private val cardId: Int,
     private val onlyImages: Boolean,
     private val dialog: Dialog,

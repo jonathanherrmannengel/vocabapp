@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.databinding.RecViewBinding
-import de.herrmann_engel.rbv.db.DB_Collection
+import de.herrmann_engel.rbv.db.DbCollection
 import de.herrmann_engel.rbv.settings.AppSettings
 import de.herrmann_engel.rbv.utils.colorAt
 
@@ -14,7 +14,7 @@ import de.herrmann_engel.rbv.utils.colorAt
  * Collection list in the "move pack" dialog. Clicking a collection reports its id to onSelected.
  */
 class AdapterCollectionsMovePack(
-    private val collections: List<DB_Collection>,
+    private val collections: List<DbCollection>,
     private val onSelected: (collectionId: Int) -> Unit
 ) : RecyclerView.Adapter<AdapterCollectionsMovePack.ViewHolder>() {
     class ViewHolder(val binding: RecViewBinding) : RecyclerView.ViewHolder(binding.root)

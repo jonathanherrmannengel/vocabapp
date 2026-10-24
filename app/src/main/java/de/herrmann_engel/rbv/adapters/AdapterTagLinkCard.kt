@@ -16,7 +16,7 @@ import com.vanniktech.emoji.inputfilters.OnlyEmojisInputFilter
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.databinding.DiaEditTagBinding
 import de.herrmann_engel.rbv.databinding.RecViewTagsBinding
-import de.herrmann_engel.rbv.db.DB_Tag
+import de.herrmann_engel.rbv.db.DbTag
 import de.herrmann_engel.rbv.utils.StringTools
 import de.herrmann_engel.rbv.utils.createDialog
 import de.herrmann_engel.rbv.utils.findActivity
@@ -27,9 +27,9 @@ import de.herrmann_engel.rbv.utils.findActivity
  * edited tag and returns false if the name is already used by another tag.
  */
 class AdapterTagLinkCard(
-    private val tags: MutableList<DB_Tag>,
-    private val onRemove: (tag: DB_Tag) -> Unit,
-    private val onSave: (tag: DB_Tag) -> Boolean
+    private val tags: MutableList<DbTag>,
+    private val onRemove: (tag: DbTag) -> Unit,
+    private val onSave: (tag: DbTag) -> Boolean
 ) : RecyclerView.Adapter<AdapterTagLinkCard.ViewHolder>() {
     class ViewHolder(val binding: RecViewTagsBinding) : RecyclerView.ViewHolder(binding.root)
 
@@ -142,7 +142,7 @@ class AdapterTagLinkCard(
                     }
                     bindingEditDialog.editTagSave.setOnClickListener {
                         if (!bindingEditDialog.editTagName.text.isNullOrBlank()) {
-                            val newTag = DB_Tag()
+                            val newTag = DbTag()
                             newTag.uid = currentTag.uid
                             newTag.name = bindingEditDialog.editTagName.text.toString()
                             newTag.emoji = StringTools.firstEmoji(

@@ -11,10 +11,10 @@ import de.herrmann_engel.rbv.adapters.AdapterMediaManageLinkedCards
 import de.herrmann_engel.rbv.cardlist.CardSort
 import de.herrmann_engel.rbv.databinding.ActivityManageMediaBinding
 import de.herrmann_engel.rbv.databinding.DiaRecBinding
-import de.herrmann_engel.rbv.db.DB_Card_With_Meta
-import de.herrmann_engel.rbv.db.DB_Media
-import de.herrmann_engel.rbv.db.utils.DB_Helper_Delete
-import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
+import de.herrmann_engel.rbv.db.CardWithMeta
+import de.herrmann_engel.rbv.db.DbMedia
+import de.herrmann_engel.rbv.db.utils.DbHelperDelete
+import de.herrmann_engel.rbv.db.utils.DbHelperGet
 import de.herrmann_engel.rbv.media.MediaFileManager
 import de.herrmann_engel.rbv.settings.AppSettings
 import de.herrmann_engel.rbv.utils.createDialog
@@ -58,7 +58,7 @@ class ManageMedia : RBVActivity() {
     }
 
     private fun setRecView() {
-        val dbHelperGet = DB_Helper_Get(this)
+        val dbHelperGet = DbHelperGet(this)
         val mediaList = dbHelperGet.getAllMedia().toMutableList()
         val adapter = AdapterMediaManage(mediaList) { showMedia(it) }
         binding.recMediaManage.adapter = adapter
@@ -66,16 +66,16 @@ class ManageMedia : RBVActivity() {
     }
 
     // Shows the cards the media entry is linked to; if there are none, offers to delete it
-    private fun showMedia(media: DB_Media) {
-        val cards: MutableList<DB_Card_With_Meta> =
-            DB_Helper_Get(this).getAllCardsByMediaWithMeta(media.uid)
+    private fun showMedia(media: DbMedia) {
+        val cards: MutableList<CardWithMeta> =
+            DbHelperGet(this).getAllCardsByMediaWithMeta(media.uid)
         if (AppSettings(this).formatCards) {
             fillFormattedTexts(cards)
         }
         sortCards(cards, CardSort.ALPHABETICAL)
         if (cards.isEmpty()) {
             showConfirmDialog(this, getString(R.string.delete), getString(R.string.media_no_card)) {
-                DB_Helper_Delete(this).deleteMedia(media.uid)
+                DbHelperDelete(this).deleteMedia(media.uid)
                 (binding.recMediaManage.adapter as? AdapterMediaManage)?.remove(media)
                 // The file itself is only deleted after another confirmation
                 if (mediaFileManager.existsMediaFile(media.file)) {

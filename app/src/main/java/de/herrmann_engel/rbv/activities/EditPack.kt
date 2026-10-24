@@ -5,9 +5,9 @@ import android.view.Menu
 import android.widget.Toast
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.databinding.ActivityCollectionOrPackFormBinding
-import de.herrmann_engel.rbv.db.DB_Pack
-import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
-import de.herrmann_engel.rbv.db.utils.DB_Helper_Update
+import de.herrmann_engel.rbv.db.DbPack
+import de.herrmann_engel.rbv.db.utils.DbHelperGet
+import de.herrmann_engel.rbv.db.utils.DbHelperUpdate
 import de.herrmann_engel.rbv.ui.CollectionOrPackForm
 import de.herrmann_engel.rbv.utils.getPackId
 
@@ -16,7 +16,7 @@ import de.herrmann_engel.rbv.utils.getPackId
  */
 class EditPack : RBVActivity() {
     private lateinit var form: CollectionOrPackForm
-    private lateinit var pack: DB_Pack
+    private lateinit var pack: DbPack
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,7 +27,7 @@ class EditPack : RBVActivity() {
             return
         }
         // Close if the pack no longer exists (e.g. deleted in the meantime)
-        pack = DB_Helper_Get(this).getSinglePack(packId) ?: run {
+        pack = DbHelperGet(this).getSinglePack(packId) ?: run {
             finish()
             return
         }
@@ -47,7 +47,7 @@ class EditPack : RBVActivity() {
             pack.desc = form.desc
             pack.emoji = form.emoji
             pack.colors = form.selectedColors
-            if (DB_Helper_Update(this).updatePack(pack)) {
+            if (DbHelperUpdate(this).updatePack(pack)) {
                 finish()
             } else {
                 Toast.makeText(this, R.string.error_values, Toast.LENGTH_SHORT).show()

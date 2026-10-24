@@ -11,14 +11,15 @@ import androidx.room.PrimaryKey
  * "flashcard".
  */
 @Entity(
+    tableName = "DB_Card",
     foreignKeys = [ForeignKey(
-        entity = DB_Pack::class,
+        entity = DbPack::class,
         parentColumns = ["uid"],
         childColumns = ["pack"],
         onDelete = ForeignKey.CASCADE
     )], indices = [Index("pack")]
 )
-data class DB_Card(
+data class DbCard(
     @PrimaryKey(autoGenerate = true)
     var uid: Int = 0,
 

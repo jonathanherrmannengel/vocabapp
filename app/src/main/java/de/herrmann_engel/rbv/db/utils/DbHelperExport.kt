@@ -6,8 +6,8 @@ import android.database.Cursor
 /**
  * Provides raw database cursors for the CSV export, either for everything or for a single collection.
  */
-class DB_Helper_Export(context: Context) {
-    private val dbHelper = DB_Helper(context)
+class DbHelperExport(context: Context) {
+    private val dbHelper = DbHelper(context)
 
     fun getAllCollectionIds(): List<Int> = dbHelper.collectionDao.allIds
 

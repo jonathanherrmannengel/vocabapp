@@ -15,7 +15,7 @@ import androidx.room.Update
  * card's tag emojis and names (see SELECT_WITH_META).
  */
 @Dao
-interface DB_Card_DAO {
+interface CardDao {
     @Query("SELECT EXISTS (SELECT 1 FROM db_card LIMIT 1)")
     fun hasCards(): Boolean
 
@@ -29,13 +29,13 @@ interface DB_Card_DAO {
     fun countCardsInPack(packId: Int): Int
 
     @get:Query(SELECT_WITH_META)
-    val allWithMeta: MutableList<DB_Card_With_Meta>
+    val allWithMeta: MutableList<CardWithMeta>
 
     @Query(SELECT_WITH_META + " WHERE pack IN (SELECT uid FROM db_pack WHERE collection=:collectionId)")
-    fun getAllByCollectionWithMeta(collectionId: Int): MutableList<DB_Card_With_Meta>
+    fun getAllByCollectionWithMeta(collectionId: Int): MutableList<CardWithMeta>
 
     @Query(SELECT_WITH_META + " WHERE pack=:packId")
-    fun getAllByPackWithMeta(packId: Int): MutableList<DB_Card_With_Meta>
+    fun getAllByPackWithMeta(packId: Int): MutableList<CardWithMeta>
 
     /**
      * Cards matching the advanced search filters. Each filter can be switched off.
@@ -64,21 +64,21 @@ interface DB_Card_DAO {
         filterRepetition: Boolean,
         repetitionOlder: Boolean,
         date: Long
-    ): MutableList<DB_Card_With_Meta>
+    ): MutableList<CardWithMeta>
 
     // Cards linked to the given media file
     @Query(SELECT_WITH_META + " INNER JOIN db_media_link_card ON db_card.uid = db_media_link_card.cardId WHERE db_media_link_card.fileId=:fileId")
-    fun getAllByMedia(fileId: Int): MutableList<DB_Card_With_Meta>
+    fun getAllByMedia(fileId: Int): MutableList<CardWithMeta>
 
     // Raw cursor used by the CSV export
     @Query("SELECT * FROM db_card WHERE pack IN (SELECT uid FROM db_pack WHERE collection=:collectionId)")
     fun getAllExportByCollection(collectionId: Int): Cursor
 
     @Query("SELECT * FROM db_card WHERE uid=:cardId LIMIT 1")
-    fun getOne(cardId: Int): DB_Card?
+    fun getOne(cardId: Int): DbCard?
 
     @Query(SELECT_WITH_META + " WHERE db_card.uid=:cardId LIMIT 1")
-    fun getOneWithMeta(cardId: Int): DB_Card_With_Meta?
+    fun getOneWithMeta(cardId: Int): CardWithMeta?
 
     // Used by the import to find already existing cards; null if there is none
     @Query("SELECT uid FROM db_card WHERE pack=:packId AND front=:front AND back=:back AND notes=:notes LIMIT 1")
@@ -90,13 +90,13 @@ interface DB_Card_DAO {
     ): Int?
 
     @Update
-    fun update(card: DB_Card)
+    fun update(card: DbCard)
 
     @Insert
-    fun insert(card: DB_Card): Long
+    fun insert(card: DbCard): Long
 
     @Delete
-    fun delete(card: DB_Card)
+    fun delete(card: DbCard)
 
     companion object {
         // Cards with the color of their pack and their tags' emojis and names (used for search and display)

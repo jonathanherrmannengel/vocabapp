@@ -9,8 +9,8 @@ import android.widget.Toast
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.actions.PackActions
 import de.herrmann_engel.rbv.databinding.ActivityViewCollectionOrPackBinding
-import de.herrmann_engel.rbv.db.DB_Pack
-import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
+import de.herrmann_engel.rbv.db.DbPack
+import de.herrmann_engel.rbv.db.utils.DbHelperGet
 import de.herrmann_engel.rbv.settings.AppSettings
 import de.herrmann_engel.rbv.utils.colorAt
 import de.herrmann_engel.rbv.utils.formatDateTime
@@ -25,8 +25,8 @@ import de.herrmann_engel.rbv.utils.putPackId
  */
 class ViewPack : RBVActivity(), PackActions.Listener {
     private lateinit var binding: ActivityViewCollectionOrPackBinding
-    private lateinit var dbHelperGet: DB_Helper_Get
-    private lateinit var pack: DB_Pack
+    private lateinit var dbHelperGet: DbHelperGet
+    private lateinit var pack: DbPack
     private var packId = 0
     // Collection of the pack list the pack was opened from, null for the list of all packs
     private var listCollectionId: Int? = null
@@ -34,7 +34,7 @@ class ViewPack : RBVActivity(), PackActions.Listener {
         super.onCreate(savedInstanceState)
         binding = ActivityViewCollectionOrPackBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        dbHelperGet = DB_Helper_Get(this)
+        dbHelperGet = DbHelperGet(this)
         listCollectionId = intent.getListCollection()
         packId = intent.getPackId() ?: run {
             finish()

@@ -18,8 +18,8 @@ import de.herrmann_engel.rbv.activities.ListCards
 import de.herrmann_engel.rbv.adapters.compare.ListPackCompare
 import de.herrmann_engel.rbv.cardlist.CardSource
 import de.herrmann_engel.rbv.databinding.RecViewCollectionOrPackBinding
-import de.herrmann_engel.rbv.db.DB_Pack
-import de.herrmann_engel.rbv.db.DB_Pack_With_Meta
+import de.herrmann_engel.rbv.db.DbPack
+import de.herrmann_engel.rbv.db.PackWithMeta
 import de.herrmann_engel.rbv.utils.StringTools
 import de.herrmann_engel.rbv.utils.colorAt
 import de.herrmann_engel.rbv.utils.putCardSource
@@ -30,7 +30,7 @@ import java.util.Locale
  * cards and the welcome message are shown by [AdapterListHeader].
  */
 class AdapterPacks(
-    private val packs: MutableList<DB_Pack_With_Meta>,
+    private val packs: MutableList<PackWithMeta>,
     private var uiFontSizeBig: Boolean,
     private val collectionId: Int?,
     private val packActions: PackActions
@@ -78,14 +78,14 @@ class AdapterPacks(
     }
 
     // In the order of the ids
-    private fun selectedPacks(ids: List<Int>): ArrayList<DB_Pack> {
+    private fun selectedPacks(ids: List<Int>): ArrayList<DbPack> {
         val packsById = packs.associateBy { it.pack.uid }
         return ArrayList(ids.mapNotNull { packsById[it]?.pack })
     }
 
     // Updates the list; all items are redrawn if the font size setting has changed
     fun updateSettingsAndContent(
-        packListNew: List<DB_Pack_With_Meta>,
+        packListNew: List<PackWithMeta>,
         uiFontSizeBig: Boolean
     ) {
         val updateAllContent = this.uiFontSizeBig != uiFontSizeBig
@@ -95,7 +95,7 @@ class AdapterPacks(
 
     // Replaces the list content, using DiffUtil to only update changed items
     private fun updateContent(
-        packListNew: List<DB_Pack_With_Meta>,
+        packListNew: List<PackWithMeta>,
         updateAllContent: Boolean
     ) {
         val diffResult =

@@ -19,11 +19,11 @@ import de.herrmann_engel.rbv.adapters.AdapterPacksMoveCard
 import de.herrmann_engel.rbv.databinding.DiaPrintBinding
 import de.herrmann_engel.rbv.databinding.DiaRecBinding
 import de.herrmann_engel.rbv.db.AppDatabase
-import de.herrmann_engel.rbv.db.DB_Card
-import de.herrmann_engel.rbv.db.DB_Pack_With_Meta
-import de.herrmann_engel.rbv.db.utils.DB_Helper_Delete
-import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
-import de.herrmann_engel.rbv.db.utils.DB_Helper_Update
+import de.herrmann_engel.rbv.db.DbCard
+import de.herrmann_engel.rbv.db.PackWithMeta
+import de.herrmann_engel.rbv.db.utils.DbHelperDelete
+import de.herrmann_engel.rbv.db.utils.DbHelperGet
+import de.herrmann_engel.rbv.db.utils.DbHelperUpdate
 import de.herrmann_engel.rbv.media.MediaFiles
 import de.herrmann_engel.rbv.settings.AppSettings
 import de.herrmann_engel.rbv.utils.StringTools
@@ -62,13 +62,13 @@ class CardActions(
      * Asks for confirmation and deletes the cards. Deleting multiple cards requires a second
      * confirmation (forceDelete is set for the second dialog).
      */
-    private fun delete(cards: ArrayList<DB_Card>, forceDelete: Boolean) {
+    private fun delete(cards: ArrayList<DbCard>, forceDelete: Boolean) {
         val text = if (cards.size > 1 && !forceDelete) {
             String.format(activity.getString(R.string.delete_multiple_cards), cards.size)
         } else null
         showConfirmDialog(activity, activity.getString(R.string.delete), text) {
             if (cards.size <= 1 || forceDelete) {
-                val dbHelperDelete = DB_Helper_Delete(activity)
+                val dbHelperDelete = DbHelperDelete(activity)
                 val cardIds = ArrayList(cards.map { it.uid })
                 runInBackground(activity, {
                     // All cards are deleted or none
@@ -82,11 +82,11 @@ class CardActions(
         }
     }
 
-    fun delete(cards: ArrayList<DB_Card>) {
+    fun delete(cards: ArrayList<DbCard>) {
         delete(cards, false)
     }
 
-    fun delete(card: DB_Card) {
+    fun delete(card: DbCard) {
         delete(arrayListOf(card))
     }
 
@@ -94,7 +94,7 @@ class CardActions(
      * Lets the user choose a pack to move the cards to. Only packs of the given collection are
      * offered, or of all collections if collectionId is null.
      */
-    fun move(cards: ArrayList<DB_Card>, collectionId: Int?) {
+    fun move(cards: ArrayList<DbCard>, collectionId: Int?) {
         val bindingMoveDialog = DiaRecBinding.inflate(
             activity.layoutInflater
         )
@@ -103,9 +103,9 @@ class CardActions(
             bindingMoveDialog.root,
             activity.getString(R.string.move_card)
         )
-        val dbHelperGet = DB_Helper_Get(activity)
+        val dbHelperGet = DbHelperGet(activity)
         // Includes the collection names, which are shown for packs of all collections
-        val packs: List<DB_Pack_With_Meta> = if (collectionId == null) {
+        val packs: List<PackWithMeta> = if (collectionId == null) {
             dbHelperGet.getAllPacksWithMeta()
         } else {
             dbHelperGet.getAllPacksWithMetaByCollection(collectionId)
@@ -120,8 +120,8 @@ class CardActions(
     }
 
     // Only cards not already in the pack are moved and reported
-    private fun moveToPack(cards: List<DB_Card>, packId: Int) {
-        val dbHelperUpdate = DB_Helper_Update(activity)
+    private fun moveToPack(cards: List<DbCard>, packId: Int) {
+        val dbHelperUpdate = DbHelperUpdate(activity)
         val movedCards = cards.filter { it.packId != packId }
         movedCards.forEach { it.packId = packId }
         runInBackground(activity, {
@@ -132,7 +132,7 @@ class CardActions(
         }) { listener.movedCards(ArrayList(movedCards.map { it.uid })) }
     }
 
-    fun move(card: DB_Card, collectionId: Int?) {
+    fun move(card: DbCard, collectionId: Int?) {
         move(arrayListOf(card), collectionId)
     }
 
@@ -140,7 +140,7 @@ class CardActions(
      * Lets the user choose what to include and prints the cards. An HTML document is built and
      * rendered in a WebView, which is then passed to the print manager.
      */
-    fun print(cards: ArrayList<DB_Card>) {
+    fun print(cards: ArrayList<DbCard>) {
         val bindingPrintDialog = DiaPrintBinding.inflate(
             activity.layoutInflater
         )
@@ -152,7 +152,7 @@ class CardActions(
         val settings = AppSettings(activity)
         val formatCards = settings.formatCards
         val formatCardNotes = settings.formatCardNotes
-        val dbHelperGet = DB_Helper_Get(activity)
+        val dbHelperGet = DbHelperGet(activity)
         val jobName: String
         // For a single card, hide the options for content the card does not have
         if (cards.size == 1) {
@@ -359,7 +359,7 @@ class CardActions(
         printDialog.show()
     }
 
-    fun print(card: DB_Card) {
+    fun print(card: DbCard) {
         print(arrayListOf(card))
     }
 

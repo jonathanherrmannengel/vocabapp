@@ -3,7 +3,7 @@ package de.herrmann_engel.rbv.activities
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import de.herrmann_engel.rbv.cardlist.CardSort
-import de.herrmann_engel.rbv.db.DB_Card_With_Meta
+import de.herrmann_engel.rbv.db.CardWithMeta
 
 /**
  * State of [ListCards] that has to survive the activity being recreated (e.g. after a theme or
@@ -15,7 +15,7 @@ import de.herrmann_engel.rbv.db.DB_Card_With_Meta
  */
 class ListCardsViewModel(private val savedState: SavedStateHandle) : ViewModel() {
     // All cards of this list (sorted), null until loaded
-    var cardsList: MutableList<DB_Card_With_Meta>? = null
+    var cardsList: MutableList<CardWithMeta>? = null
 
     // False until the display settings have been initialized from the app settings
     val hasDisplaySettings: Boolean

@@ -22,8 +22,8 @@ import de.herrmann_engel.rbv.adapters.AdapterMediaLinkCardAll
 import de.herrmann_engel.rbv.adapters.AdapterMediaLinkCardImages
 import de.herrmann_engel.rbv.databinding.DiaImageBinding
 import de.herrmann_engel.rbv.databinding.DiaRecBinding
-import de.herrmann_engel.rbv.db.DB_Media
-import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
+import de.herrmann_engel.rbv.db.DbMedia
+import de.herrmann_engel.rbv.db.utils.DbHelperGet
 import de.herrmann_engel.rbv.settings.AppConfig
 import de.herrmann_engel.rbv.settings.AppSettings
 import de.herrmann_engel.rbv.utils.createDialog
@@ -33,7 +33,7 @@ import de.herrmann_engel.rbv.utils.showConfirmDialog
  * Media file handling for an activity that works with media files.
  *
  * Media files are stored in a folder chosen by the user (Storage Access Framework); its URI is
- * saved in the config preferences. The database only stores the file names (see DB_Media).
+ * saved in the config preferences. The database only stores the file names (see DbMedia).
  * This class handles selecting the folder and opening, sharing, displaying and deleting files.
  *
  * It has to be created while the activity is constructed (e.g. as a property initializer),
@@ -92,7 +92,7 @@ class MediaFileManager(
     fun askForFolderIfNeeded() {
         try {
             val folder = cardMediaFolder
-            val dbHelperGet = DB_Helper_Get(activity)
+            val dbHelperGet = DbHelperGet(activity)
             // Check: No media folder set
             if (folder.isNullOrEmpty()) {
                 if (dbHelperGet.getAllMedia().isNotEmpty()) {
@@ -159,7 +159,7 @@ class MediaFileManager(
      * Shows the images of a card: a single image directly, up to MAX_SIZE_CARD_IMAGE_PREVIEW images
      * as a grid of previews, more as a list of file names.
      */
-    fun showImageListDialog(imageList: List<DB_Media>, cardId: Int) {
+    fun showImageListDialog(imageList: List<DbMedia>, cardId: Int) {
         if (imageList.size == 1) {
             showImageDialog(imageList[0].uid, cardId)
         } else if (imageList.size > Globals.MAX_SIZE_CARD_IMAGE_PREVIEW) {
@@ -186,7 +186,7 @@ class MediaFileManager(
     }
 
     // Shows all media files of a card as a list
-    fun showMediaListDialog(mediaList: List<DB_Media>, cardId: Int) {
+    fun showMediaListDialog(mediaList: List<DbMedia>, cardId: Int) {
         showMediaListDialog(
             mediaList,
             cardId,
@@ -196,7 +196,7 @@ class MediaFileManager(
     }
 
     private fun showMediaListDialog(
-        mediaList: List<DB_Media>,
+        mediaList: List<DbMedia>,
         cardId: Int,
         onlyImages: Boolean,
         title: String
@@ -312,7 +312,7 @@ class MediaFileManager(
     }
 
     private fun getFile(fileId: Int): MediaFolderFile? {
-        val dbHelperGet = DB_Helper_Get(activity)
+        val dbHelperGet = DbHelperGet(activity)
         val fileName = dbHelperGet.getSingleMedia(fileId)?.file ?: return null
         return getFile(fileName)
     }
@@ -416,7 +416,7 @@ class MediaFileManager(
     }
 
     private fun existsMediaFile(fileId: Int): Boolean {
-        val dbHelperGet = DB_Helper_Get(activity)
+        val dbHelperGet = DbHelperGet(activity)
         val media = dbHelperGet.getSingleMedia(fileId) ?: return false
         return existsMediaFile(media.file)
     }

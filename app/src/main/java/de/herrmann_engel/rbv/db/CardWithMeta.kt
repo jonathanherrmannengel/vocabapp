@@ -8,9 +8,9 @@ import java.util.Objects
  * A card together with data needed to display it in lists: the color of its pack and the
  * names (and emojis) of its tags. The ignored fields are computed in memory and not stored.
  */
-class DB_Card_With_Meta {
+class CardWithMeta {
     @Embedded
-    lateinit var card: DB_Card
+    lateinit var card: DbCard
     var packColor: Int = 0
     var tagNames: String? = null
 
@@ -31,7 +31,7 @@ class DB_Card_With_Meta {
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is DB_Card_With_Meta) return false
+        if (other !is CardWithMeta) return false
         return packColor == other.packColor &&
             formattingIsInaccurate == other.formattingIsInaccurate &&
             card == other.card &&

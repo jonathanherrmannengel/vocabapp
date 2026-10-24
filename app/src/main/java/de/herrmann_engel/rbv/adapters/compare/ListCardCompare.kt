@@ -1,15 +1,15 @@
 package de.herrmann_engel.rbv.adapters.compare
 
 import androidx.recyclerview.widget.DiffUtil
-import de.herrmann_engel.rbv.db.DB_Card_With_Meta
+import de.herrmann_engel.rbv.db.CardWithMeta
 
 /**
  * DiffUtil callback for card lists. If updateAllContent is set, all items are rebound
  * (e.g. if the displayed side has changed).
  */
 class ListCardCompare(
-    private val oldList: List<DB_Card_With_Meta>,
-    private val newList: List<DB_Card_With_Meta>,
+    private val oldList: List<CardWithMeta>,
+    private val newList: List<CardWithMeta>,
     private val updateAllContent: Boolean
 ) : DiffUtil.Callback() {
     override fun getOldListSize(): Int {

@@ -5,9 +5,9 @@ import android.view.Menu
 import android.widget.Toast
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.databinding.ActivityCollectionOrPackFormBinding
-import de.herrmann_engel.rbv.db.DB_Collection
-import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
-import de.herrmann_engel.rbv.db.utils.DB_Helper_Update
+import de.herrmann_engel.rbv.db.DbCollection
+import de.herrmann_engel.rbv.db.utils.DbHelperGet
+import de.herrmann_engel.rbv.db.utils.DbHelperUpdate
 import de.herrmann_engel.rbv.ui.CollectionOrPackForm
 import de.herrmann_engel.rbv.utils.getCollectionId
 
@@ -16,7 +16,7 @@ import de.herrmann_engel.rbv.utils.getCollectionId
  */
 class EditCollection : RBVActivity() {
     private lateinit var form: CollectionOrPackForm
-    private lateinit var collection: DB_Collection
+    private lateinit var collection: DbCollection
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,7 +27,7 @@ class EditCollection : RBVActivity() {
             return
         }
         // Close if the collection no longer exists (e.g. deleted in the meantime)
-        collection = DB_Helper_Get(this).getSingleCollection(collectionId) ?: run {
+        collection = DbHelperGet(this).getSingleCollection(collectionId) ?: run {
             finish()
             return
         }
@@ -52,7 +52,7 @@ class EditCollection : RBVActivity() {
             collection.desc = form.desc
             collection.emoji = form.emoji
             collection.colors = form.selectedColors
-            if (DB_Helper_Update(this).updateCollection(collection)) {
+            if (DbHelperUpdate(this).updateCollection(collection)) {
                 finish()
             } else {
                 Toast.makeText(this, R.string.error_values, Toast.LENGTH_SHORT).show()

@@ -9,23 +9,23 @@ import androidx.room.RoomDatabase
  * link tables connecting media files and tags to cards.
  */
 @Database(
-    entities = [DB_Pack::class, DB_Card::class, DB_Collection::class, DB_Media::class, DB_Media_Link_Card::class, DB_Tag::class, DB_Tag_Link_Card::class],
+    entities = [DbPack::class, DbCard::class, DbCollection::class, DbMedia::class, DbMediaLinkCard::class, DbTag::class, DbTagLinkCard::class],
     version = 12
 )
 abstract class AppDatabase : RoomDatabase() {
-    abstract fun packDAO(): DB_Pack_DAO
+    abstract fun packDAO(): PackDao
 
-    abstract fun cardDAO(): DB_Card_DAO
+    abstract fun cardDAO(): CardDao
 
-    abstract fun collectionDAO(): DB_Collection_DAO
+    abstract fun collectionDAO(): CollectionDao
 
-    abstract fun mediaDAO(): DB_Media_DAO
+    abstract fun mediaDAO(): MediaDao
 
-    abstract fun mediaLinkCardDAO(): DB_Media_Link_Card_DAO
+    abstract fun mediaLinkCardDAO(): MediaLinkCardDao
 
-    abstract fun tagDAO(): DB_Tag_DAO
+    abstract fun tagDAO(): TagDao
 
-    abstract fun tagLinkCardDAO(): DB_Tag_Link_Card_DAO
+    abstract fun tagLinkCardDAO(): TagLinkCardDao
 
     companion object {
         private var appDatabase: AppDatabase? = null

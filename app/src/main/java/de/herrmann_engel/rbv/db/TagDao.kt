@@ -10,15 +10,15 @@ import androidx.room.Update
  * Data access for tags.
  */
 @Dao
-interface DB_Tag_DAO {
+interface TagDao {
     @Query("SELECT EXISTS (SELECT 1 FROM db_tag LIMIT 1)")
     fun hasTags(): Boolean
 
     @get:Query("SELECT * FROM db_tag ORDER BY tag_name ASC")
-    val all: List<DB_Tag>
+    val all: List<DbTag>
 
     @Query("SELECT * FROM db_tag WHERE db_tag.uid IN (SELECT tagId FROM db_tag_link_card WHERE cardId=:cardId) ORDER BY tag_name ASC")
-    fun getAllByCard(cardId: Int): MutableList<DB_Tag>
+    fun getAllByCard(cardId: Int): MutableList<DbTag>
 
     @get:Query("SELECT * FROM db_tag")
     val allExport: Cursor
@@ -27,7 +27,7 @@ interface DB_Tag_DAO {
     fun getAllExportByCollection(collectionId: Int): Cursor
 
     @Query("SELECT * FROM db_tag WHERE tag_name=:tagName LIMIT 1")
-    fun getSingleTag(tagName: String): DB_Tag?
+    fun getSingleTag(tagName: String): DbTag?
 
     // Removes the given tags if they are not assigned to any card; returns the number of removed
     // tags. Only the given tags are checked, so tags of a running import that are not linked yet
@@ -36,8 +36,8 @@ interface DB_Tag_DAO {
     fun deleteUnusedTags(tagIds: List<Int>): Int
 
     @Update
-    fun update(dbTag: DB_Tag)
+    fun update(dbTag: DbTag)
 
     @Insert
-    fun insert(dbTag: DB_Tag): Long
+    fun insert(dbTag: DbTag): Long
 }

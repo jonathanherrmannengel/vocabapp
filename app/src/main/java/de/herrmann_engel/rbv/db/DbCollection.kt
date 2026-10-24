@@ -2,22 +2,14 @@ package de.herrmann_engel.rbv.db
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
-import androidx.room.ForeignKey
-import androidx.room.Index
 import androidx.room.PrimaryKey
 
 /**
- * A pack belongs to a collection and contains cards. Shown to users as "deck".
+ * A collection is the top level of the hierarchy and groups packs. Shown to users as
+ * "filing box".
  */
-@Entity(
-    foreignKeys = [ForeignKey(
-        entity = DB_Collection::class,
-        parentColumns = ["uid"],
-        childColumns = ["collection"],
-        onDelete = ForeignKey.CASCADE
-    )], indices = [Index("collection")]
-)
-data class DB_Pack(
+@Entity(tableName = "DB_Collection")
+data class DbCollection(
     @PrimaryKey(autoGenerate = true)
     var uid: Int = 0,
 
@@ -34,10 +26,6 @@ data class DB_Pack(
     // Index into the pack color resource arrays (e.g. R.array.pack_color_main)
     @ColumnInfo(name = "colors")
     var colors: Int = 0,
-
-    // uid of the collection the pack belongs to
-    @ColumnInfo(name = "collection")
-    var collectionId: Int = 0,
 
     @ColumnInfo(name = "emoji")
     var emoji: String = ""

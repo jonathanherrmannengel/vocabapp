@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.adapters.AdapterFilesManage
 import de.herrmann_engel.rbv.databinding.ActivityManageFilesBinding
-import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
+import de.herrmann_engel.rbv.db.utils.DbHelperGet
 import de.herrmann_engel.rbv.media.MediaFileManager
 import de.herrmann_engel.rbv.settings.AppSettings
 
@@ -45,7 +45,7 @@ class ManageFiles : RBVActivity() {
         val files = mediaFileManager.listFiles()
         if (files != null) {
             // Names of all media entries, so the files can be checked without a database query each
-            val mediaNames = DB_Helper_Get(this).getAllMedia().mapTo(HashSet()) { it.file }
+            val mediaNames = DbHelperGet(this).getAllMedia().mapTo(HashSet()) { it.file }
             // Ignore directories and the .nomedia file
             val filesWithoutMedia = files.filter {
                 it.isFile && it.name != ".nomedia" && it.name !in mediaNames

@@ -1,20 +1,20 @@
 package de.herrmann_engel.rbv.db.utils
 
 import android.content.Context
-import de.herrmann_engel.rbv.db.DB_Card
-import de.herrmann_engel.rbv.db.DB_Card_With_Meta
-import de.herrmann_engel.rbv.db.DB_Collection
-import de.herrmann_engel.rbv.db.DB_Collection_With_Meta
-import de.herrmann_engel.rbv.db.DB_Media
-import de.herrmann_engel.rbv.db.DB_Pack
-import de.herrmann_engel.rbv.db.DB_Pack_With_Meta
-import de.herrmann_engel.rbv.db.DB_Tag
+import de.herrmann_engel.rbv.db.CardWithMeta
+import de.herrmann_engel.rbv.db.CollectionWithMeta
+import de.herrmann_engel.rbv.db.DbCard
+import de.herrmann_engel.rbv.db.DbCollection
+import de.herrmann_engel.rbv.db.DbMedia
+import de.herrmann_engel.rbv.db.DbPack
+import de.herrmann_engel.rbv.db.DbTag
+import de.herrmann_engel.rbv.db.PackWithMeta
 
 /**
  * Read access to the database.
  */
-class DB_Helper_Get(context: Context) {
-    private val dbHelper = DB_Helper(context)
+class DbHelperGet(context: Context) {
+    private val dbHelper = DbHelper(context)
 
     // Check if has content
     fun hasCollections(): Boolean = dbHelper.collectionDao.hasCollections()
@@ -46,13 +46,13 @@ class DB_Helper_Get(context: Context) {
     fun existsTagLinkCard(tagId: Int, cardId: Int): Boolean = dbHelper.tagLinkCardDao.existsTagLinkCard(tagId, cardId)
 
     // Get One
-    fun getSingleCollection(collectionId: Int): DB_Collection? = dbHelper.collectionDao.getOne(collectionId)
+    fun getSingleCollection(collectionId: Int): DbCollection? = dbHelper.collectionDao.getOne(collectionId)
 
-    fun getSinglePack(packId: Int): DB_Pack? = dbHelper.packDao.getOne(packId)
+    fun getSinglePack(packId: Int): DbPack? = dbHelper.packDao.getOne(packId)
 
-    fun getSingleCard(cardId: Int): DB_Card? = dbHelper.cardDao.getOne(cardId)
+    fun getSingleCard(cardId: Int): DbCard? = dbHelper.cardDao.getOne(cardId)
 
-    fun getSingleCardWithMeta(cardId: Int): DB_Card_With_Meta? = dbHelper.cardDao.getOneWithMeta(cardId)
+    fun getSingleCardWithMeta(cardId: Int): CardWithMeta? = dbHelper.cardDao.getOneWithMeta(cardId)
 
     fun getSingleCardIdByPackAndFrontAndBackAndNotes(
         packId: Int,
@@ -61,39 +61,39 @@ class DB_Helper_Get(context: Context) {
         notes: String
     ): Int? = dbHelper.cardDao.getOneIdByPackAndFrontAndBackAndNotes(packId, front, back, notes)
 
-    fun getSingleMedia(file: String): DB_Media? = dbHelper.mediaDao.getSingleMedia(file)
+    fun getSingleMedia(file: String): DbMedia? = dbHelper.mediaDao.getSingleMedia(file)
 
-    fun getSingleMedia(fileId: Int): DB_Media? = dbHelper.mediaDao.getSingleMedia(fileId)
+    fun getSingleMedia(fileId: Int): DbMedia? = dbHelper.mediaDao.getSingleMedia(fileId)
 
-    fun getSingleTag(tagName: String): DB_Tag? = dbHelper.tagDao.getSingleTag(tagName)
+    fun getSingleTag(tagName: String): DbTag? = dbHelper.tagDao.getSingleTag(tagName)
 
     // Get All: Collections
-    fun getAllCollections(): List<DB_Collection> = dbHelper.collectionDao.all
+    fun getAllCollections(): List<DbCollection> = dbHelper.collectionDao.all
 
-    fun getAllCollectionsByName(name: String): List<DB_Collection> = dbHelper.collectionDao.getAllByName(name)
+    fun getAllCollectionsByName(name: String): List<DbCollection> = dbHelper.collectionDao.getAllByName(name)
 
-    fun getAllCollectionsWithMeta(): MutableList<DB_Collection_With_Meta> =
+    fun getAllCollectionsWithMeta(): MutableList<CollectionWithMeta> =
         dbHelper.collectionDao.allWithMeta
 
     // Get All: Packs
-    fun getAllPacksByCollection(collectionId: Int): List<DB_Pack> = dbHelper.packDao.getAllByCollection(collectionId)
+    fun getAllPacksByCollection(collectionId: Int): List<DbPack> = dbHelper.packDao.getAllByCollection(collectionId)
 
     fun getAllPacksByCollectionAndNameAndDesc(
         collectionId: Int,
         name: String,
         desc: String
-    ): List<DB_Pack> = dbHelper.packDao.getAllByCollectionAndNameAndDesc(collectionId, name, desc)
+    ): List<DbPack> = dbHelper.packDao.getAllByCollectionAndNameAndDesc(collectionId, name, desc)
 
-    fun getAllPacksWithMeta(): MutableList<DB_Pack_With_Meta> = dbHelper.packDao.allWithMeta
+    fun getAllPacksWithMeta(): MutableList<PackWithMeta> = dbHelper.packDao.allWithMeta
 
-    fun getAllPacksWithMetaByCollection(collectionId: Int): MutableList<DB_Pack_With_Meta> = dbHelper.packDao.getAllByCollectionWithMeta(collectionId)
+    fun getAllPacksWithMetaByCollection(collectionId: Int): MutableList<PackWithMeta> = dbHelper.packDao.getAllByCollectionWithMeta(collectionId)
 
     // Get All: Cards
-    fun getAllCardsWithMeta(): MutableList<DB_Card_With_Meta> = dbHelper.cardDao.allWithMeta
+    fun getAllCardsWithMeta(): MutableList<CardWithMeta> = dbHelper.cardDao.allWithMeta
 
-    fun getAllCardsByPackWithMeta(packId: Int): MutableList<DB_Card_With_Meta> = dbHelper.cardDao.getAllByPackWithMeta(packId)
+    fun getAllCardsByPackWithMeta(packId: Int): MutableList<CardWithMeta> = dbHelper.cardDao.getAllByPackWithMeta(packId)
 
-    fun getAllCardsByCollectionWithMeta(collectionId: Int): MutableList<DB_Card_With_Meta> = dbHelper.cardDao.getAllByCollectionWithMeta(collectionId)
+    fun getAllCardsByCollectionWithMeta(collectionId: Int): MutableList<CardWithMeta> = dbHelper.cardDao.getAllByCollectionWithMeta(collectionId)
 
     /**
      * Returns the cards matching the advanced search filters.
@@ -115,7 +115,7 @@ class DB_Helper_Get(context: Context) {
         progressThreshold: Int?,
         repetitionOlder: Boolean,
         repetitionDays: Int?
-    ): MutableList<DB_Card_With_Meta> {
+    ): MutableList<CardWithMeta> {
         // Point in time repetitionDays days ago (Unix time in seconds)
         val date = System.currentTimeMillis() / 1000L - (repetitionDays ?: 0) * 86400L
         return dbHelper.cardDao.getAllFilteredWithMeta(
@@ -126,22 +126,22 @@ class DB_Helper_Get(context: Context) {
         )
     }
 
-    fun getAllCardsByMediaWithMeta(mediaId: Int): MutableList<DB_Card_With_Meta> = dbHelper.cardDao.getAllByMedia(mediaId)
+    fun getAllCardsByMediaWithMeta(mediaId: Int): MutableList<CardWithMeta> = dbHelper.cardDao.getAllByMedia(mediaId)
 
     // Get All: Media
-    fun getAllMedia(): List<DB_Media> = dbHelper.mediaDao.all
+    fun getAllMedia(): List<DbMedia> = dbHelper.mediaDao.all
 
-    fun getCardMedia(cardId: Int): List<DB_Media> = dbHelper.mediaDao.getAllByCard(cardId)
+    fun getCardMedia(cardId: Int): List<DbMedia> = dbHelper.mediaDao.getAllByCard(cardId)
 
     // Only the media files of a card that can be displayed as images
-    fun getCardImageMedia(cardId: Int): List<DB_Media> = dbHelper.mediaDao.getAllByCard(cardId).filter { media -> isPhoto(media.mime) }
+    fun getCardImageMedia(cardId: Int): List<DbMedia> = dbHelper.mediaDao.getAllByCard(cardId).filter { media -> isPhoto(media.mime) }
 
     private fun isPhoto(mime: String): Boolean {
         return mime == "image/png" || mime == "image/jpeg" || mime == "image/webp"
     }
 
     // Get All: Tags
-    fun getAllTags(): List<DB_Tag> = dbHelper.tagDao.all
+    fun getAllTags(): List<DbTag> = dbHelper.tagDao.all
 
-    fun getCardTags(cardId: Int): MutableList<DB_Tag> = dbHelper.tagDao.getAllByCard(cardId)
+    fun getCardTags(cardId: Int): MutableList<DbTag> = dbHelper.tagDao.getAllByCard(cardId)
 }

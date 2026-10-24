@@ -1,14 +1,14 @@
 package de.herrmann_engel.rbv.adapters.compare
 
 import androidx.recyclerview.widget.DiffUtil
-import de.herrmann_engel.rbv.db.DB_Collection_With_Meta
+import de.herrmann_engel.rbv.db.CollectionWithMeta
 
 /**
  * DiffUtil callback for collection lists. If updateAllContent is set, all items are rebound.
  */
 class ListCollectionCompare(
-    private val oldList: List<DB_Collection_With_Meta>,
-    private val newList: List<DB_Collection_With_Meta>,
+    private val oldList: List<CollectionWithMeta>,
+    private val newList: List<CollectionWithMeta>,
     private val updateAllContent: Boolean
 ) : DiffUtil.Callback() {
     override fun getOldListSize(): Int {

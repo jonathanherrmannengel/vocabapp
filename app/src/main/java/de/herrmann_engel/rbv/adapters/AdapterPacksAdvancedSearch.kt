@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.databinding.RecViewSmallBinding
-import de.herrmann_engel.rbv.db.DB_Pack_With_Meta
+import de.herrmann_engel.rbv.db.PackWithMeta
 import de.herrmann_engel.rbv.utils.StringTools
 import de.herrmann_engel.rbv.utils.colorAt
 import java.util.Locale
@@ -16,7 +16,7 @@ import java.util.Locale
  * collection of each pack. Changes are reported to onCheckedChange.
  */
 class AdapterPacksAdvancedSearch(
-    private val packs: List<DB_Pack_With_Meta>,
+    private val packs: List<PackWithMeta>,
     // Called on every bind: rows are rebound (e.g. when scrolled back into view) and must then
     // show the current selection
     private val isChecked: (packId: Int) -> Boolean,

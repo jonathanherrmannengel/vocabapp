@@ -10,19 +10,20 @@ import androidx.room.PrimaryKey
  * Link table: assigns a tag to a card (many-to-many).
  */
 @Entity(
+    tableName = "DB_Tag_Link_Card",
     foreignKeys = [ForeignKey(
-        entity = DB_Tag::class,
+        entity = DbTag::class,
         parentColumns = ["uid"],
         childColumns = ["tagId"],
         onDelete = ForeignKey.CASCADE
     ), ForeignKey(
-        entity = DB_Card::class,
+        entity = DbCard::class,
         parentColumns = ["uid"],
         childColumns = ["cardId"],
         onDelete = ForeignKey.CASCADE
     )], indices = [Index(value = ["tagId", "cardId"], unique = true), Index("cardId")]
 )
-class DB_Tag_Link_Card {
+class DbTagLinkCard {
     @PrimaryKey(autoGenerate = true)
     var uid: Int = 0
 

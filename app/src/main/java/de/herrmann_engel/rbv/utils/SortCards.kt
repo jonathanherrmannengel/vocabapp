@@ -1,14 +1,14 @@
 package de.herrmann_engel.rbv.utils
 
 import de.herrmann_engel.rbv.cardlist.CardSort
-import de.herrmann_engel.rbv.db.DB_Card_With_Meta
+import de.herrmann_engel.rbv.db.CardWithMeta
 
 private fun compareCardsAlphabetical(a: String, b: String): Int {
     return a.compareTo(b, ignoreCase = true)
 }
 
 // Sorts the card list according to the sort order
-fun sortCards(list: MutableList<DB_Card_With_Meta>, sort: CardSort) {
+fun sortCards(list: MutableList<CardWithMeta>, sort: CardSort) {
     when (sort) {
         // By front, then by back
         CardSort.ALPHABETICAL -> {
@@ -34,7 +34,7 @@ fun sortCards(list: MutableList<DB_Card_With_Meta>, sort: CardSort) {
         // Most recently repeated first, then newest first
         CardSort.REPETITION -> {
             list.sortWith(
-                compareByDescending<DB_Card_With_Meta> { it.card.lastRepetition }
+                compareByDescending<CardWithMeta> { it.card.lastRepetition }
                     .thenByDescending { it.card.date }
             )
         }
@@ -57,7 +57,7 @@ fun sortCards(list: MutableList<DB_Card_With_Meta>, sort: CardSort) {
         // Least known first, then newest first
         CardSort.DEFAULT -> {
             list.sortWith(
-                compareBy<DB_Card_With_Meta> { it.card.known }.thenByDescending { it.card.date }
+                compareBy<CardWithMeta> { it.card.known }.thenByDescending { it.card.date }
             )
         }
     }

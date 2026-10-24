@@ -5,9 +5,9 @@ import android.net.Uri
 import com.opencsv.CSVReader
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.db.AppDatabase
-import de.herrmann_engel.rbv.db.utils.DB_Helper_Create
-import de.herrmann_engel.rbv.db.utils.DB_Helper_Delete
-import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
+import de.herrmann_engel.rbv.db.utils.DbHelperCreate
+import de.herrmann_engel.rbv.db.utils.DbHelperDelete
+import de.herrmann_engel.rbv.db.utils.DbHelperGet
 import de.herrmann_engel.rbv.settings.AppSettings
 import de.herrmann_engel.rbv.utils.StringTools
 import java.io.InputStreamReader
@@ -59,9 +59,9 @@ class Importer(
     // Column name -> position per row type, from the "<type>_schema" rows
     private val schemas = HashMap<String, Map<String, Int>>()
 
-    private val helperCreate = DB_Helper_Create(context)
-    private val helperGet = DB_Helper_Get(context)
-    private val helperDelete = DB_Helper_Delete(context)
+    private val helperCreate = DbHelperCreate(context)
+    private val helperGet = DbHelperGet(context)
+    private val helperDelete = DbHelperDelete(context)
 
     // Translation of the uids in the file to the uids in the database, per entry type
     private val collectionIdConverter = ImportIdConverter()

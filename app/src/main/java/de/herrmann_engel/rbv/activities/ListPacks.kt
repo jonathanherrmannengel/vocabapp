@@ -16,8 +16,8 @@ import de.herrmann_engel.rbv.adapters.iconText
 import de.herrmann_engel.rbv.cardlist.CardSource
 import de.herrmann_engel.rbv.databinding.ActivityDefaultRecBinding
 import de.herrmann_engel.rbv.databinding.DiaExportBinding
-import de.herrmann_engel.rbv.db.DB_Pack_With_Meta
-import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
+import de.herrmann_engel.rbv.db.PackWithMeta
+import de.herrmann_engel.rbv.db.utils.DbHelperGet
 import de.herrmann_engel.rbv.export_import.ImportExportWork
 import de.herrmann_engel.rbv.settings.AppSettings
 import de.herrmann_engel.rbv.utils.colorAt
@@ -36,7 +36,7 @@ import java.util.Locale
  */
 class ListPacks : RBVActivity(), PackActions.Listener {
     private lateinit var binding: ActivityDefaultRecBinding
-    private lateinit var dbHelperGet: DB_Helper_Get
+    private lateinit var dbHelperGet: DbHelperGet
     private var adapter: AdapterPacks? = null
     // First row: all cards of the listed packs, or a welcome message without packs
     private var headerAdapter: AdapterListHeader? = null
@@ -46,7 +46,7 @@ class ListPacks : RBVActivity(), PackActions.Listener {
         super.onCreate(savedInstanceState)
         binding = ActivityDefaultRecBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        dbHelperGet = DB_Helper_Get(this)
+        dbHelperGet = DbHelperGet(this)
         collectionId = intent.getListCollection()
         setUpEdgeToEdge(binding.recDefault)
     }
@@ -214,7 +214,7 @@ class ListPacks : RBVActivity(), PackActions.Listener {
         collectionId?.let { dbHelperGet.countCardsInCollection(it) } ?: dbHelperGet.countCards()
 
     // Loads the packs with the number of cards in each
-    private fun loadPacks(): MutableList<DB_Pack_With_Meta> =
+    private fun loadPacks(): MutableList<PackWithMeta> =
         collectionId?.let { dbHelperGet.getAllPacksWithMetaByCollection(it) }
             ?: dbHelperGet.getAllPacksWithMeta()
 

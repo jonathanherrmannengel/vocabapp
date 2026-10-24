@@ -10,7 +10,7 @@ import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.activities.ListPacks
 import de.herrmann_engel.rbv.adapters.compare.ListCollectionCompare
 import de.herrmann_engel.rbv.databinding.RecViewCollectionOrPackBinding
-import de.herrmann_engel.rbv.db.DB_Collection_With_Meta
+import de.herrmann_engel.rbv.db.CollectionWithMeta
 import de.herrmann_engel.rbv.utils.StringTools
 import de.herrmann_engel.rbv.utils.colorAt
 import de.herrmann_engel.rbv.utils.putListCollection
@@ -21,7 +21,7 @@ import java.util.Locale
  * [AdapterListHeader].
  */
 class AdapterCollections(
-    private val collections: MutableList<DB_Collection_With_Meta>,
+    private val collections: MutableList<CollectionWithMeta>,
     private var uiFontSizeBig: Boolean
 ) :
     RecyclerView.Adapter<AdapterCollections.ViewHolder>() {
@@ -31,7 +31,7 @@ class AdapterCollections(
 
     // Updates the list; all items are redrawn if the font size setting has changed
     fun updateSettingsAndContent(
-        collectionListNew: List<DB_Collection_With_Meta>,
+        collectionListNew: List<CollectionWithMeta>,
         uiFontSizeBig: Boolean
     ) {
         val updateAllContent = this.uiFontSizeBig != uiFontSizeBig
@@ -40,7 +40,7 @@ class AdapterCollections(
     }
 
     private fun updateContent(
-        collectionListNew: List<DB_Collection_With_Meta>,
+        collectionListNew: List<CollectionWithMeta>,
         updateAllContent: Boolean
     ) {
         val diffResult =

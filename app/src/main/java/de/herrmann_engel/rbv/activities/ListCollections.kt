@@ -19,8 +19,8 @@ import de.herrmann_engel.rbv.adapters.iconText
 import de.herrmann_engel.rbv.databinding.ActivityDefaultRecBinding
 import de.herrmann_engel.rbv.databinding.DiaExportBinding
 import de.herrmann_engel.rbv.databinding.DiaImportBinding
-import de.herrmann_engel.rbv.db.DB_Collection_With_Meta
-import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
+import de.herrmann_engel.rbv.db.CollectionWithMeta
+import de.herrmann_engel.rbv.db.utils.DbHelperGet
 import de.herrmann_engel.rbv.export_import.ImportExportWork
 import de.herrmann_engel.rbv.export_import.ImportMode
 import de.herrmann_engel.rbv.media.MediaFileManager
@@ -40,7 +40,7 @@ import java.util.Locale
 class ListCollections : RBVActivity() {
     private val mediaFileManager = MediaFileManager(this)
     private lateinit var binding: ActivityDefaultRecBinding
-    private lateinit var dbHelperGet: DB_Helper_Get
+    private lateinit var dbHelperGet: DbHelperGet
     private var adapter: AdapterCollections? = null
     // First row: all packs, or a welcome message without collections
     private var headerAdapter: AdapterListHeader? = null
@@ -92,7 +92,7 @@ class ListCollections : RBVActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityDefaultRecBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        dbHelperGet = DB_Helper_Get(this)
+        dbHelperGet = DbHelperGet(this)
         setTitle(R.string.app_name)
         setUpEdgeToEdge(binding.recDefault)
         // Ask for the media folder if media entries exist but the folder is missing or inaccessible
@@ -233,7 +233,7 @@ class ListCollections : RBVActivity() {
     )
 
     // Loads the collections with the number of packs in each
-    private fun loadCollections(): MutableList<DB_Collection_With_Meta> =
+    private fun loadCollections(): MutableList<CollectionWithMeta> =
         dbHelperGet.getAllCollectionsWithMeta()
 
     // Reload the list after an import (started here or elsewhere)

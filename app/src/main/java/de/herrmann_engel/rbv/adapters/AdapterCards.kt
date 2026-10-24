@@ -24,8 +24,8 @@ import de.herrmann_engel.rbv.activities.ViewCard
 import de.herrmann_engel.rbv.adapters.compare.ListCardCompare
 import de.herrmann_engel.rbv.cardlist.CardSource
 import de.herrmann_engel.rbv.databinding.RecViewCardBinding
-import de.herrmann_engel.rbv.db.DB_Card
-import de.herrmann_engel.rbv.db.DB_Card_With_Meta
+import de.herrmann_engel.rbv.db.CardWithMeta
+import de.herrmann_engel.rbv.db.DbCard
 import de.herrmann_engel.rbv.utils.StringTools
 import de.herrmann_engel.rbv.utils.colorAt
 import de.herrmann_engel.rbv.utils.putCardId
@@ -39,7 +39,7 @@ import java.util.Locale
  * Unless the list shows a single pack, cards are colored by their pack.
  */
 class AdapterCards(
-    private val cards: MutableList<DB_Card_With_Meta>,
+    private val cards: MutableList<CardWithMeta>,
     private var uiFontSizeBig: Boolean,
     private var reverse: Boolean,
     private var showBothSides: Boolean,
@@ -94,7 +94,7 @@ class AdapterCards(
     }
 
     // In the order of the ids
-    private fun selectedCards(ids: List<Int>): ArrayList<DB_Card> {
+    private fun selectedCards(ids: List<Int>): ArrayList<DbCard> {
         val cardsById = cards.associateBy { it.card.uid }
         return ArrayList(ids.mapNotNull { cardsById[it]?.card })
     }
@@ -102,7 +102,7 @@ class AdapterCards(
     // Replaces the list content, using DiffUtil to only update changed items; all items are
     // redrawn if the displayed side(s) or the font size setting changed
     fun updateContent(
-        cardsListNew: List<DB_Card_With_Meta>,
+        cardsListNew: List<CardWithMeta>,
         reverse: Boolean,
         showBothSides: Boolean,
         uiFontSizeBig: Boolean
@@ -245,7 +245,7 @@ class AdapterCards(
      * Fills the text view of one side of a card (shortened, single line) and sets the click
      * listeners. If only one side is shown, the progress is appended.
      */
-    private fun prepareCardSide(back: Boolean, card: DB_Card_With_Meta, viewHolder: ViewHolder) {
+    private fun prepareCardSide(back: Boolean, card: CardWithMeta, viewHolder: ViewHolder) {
         val context = viewHolder.binding.root.context
         val recText = if (back) {
             viewHolder.binding.recBack
