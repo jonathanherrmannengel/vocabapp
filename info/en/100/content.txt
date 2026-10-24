@@ -3,3 +3,5 @@ As this app does not store data anywhere but on your device you need to export y
 If you export all filing boxes an output file is created and additionally you can share the backup (e.g. by sending an email to yourself) after the export finished. If you export a single filing box the share dialog is the only option.
 
 Imports and exports run in the background, so you can leave the app in the meantime. A notification shows the progress (on Android 13 and newer only if you allow notifications; the import or export works without it as well). The result is shown in the app as soon as it is done, or when you return to the app.
+
+Do not stop the app completely during an import (e.g. with “Force stop”): an interrupted import is not continued, the entries imported until then are kept. An interrupted export is started again automatically.

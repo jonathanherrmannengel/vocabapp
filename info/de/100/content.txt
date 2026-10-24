@@ -3,3 +3,5 @@ Da diese App Daten nirgendwo anders als auf Deinem Gerät speichert, musst Du vo
 Wenn Du alle Karteikästen exportierst wird eine Ausgabedatei erstellt und Du kannst zusätzlich das Backup (z.B. als Mail an Dich selbst) nach Abschluss des Exports teilen. Wenn Du einen einzelnen Karteikasten exportierst ist der Teilen-Dialog die einzige Option.
 
 Importe und Exporte laufen im Hintergrund, Du kannst die App also währenddessen verlassen. Eine Benachrichtigung zeigt den Fortschritt an (ab Android 13 nur, wenn Du Benachrichtigungen erlaubst; Import und Export funktionieren auch ohne sie). Das Ergebnis wird in der App angezeigt, sobald es vorliegt, oder wenn Du zur App zurückkehrst.
+
+Beende die App während eines Imports nicht vollständig (etwa mit „Beenden erzwingen“): Ein unterbrochener Import wird nicht fortgesetzt, die bis dahin importierten Einträge bleiben erhalten. Ein unterbrochener Export wird automatisch neu gestartet.
