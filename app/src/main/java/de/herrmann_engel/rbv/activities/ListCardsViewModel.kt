@@ -2,7 +2,7 @@ package de.herrmann_engel.rbv.activities
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import de.herrmann_engel.rbv.Globals
+import de.herrmann_engel.rbv.cardlist.CardSort
 import de.herrmann_engel.rbv.db.DB_Card_With_Meta
 
 /**
@@ -21,10 +21,10 @@ class ListCardsViewModel(private val savedState: SavedStateHandle) : ViewModel()
     val hasDisplaySettings: Boolean
         get() = savedState.contains(KEY_LIST_SORT)
 
-    var listSort: Int
-        get() = savedState[KEY_LIST_SORT] ?: Globals.SORT_CARDS_DEFAULT
+    var listSort: CardSort
+        get() = CardSort.fromValue(savedState[KEY_LIST_SORT] ?: CardSort.DEFAULT.value)
         set(value) {
-            savedState[KEY_LIST_SORT] = value
+            savedState[KEY_LIST_SORT] = value.value
         }
 
     var frontBackReverse: Boolean

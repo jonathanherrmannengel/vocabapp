@@ -5,21 +5,21 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.R
+import de.herrmann_engel.rbv.cardlist.CardSort
 import de.herrmann_engel.rbv.databinding.DiaRecBinding
 import de.herrmann_engel.rbv.databinding.RecViewBinding
 import de.herrmann_engel.rbv.db.DB_Card_With_Meta
 import de.herrmann_engel.rbv.db.DB_Media
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Delete
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
+import de.herrmann_engel.rbv.media.MediaFiles
+import de.herrmann_engel.rbv.settings.AppSettings
 import de.herrmann_engel.rbv.utils.ContextTools
 import de.herrmann_engel.rbv.utils.FormatCards
 import de.herrmann_engel.rbv.utils.SortCards
 import de.herrmann_engel.rbv.utils.createDialog
 import de.herrmann_engel.rbv.utils.showConfirmDialog
-import de.herrmann_engel.rbv.media.MediaFiles
-import de.herrmann_engel.rbv.settings.AppSettings
 
 
 /**
@@ -55,7 +55,7 @@ class AdapterMediaManage(
                 }
                 SortCards().sortCards(
                     cards,
-                    Globals.SORT_CARDS_ALPHABETICAL
+                    CardSort.ALPHABETICAL
                 )
                 // Media not linked to any card: offer to delete it
                 if (cards.isEmpty()) {

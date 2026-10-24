@@ -12,7 +12,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import de.herrmann_engel.rbv.Globals
-import de.herrmann_engel.rbv.Globals.IMPORT_MODE_SIMPLE_LIST
 import de.herrmann_engel.rbv.Globals.MAX_SIZE_COLLECTIONS_OR_PACKS_LIST_COUNTER
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.adapters.AdapterCollections
@@ -24,6 +23,7 @@ import de.herrmann_engel.rbv.databinding.DiaImportBinding
 import de.herrmann_engel.rbv.db.DB_Collection_With_Meta
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
 import de.herrmann_engel.rbv.export_import.ImportExportWork
+import de.herrmann_engel.rbv.export_import.ImportMode
 import de.herrmann_engel.rbv.media.MediaFileManager
 import de.herrmann_engel.rbv.settings.AppSettings
 import de.herrmann_engel.rbv.utils.createDialog
@@ -46,7 +46,7 @@ class ListCollections : RBVActivity() {
     // First row: all packs, or a welcome message without collections
     private var headerAdapter: AdapterListHeader? = null
     // Import options chosen in the import dialog, used once the user has picked the file
-    private var importMode = 0
+    private var importMode = ImportMode.SKIP
     private var importIncludeSettings = false
     private var importIncludeMedia = false
     // Result of the file picker for the import: start the import in the background
@@ -284,15 +284,15 @@ class ListCollections : RBVActivity() {
             importMode =
                 when (bindingStartImportDialog.diaImportRadio.checkedRadioButtonId) {
                     R.id.dia_import_radio_integrate -> {
-                        Globals.IMPORT_MODE_INTEGRATE
+                        ImportMode.INTEGRATE
                     }
 
                     R.id.dia_import_radio_duplicates -> {
-                        Globals.IMPORT_MODE_DUPLICATES
+                        ImportMode.DUPLICATES
                     }
 
                     else -> {
-                        Globals.IMPORT_MODE_SKIP
+                        ImportMode.SKIP
                     }
                 }
             importIncludeSettings = bindingStartImportDialog.diaImportIncludeSettings.isChecked
@@ -310,7 +310,7 @@ class ListCollections : RBVActivity() {
             getString(R.string.import_simple_list),
             getString(R.string.import_simple_list_info)
         ) {
-            importMode = IMPORT_MODE_SIMPLE_LIST
+            importMode = ImportMode.SIMPLE_LIST
             importIncludeSettings = false
             importIncludeMedia = false
             startImport()

@@ -3,11 +3,13 @@ package de.herrmann_engel.rbv.activities
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.content.res.AppCompatResources
-import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.R
+import de.herrmann_engel.rbv.cardlist.CardListSide
+import de.herrmann_engel.rbv.cardlist.CardSort
 import de.herrmann_engel.rbv.databinding.ActivitySettingsBinding
 import de.herrmann_engel.rbv.media.MediaFileManager
 import de.herrmann_engel.rbv.settings.AppSettings
+import de.herrmann_engel.rbv.settings.UiMode
 import de.herrmann_engel.rbv.utils.showInfoDialog
 
 /**
@@ -24,46 +26,46 @@ class Settings : RBVActivity() {
         // Default sort order of card lists
         binding.settingsSort.clearCheck()
         when (settings.defaultSort) {
-            Globals.SORT_CARDS_ALPHABETICAL -> {
+            CardSort.ALPHABETICAL -> {
                 binding.settingsSortAlphabetical.isChecked = true
             }
 
-            Globals.SORT_CARDS_RANDOM -> {
+            CardSort.RANDOM -> {
                 binding.settingsSortRandom.isChecked = true
             }
 
-            Globals.SORT_CARDS_REPETITION -> {
+            CardSort.REPETITION -> {
                 binding.settingsSortRepetition.isChecked = true
             }
 
-            Globals.SORT_CARDS_MIXED -> {
+            CardSort.MIXED -> {
                 binding.settingsSortMixed.isChecked = true
             }
 
-            else -> {
+            CardSort.DEFAULT -> {
                 binding.settingsSortNormal.isChecked = true
             }
         }
         binding.settingsSort.setOnCheckedChangeListener { _, id: Int ->
             val sortNew = when (id) {
                 R.id.settings_sort_alphabetical -> {
-                    Globals.SORT_CARDS_ALPHABETICAL
+                    CardSort.ALPHABETICAL
                 }
 
                 R.id.settings_sort_random -> {
-                    Globals.SORT_CARDS_RANDOM
+                    CardSort.RANDOM
                 }
 
                 R.id.settings_sort_repetition -> {
-                    Globals.SORT_CARDS_REPETITION
+                    CardSort.REPETITION
                 }
 
                 R.id.settings_sort_mixed -> {
-                    Globals.SORT_CARDS_MIXED
+                    CardSort.MIXED
                 }
 
                 else -> {
-                    Globals.SORT_CARDS_DEFAULT
+                    CardSort.DEFAULT
                 }
             }
             settings.defaultSort = sortNew
@@ -71,30 +73,30 @@ class Settings : RBVActivity() {
         // Side(s) of the cards shown in card lists
         binding.settingsFlashcardListSide.clearCheck()
         when (settings.flashcardListSide) {
-            Globals.FLASHCARD_LIST_SIDE_BACK -> {
+            CardListSide.BACK -> {
                 binding.settingsFlashcardListSideBack.isChecked = true
             }
 
-            Globals.FLASHCARD_LIST_SIDE_BOTH -> {
+            CardListSide.BOTH -> {
                 binding.settingsFlashcardListSideBoth.isChecked = true
             }
 
-            else -> {
+            CardListSide.FRONT -> {
                 binding.settingsFlashcardListSideFront.isChecked = true
             }
         }
         binding.settingsFlashcardListSide.setOnCheckedChangeListener { _, id: Int ->
             val sideNew = when (id) {
                 R.id.settings_flashcard_list_side_back -> {
-                    Globals.FLASHCARD_LIST_SIDE_BACK
+                    CardListSide.BACK
                 }
 
                 R.id.settings_flashcard_list_side_both -> {
-                    Globals.FLASHCARD_LIST_SIDE_BOTH
+                    CardListSide.BOTH
                 }
 
                 else -> {
-                    Globals.FLASHCARD_LIST_SIDE_FRONT
+                    CardListSide.FRONT
                 }
             }
             settings.flashcardListSide = sideNew
@@ -137,24 +139,24 @@ class Settings : RBVActivity() {
         // Theme: day, night or follow system; applied immediately
         binding.settingsUiMode.clearCheck()
         when (settings.uiMode) {
-            Globals.UI_MODE_NIGHT -> {
+            UiMode.NIGHT -> {
                 binding.settingsUiModeNight.isChecked = true
             }
 
-            Globals.UI_MODE_DAY -> {
+            UiMode.DAY -> {
                 binding.settingsUiModeDay.isChecked = true
             }
 
-            else -> {
+            UiMode.AUTO -> {
                 binding.settingsUiModeAuto.isChecked = true
             }
         }
         binding.settingsUiMode.setOnCheckedChangeListener { _, id: Int ->
-            var uiModeNew = Globals.UI_MODE_AUTO
+            var uiModeNew = UiMode.AUTO
             if (id == R.id.settings_ui_mode_night) {
-                uiModeNew = Globals.UI_MODE_NIGHT
+                uiModeNew = UiMode.NIGHT
             } else if (id == R.id.settings_ui_mode_day) {
-                uiModeNew = Globals.UI_MODE_DAY
+                uiModeNew = UiMode.DAY
             }
             settings.uiMode = uiModeNew
             settings.applyUiMode()

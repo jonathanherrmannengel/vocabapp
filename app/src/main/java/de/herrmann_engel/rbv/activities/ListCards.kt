@@ -16,6 +16,8 @@ import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.actions.CardActions
 import de.herrmann_engel.rbv.adapters.AdapterCards
+import de.herrmann_engel.rbv.cardlist.CardListSide
+import de.herrmann_engel.rbv.cardlist.CardSort
 import de.herrmann_engel.rbv.cardlist.CardSource
 import de.herrmann_engel.rbv.cardlist.ListStatsDialog
 import de.herrmann_engel.rbv.cardlist.QueryMode
@@ -91,7 +93,7 @@ class ListCards : RBVActivity(), CardActions.Listener {
         set(value) {
             viewModel.showFrontAndBack = value
         }
-    private var listSort: Int
+    private var listSort: CardSort
         get() = viewModel.listSort
         set(value) {
             viewModel.listSort = value
@@ -113,17 +115,17 @@ class ListCards : RBVActivity(), CardActions.Listener {
         if (!viewModel.hasDisplaySettings) {
             listSort = settings.defaultSort
             when (settings.flashcardListSide) {
-                Globals.FLASHCARD_LIST_SIDE_BACK -> {
+                CardListSide.BACK -> {
                     frontBackReverse = true
                     showFrontAndBack = false
                 }
 
-                Globals.FLASHCARD_LIST_SIDE_BOTH -> {
+                CardListSide.BOTH -> {
                     frontBackReverse = false
                     showFrontAndBack = true
                 }
 
-                else -> {
+                CardListSide.FRONT -> {
                     frontBackReverse = false
                     showFrontAndBack = false
                 }
@@ -353,7 +355,7 @@ class ListCards : RBVActivity(), CardActions.Listener {
     }
 
     // Loads, formats and sorts the cards of this list
-    private fun loadCards(sort: Int): MutableList<DB_Card_With_Meta> {
+    private fun loadCards(sort: CardSort): MutableList<DB_Card_With_Meta> {
         val cards = when (val cardSource = cardSource) {
             CardSource.AllCards -> dbHelperGet.allCardsWithMeta
             is CardSource.Collection ->
@@ -422,31 +424,31 @@ class ListCards : RBVActivity(), CardActions.Listener {
         changeListSortMenuItem = menu.findItem(R.id.sort_menu)
         val sortMenu = changeListSortMenuItem.subMenu
         sortMenu?.findItem(R.id.sort_menu_default)?.setOnMenuItemClickListener {
-            listSort = Globals.SORT_CARDS_DEFAULT
+            listSort = CardSort.DEFAULT
             sortList()
             updateContent(true)
             false
         }
         sortMenu?.findItem(R.id.sort_menu_random)?.setOnMenuItemClickListener {
-            listSort = Globals.SORT_CARDS_RANDOM
+            listSort = CardSort.RANDOM
             sortList()
             updateContent(true)
             false
         }
         sortMenu?.findItem(R.id.sort_menu_alphabetical)?.setOnMenuItemClickListener {
-            listSort = Globals.SORT_CARDS_ALPHABETICAL
+            listSort = CardSort.ALPHABETICAL
             sortList()
             updateContent(true)
             false
         }
         sortMenu?.findItem(R.id.sort_menu_repetition)?.setOnMenuItemClickListener {
-            listSort = Globals.SORT_CARDS_REPETITION
+            listSort = CardSort.REPETITION
             sortList()
             updateContent(true)
             false
         }
         sortMenu?.findItem(R.id.sort_menu_mixed)?.setOnMenuItemClickListener {
-            listSort = Globals.SORT_CARDS_MIXED
+            listSort = CardSort.MIXED
             sortList()
             updateContent(true)
             false

@@ -6,7 +6,6 @@ import androidx.work.CoroutineWorker
 import androidx.work.ForegroundInfo
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
-import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.export_import.ImportExportWork.KEY_ERROR_LEVEL
 import de.herrmann_engel.rbv.export_import.ImportExportWork.KEY_INCLUDE_MEDIA
@@ -18,7 +17,7 @@ import kotlinx.coroutines.withContext
 
 /**
  * Background work that imports a file (see [Importer]), started by [ImportExportWork].
- * The output is the result as IMPORT_ERROR_LEVEL_* constant.
+ * The output is the result as value of [ImportErrorLevel].
  */
 class ImportWork(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
 
@@ -27,14 +26,14 @@ class ImportWork(context: Context, params: WorkerParameters) : CoroutineWorker(c
         // An interrupted import (e.g. the app process was stopped) is not repeated: the rows
         // imported until then are kept, and a second run would import them again
         if (runAttemptCount > 0) {
-            return result(Globals.IMPORT_ERROR_LEVEL_WARN)
+            return result(ImportErrorLevel.WARN)
         }
         startForeground()
         val errorLevel = withContext(Dispatchers.IO) {
             Importer(
                 applicationContext,
                 uri,
-                inputData.getInt(KEY_MODE, Globals.IMPORT_MODE_INTEGRATE),
+                ImportMode.fromValue(inputData.getInt(KEY_MODE, ImportMode.INTEGRATE.value)),
                 inputData.getBoolean(KEY_INCLUDE_SETTINGS, false),
                 inputData.getBoolean(KEY_INCLUDE_MEDIA, false)
             ) { rows -> setForegroundAsync(notification(rows)) }.execute()
@@ -42,7 +41,8 @@ class ImportWork(context: Context, params: WorkerParameters) : CoroutineWorker(c
         return result(errorLevel)
     }
 
-    private fun result(errorLevel: Int) = Result.success(workDataOf(KEY_ERROR_LEVEL to errorLevel))
+    private fun result(errorLevel: ImportErrorLevel) =
+        Result.success(workDataOf(KEY_ERROR_LEVEL to errorLevel.value))
 
     private fun notification(rows: Int?): ForegroundInfo = ImportExportWork.foregroundInfo(
         applicationContext,

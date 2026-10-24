@@ -55,7 +55,7 @@ object ImportExportWork {
     const val KEY_INCLUDE_MEDIA = "includeMedia"
     const val KEY_COLLECTION_ID = "collectionId"
 
-    // Output data: IMPORT_ERROR_LEVEL_* of an import, path of the exported file (missing on errors)
+    // Output data: ImportErrorLevel of an import, path of the exported file (missing on errors)
     const val KEY_ERROR_LEVEL = "errorLevel"
     const val KEY_FILE = "file"
 
@@ -66,7 +66,7 @@ object ImportExportWork {
     fun startImport(
         context: Context,
         uri: Uri,
-        mode: Int,
+        mode: ImportMode,
         includeSettings: Boolean,
         includeMedia: Boolean
     ): Boolean {
@@ -75,7 +75,7 @@ object ImportExportWork {
             .setInputData(
                 workDataOf(
                     KEY_URI to uri.toString(),
-                    KEY_MODE to mode,
+                    KEY_MODE to mode.value,
                     KEY_INCLUDE_SETTINGS to includeSettings,
                     KEY_INCLUDE_MEDIA to includeMedia
                 )

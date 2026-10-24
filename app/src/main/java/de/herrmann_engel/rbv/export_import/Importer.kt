@@ -3,7 +3,6 @@ package de.herrmann_engel.rbv.export_import
 import android.content.Context
 import android.net.Uri
 import com.opencsv.CSVReader
-import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.db.AppDatabase
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Create
@@ -24,7 +23,7 @@ import java.util.TimeZone
  *
  * The uids in the file are translated to new uids via [ImportIdConverter], so packs, cards
  * and links end up assigned to the right (newly created or existing) entries. How existing
- * entries are handled depends on mode (see the IMPORT_MODE_* constants in Globals).
+ * entries are handled depends on mode (see [ImportMode]).
  *
  * Columns are looked up by name using the "<type>_schema" rows written by the export. For files
  * without schema rows, the column positions of the current format are used.
@@ -42,7 +41,7 @@ import java.util.TimeZone
 class Importer(
     val context: Context,
     private val uri: Uri,
-    private val mode: Int,
+    private val mode: ImportMode,
     private val includeSettings: Boolean,
     private val includeMedia: Boolean,
     private val onProgress: (rows: Int) -> Unit
@@ -117,11 +116,11 @@ class Importer(
         }
     }
 
-    // Imports the file and returns one of the IMPORT_ERROR_LEVEL_* constants
-    fun execute(): Int {
+    // Imports the file and returns how well it went
+    fun execute(): ImportErrorLevel {
         try {
             val inputStream = context.contentResolver.openInputStream(uri)
-                ?: return Globals.IMPORT_ERROR_LEVEL_ERROR
+                ?: return ImportErrorLevel.ERROR
             CSVReader(InputStreamReader(inputStream)).use { csvReader ->
                 importRows(csvReader)
             }
@@ -135,14 +134,14 @@ class Importer(
     }
 
     // An error if nothing was imported, a warning if something could not be imported
-    private fun resultLevel(): Int = when {
-        !importedAny -> Globals.IMPORT_ERROR_LEVEL_ERROR
-        hadProblems -> Globals.IMPORT_ERROR_LEVEL_WARN
-        else -> Globals.IMPORT_ERROR_LEVEL_OKAY
+    private fun resultLevel(): ImportErrorLevel = when {
+        !importedAny -> ImportErrorLevel.ERROR
+        hadProblems -> ImportErrorLevel.WARN
+        else -> ImportErrorLevel.OKAY
     }
 
     private fun importRows(csvReader: CSVReader) {
-        if (mode == Globals.IMPORT_MODE_SIMPLE_LIST) {
+        if (mode == ImportMode.SIMPLE_LIST) {
             createSimpleListPack()
         }
         try {
@@ -181,7 +180,7 @@ class Importer(
             helperDelete.deleteUnusedTags(createdTags)
             // Nothing could be imported from a simple list: remove the pack (and the collection)
             // created for it
-            if (mode == Globals.IMPORT_MODE_SIMPLE_LIST && !importedAny) {
+            if (mode == ImportMode.SIMPLE_LIST && !importedAny) {
                 simpleListPackId?.let { helperGet.getSinglePack(it) }?.let {
                     helperDelete.deletePack(it, true)
                 }
@@ -195,7 +194,7 @@ class Importer(
 
     // Imports one row; throws if the row cannot be imported
     private fun importRow(line: Array<String?>) {
-        if (mode == Globals.IMPORT_MODE_SIMPLE_LIST) {
+        if (mode == ImportMode.SIMPLE_LIST) {
             importSimpleListCard(line)
             return
         }
@@ -296,7 +295,7 @@ class Importer(
         val sameNamed = helperGet.getAllCollectionsByName(name)
         // Create a new collection unless one with the same name exists; in integrate mode the
         // existing one is used instead, in skip mode its content is skipped
-        if (sameNamed.isEmpty() || mode == Globals.IMPORT_MODE_DUPLICATES) {
+        if (sameNamed.isEmpty() || mode == ImportMode.DUPLICATES) {
             val collectionIdNew =
                 helperCreate
                     .createCollection(name, desc, colors, emoji, date)
@@ -305,7 +304,7 @@ class Importer(
                 collectionIdOld,
                 collectionIdNew
             )
-        } else if (mode == Globals.IMPORT_MODE_INTEGRATE) {
+        } else if (mode == ImportMode.INTEGRATE) {
             collectionIdConverter.insertPair(
                 collectionIdOld,
                 sameNamed[0].uid
@@ -317,7 +316,7 @@ class Importer(
     private fun importPack(line: Array<String?>) {
         // Files from old versions without collections: put the packs into a "_default" collection
         if (collectionIdConverter.getSize() == 0 &&
-            mode != Globals.IMPORT_MODE_SKIP
+            mode != ImportMode.SKIP
         ) {
             markImported()
             val name = "_default"
@@ -326,7 +325,7 @@ class Importer(
             val colors = 0
             val emoji = ""
             val sameNamed = helperGet.getAllCollectionsByName(name)
-            if (sameNamed.isEmpty() || mode == Globals.IMPORT_MODE_DUPLICATES) {
+            if (sameNamed.isEmpty() || mode == ImportMode.DUPLICATES) {
                 val collectionIdNew =
                     helperCreate
                         .createCollection(
@@ -358,7 +357,7 @@ class Importer(
                 name,
                 desc
             )
-        if (sameNamed.isEmpty() || mode == Globals.IMPORT_MODE_DUPLICATES) {
+        if (sameNamed.isEmpty() || mode == ImportMode.DUPLICATES) {
             val packIdNew =
                 helperCreate
                     .createPack(
@@ -371,7 +370,7 @@ class Importer(
                     )
                     .toInt()
             packIdConverter.insertPair(packIdOld, packIdNew)
-        } else if (mode == Globals.IMPORT_MODE_INTEGRATE) {
+        } else if (mode == ImportMode.INTEGRATE) {
             packIdConverter.insertPair(packIdOld, sameNamed[0].uid)
         }
     }
@@ -401,7 +400,7 @@ class Importer(
                 notes
             )
         // Existing identical cards are skipped, or reused in integrate mode
-        if (sameNamed == null || mode == Globals.IMPORT_MODE_DUPLICATES) {
+        if (sameNamed == null || mode == ImportMode.DUPLICATES) {
             val cardIdNew = helperCreate.createCard(
                 front,
                 back,
@@ -413,7 +412,7 @@ class Importer(
                 countRepetitions
             ).toInt()
             cardIdConverter.insertPair(cardIdOld, cardIdNew)
-        } else if (mode == Globals.IMPORT_MODE_INTEGRATE) {
+        } else if (mode == ImportMode.INTEGRATE) {
             cardIdConverter.insertPair(cardIdOld, sameNamed)
         }
     }

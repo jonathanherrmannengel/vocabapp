@@ -22,6 +22,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.work.WorkInfo
 import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.R
+import de.herrmann_engel.rbv.export_import.ImportErrorLevel
 import de.herrmann_engel.rbv.export_import.ImportExportWork
 import de.herrmann_engel.rbv.settings.AppSettings
 import de.herrmann_engel.rbv.utils.showInfoDialog
@@ -64,7 +65,9 @@ abstract class RBVActivity : AppCompatActivity() {
             exportFinished(output.getString(ImportExportWork.KEY_FILE)?.let { File(it) })
         } else {
             importFinished(
-                output.getInt(ImportExportWork.KEY_ERROR_LEVEL, Globals.IMPORT_ERROR_LEVEL_ERROR)
+                ImportErrorLevel.fromValue(
+                    output.getInt(ImportExportWork.KEY_ERROR_LEVEL, ImportErrorLevel.ERROR.value)
+                )
             )
         }
     }
@@ -109,16 +112,16 @@ abstract class RBVActivity : AppCompatActivity() {
         )
     }
 
-    // errorLevel: one of the IMPORT_ERROR_LEVEL_* constants
-    private fun importFinished(errorLevel: Int) {
-        when {
-            errorLevel >= Globals.IMPORT_ERROR_LEVEL_ERROR ->
+    private fun importFinished(errorLevel: ImportErrorLevel) {
+        when (errorLevel) {
+            ImportErrorLevel.ERROR ->
                 Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show()
 
-            errorLevel == Globals.IMPORT_ERROR_LEVEL_OKAY ->
+            ImportErrorLevel.OKAY ->
                 Toast.makeText(this, R.string.success, Toast.LENGTH_SHORT).show()
 
-            else -> Toast.makeText(this, R.string.import_warn, Toast.LENGTH_LONG).show()
+            ImportErrorLevel.WARN ->
+                Toast.makeText(this, R.string.import_warn, Toast.LENGTH_LONG).show()
         }
         // Also after a failed import: it may have removed entries it created, and settings from
         // the file are applied even if no entry could be imported
