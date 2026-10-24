@@ -1,0 +1,7 @@
+Jede Karteikarte hat einen Fortschritt, der bei 0 beginnt.
+
+Wenn Du eine Karteikarte im Abfrage-Modus als gewusst markierst, steigt ihr Fortschritt um 1. Markierst Du sie als nicht gewusst, sinkt der Fortschritt um 1 (aber nicht unter 0) oder wird auf 0 zurückgesetzt, wenn dies in den Einstellungen aktiviert ist.
+
+In den Karteikarten-Details kannst Du den Fortschritt auch mit den Schaltflächen „+“ und „−“ ändern.
+
+Jede Änderung des Fortschritts zählt als Wiederholung: Der Zeitpunkt der letzten Wiederholung und die Anzahl der Wiederholungen werden aktualisiert. Die Sortierung und die erweiterte Abfrage nutzen diese Werte.

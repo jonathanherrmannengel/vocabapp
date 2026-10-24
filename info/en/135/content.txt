@@ -1,0 +1,7 @@
+Each flashcard has a progress value, starting at 0.
+
+In query mode, marking a flashcard as known increases its progress by 1. Marking it as not known decreases the progress by 1 (but not below 0), or resets it to 0 if this is activated in the settings.
+
+In the flashcard details, you can also change the progress with the “+” and “−” buttons.
+
+Every change of the progress counts as a repetition: the time of the last repetition and the number of repetitions are updated. Sorting and the advanced query use these values.

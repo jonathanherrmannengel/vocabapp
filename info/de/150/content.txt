@@ -1,0 +1,5 @@
+Dateien, die Du mit Karteikarten verknüpfst, werden in einen Ordner kopiert, den Du auswählst. Die App fragt nach diesem Ordner, wenn Du die erste Datei hinzufügst.
+
+Backups enthalten nur die Verknüpfungen zu den Dateien (Option „Medien-Referenzen einschließen“ beim Export), nicht die Dateien selbst. Damit Deine Medien erhalten bleiben, sichere auch den Medienordner. Wenn Du ein Backup auf einem anderen Gerät wiederherstellst, kopiere den Ordner dorthin und wähle ihn in der App aus; die App fragt danach, wenn Verknüpfungen vorhanden sind, aber kein Ordner ausgewählt ist.
+
+In den Einstellungen kannst Du festlegen, ob die Mediendateien in anderen Apps (etwa Galerie) angezeigt werden.

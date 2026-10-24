@@ -1,3 +1,5 @@
 Da diese App Daten nirgendwo anders als auf Deinem Gerät speichert, musst Du von Zeit zu Zeit Deine Daten als Backup exportieren, um Datenverlust zu verhindern wenn Dein Handy kaputt oder verloren geht. Zusätzlich solltest Du den App Medienordner sichern, wenn Du Medien zu Karteikarten hinzufügst.
 
 Wenn Du alle Karteikästen exportierst wird eine Ausgabedatei erstellt und Du kannst zusätzlich das Backup (z.B. als Mail an Dich selbst) nach Abschluss des Exports teilen. Wenn Du einen einzelnen Karteikasten exportierst ist der Teilen-Dialog die einzige Option.
+
+Importe und Exporte laufen im Hintergrund, Du kannst die App also währenddessen verlassen. Eine Benachrichtigung zeigt den Fortschritt an (ab Android 13 nur, wenn Du Benachrichtigungen erlaubst; Import und Export funktionieren auch ohne sie). Das Ergebnis wird in der App angezeigt, sobald es vorliegt, oder wenn Du zur App zurückkehrst.

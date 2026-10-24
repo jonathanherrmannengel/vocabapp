@@ -1,0 +1,5 @@
+Files you link to flashcards are copied into a folder you select. The app asks for this folder when you add the first file.
+
+Backups only contain the links to the files (option “Include media links” when exporting), not the files themselves. To keep your media, also back up the media folder. After restoring a backup on another device, copy the folder there and select it in the app; the app asks for it if links exist but no folder is selected.
+
+In the settings, you can choose whether the media files are shown in other apps (e.g. gallery).
