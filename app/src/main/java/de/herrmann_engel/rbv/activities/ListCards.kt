@@ -353,7 +353,7 @@ class ListCards : RBVActivity(), CardActions.Listener {
     // Loads, formats and sorts the cards of this list
     private fun loadCards(sort: CardSort): MutableList<DB_Card_With_Meta> {
         val cards = when (val cardSource = cardSource) {
-            CardSource.AllCards -> dbHelperGet.allCardsWithMeta
+            CardSource.AllCards -> dbHelperGet.getAllCardsWithMeta()
             is CardSource.Collection ->
                 dbHelperGet.getAllCardsByCollectionWithMeta(cardSource.collectionId)
             is CardSource.Pack -> dbHelperGet.getAllCardsByPackWithMeta(cardSource.packId)

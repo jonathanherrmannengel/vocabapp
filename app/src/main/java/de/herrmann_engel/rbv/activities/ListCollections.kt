@@ -234,7 +234,7 @@ class ListCollections : RBVActivity() {
 
     // Loads the collections with the number of packs in each
     private fun loadCollections(): MutableList<DB_Collection_With_Meta> =
-        dbHelperGet.allCollectionsWithMeta
+        dbHelperGet.getAllCollectionsWithMeta()
 
     // Reload the list after an import (started here or elsewhere)
     override fun onImportFinished() {

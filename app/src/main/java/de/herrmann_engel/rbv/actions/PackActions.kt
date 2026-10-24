@@ -82,7 +82,7 @@ class PackActions(val activity: ComponentActivity, private val listener: Listene
             activity.getString(R.string.move_pack)
         )
         val dbHelperGet = DB_Helper_Get(activity)
-        val collections = dbHelperGet.allCollections
+        val collections = dbHelperGet.getAllCollections()
         val adapter = AdapterCollectionsMovePack(collections, packs, moveDialog, listener::movedPacks)
         bindingMoveDialog.diaRec.adapter = adapter
         bindingMoveDialog.diaRec.layoutManager = LinearLayoutManager(activity)

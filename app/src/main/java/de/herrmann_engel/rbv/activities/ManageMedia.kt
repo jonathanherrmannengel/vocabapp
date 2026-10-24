@@ -49,7 +49,7 @@ class ManageMedia : RBVActivity() {
 
     private fun setRecView() {
         val dbHelperGet = DB_Helper_Get(this)
-        val mediaList = dbHelperGet.allMedia.toMutableList()
+        val mediaList = dbHelperGet.getAllMedia().toMutableList()
         val adapter = AdapterMediaManage(mediaList, mediaFileManager)
         binding.recMediaManage.adapter = adapter
         binding.recMediaManage.layoutManager = LinearLayoutManager(this)

@@ -216,7 +216,7 @@ class ListPacks : RBVActivity(), PackActions.Listener {
     // Loads the packs with the number of cards in each
     private fun loadPacks(): MutableList<DB_Pack_With_Meta> =
         collectionId?.let { dbHelperGet.getAllPacksWithMetaByCollection(it) }
-            ?: dbHelperGet.allPacksWithMeta
+            ?: dbHelperGet.getAllPacksWithMeta()
 
     // Reload the list after an import, which may have added packs or changed the font size setting
     override fun onImportFinished() {

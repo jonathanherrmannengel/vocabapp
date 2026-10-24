@@ -68,18 +68,14 @@ class DB_Helper_Get(context: Context) {
     fun getSingleTag(tagName: String): DB_Tag? = dbHelper.tagDao.getSingleTag(tagName)
 
     // Get All: Collections
-    val allCollections: List<DB_Collection>
-        get() = dbHelper.collectionDao.all
+    fun getAllCollections(): List<DB_Collection> = dbHelper.collectionDao.all
 
     fun getAllCollectionsByName(name: String): List<DB_Collection> = dbHelper.collectionDao.getAllByName(name)
 
-    val allCollectionsWithMeta: MutableList<DB_Collection_With_Meta>
-        get() = dbHelper.collectionDao.allWithMeta
+    fun getAllCollectionsWithMeta(): MutableList<DB_Collection_With_Meta> =
+        dbHelper.collectionDao.allWithMeta
 
     // Get All: Packs
-    val allPacks: List<DB_Pack>
-        get() = dbHelper.packDao.all
-
     fun getAllPacksByCollection(collectionId: Int): List<DB_Pack> = dbHelper.packDao.getAllByCollection(collectionId)
 
     fun getAllPacksByCollectionAndNameAndDesc(
@@ -88,14 +84,12 @@ class DB_Helper_Get(context: Context) {
         desc: String
     ): List<DB_Pack> = dbHelper.packDao.getAllByCollectionAndNameAndDesc(collectionId, name, desc)
 
-    val allPacksWithMeta: MutableList<DB_Pack_With_Meta>
-        get() = dbHelper.packDao.allWithMeta
+    fun getAllPacksWithMeta(): MutableList<DB_Pack_With_Meta> = dbHelper.packDao.allWithMeta
 
     fun getAllPacksWithMetaByCollection(collectionId: Int): MutableList<DB_Pack_With_Meta> = dbHelper.packDao.getAllByCollectionWithMeta(collectionId)
 
     // Get All: Cards
-    val allCardsWithMeta: MutableList<DB_Card_With_Meta>
-        get() = dbHelper.cardDao.allWithMeta
+    fun getAllCardsWithMeta(): MutableList<DB_Card_With_Meta> = dbHelper.cardDao.allWithMeta
 
     fun getAllCardsByPackWithMeta(packId: Int): MutableList<DB_Card_With_Meta> = dbHelper.cardDao.getAllByPackWithMeta(packId)
 
@@ -135,8 +129,7 @@ class DB_Helper_Get(context: Context) {
     fun getAllCardsByMediaWithMeta(mediaId: Int): MutableList<DB_Card_With_Meta> = dbHelper.cardDao.getAllByMedia(mediaId)
 
     // Get All: Media
-    val allMedia: List<DB_Media>
-        get() = dbHelper.mediaDao.all
+    fun getAllMedia(): List<DB_Media> = dbHelper.mediaDao.all
 
     fun getCardMedia(cardId: Int): List<DB_Media> = dbHelper.mediaDao.getAllByCard(cardId)
 
@@ -148,8 +141,7 @@ class DB_Helper_Get(context: Context) {
     }
 
     // Get All: Tags
-    val allTags: List<DB_Tag>
-        get() = dbHelper.tagDao.all
+    fun getAllTags(): List<DB_Tag> = dbHelper.tagDao.all
 
     fun getCardTags(cardId: Int): MutableList<DB_Tag> = dbHelper.tagDao.getAllByCard(cardId)
 }

@@ -18,9 +18,6 @@ interface DB_Pack_DAO {
     @Query("SELECT EXISTS (SELECT 1 FROM db_pack WHERE uid=:packId LIMIT 1)")
     fun existsPack(packId: Int): Boolean
 
-    @get:Query("SELECT * FROM db_pack ORDER BY name COLLATE NOCASE ASC, uid DESC")
-    val all: List<DB_Pack>
-
     @get:Query("SELECT *, (SELECT COUNT(*) FROM db_card WHERE pack=db_pack.uid) AS counter, (SELECT name FROM db_collection WHERE uid=db_pack.collection) AS collectionName FROM db_pack ORDER BY name COLLATE NOCASE ASC, uid DESC")
     val allWithMeta: MutableList<DB_Pack_With_Meta>
 

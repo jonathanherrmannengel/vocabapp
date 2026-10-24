@@ -95,7 +95,7 @@ class MediaFileManager(
             val dbHelperGet = DB_Helper_Get(activity)
             // Check: No media folder set
             if (folder.isNullOrEmpty()) {
-                if (dbHelperGet.allMedia.isNotEmpty()) {
+                if (dbHelperGet.getAllMedia().isNotEmpty()) {
                     showSelectDialog(activity.getString(R.string.select_folder_help_db_entries))
                 }
             } else {

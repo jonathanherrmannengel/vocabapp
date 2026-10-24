@@ -9,8 +9,7 @@ import android.database.Cursor
 class DB_Helper_Export(context: Context) {
     private val dbHelper = DB_Helper(context)
 
-    val allCollectionIds: List<Int>
-        get() = dbHelper.collectionDao.allIds
+    fun getAllCollectionIds(): List<Int> = dbHelper.collectionDao.allIds
 
     fun getSingleCollection(collectionId: Int): Cursor = dbHelper.collectionDao.getOneExport(collectionId)
 
@@ -18,24 +17,20 @@ class DB_Helper_Export(context: Context) {
 
     fun getAllCardsByCollection(collectionId: Int): Cursor = dbHelper.cardDao.getAllExportByCollection(collectionId)
 
-    val allMedia: Cursor
-        get() = dbHelper.mediaDao.allExport
+    fun getAllMedia(): Cursor = dbHelper.mediaDao.allExport
 
     fun getAllMediaByCollection(collectionId: Int): Cursor = dbHelper.mediaDao.getAllExportByCollection(collectionId)
 
-    val allMediaLinks: Cursor
-        get() = dbHelper.mediaLinkCardDao.allExport
+    fun getAllMediaLinks(): Cursor = dbHelper.mediaLinkCardDao.allExport
 
     fun getAllMediaLinksByCollection(collectionId: Int): Cursor = dbHelper.mediaLinkCardDao.getAllExportByCollection(collectionId)
 
 
-    val allTags: Cursor
-        get() = dbHelper.tagDao.allExport
+    fun getAllTags(): Cursor = dbHelper.tagDao.allExport
 
     fun getAllTagsByCollection(collectionId: Int): Cursor = dbHelper.tagDao.getAllExportByCollection(collectionId)
 
-    val allTagLinks: Cursor
-        get() = dbHelper.tagLinkCardDao.allExport
+    fun getAllTagLinks(): Cursor = dbHelper.tagLinkCardDao.allExport
 
     fun getAllTagLinksByCollection(collectionId: Int): Cursor = dbHelper.tagLinkCardDao.getAllExportByCollection(collectionId)
 }

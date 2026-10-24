@@ -64,7 +64,7 @@ class AdvancedSearch : RBVActivity() {
         dbHelperGet = DB_Helper_Get(this)
         // Packs including card counts and collection names, loaded in the background
         lifecycleScope.launch {
-            val packs = withContext(Dispatchers.IO) { dbHelperGet.allPacksWithMeta }
+            val packs = withContext(Dispatchers.IO) { dbHelperGet.getAllPacksWithMeta() }
             binding.recAdvancedSearch.adapter = AdapterPacksAdvancedSearch(packs, viewModel::isPackSelected) { packId, checked ->
                 viewModel.setPackSelected(packId, checked)
             }
@@ -135,7 +135,7 @@ class AdvancedSearch : RBVActivity() {
         // The tag filter is only shown if there are tags
         if (dbHelperGet.hasTags()) {
             binding.advancedSearchContainerTags.visibility = View.VISIBLE
-            val tags = dbHelperGet.allTags
+            val tags = dbHelperGet.getAllTags()
             val adapterTags = AdapterTagsAdvancedSearch(tags, viewModel::isTagSelected) { tagId, checked ->
                 viewModel.setTagSelected(tagId, checked)
             }

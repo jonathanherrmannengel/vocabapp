@@ -104,7 +104,7 @@ class Exporter(
                 index = collectionId.toString()
                 collectionIds = listOf(collectionId)
             } else {
-                collectionIds = dbHelperExport.allCollectionIds
+                collectionIds = dbHelperExport.getAllCollectionIds()
                 index = "all"
             }
             val file = File(
@@ -148,7 +148,7 @@ class Exporter(
                         file.name,
                         if (singleCollection) {
                             dbHelperExport.getAllMediaByCollection(collectionId)
-                        } else dbHelperExport.allMedia,
+                        } else dbHelperExport.getAllMedia(),
                         true
                     )
                     || !exportCSV(
@@ -156,7 +156,7 @@ class Exporter(
                         file.name,
                         if (singleCollection) {
                             dbHelperExport.getAllMediaLinksByCollection(collectionId)
-                        } else dbHelperExport.allMediaLinks,
+                        } else dbHelperExport.getAllMediaLinks(),
                         true
                     )
                 ) {
@@ -168,7 +168,7 @@ class Exporter(
                     file.name,
                     if (singleCollection) {
                         dbHelperExport.getAllTagsByCollection(collectionId)
-                    } else dbHelperExport.allTags,
+                    } else dbHelperExport.getAllTags(),
                     true
                 )
                 || !exportCSV(
@@ -176,7 +176,7 @@ class Exporter(
                     file.name,
                     if (singleCollection) {
                         dbHelperExport.getAllTagLinksByCollection(collectionId)
-                    } else dbHelperExport.allTagLinks,
+                    } else dbHelperExport.getAllTagLinks(),
                     true
                 )
             ) {

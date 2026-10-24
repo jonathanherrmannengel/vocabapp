@@ -45,7 +45,7 @@ class ManageFiles : RBVActivity() {
         val files = mediaFileManager.listFiles()
         if (files != null) {
             // Names of all media entries, so the files can be checked without a database query each
-            val mediaNames = DB_Helper_Get(this).allMedia.mapTo(HashSet()) { it.file }
+            val mediaNames = DB_Helper_Get(this).getAllMedia().mapTo(HashSet()) { it.file }
             // Ignore directories and the .nomedia file
             val filesWithoutMedia = files.filter {
                 it.isFile && it.name != ".nomedia" && it.name !in mediaNames
