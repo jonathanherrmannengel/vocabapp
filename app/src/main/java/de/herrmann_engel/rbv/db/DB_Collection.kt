@@ -5,7 +5,8 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 /**
- * A collection is the top level of the hierarchy and groups packs.
+ * A collection is the top level of the hierarchy and groups packs. Shown to users as
+ * "filing box".
  */
 @Entity
 data class DB_Collection(

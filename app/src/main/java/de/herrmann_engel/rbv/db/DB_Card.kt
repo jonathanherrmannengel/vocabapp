@@ -7,7 +7,8 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 
 /**
- * A single flashcard with a front and a back side, belonging to a pack.
+ * A single card with a front and a back side, belonging to a pack. Shown to users as
+ * "flashcard".
  */
 @Entity(
     foreignKeys = [ForeignKey(

@@ -7,7 +7,7 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 
 /**
- * A pack belongs to a collection and contains cards.
+ * A pack belongs to a collection and contains cards. Shown to users as "deck".
  */
 @Entity(
     foreignKeys = [ForeignKey(
