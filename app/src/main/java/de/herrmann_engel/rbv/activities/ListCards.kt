@@ -223,14 +223,9 @@ class ListCards : RBVActivity(), CardActions.Listener {
 
     // Missing media file: open the card's media settings
     private fun openCardMedia(cardId: Int) {
-        try {
-            val intent = Intent(this, EditCardMedia::class.java)
-            intent.putCardId(cardId)
-            startActivity(intent)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show()
-        }
+        val intent = Intent(this, EditCardMedia::class.java)
+        intent.putCardId(cardId)
+        startActivity(intent)
     }
 
     public override fun onResume() {
