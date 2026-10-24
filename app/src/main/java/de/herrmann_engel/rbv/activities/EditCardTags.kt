@@ -8,7 +8,9 @@ import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.adapters.AdapterTagLinkCard
 import de.herrmann_engel.rbv.databinding.ActivityEditCardTagsBinding
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Create
+import de.herrmann_engel.rbv.db.utils.DB_Helper_Delete
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
+import de.herrmann_engel.rbv.db.utils.DB_Helper_Update
 import de.herrmann_engel.rbv.utils.colorAt
 import de.herrmann_engel.rbv.utils.getCardId
 
@@ -76,7 +78,11 @@ class EditCardTags : RBVActivity() {
 
     private fun setRecView() {
         val tagList = dbHelperGet.getCardTags(cardId)
-        val adapter = AdapterTagLinkCard(tagList, cardId)
+        val adapter = AdapterTagLinkCard(
+            tagList,
+            onRemove = { DB_Helper_Delete(this).deleteTagLink(it.uid, cardId) },
+            onSave = { DB_Helper_Update(this).updateTag(it) }
+        )
         binding.editCardTagsRec.adapter = adapter
         binding.editCardTagsRec.layoutManager = LinearLayoutManager(this)
     }

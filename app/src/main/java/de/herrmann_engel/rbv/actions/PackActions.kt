@@ -9,6 +9,7 @@ import de.herrmann_engel.rbv.db.AppDatabase
 import de.herrmann_engel.rbv.db.DB_Pack
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Delete
 import de.herrmann_engel.rbv.db.utils.DB_Helper_Get
+import de.herrmann_engel.rbv.db.utils.DB_Helper_Update
 import de.herrmann_engel.rbv.utils.createDialog
 import de.herrmann_engel.rbv.utils.runInBackground
 import de.herrmann_engel.rbv.utils.showConfirmDialog
@@ -83,10 +84,27 @@ class PackActions(val activity: ComponentActivity, private val listener: Listene
         )
         val dbHelperGet = DB_Helper_Get(activity)
         val collections = dbHelperGet.getAllCollections()
-        val adapter = AdapterCollectionsMovePack(collections, packs, moveDialog, listener::movedPacks)
+        val adapter = AdapterCollectionsMovePack(collections) { collectionId ->
+            moveDialog.dismiss()
+            moveToCollection(packs, collectionId)
+        }
         bindingMoveDialog.diaRec.adapter = adapter
         bindingMoveDialog.diaRec.layoutManager = LinearLayoutManager(activity)
         moveDialog.show()
+    }
+
+    // Only packs not already in the collection are moved and reported
+    private fun moveToCollection(packs: List<DB_Pack>, collectionId: Int) {
+        val dbHelperUpdate = DB_Helper_Update(activity)
+        val movedPacks = packs.filter { it.collectionId != collectionId }
+        // All packs are moved or none
+        AppDatabase.getInstance(activity).runInTransaction {
+            for (pack in movedPacks) {
+                pack.collectionId = collectionId
+                dbHelperUpdate.updatePack(pack)
+            }
+        }
+        listener.movedPacks(ArrayList(movedPacks.map { it.uid }))
     }
 
     fun move(pack: DB_Pack) {

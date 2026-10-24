@@ -17,19 +17,19 @@ import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.databinding.DiaEditTagBinding
 import de.herrmann_engel.rbv.databinding.RecViewTagsBinding
 import de.herrmann_engel.rbv.db.DB_Tag
-import de.herrmann_engel.rbv.db.utils.DB_Helper_Delete
-import de.herrmann_engel.rbv.db.utils.DB_Helper_Update
 import de.herrmann_engel.rbv.utils.StringTools
 import de.herrmann_engel.rbv.utils.createDialog
 import de.herrmann_engel.rbv.utils.findActivity
 
 /**
  * List of the tags of a card (in the card's tag settings). Tags can be removed from the card
- * or edited (name, emoji, color); edits affect the tag on all cards.
+ * (onRemove) or edited (name, emoji, color); edits affect the tag on all cards. onSave stores an
+ * edited tag and returns false if the name is already used by another tag.
  */
 class AdapterTagLinkCard(
     private val tags: MutableList<DB_Tag>,
-    private val cardId: Int,
+    private val onRemove: (tag: DB_Tag) -> Unit,
+    private val onSave: (tag: DB_Tag) -> Boolean
 ) : RecyclerView.Adapter<AdapterTagLinkCard.ViewHolder>() {
     class ViewHolder(val binding: RecViewTagsBinding) : RecyclerView.ViewHolder(binding.root)
 
@@ -54,8 +54,7 @@ class AdapterTagLinkCard(
             viewHolder.binding.recTagsName.text = currentTag.name
             viewHolder.binding.recTagsDelete.visibility = View.VISIBLE
             viewHolder.binding.recTagsDelete.setOnClickListener {
-                val dbHelperDelete = DB_Helper_Delete(context)
-                dbHelperDelete.deleteTagLink(currentTag.uid, cardId)
+                onRemove(currentTag)
                 tags.remove(currentTag)
                 notifyItemRemoved(viewHolder.bindingAdapterPosition)
                 notifyItemRangeChanged(viewHolder.bindingAdapterPosition, tags.size)
@@ -154,8 +153,7 @@ class AdapterTagLinkCard(
                             newTag.color =
                                 color?.let { it1 -> "#" + Integer.toHexString(it1).substring(2) }
                                     ?: currentTag.color
-                            val dbHelperUpdate = DB_Helper_Update(context)
-                            if (dbHelperUpdate.updateTag(newTag)) {
+                            if (onSave(newTag)) {
                                 tags[tags.indexOf(currentTag)] = newTag
                                 notifyItemChanged(viewHolder.bindingAdapterPosition)
                                 editDialog.dismiss()
