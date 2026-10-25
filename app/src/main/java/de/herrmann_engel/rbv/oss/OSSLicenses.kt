@@ -20,6 +20,11 @@ class OSSLicenses(licenseIdentifier: String, val project: OSSProject) {
                 licenseFilePath = "oss/LICENSE-Apache-2.0.txt"
             }
 
+            "CC-BY-4.0" -> {
+                licenseLink = "https://creativecommons.org/licenses/by/4.0/legalcode"
+                licenseFilePath = "oss/LICENSE-CC-BY-4.0.txt"
+            }
+
             "CC-BY-SA-4.0" -> {
                 licenseLink = "https://creativecommons.org/licenses/by-sa/4.0/legalcode"
                 licenseFilePath = "oss/LICENSE-CC-BY-SA-4.0.txt"

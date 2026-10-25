@@ -47,6 +47,12 @@
         <projectCode>https://github.com/vanniktech/Emoji</projectCode>
     </item>
     <item>
+        <identifier>CC-BY-4.0</identifier>
+        <projectDev>Twitter, Inc and other contributors</projectDev>
+        <projectName>Twemoji (emoji images of Emoji)</projectName>
+        <projectCode>https://github.com/twitter/twemoji</projectCode>
+    </item>
+    <item>
         <identifier>Apache-2.0</identifier>
         <projectDev>Saket Narayan</projectDev>
         <projectName>BetterLinkMovementMethod</projectName>
@@ -64,7 +70,7 @@
         <identifier>Apache-2.0</identifier>
         <projectDev>Google</projectDev>
         <projectName>AndroidX</projectName>
-        <projectId>androidx.appcompat, androidx.core, androidx.documentfile, androidx.lifecycle, androidx.room</projectId>
+        <projectId>androidx.appcompat, androidx.core, androidx.databinding, androidx.documentfile, androidx.lifecycle, androidx.room, androidx.work</projectId>
     </item>
     <item>
         <identifier>Apache-2.0</identifier>
