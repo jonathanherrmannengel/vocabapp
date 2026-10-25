@@ -2,4 +2,5 @@ Umfangreiche interne Überarbeitung für mehr Stabilität und Datenkonsistenz.
 Schnellerer und zuverlässigerer Backup-Import und -Export.
 Bessere Leistung bei großen Datenmengen.
 Optimierte Farben.
+Verbessertes Logo.
 Fehlerkorrekturen.
