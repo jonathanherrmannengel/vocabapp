@@ -29,8 +29,9 @@ class DbHelperDelete(context: Context) {
 
     /**
      * Deletes a pack. If it still contains cards, these are deleted as well if force is set,
-     * otherwise nothing is deleted and false is returned. As with deleteCard, media files no
-     * longer linked to any card are deleted too, and so are tags no longer assigned to any card.
+     * otherwise nothing is deleted and false is returned. As with deleteCard, media entries no
+     * longer linked to any card are deleted too (the files are kept), and so are tags no longer
+     * assigned to any card.
      */
     fun deletePack(pack: DbPack, force: Boolean): Boolean =
         dbHelper.database.runInTransaction<Boolean> {
@@ -49,8 +50,8 @@ class DbHelperDelete(context: Context) {
         }
 
     /**
-     * Deletes a card and its media and tag links. Media files and tags no longer linked to any card
-     * are deleted too.
+     * Deletes a card and its media and tag links. Media entries and tags no longer linked to any
+     * card are deleted too (the files are kept).
      */
     fun deleteCard(card: DbCard): Boolean =
         dbHelper.database.runInTransaction<Boolean> {
@@ -68,15 +69,19 @@ class DbHelperDelete(context: Context) {
         dbHelper.mediaDao.deleteMedia(fileId)
     }
 
-    // Removes a media file from a card; returns true if the media entry was deleted because it is
-    // no longer used
+    /**
+     * Removes a media file from a card; returns true if the media entry was deleted because it is
+     * no longer used.
+     */
     fun deleteMediaLink(fileId: Int, cardId: Int): Boolean =
         dbHelper.database.runInTransaction<Boolean> {
             dbHelper.mediaLinkCardDao.deleteMediaLinkCard(fileId, cardId)
             deleteUnusedMedia(listOf(fileId)) > 0
         }
 
-    // Removes a tag from a card; returns true if the tag was deleted because it is no longer used
+    /**
+     * Removes a tag from a card; returns true if the tag was deleted because it is no longer used.
+     */
     fun deleteTagLink(tagId: Int, cardId: Int): Boolean =
         dbHelper.database.runInTransaction<Boolean> {
             dbHelper.tagLinkCardDao.deleteTagLinkCard(tagId, cardId)
