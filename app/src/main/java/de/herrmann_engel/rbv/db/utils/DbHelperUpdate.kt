@@ -36,6 +36,14 @@ class DbHelperUpdate(context: Context) {
         return true
     }
 
+    // Saves a new progress of the card; each change of the progress counts as a repetition
+    fun updateCardProgress(card: DbCard, known: Int) {
+        card.known = known
+        card.lastRepetition = System.currentTimeMillis() / 1000L
+        card.countRepetitions++
+        updateCard(card)
+    }
+
     fun updateTag(tag: DbTag): Boolean {
         val dbHelperGet = DbHelperGet(dbHelper.context)
         // Do not allow tag name already in use

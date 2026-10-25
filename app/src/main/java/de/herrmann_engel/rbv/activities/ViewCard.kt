@@ -189,21 +189,14 @@ class ViewCard : RBVActivity(), CardActions.Listener {
         )
         known = card.known
         updateCardKnown()
-        // Each change of the progress counts as a repetition
         binding.cardMinus.setOnClickListener {
-            known = 0.coerceAtLeast(--known)
-            card.known = known
-            card.lastRepetition = System.currentTimeMillis() / 1000L
-            card.countRepetitions++
-            dbHelperUpdate.updateCard(card)
+            known = 0.coerceAtLeast(known - 1)
+            dbHelperUpdate.updateCardProgress(card, known)
             updateCardKnown()
         }
         binding.cardPlus.setOnClickListener {
             known++
-            card.known = known
-            card.lastRepetition = System.currentTimeMillis() / 1000L
-            card.countRepetitions++
-            dbHelperUpdate.updateCard(card)
+            dbHelperUpdate.updateCardProgress(card, known)
             updateCardKnown()
         }
         updateColors()

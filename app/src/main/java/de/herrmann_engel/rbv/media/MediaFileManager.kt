@@ -378,10 +378,16 @@ class MediaFileManager(
     private fun deleteMediaFile(name: String) {
         val file = getFile(name)
         if (file != null && file.isFile) {
-            DocumentsContract.deleteDocument(
-                activity.contentResolver,
-                file.uri
-            )
+            try {
+                DocumentsContract.deleteDocument(
+                    activity.contentResolver,
+                    file.uri
+                )
+            } catch (e: Exception) {
+                // E.g. the file has been deleted meanwhile or the permission has been revoked
+                e.printStackTrace()
+                Toast.makeText(activity, R.string.error, Toast.LENGTH_SHORT).show()
+            }
             clearCachedFiles()
         } else {
             Toast.makeText(activity, R.string.error, Toast.LENGTH_SHORT).show()

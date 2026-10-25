@@ -154,12 +154,9 @@ class QueryMode(
         }
     }
 
-    // Saves the new progress as a repetition of the card
+    // Saves the new progress and reports the changed card (onCardChanged)
     private fun cardKnownChanged(card: DbCard, known: Int) {
-        card.known = known
-        card.lastRepetition = System.currentTimeMillis() / 1000L
-        card.countRepetitions++
-        dbHelperUpdate.updateCard(card)
+        dbHelperUpdate.updateCardProgress(card, known)
         onCardChanged(position)
     }
 
