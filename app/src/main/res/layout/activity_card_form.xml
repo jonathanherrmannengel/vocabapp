@@ -5,7 +5,7 @@
     android:gravity="center">
 
     <ScrollView
-        android:id="@+id/new_card_layout"
+        android:id="@+id/card_form_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="20dp">
@@ -16,7 +16,7 @@
             android:orientation="vertical">
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/new_card_front_layout"
+                android:id="@+id/card_form_front_layout"
                 style="@style/material_edit_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -26,7 +26,7 @@
                 android:theme="@style/material_edit_text">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/new_card_front"
+                    android:id="@+id/card_form_front"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
@@ -35,7 +35,7 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/new_card_back_layout"
+                android:id="@+id/card_form_back_layout"
                 style="@style/material_edit_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -45,7 +45,7 @@
                 android:theme="@style/material_edit_text">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/new_card_back"
+                    android:id="@+id/card_form_back"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
@@ -54,7 +54,7 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/new_card_notes_layout"
+                android:id="@+id/card_form_notes_layout"
                 style="@style/material_edit_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -63,7 +63,7 @@
                 android:theme="@style/material_edit_text">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/new_card_notes"
+                    android:id="@+id/card_form_notes"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
