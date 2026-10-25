@@ -152,11 +152,18 @@ class Settings : RBVActivity() {
             }
         }
         binding.settingsUiMode.setOnCheckedChangeListener { _, id: Int ->
-            var uiModeNew = UiMode.AUTO
-            if (id == R.id.settings_ui_mode_night) {
-                uiModeNew = UiMode.NIGHT
-            } else if (id == R.id.settings_ui_mode_day) {
-                uiModeNew = UiMode.DAY
+            val uiModeNew = when (id) {
+                R.id.settings_ui_mode_night -> {
+                    UiMode.NIGHT
+                }
+
+                R.id.settings_ui_mode_day -> {
+                    UiMode.DAY
+                }
+
+                else -> {
+                    UiMode.AUTO
+                }
             }
             settings.uiMode = uiModeNew
             settings.applyUiMode()
