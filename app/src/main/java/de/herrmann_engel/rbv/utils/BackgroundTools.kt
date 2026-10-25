@@ -9,7 +9,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 /**
- * Runs a database operation that can take long with much data (e.g. deleting many cards) in the
+ * Runs an operation that can take long (e.g. deleting many cards or copying a large file) in the
  * background, so the app does not freeze, and then calls onDone. Meanwhile, a dialog blocks the
  * activity, so the user cannot navigate away or use items that are being changed (see
  * showWaitDialog). The operation is always completed. If the user has left the app meanwhile,

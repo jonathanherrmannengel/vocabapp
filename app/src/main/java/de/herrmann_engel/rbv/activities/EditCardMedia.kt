@@ -13,11 +13,14 @@ import de.herrmann_engel.rbv.adapters.AdapterMediaLinkCard
 import de.herrmann_engel.rbv.databinding.ActivityEditCardMediaBinding
 import de.herrmann_engel.rbv.databinding.DiaFileExistsBinding
 import de.herrmann_engel.rbv.db.utils.DbHelperCreate
+import de.herrmann_engel.rbv.db.utils.DbHelperDelete
 import de.herrmann_engel.rbv.db.utils.DbHelperGet
 import de.herrmann_engel.rbv.media.MediaFileManager
 import de.herrmann_engel.rbv.utils.colorAt
 import de.herrmann_engel.rbv.utils.createDialog
 import de.herrmann_engel.rbv.utils.getCardId
+import de.herrmann_engel.rbv.utils.runInBackground
+import java.io.IOException
 
 /**
  * Manages the media files of the card passed as "card" extra. New files are picked by the user
@@ -117,56 +120,87 @@ class EditCardMedia : RBVActivity() {
         setRecView()
     }
 
-    // Copies the picked file into the media folder and links it to the card
+    // Copies the picked file into the media folder in the background and links it to the card
     private fun createMediaFile(
         outputDirectory: DocumentFile,
         mime: String,
         inputFileName: String,
         fileUri: Uri
     ) {
-        try {
-            val output = outputDirectory.createFile(mime, inputFileName)!!
-            val outputFileName = output.name
-            if (outputFileName == null) {
-                output.delete()
-                throw IllegalStateException("Created file has no name")
+        var linked = false
+        runInBackground(this, {
+            copyFile(outputDirectory, mime, inputFileName, fileUri)?.let { outputFileName ->
+                linked = linkMedia(outputFileName, mime)
             }
-            val outputStream = contentResolver.openOutputStream(output.uri)!!
-            val inputStream = contentResolver.openInputStream(fileUri)!!
-            val buffer = ByteArray(1024)
-            var read: Int
-            while (inputStream.read(buffer).also { read = it } != -1) {
-                outputStream.write(buffer, 0, read)
-            }
-            inputStream.close()
-            outputStream.flush()
-            outputStream.close()
+        }) {
             mediaFileManager.clearCachedFiles()
-            addMediaLink(outputFileName, mime)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show()
+            showLinkResult(linked)
         }
     }
 
-    // Creates the media entry for the file name (if it does not exist yet) and links it to the card
-    private fun addMediaLink(outputFileName: String, mime: String) {
-        try {
-            val dbHelperCreate = DbHelperCreate(this)
-            val fileId = dbHelperGet.getSingleMedia(outputFileName)?.uid
-                ?: dbHelperCreate.createMedia(outputFileName, mime).toInt()
-            dbHelperCreate.createMediaLink(fileId, cardId)
-            setRecView()
-            Toast.makeText(this, R.string.success, Toast.LENGTH_SHORT).show()
+    // Returns the name of the new file, or null if the copy failed; an incomplete file is deleted
+    private fun copyFile(
+        outputDirectory: DocumentFile,
+        mime: String,
+        inputFileName: String,
+        fileUri: Uri
+    ): String? {
+        val output = outputDirectory.createFile(mime, inputFileName) ?: return null
+        return try {
+            val outputFileName = output.name ?: throw IOException("Created file has no name")
+            val inputStream = contentResolver.openInputStream(fileUri)
+                ?: throw IOException("Picked file cannot be read")
+            inputStream.use { input ->
+                val outputStream = contentResolver.openOutputStream(output.uri)
+                    ?: throw IOException("Created file cannot be written")
+                outputStream.use { input.copyTo(it) }
+            }
+            outputFileName
         } catch (e: Exception) {
             e.printStackTrace()
+            output.delete()
+            null
+        }
+    }
+
+    // Links an existing file of the media folder to the card
+    private fun addMediaLink(fileName: String, mime: String) {
+        showLinkResult(linkMedia(fileName, mime))
+    }
+
+    // Creates the media entry for the file name (if it does not exist yet) and links it to the
+    // card; returns false if that failed
+    private fun linkMedia(fileName: String, mime: String): Boolean =
+        try {
+            val dbHelperCreate = DbHelperCreate(this)
+            val fileId = dbHelperGet.getSingleMedia(fileName)?.uid
+                ?: dbHelperCreate.createMedia(fileName, mime).toInt()
+            dbHelperCreate.createMediaLink(fileId, cardId)
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+
+    private fun showLinkResult(linked: Boolean) {
+        if (linked) {
+            setRecView()
+            Toast.makeText(this, R.string.success, Toast.LENGTH_SHORT).show()
+        } else {
             Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show()
         }
     }
 
     private fun setRecView() {
         val mediaList = dbHelperGet.getCardMedia(cardId).toMutableList()
-        val adapter = AdapterMediaLinkCard(mediaList, cardId, mediaFileManager)
+        // If the media entry was deleted because no card uses it any more, the user is asked
+        // whether to delete the file too
+        val adapter = AdapterMediaLinkCard(mediaList, mediaFileManager) { media ->
+            val mediaDeleted = DbHelperDelete(this).deleteMediaLink(media.uid, cardId)
+            if (mediaDeleted && mediaFileManager.existsMediaFile(media.file)) {
+                mediaFileManager.showDeleteDialog(media.file)
+            }
+        }
         binding.recCardMedia.adapter = adapter
         binding.recCardMedia.layoutManager = LinearLayoutManager(this)
     }

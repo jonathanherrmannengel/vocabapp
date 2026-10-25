@@ -1,6 +1,5 @@
 package de.herrmann_engel.rbv.adapters
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,18 +7,16 @@ import androidx.recyclerview.widget.RecyclerView
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.databinding.RecViewFilesBinding
 import de.herrmann_engel.rbv.db.DbMedia
-import de.herrmann_engel.rbv.db.utils.DbHelperDelete
 import de.herrmann_engel.rbv.media.MediaFiles
 
 /**
  * List of the media files linked to a card (in the card's media settings). Missing files are
- * marked. The delete button removes the link; if the media is then unused, its database entry
- * is deleted too and the user is asked whether to delete the file.
+ * marked. The delete button removes the media from the list and reports it (onRemove).
  */
 class AdapterMediaLinkCard(
     private val media: MutableList<DbMedia>,
-    private val cardId: Int,
-    private val mediaFiles: MediaFiles
+    private val mediaFiles: MediaFiles,
+    private val onRemove: (DbMedia) -> Unit
 ) : RecyclerView.Adapter<AdapterMediaLinkCard.ViewHolder>() {
     class ViewHolder(val binding: RecViewFilesBinding) : RecyclerView.ViewHolder(binding.root)
 
@@ -57,38 +54,21 @@ class AdapterMediaLinkCard(
                 viewHolder.binding.recFilesOpen.setOnClickListener {
                     mediaFiles.openFile(fileId)
                 }
-                viewHolder.binding.recFilesDelete.setOnClickListener {
-                    if (deleteItem(currentMedia, viewHolder, context)) {
-                        mediaFiles.showDeleteDialog(
-                            fileName
-                        )
-                    }
-                }
             } else {
                 viewHolder.binding.recFilesMissing.text =
                     context.resources.getString(R.string.media_missing)
                 viewHolder.binding.recFilesMissing.visibility = View.VISIBLE
-                viewHolder.binding.recFilesDelete.setOnClickListener {
-                    deleteItem(currentMedia, viewHolder, context)
-                }
+            }
+            viewHolder.binding.recFilesDelete.setOnClickListener {
+                onRemove(currentMedia)
+                media.remove(currentMedia)
+                notifyItemRemoved(viewHolder.bindingAdapterPosition)
+                notifyItemRangeChanged(viewHolder.bindingAdapterPosition, media.size)
             }
         }
     }
 
     override fun getItemCount(): Int {
         return 1.coerceAtLeast(media.size)
-    }
-
-    // Removes the link to the card; returns true if the media entry was deleted because it is no longer used
-    private fun deleteItem(
-        currentMedia: DbMedia,
-        viewHolder: ViewHolder,
-        context: Context
-    ): Boolean {
-        val mediaDeleted = DbHelperDelete(context).deleteMediaLink(currentMedia.uid, cardId)
-        media.remove(currentMedia)
-        notifyItemRemoved(viewHolder.bindingAdapterPosition)
-        notifyItemRangeChanged(viewHolder.bindingAdapterPosition, media.size)
-        return mediaDeleted
     }
 }
