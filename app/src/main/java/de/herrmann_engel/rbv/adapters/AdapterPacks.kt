@@ -162,11 +162,9 @@ class AdapterPacks(
         viewHolder.binding.recCollectionsPreviewText.text =
             if (selected) {
                 "✓"
-            } else if (currentPack.emoji.isBlank()) {
+            } else currentPack.emoji.ifBlank {
                 val pattern = Regex("^(\\P{M}\\p{M}*+).*")
                 currentPack.name.replace(pattern, "$1")
-            } else {
-                currentPack.emoji
             }
         viewHolder.binding.recCollectionsNumberText.text = packs[position].counter.toString()
         viewHolder.binding.recCollectionsNumberText.contentDescription = String.format(

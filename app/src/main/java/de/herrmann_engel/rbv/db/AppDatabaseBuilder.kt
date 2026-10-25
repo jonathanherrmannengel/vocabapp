@@ -230,7 +230,7 @@ class AppDatabaseBuilder {
     }
 
     fun get(context: Context): AppDatabase {
-        return databaseBuilder<AppDatabase>(
+        return databaseBuilder(
             context,
             AppDatabase::class.java, Globals.DB_NAME
         ) // Queries are executed synchronously throughout the app

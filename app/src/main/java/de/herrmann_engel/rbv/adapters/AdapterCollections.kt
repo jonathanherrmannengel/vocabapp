@@ -89,12 +89,10 @@ class AdapterCollections(
             viewHolder.binding.recCollectionsDesc.text = StringTools.shorten(desc)
         }
         viewHolder.binding.recCollectionsPreviewText.text =
-            if (currentCollection.emoji.isBlank()) {
+            currentCollection.emoji.ifBlank {
                 // Without emoji, show the first character of the name (including combining marks)
                 val pattern = Regex("^(\\P{M}\\p{M}*+).*")
                 currentCollection.name.replace(pattern, "$1")
-            } else {
-                currentCollection.emoji
             }
         viewHolder.binding.recCollectionsNumberText.text = collections[position].counter.toString()
         viewHolder.binding.recCollectionsNumberText.contentDescription = String.format(
