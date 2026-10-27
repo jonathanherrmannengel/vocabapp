@@ -9,8 +9,8 @@ android {
         applicationId = "de.herrmann_engel.rbv"
         minSdk = 25
         targetSdk = 37
-        versionCode = 86
-        versionName = "4.0.0"
+        versionCode = 87
+        versionName = "4.1.0"
     }
 
     buildTypes {
