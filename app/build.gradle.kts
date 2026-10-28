@@ -72,6 +72,7 @@ dependencies {
     implementation("me.saket:better-link-movement-method:2.2.0")
     implementation("com.vanniktech:emoji-twitter:0.24.1")
     implementation("io.coil-kt.coil3:coil:3.6.3")
+    implementation("io.coil-kt.coil3:coil-gif:3.6.3")
     implementation("com.github.rtugeek:colorseekbar:2.1.0")
     implementation("com.atlassian.commonmark:commonmark:0.13.0")
     //match Markwon version of commonmark
