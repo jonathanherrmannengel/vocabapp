@@ -8,10 +8,13 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.text.htmlEncode
 import androidx.core.text.toHtml
 import androidx.core.text.toSpanned
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.LinearLayoutManager
 import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.R
@@ -25,6 +28,7 @@ import de.herrmann_engel.rbv.db.utils.DbHelperDelete
 import de.herrmann_engel.rbv.db.utils.DbHelperGet
 import de.herrmann_engel.rbv.db.utils.DbHelperUpdate
 import de.herrmann_engel.rbv.media.MediaFiles
+import de.herrmann_engel.rbv.media.isImage
 import de.herrmann_engel.rbv.settings.AppSettings
 import de.herrmann_engel.rbv.utils.StringTools
 import de.herrmann_engel.rbv.utils.createDialog
@@ -51,11 +55,6 @@ class CardActions(
     interface Listener {
         fun deletedCards(cardIds: ArrayList<Int>)
         fun movedCards(cardIds: ArrayList<Int>)
-    }
-
-    // User data has to be escaped before it is inserted into the print HTML
-    private fun escapeHtml(text: String?): String {
-        return (text ?: "").htmlEncode()
     }
 
     /**
@@ -149,9 +148,6 @@ class CardActions(
             bindingPrintDialog.root,
             activity.getString(R.string.print)
         )
-        val settings = AppSettings(activity)
-        val formatCards = settings.formatCards
-        val formatCardNotes = settings.formatCardNotes
         val dbHelperGet = DbHelperGet(activity)
         val jobName: String
         // For a single card, hide the options for content the card does not have
@@ -161,14 +157,12 @@ class CardActions(
                 bindingPrintDialog.diaPrintIncludeNotesLayout.visibility = View.GONE
                 bindingPrintDialog.diaPrintIncludeNotes.isChecked = false
             }
-            val imageList =
-                dbHelperGet.getCardImageMedia(cards[0].uid)
+            val mediaList = dbHelperGet.getCardMedia(cards[0].uid)
+            val imageList = mediaList.filter { it.isImage }
             if (imageList.isEmpty() || imageList.size > Globals.MAX_SIZE_CARD_IMAGE_PRINT) {
                 bindingPrintDialog.diaPrintIncludeImagesLayout.visibility = View.GONE
                 bindingPrintDialog.diaPrintIncludeImages.isChecked = false
             }
-            val mediaList =
-                dbHelperGet.getCardMedia(cards[0].uid)
             if (mediaList.isEmpty()) {
                 bindingPrintDialog.diaPrintIncludeMediaLayout.visibility = View.GONE
                 bindingPrintDialog.diaPrintIncludeMedia.isChecked = false
@@ -191,6 +185,16 @@ class CardActions(
             builder.setMediaSize(PrintAttributes.MediaSize.ISO_A4)
             val attributes = builder.build()
             val webView = WebView(activity)
+            // The WebView is not shown, so nothing would keep it until its page has been handed to
+            // the print manager (which keeps it from then on): this observer holds it (through
+            // onDestroy) for as long as it is registered with the activity, and destroys it if the
+            // activity is closed before.
+            val keepWebView = object : DefaultLifecycleObserver {
+                override fun onDestroy(owner: LifecycleOwner) {
+                    webView.destroy()
+                }
+            }
+            activity.lifecycle.addObserver(keepWebView)
             webView.webViewClient = object : WebViewClient() {
                 override fun shouldOverrideUrlLoading(
                     view: WebView,
@@ -203,158 +207,19 @@ class CardActions(
                 override fun onPageFinished(view: WebView, url: String) {
                     val adapter = webView.createPrintDocumentAdapter(jobName)
                     printManager.print(jobName, adapter, attributes)
+                    activity.lifecycle.removeObserver(keepWebView)
                 }
             }
-            var htmlDocument =
-                "<!doctype html><html><head><meta charset=\"utf-8\"><title>" + escapeHtml(activity.getString(R.string.print)) + "</title><style>@page{margin:20mm 25mm;}@media(max-width:250mm),@media(max-height:200mm){@page{margin:7% 10%;}}div{inline-size:100%;overflow-wrap:break-word;}.main-title{margin-bottom:30px;}.title{text-align:center;color:#000007;}.border-top::before{margin-bottom:20px;margin-top:30px;display:block;content:' ';width:100%;height:1px;outline:2px solid #555;outline-offset:-1px;}.main-title.border-top::before{margin-top:100px;}.image-div{display:grid;gap:10px;grid-template-columns: 1fr 1fr 1fr;justify-content:center;}.image{width:100%;height:100%;object-fit:contain;}.media-div{text-align:center}.tag-div{display:inline-block;width:auto;margin:10px;padding:10px;border:2px solid black;border-radius:1em;}.tag-emoji{padding-right:0.5em;}</style></head>"
-            var firstCard = true
-            // One section per card: title, front, back, and optionally notes, images, other media and tags
-            for (card in cards) {
-                val cardFront = if (formatCards) {
-                    StringTools.format(card.front)
-                } else {
-                    card.front.toSpanned()
-                }
-                val maxTitleLength = 30
-                var title = escapeHtml(StringTools.shorten(cardFront.toString(), maxTitleLength))
-                if (bindingPrintDialog.diaPrintIncludeProgress.isChecked) {
-                    title += " (" + card.known + ")"
-                }
-                val titleClass = if (firstCard) {
-                    "main-title title"
-                } else {
-                    "main-title title border-top"
-                }
-                htmlDocument += "<h1 class=\"$titleClass\" dir=\"auto\">$title</h1>"
-                htmlDocument += "<article>"
-                if (bindingPrintDialog.diaPrintIncludeHeadings.isChecked) {
-                    htmlDocument += "<h2 class=\"title\" dir=\"auto\">" + escapeHtml(activity.getString(R.string.card_front)) + "</h2>"
-                }
-                htmlDocument += "<div>"
-                htmlDocument += cardFront.toHtml()
-                htmlDocument += "</div></article>"
-                htmlDocument += "<article>"
-                if (bindingPrintDialog.diaPrintIncludeHeadings.isChecked) {
-                    htmlDocument += "<h2 class=\"title border-top\" dir=\"auto\">" + escapeHtml(activity.getString(R.string.card_back)) + "</h2>"
-                    htmlDocument += "<div>"
-                } else {
-                    htmlDocument += "<div class=\"border-top\">"
-                }
-                htmlDocument += if (formatCards) {
-                    StringTools.format(card.back)
-                } else {
-                    card.back.toSpanned()
-                }.toHtml()
-                htmlDocument += "</div></article>"
-                val notes = card.notes
-                if (notes.isNotBlank() && bindingPrintDialog.diaPrintIncludeNotes.isChecked) {
-                    htmlDocument += "<article>"
-                    if (bindingPrintDialog.diaPrintIncludeHeadings.isChecked) {
-                        htmlDocument += "<h2 class=\"title border-top\" dir=\"auto\">" + escapeHtml(activity.getString(R.string.card_notes)) + "</h2>"
-                        htmlDocument += "<div dir=\"auto\">"
-                    } else {
-                        htmlDocument += "<div dir=\"auto\" class=\"border-top\">"
-                    }
-                    htmlDocument += if (formatCardNotes) {
-                        // Notes are formatted as Markdown
-                        val parser = Parser.builder().build()
-                        val document = parser.parse(notes)
-                        // Raw HTML is left out, as in the app (Markwon without HTML support)
-                        val renderer = HtmlRenderer.builder()
-                            .nodeRendererFactory { OmitRawHtml }
-                            .build()
-                        renderer.render(document)
-                    } else {
-                        notes.toSpanned().toHtml()
-                    }
-                    htmlDocument += "</div></article>"
-                }
-
-                val imageList =
-                    dbHelperGet.getCardImageMedia(card.uid)
-                if (imageList.isNotEmpty() && bindingPrintDialog.diaPrintIncludeImages.isChecked) {
-                    htmlDocument += "<article>"
-                    if (bindingPrintDialog.diaPrintIncludeHeadings.isChecked) {
-                        htmlDocument += "<h2 class=\"title border-top\" dir=\"auto\">" + escapeHtml(activity.getString(R.string.image_media)) + "</h2>"
-                        htmlDocument += "<div>"
-                    } else {
-                        htmlDocument += "<div class=\"border-top\">"
-                    }
-                    if (imageList.size > Globals.MAX_SIZE_CARD_IMAGE_PRINT) {
-                        htmlDocument += String.format(
-                            Locale.ROOT,
-                            activity.getString(R.string.image_media_print_number_and_limit),
-                            imageList.size,
-                            Globals.MAX_SIZE_CARD_IMAGE_PRINT
-                        )
-                    } else {
-                        htmlDocument += when (imageList.size) {
-                            1 -> {
-                                "<div class=\"image-div\" style=\"grid-template-columns:0.33fr;\">"
-                            }
-
-                            2 -> {
-                                "<div class=\"image-div\" style=\"grid-template-columns:0.33fr 0.33fr;\">"
-                            }
-
-                            else -> {
-                                "<div class=\"image-div\">"
-                            }
-                        }
-                        for (item in imageList) {
-                            val uri =
-                                mediaFiles.getImageUri(item.uid)
-                            if (uri != null) {
-                                htmlDocument += "<div><img class=\"image\" alt=\"" + escapeHtml(item.file) + "\" src=\"" + escapeHtml(uri.toString()) + "\"></div>"
-                            }
-                        }
-                        htmlDocument += "</div>"
-                    }
-                    htmlDocument += "</div></article>"
-                }
-                val mediaList =
-                    dbHelperGet.getCardMedia(card.uid)
-                if (mediaList.isNotEmpty() && bindingPrintDialog.diaPrintIncludeMedia.isChecked) {
-                    htmlDocument += "<article>"
-                    if (bindingPrintDialog.diaPrintIncludeHeadings.isChecked) {
-                        htmlDocument += "<h2 class=\"title border-top\" dir=\"auto\">" + escapeHtml(activity.getString(R.string.all_media)) + "</h2>"
-                        htmlDocument += "<div>"
-                    } else {
-                        htmlDocument += "<div class=\"border-top\">"
-                    }
-                    for (item in mediaList) {
-                        htmlDocument += "<div class=\"media-div\">" + escapeHtml(item.file) + "</div>"
-                    }
-                    htmlDocument += "</div></article>"
-                }
-                val tagList =
-                    dbHelperGet.getCardTags(card.uid)
-                if (tagList.isNotEmpty() && bindingPrintDialog.diaPrintIncludeTags.isChecked) {
-                    htmlDocument += "<article>"
-                    if (bindingPrintDialog.diaPrintIncludeHeadings.isChecked) {
-                        htmlDocument += "<h2 class=\"title border-top\" dir=\"auto\">" + escapeHtml(activity.getString(R.string.tags)) + "</h2>"
-                        htmlDocument += "<div>"
-                    } else {
-                        htmlDocument += "<div class=\"border-top\">"
-                    }
-                    for (tag in tagList) {
-                        htmlDocument += "<div class=\"tag-div\""
-                        // Only accept hex colors (as stored by the tag editor) in the style attribute
-                        if (tag.color.matches(Regex("#[0-9a-fA-F]{3,8}"))) {
-                            htmlDocument += " style=\"border-color:" + tag.color + ";\""
-                        }
-                        htmlDocument += ">"
-                        if (tag.emoji.isNotBlank()) {
-                            htmlDocument += "<span class=\"tag-emoji\">" + escapeHtml(tag.emoji) + "</span>"
-                        }
-                        htmlDocument += "<span>" + escapeHtml(tag.name) + "</span></div>"
-                    }
-                    htmlDocument += "</div></article>"
-                }
-                firstCard = false
-            }
-            htmlDocument += "</html>"
-            webView.loadDataWithBaseURL(null, htmlDocument, "text/HTML", "UTF-8", null)
+            val options = PrintOptions(
+                headings = bindingPrintDialog.diaPrintIncludeHeadings.isChecked,
+                progress = bindingPrintDialog.diaPrintIncludeProgress.isChecked,
+                notes = bindingPrintDialog.diaPrintIncludeNotes.isChecked,
+                images = bindingPrintDialog.diaPrintIncludeImages.isChecked,
+                media = bindingPrintDialog.diaPrintIncludeMedia.isChecked,
+                tags = bindingPrintDialog.diaPrintIncludeTags.isChecked
+            )
+            val htmlDocument = printHtml(cards, options)
+            webView.loadDataWithBaseURL(null, htmlDocument, "text/html", "UTF-8", null)
         }
         printDialog.show()
     }
@@ -363,6 +228,190 @@ class CardActions(
         print(arrayListOf(card))
     }
 
+    // What the user chose to include in the print dialog
+    private data class PrintOptions(
+        val headings: Boolean,
+        val progress: Boolean,
+        val notes: Boolean,
+        val images: Boolean,
+        val media: Boolean,
+        val tags: Boolean
+    )
+
+    // User data has to be escaped before it is inserted into the print HTML
+    private fun escapeHtml(text: String): String {
+        return text.htmlEncode()
+    }
+
+    /**
+     * The HTML document to print: one part per card with title, front, back, and optionally
+     * notes, images, other media and tags. User data is escaped (see escapeHtml).
+     */
+    private fun printHtml(cards: List<DbCard>, options: PrintOptions): String {
+        val settings = AppSettings(activity)
+        val formatCards = settings.formatCards
+        val formatCardNotes = settings.formatCardNotes
+        val dbHelperGet = DbHelperGet(activity)
+
+        /**
+         * A section of a card: with a heading, or (if headings are left out) separated by a line
+         * only, except for the first section. content appends the inner HTML.
+         */
+        fun StringBuilder.appendSection(
+            @StringRes heading: Int,
+            divAttributes: String = "",
+            separated: Boolean = true,
+            content: StringBuilder.() -> Unit
+        ) {
+            append("<article>")
+            val headingClass = if (separated) "title border-top" else "title"
+            if (options.headings) {
+                val headingText = escapeHtml(activity.getString(heading))
+                append("""<h2 class="$headingClass" dir="auto">$headingText</h2>""")
+                append("""<div$divAttributes>""")
+            } else if (separated) {
+                append("""<div$divAttributes class="border-top">""")
+            } else {
+                append("""<div$divAttributes>""")
+            }
+            content()
+            append("</div></article>")
+        }
+
+        return buildString {
+            val documentTitle = escapeHtml(activity.getString(R.string.print))
+            append("""<!doctype html><html><head><meta charset="utf-8">""")
+            append("""<title>$documentTitle</title><style>$PRINT_CSS</style></head>""")
+            cards.forEachIndexed { index, card ->
+                val cardFront = if (formatCards) {
+                    StringTools.format(card.front)
+                } else {
+                    card.front.toSpanned()
+                }
+                val maxTitleLength = 30
+                val shortFront = StringTools.shorten(cardFront.toString(), maxTitleLength)
+                var title = escapeHtml(shortFront)
+                if (options.progress) {
+                    title += " (${card.known})"
+                }
+                val titleClass = if (index == 0) {
+                    "main-title title"
+                } else {
+                    "main-title title border-top"
+                }
+                append("""<h1 class="$titleClass" dir="auto">$title</h1>""")
+                appendSection(R.string.card_front, separated = false) {
+                    append(cardFront.toHtml())
+                }
+                appendSection(R.string.card_back) {
+                    val cardBack = if (formatCards) {
+                        StringTools.format(card.back)
+                    } else {
+                        card.back.toSpanned()
+                    }
+                    append(cardBack.toHtml())
+                }
+                val notes = card.notes
+                if (notes.isNotBlank() && options.notes) {
+                    appendSection(R.string.card_notes, """ dir="auto"""") {
+                        if (formatCardNotes) {
+                            // Notes are formatted as Markdown; raw HTML is left out, as in the app
+                            // (Markwon without HTML support)
+                            append(markdownRenderer.render(markdownParser.parse(notes)))
+                        } else {
+                            append(notes.toSpanned().toHtml())
+                        }
+                    }
+                }
+                val mediaList = dbHelperGet.getCardMedia(card.uid)
+                val imageList = mediaList.filter { it.isImage }
+                if (imageList.isNotEmpty() && options.images) {
+                    appendSection(R.string.image_media) {
+                        if (imageList.size > Globals.MAX_SIZE_CARD_IMAGE_PRINT) {
+                            append(
+                                String.format(
+                                    Locale.ROOT,
+                                    activity.getString(R.string.image_media_print_number_and_limit),
+                                    imageList.size,
+                                    Globals.MAX_SIZE_CARD_IMAGE_PRINT
+                                )
+                            )
+                        } else {
+                            // Fewer than 3 images keep the width of a third each
+                            val style = when (imageList.size) {
+                                1 -> """ style="grid-template-columns:0.33fr;""""
+                                2 -> """ style="grid-template-columns:0.33fr 0.33fr;""""
+                                else -> ""
+                            }
+                            append("""<div class="image-div"$style>""")
+                            for (item in imageList) {
+                                val uri = mediaFiles.getImageUri(item.uid) ?: continue
+                                val alt = escapeHtml(item.file)
+                                val src = escapeHtml(uri.toString())
+                                append("""<div><img class="image" alt="$alt" src="$src"></div>""")
+                            }
+                            append("</div>")
+                        }
+                    }
+                }
+                if (mediaList.isNotEmpty() && options.media) {
+                    appendSection(R.string.all_media) {
+                        for (item in mediaList) {
+                            append("""<div class="media-div">${escapeHtml(item.file)}</div>""")
+                        }
+                    }
+                }
+                val tagList = dbHelperGet.getCardTags(card.uid)
+                if (tagList.isNotEmpty() && options.tags) {
+                    appendSection(R.string.tags) {
+                        for (tag in tagList) {
+                            // Only accept hex colors in the style attribute
+                            val style = if (tag.color.matches(HEX_COLOR)) {
+                                """ style="border-color:${tag.color};""""
+                            } else {
+                                ""
+                            }
+                            val emoji = if (tag.emoji.isBlank()) {
+                                ""
+                            } else {
+                                """<span class="tag-emoji">${escapeHtml(tag.emoji)}</span>"""
+                            }
+                            val name = escapeHtml(tag.name)
+                            append("""<div class="tag-div"$style>$emoji<span>$name</span></div>""")
+                        }
+                    }
+                }
+            }
+            append("</html>")
+        }
+    }
+
+}
+
+// Style of the print HTML
+private const val PRINT_CSS =
+    "@page{margin:20mm 25mm;}" +
+    "@media(max-width:250mm),@media(max-height:200mm){@page{margin:7% 10%;}}" +
+    "div{inline-size:100%;overflow-wrap:break-word;}" +
+    ".main-title{margin-bottom:30px;}" +
+    ".title{text-align:center;color:#000007;}" +
+    ".border-top::before{margin-bottom:20px;margin-top:30px;display:block;content:' ';" +
+    "width:100%;height:1px;outline:2px solid #555;outline-offset:-1px;}" +
+    ".main-title.border-top::before{margin-top:100px;}" +
+    ".image-div{display:grid;gap:10px;grid-template-columns: 1fr 1fr 1fr;justify-content:center;}" +
+    ".image{width:100%;height:100%;object-fit:contain;}" +
+    ".media-div{text-align:center}" +
+    ".tag-div{display:inline-block;width:auto;margin:10px;padding:10px;" +
+    "border:2px solid black;border-radius:1em;}" +
+    ".tag-emoji{padding-right:0.5em;}"
+
+// Tag colors that may be used in the print HTML (as stored by the tag editor)
+private val HEX_COLOR = Regex("#[0-9a-fA-F]{3,8}")
+
+// Markdown of card notes for the print HTML; both can be reused for all notes
+private val markdownParser: Parser by lazy { Parser.builder().build() }
+private val markdownRenderer: HtmlRenderer by lazy {
+    HtmlRenderer.builder().nodeRendererFactory { OmitRawHtml }.build()
 }
 
 // Renders raw HTML blocks and inline HTML of Markdown as nothing

@@ -9,6 +9,7 @@ import de.herrmann_engel.rbv.db.DbMedia
 import de.herrmann_engel.rbv.db.DbPack
 import de.herrmann_engel.rbv.db.DbTag
 import de.herrmann_engel.rbv.db.PackWithMeta
+import de.herrmann_engel.rbv.media.isImage
 
 /**
  * Read access to the database.
@@ -134,11 +135,7 @@ class DbHelperGet(context: Context) {
     fun getCardMedia(cardId: Int): List<DbMedia> = dbHelper.mediaDao.getAllByCard(cardId)
 
     // Only the media files of a card that can be displayed as images
-    fun getCardImageMedia(cardId: Int): List<DbMedia> = dbHelper.mediaDao.getAllByCard(cardId).filter { media -> isPhoto(media.mime) }
-
-    private fun isPhoto(mime: String): Boolean {
-        return mime == "image/png" || mime == "image/jpeg" || mime == "image/webp"
-    }
+    fun getCardImageMedia(cardId: Int): List<DbMedia> = getCardMedia(cardId).filter { it.isImage }
 
     // Get All: Tags
     fun getAllTags(): List<DbTag> = dbHelper.tagDao.all
