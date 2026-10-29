@@ -12,6 +12,7 @@ import de.herrmann_engel.rbv.adapters.AdapterPacksAdvancedSearch
 import de.herrmann_engel.rbv.adapters.AdapterTagsAdvancedSearch
 import de.herrmann_engel.rbv.cardlist.CardSource
 import de.herrmann_engel.rbv.databinding.ActivityAdvancedSearchBinding
+import de.herrmann_engel.rbv.db.DbTag
 import de.herrmann_engel.rbv.db.utils.DbHelperGet
 import de.herrmann_engel.rbv.settings.AppSettings
 import de.herrmann_engel.rbv.utils.putCardSource
@@ -132,11 +133,21 @@ class AdvancedSearch : RBVActivity() {
 
     override fun onResume() {
         super.onResume()
-        // The tag filter is only shown if there are tags
-        if (dbHelperGet.hasTags()) {
+        // Tags loaded in the background (again on every resume, as they may have been changed);
+        // the tag filter is only shown if there are tags
+        lifecycleScope.launch {
+            val tags = withContext(Dispatchers.IO) { dbHelperGet.getAllTags() }
+            showTags(tags)
+        }
+    }
+
+    private fun showTags(tags: List<DbTag>) {
+        if (tags.isNotEmpty()) {
             binding.advancedSearchContainerTags.visibility = View.VISIBLE
-            val tags = dbHelperGet.getAllTags()
-            val adapterTags = AdapterTagsAdvancedSearch(tags, viewModel::isTagSelected) { tagId, checked ->
+            val adapterTags = AdapterTagsAdvancedSearch(
+                tags,
+                viewModel::isTagSelected
+            ) { tagId, checked ->
                 viewModel.setTagSelected(tagId, checked)
             }
             binding.recAdvancedSearchTags.adapter = adapterTags

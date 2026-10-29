@@ -1,7 +1,6 @@
 package de.herrmann_engel.rbv.adapters
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import de.herrmann_engel.rbv.R
@@ -17,8 +16,7 @@ import java.util.Locale
  */
 class AdapterPacksAdvancedSearch(
     private val packs: List<PackWithMeta>,
-    // Called on every bind: rows are rebound (e.g. when scrolled back into view) and must then
-    // show the current selection
+    // Called when a row is bound, so that it shows the current selection
     private val isChecked: (packId: Int) -> Boolean,
     private val onCheckedChange: (packId: Int, checked: Boolean) -> Unit
 ) : RecyclerView.Adapter<AdapterPacksAdvancedSearch.ViewHolder>() {
@@ -27,50 +25,39 @@ class AdapterPacksAdvancedSearch(
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         val binding =
             RecViewSmallBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false)
-        return ViewHolder(binding)
+        val viewHolder = ViewHolder(binding)
+        // Only taps are reported, not the state set when a row is bound
+        binding.recSmallCheckbox.setOnClickListener {
+            val position = viewHolder.bindingAdapterPosition
+            if (position != RecyclerView.NO_POSITION) {
+                onCheckedChange(packs[position].pack.uid, binding.recSmallCheckbox.isChecked)
+            }
+        }
+        return viewHolder
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         val context = viewHolder.binding.root.context
-        // Not recyclable, so that checkbox listeners are not triggered for recycled views
-        viewHolder.setIsRecyclable(false)
-        // Placeholder item if there are no packs
-        if (packs.isEmpty()) {
-            viewHolder.binding.recSmallName.text =
-                context.resources.getString(R.string.welcome_pack)
-            viewHolder.binding.recSmallDesc.visibility = View.GONE
-            viewHolder.binding.recSmallCheckbox.visibility = View.GONE
-        } else {
-            val pack = packs[position].pack
-            context.resources.colorAt(R.array.pack_color_list, pack.colors)
-                ?.let { viewHolder.binding.recSmallName.setTextColor(it) }
-            val size = packs[position].counter
-            var checkBoxContentDescription = pack.name
-            viewHolder.binding.recSmallName.text =
-                String.format(
-                    Locale.ROOT,
-                    "%s (%d)",
-                    StringTools.shorten(pack.name),
-                    size
-                )
-            val collectionName = StringTools.shorten(packs[position].collectionName ?: "")
-            viewHolder.binding.recSmallDesc.visibility = View.VISIBLE
-            viewHolder.binding.recSmallDesc.text = collectionName
-            checkBoxContentDescription = String.format(
-                context.resources.getString(R.string.advanced_search_packs_checkbox_description),
-                checkBoxContentDescription,
-                collectionName
-            )
-            viewHolder.binding.recSmallCheckbox.contentDescription = checkBoxContentDescription
-            val packId = pack.uid
-            viewHolder.binding.recSmallCheckbox.isChecked = isChecked(packId)
-            viewHolder.binding.recSmallCheckbox.setOnCheckedChangeListener { _, checked ->
-                onCheckedChange(packId, checked)
-            }
-        }
+        val pack = packs[position].pack
+        context.resources.colorAt(R.array.pack_color_list, pack.colors)
+            ?.let { viewHolder.binding.recSmallName.setTextColor(it) }
+        viewHolder.binding.recSmallName.text = String.format(
+            Locale.ROOT,
+            "%s (%d)",
+            StringTools.shorten(pack.name),
+            packs[position].counter
+        )
+        val collectionName = StringTools.shorten(packs[position].collectionName ?: "")
+        viewHolder.binding.recSmallDesc.text = collectionName
+        viewHolder.binding.recSmallCheckbox.contentDescription = String.format(
+            context.resources.getString(R.string.advanced_search_packs_checkbox_description),
+            pack.name,
+            collectionName
+        )
+        viewHolder.binding.recSmallCheckbox.isChecked = isChecked(pack.uid)
     }
 
     override fun getItemCount(): Int {
-        return 1.coerceAtLeast(packs.size)
+        return packs.size
     }
 }

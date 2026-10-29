@@ -24,8 +24,6 @@ class DbHelperGet(context: Context) {
 
     fun hasMedia(): Boolean = dbHelper.mediaDao.hasMedia()
 
-    fun hasTags(): Boolean = dbHelper.tagDao.hasTags()
-
     // Count
     fun countPacks(): Int = dbHelper.packDao.countPacks()
 

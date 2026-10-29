@@ -11,9 +11,6 @@ import androidx.room.Update
  */
 @Dao
 interface TagDao {
-    @Query("SELECT EXISTS (SELECT 1 FROM db_tag LIMIT 1)")
-    fun hasTags(): Boolean
-
     @get:Query("SELECT * FROM db_tag ORDER BY tag_name ASC")
     val all: List<DbTag>
 

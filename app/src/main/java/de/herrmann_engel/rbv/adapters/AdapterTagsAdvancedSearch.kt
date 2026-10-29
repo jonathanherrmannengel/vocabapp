@@ -13,8 +13,7 @@ import de.herrmann_engel.rbv.utils.StringTools
  */
 class AdapterTagsAdvancedSearch(
     private val tags: List<DbTag>,
-    // Called on every bind: rows are rebound (e.g. when scrolled back into view) and must then
-    // show the current selection
+    // Called when a row is bound, so that it shows the current selection
     private val isChecked: (tagId: Int) -> Boolean,
     private val onCheckedChange: (tagId: Int, checked: Boolean) -> Unit
 ) : RecyclerView.Adapter<AdapterTagsAdvancedSearch.ViewHolder>() {
@@ -23,12 +22,18 @@ class AdapterTagsAdvancedSearch(
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         val binding =
             RecViewSmallBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false)
-        return ViewHolder(binding)
+        val viewHolder = ViewHolder(binding)
+        // Only taps are reported, not the state set when a row is bound
+        binding.recSmallCheckbox.setOnClickListener {
+            val position = viewHolder.bindingAdapterPosition
+            if (position != RecyclerView.NO_POSITION) {
+                onCheckedChange(tags[position].uid, binding.recSmallCheckbox.isChecked)
+            }
+        }
+        return viewHolder
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-        // Not recyclable, so that checkbox listeners are not triggered for recycled views
-        viewHolder.setIsRecyclable(false)
         viewHolder.binding.recSmallName.text = StringTools.shorten(tags[position].name)
         if (tags[position].emoji.isBlank()) {
             viewHolder.binding.recSmallDesc.visibility = View.GONE
@@ -37,11 +42,7 @@ class AdapterTagsAdvancedSearch(
             viewHolder.binding.recSmallDesc.text = tags[position].emoji
         }
         viewHolder.binding.recSmallCheckbox.contentDescription = tags[position].name
-        val tagId = tags[position].uid
-        viewHolder.binding.recSmallCheckbox.isChecked = isChecked(tagId)
-        viewHolder.binding.recSmallCheckbox.setOnCheckedChangeListener { _, checked ->
-            onCheckedChange(tagId, checked)
-        }
+        viewHolder.binding.recSmallCheckbox.isChecked = isChecked(tags[position].uid)
     }
 
     override fun getItemCount(): Int {
