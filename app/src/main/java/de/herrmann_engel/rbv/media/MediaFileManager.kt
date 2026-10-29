@@ -27,6 +27,7 @@ import de.herrmann_engel.rbv.db.utils.DbHelperGet
 import de.herrmann_engel.rbv.settings.AppConfig
 import de.herrmann_engel.rbv.settings.AppSettings
 import de.herrmann_engel.rbv.utils.createDialog
+import de.herrmann_engel.rbv.utils.runInBackground
 import de.herrmann_engel.rbv.utils.showConfirmDialog
 
 /**
@@ -217,8 +218,7 @@ class MediaFileManager(
             activity.getString(R.string.delete_file_title),
             text ?: activity.getString(R.string.delete_file_info)
         ) {
-            deleteMediaFile(fileName)
-            onDeleted()
+            deleteMediaFile(fileName, onDeleted)
         }
     }
 
@@ -375,22 +375,33 @@ class MediaFileManager(
         }
     }
 
-    private fun deleteMediaFile(name: String) {
+    /**
+     * Deletes the file in the background (slow for folders of some document providers, e.g. in the
+     * cloud), then calls onDone. The file is looked up before, so that the list of files is only
+     * used on the main thread.
+     */
+    private fun deleteMediaFile(name: String, onDone: () -> Unit) {
         val file = getFile(name)
-        if (file != null && file.isFile) {
-            try {
-                DocumentsContract.deleteDocument(
-                    activity.contentResolver,
-                    file.uri
-                )
+        if (file == null || !file.isFile) {
+            Toast.makeText(activity, R.string.error, Toast.LENGTH_SHORT).show()
+            onDone()
+            return
+        }
+        var deleted = false
+        runInBackground(activity, {
+            deleted = try {
+                DocumentsContract.deleteDocument(activity.contentResolver, file.uri)
             } catch (e: Exception) {
                 // E.g. the file has been deleted meanwhile or the permission has been revoked
                 e.printStackTrace()
+                false
+            }
+        }) {
+            clearCachedFiles()
+            if (!deleted) {
                 Toast.makeText(activity, R.string.error, Toast.LENGTH_SHORT).show()
             }
-            clearCachedFiles()
-        } else {
-            Toast.makeText(activity, R.string.error, Toast.LENGTH_SHORT).show()
+            onDone()
         }
     }
 

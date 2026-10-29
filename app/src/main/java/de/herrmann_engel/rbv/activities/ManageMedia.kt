@@ -29,6 +29,8 @@ import de.herrmann_engel.rbv.utils.sortCards
 class ManageMedia : RBVActivity() {
     private val mediaFileManager = MediaFileManager(this, onFolderSet = { setRecView() })
     private lateinit var binding: ActivityManageMediaBinding
+    // Set when the list is shown; deleting is only started from that list
+    private lateinit var adapter: AdapterMediaManage
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityManageMediaBinding.inflate(layoutInflater)
@@ -60,7 +62,7 @@ class ManageMedia : RBVActivity() {
     private fun setRecView() {
         val dbHelperGet = DbHelperGet(this)
         val mediaList = dbHelperGet.getAllMedia().toMutableList()
-        val adapter = AdapterMediaManage(mediaList) { showMedia(it) }
+        adapter = AdapterMediaManage(mediaList) { showMedia(it) }
         binding.recMediaManage.adapter = adapter
         binding.recMediaManage.layoutManager = LinearLayoutManager(this)
     }
@@ -76,7 +78,7 @@ class ManageMedia : RBVActivity() {
         if (cards.isEmpty()) {
             showConfirmDialog(this, getString(R.string.delete), getString(R.string.media_no_card)) {
                 DbHelperDelete(this).deleteMedia(media.uid)
-                (binding.recMediaManage.adapter as? AdapterMediaManage)?.remove(media)
+                adapter.remove(media)
                 // The file itself is only deleted after another confirmation
                 if (mediaFileManager.existsMediaFile(media.file)) {
                     mediaFileManager.showDeleteDialog(media.file)

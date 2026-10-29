@@ -26,8 +26,9 @@ interface MediaFiles {
     fun existsMediaFile(name: String?): Boolean
 
     /**
-     * Asks for confirmation and deletes the file from the media folder. Without text, a default
-     * explanation is shown. onDeleted is called after the user confirmed the deletion.
+     * Asks for confirmation and deletes the file from the media folder (in the background). Without
+     * text, a default explanation is shown. onDeleted is called once the deletion has been tried
+     * (not if the user declines); errors have been shown to the user then.
      */
     fun showDeleteDialog(fileName: String, text: String? = null, onDeleted: () -> Unit = {})
 }

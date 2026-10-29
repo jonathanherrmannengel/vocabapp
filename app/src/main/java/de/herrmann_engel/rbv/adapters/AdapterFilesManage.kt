@@ -12,11 +12,12 @@ import de.herrmann_engel.rbv.media.MediaFolderFile
 
 /**
  * Lists files in the media folder that are not registered as media in the database,
- * with buttons to open, share and delete them.
+ * with buttons to open, share and delete them. Deleting is reported to onDelete.
  */
 class AdapterFilesManage(
     private val files: MutableList<MediaFolderFile>,
-    private val mediaFiles: MediaFiles
+    private val mediaFiles: MediaFiles,
+    private val onDelete: (MediaFolderFile) -> Unit
 ) : RecyclerView.Adapter<AdapterFilesManage.ViewHolder>() {
     class ViewHolder(val binding: RecViewFilesBinding) : RecyclerView.ViewHolder(binding.root)
 
@@ -48,23 +49,25 @@ class AdapterFilesManage(
             viewHolder.binding.recFilesOpen.setOnClickListener {
                 mediaFiles.openFile(currentFile.name)
             }
-            viewHolder.binding.recFilesDelete.setOnClickListener {
-                mediaFiles.showDeleteDialog(
-                    currentFile.name,
-                    context.resources.getString(R.string.delete_file_without_media_info)
-                ) {
-                    // Remove the item if the file has actually been deleted
-                    if (!mediaFiles.existsMediaFile(currentFile.name)) {
-                        files.remove(currentFile)
-                        notifyItemRemoved(position)
-                        notifyItemRangeChanged(position, files.size)
-                    }
-                }
-            }
+            viewHolder.binding.recFilesDelete.setOnClickListener { onDelete(currentFile) }
         }
     }
 
     override fun getItemCount(): Int {
         return 1.coerceAtLeast(files.size)
+    }
+
+    // Removes a deleted file from the list; the last one is replaced by the placeholder item
+    fun remove(file: MediaFolderFile) {
+        val position = files.indexOf(file)
+        if (position < 0) {
+            return
+        }
+        files.removeAt(position)
+        if (files.isEmpty()) {
+            notifyItemChanged(0)
+        } else {
+            notifyItemRemoved(position)
+        }
     }
 }

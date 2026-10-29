@@ -9,6 +9,7 @@ import de.herrmann_engel.rbv.adapters.AdapterFilesManage
 import de.herrmann_engel.rbv.databinding.ActivityManageFilesBinding
 import de.herrmann_engel.rbv.db.utils.DbHelperGet
 import de.herrmann_engel.rbv.media.MediaFileManager
+import de.herrmann_engel.rbv.media.MediaFolderFile
 import de.herrmann_engel.rbv.settings.AppSettings
 
 /**
@@ -17,6 +18,8 @@ import de.herrmann_engel.rbv.settings.AppSettings
 class ManageFiles : RBVActivity() {
     private val mediaFileManager = MediaFileManager(this, onFolderSet = { setRecView() })
     private lateinit var binding: ActivityManageFilesBinding
+    // Set when the list is shown; deleting is only started from that list
+    private lateinit var adapter: AdapterFilesManage
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityManageFilesBinding.inflate(layoutInflater)
@@ -50,9 +53,21 @@ class ManageFiles : RBVActivity() {
             val filesWithoutMedia = files.filter {
                 it.isFile && it.name != ".nomedia" && it.name !in mediaNames
             }.toMutableList()
-            val adapter = AdapterFilesManage(filesWithoutMedia, mediaFileManager)
+            adapter = AdapterFilesManage(filesWithoutMedia, mediaFileManager) { deleteFile(it) }
             binding.recFilesManage.adapter = adapter
             binding.recFilesManage.layoutManager = LinearLayoutManager(this)
+        }
+    }
+
+    // Asks for confirmation, deletes the file and removes it from the list if it is gone
+    private fun deleteFile(file: MediaFolderFile) {
+        mediaFileManager.showDeleteDialog(
+            file.name,
+            getString(R.string.delete_file_without_media_info)
+        ) {
+            if (!mediaFileManager.existsMediaFile(file.name)) {
+                adapter.remove(file)
+            }
         }
     }
 }
