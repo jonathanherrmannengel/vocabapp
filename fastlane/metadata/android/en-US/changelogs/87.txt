@@ -1,0 +1,4 @@
+Select and delete several filing boxes at once.
+Animated GIF and WebP images (WebP from Android 9).
+Improved accessibility.
+Bugfixes.

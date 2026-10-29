@@ -1,0 +1,4 @@
+Mehrere Karteikästen auf einmal auswählen und löschen.
+Animierte GIF- und WebP-Bilder (WebP ab Android 9).
+Verbesserte Barrierefreiheit.
+Fehlerkorrekturen.
