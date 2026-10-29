@@ -42,6 +42,9 @@ class AdapterMediaLinkCardImages(
         )
         val currentMediaLink = media[position]
         val fileId = currentMediaLink.uid
+        // Screen readers name each image by its file
+        viewHolder.binding.recImg.contentDescription =
+            context.getString(R.string.image_media_file, currentMediaLink.file)
         val uri = mediaFiles.getImageUri(fileId)
         if (uri != null) {
             viewHolder.binding.recImg.load(uri)

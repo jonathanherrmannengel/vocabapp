@@ -165,6 +165,6 @@
             android:paddingTop="10dp"
             android:textColor="@color/light_black"
             android:textIsSelectable="true"
-            android:textSize="11sp" />
+            android:textSize="12sp" />
     </RelativeLayout>
 </ScrollView>

@@ -164,8 +164,9 @@
 
                     <ImageButton
                         android:id="@+id/settings_format_cards_info"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:padding="14dp"
                         android:background="@android:color/transparent"
                         android:contentDescription="@string/info"
                         android:src="@drawable/outline_info_24"

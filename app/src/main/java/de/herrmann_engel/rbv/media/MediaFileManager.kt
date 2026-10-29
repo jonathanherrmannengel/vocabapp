@@ -139,8 +139,8 @@ class MediaFileManager(
     }
 
     override fun showImageDialog(fileId: Int, cardId: Int, dialog: Dialog?) {
-        val uri = getImageUri(fileId)
-        if (uri != null) {
+        val file = getFile(fileId)
+        if (file != null && file.isFile) {
             val bindingImageDialog = DiaImageBinding.inflate(
                 activity.layoutInflater
             )
@@ -149,7 +149,9 @@ class MediaFileManager(
                 bindingImageDialog.root,
                 activity.getString(R.string.image_media)
             )
-            bindingImageDialog.diaImageView.load(uri)
+            bindingImageDialog.diaImageView.load(file.uri)
+            bindingImageDialog.diaImageView.contentDescription =
+                activity.getString(R.string.image_media_file, file.name)
             imageDialog.show()
         } else if (!existsMediaFile(fileId)) {
             showMissingDialog(cardId, dialog)
