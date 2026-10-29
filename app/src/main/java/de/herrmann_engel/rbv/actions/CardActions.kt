@@ -118,6 +118,10 @@ class CardActions(
         moveDialog.show()
     }
 
+    fun move(card: DbCard, collectionId: Int?) {
+        move(arrayListOf(card), collectionId)
+    }
+
     // Only cards not already in the pack are moved and reported
     private fun moveToPack(cards: List<DbCard>, packId: Int) {
         val dbHelperUpdate = DbHelperUpdate(activity)
@@ -129,10 +133,6 @@ class CardActions(
                 movedCards.forEach { dbHelperUpdate.updateCard(it) }
             }
         }) { listener.movedCards(ArrayList(movedCards.map { it.uid })) }
-    }
-
-    fun move(card: DbCard, collectionId: Int?) {
-        move(arrayListOf(card), collectionId)
     }
 
     /**

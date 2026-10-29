@@ -93,6 +93,10 @@ class PackActions(val activity: ComponentActivity, private val listener: Listene
         moveDialog.show()
     }
 
+    fun move(pack: DbPack) {
+        move(arrayListOf(pack))
+    }
+
     // Only packs not already in the collection are moved and reported
     private fun moveToCollection(packs: List<DbPack>, collectionId: Int) {
         val dbHelperUpdate = DbHelperUpdate(activity)
@@ -105,10 +109,6 @@ class PackActions(val activity: ComponentActivity, private val listener: Listene
             }
         }
         listener.movedPacks(ArrayList(movedPacks.map { it.uid }))
-    }
-
-    fun move(pack: DbPack) {
-        move(arrayListOf(pack))
     }
 
 }
