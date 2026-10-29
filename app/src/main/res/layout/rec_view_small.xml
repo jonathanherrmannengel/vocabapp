@@ -32,7 +32,6 @@
             android:layout_marginTop="2dp"
             android:gravity="start"
             android:textColor="@color/dark_grey"
-            android:textSize="11sp"
-            android:visibility="gone" />
+            android:textSize="11sp" />
     </LinearLayout>
 </LinearLayout>
