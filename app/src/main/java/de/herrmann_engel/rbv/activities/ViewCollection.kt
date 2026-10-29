@@ -2,17 +2,14 @@ package de.herrmann_engel.rbv.activities
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.TypedValue
 import android.view.Menu
-import android.view.View
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.databinding.ActivityViewCollectionOrPackBinding
 import de.herrmann_engel.rbv.db.DbCollection
 import de.herrmann_engel.rbv.db.utils.DbHelperDelete
 import de.herrmann_engel.rbv.db.utils.DbHelperGet
 import de.herrmann_engel.rbv.settings.AppSettings
-import de.herrmann_engel.rbv.utils.colorAt
-import de.herrmann_engel.rbv.utils.formatDateTime
+import de.herrmann_engel.rbv.ui.showDetails
 import de.herrmann_engel.rbv.utils.getCollectionId
 import de.herrmann_engel.rbv.utils.putCollectionId
 import de.herrmann_engel.rbv.utils.runInBackground
@@ -56,45 +53,20 @@ class ViewCollection : RBVActivity() {
     // Load the collection again on every resume, as it may have been edited
     public override fun onResume() {
         super.onResume()
-        val settings = AppSettings(this)
-        val increaseFontSize = settings.uiFontSizeBig
         // Close if the collection no longer exists (e.g. deleted in the meantime)
         collection = dbHelperGet.getSingleCollection(collectionId) ?: run {
             finish()
             return
         }
         title = getString(R.string.collection_details)
-        binding.collectionOrPackName.text = collection.name
-        if (collection.emoji.isBlank()) {
-            binding.collectionOrPackEmoji.visibility = View.GONE
-        } else {
-            binding.collectionOrPackEmoji.visibility = View.VISIBLE
-            binding.collectionOrPackEmoji.text = collection.emoji
-        }
-        if (collection.desc.isBlank()) {
-            binding.collectionOrPackDesc.visibility = View.GONE
-        } else {
-            binding.collectionOrPackDesc.visibility = View.VISIBLE
-            binding.collectionOrPackDesc.text = collection.desc
-        }
-        if (increaseFontSize) {
-            binding.collectionOrPackEmoji.setTextSize(
-                TypedValue.COMPLEX_UNIT_PX,
-                resources.getDimension(R.dimen.details_name_size_big)
-            )
-            binding.collectionOrPackName.setTextSize(
-                TypedValue.COMPLEX_UNIT_PX,
-                resources.getDimension(R.dimen.details_name_size_big)
-            )
-            binding.collectionOrPackDesc.setTextSize(
-                TypedValue.COMPLEX_UNIT_PX,
-                resources.getDimension(R.dimen.details_desc_size_big)
-            )
-        }
-        // Format the creation date (stored in seconds)
-        binding.collectionOrPackDate.text = formatDateTime(this, collection.date)
-        resources.colorAt(R.array.pack_color_background, collection.colors)
-            ?.let { binding.root.setBackgroundColor(it) }
+        binding.showDetails(
+            collection.name,
+            collection.emoji,
+            collection.desc,
+            collection.date,
+            collection.colors,
+            AppSettings(this).uiFontSizeBig
+        )
     }
 
     /**

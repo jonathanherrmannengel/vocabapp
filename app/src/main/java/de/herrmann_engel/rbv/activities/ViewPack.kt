@@ -2,9 +2,7 @@ package de.herrmann_engel.rbv.activities
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.TypedValue
 import android.view.Menu
-import android.view.View
 import android.widget.Toast
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.actions.PackActions
@@ -12,8 +10,7 @@ import de.herrmann_engel.rbv.databinding.ActivityViewCollectionOrPackBinding
 import de.herrmann_engel.rbv.db.DbPack
 import de.herrmann_engel.rbv.db.utils.DbHelperGet
 import de.herrmann_engel.rbv.settings.AppSettings
-import de.herrmann_engel.rbv.utils.colorAt
-import de.herrmann_engel.rbv.utils.formatDateTime
+import de.herrmann_engel.rbv.ui.showDetails
 import de.herrmann_engel.rbv.utils.getListCollection
 import de.herrmann_engel.rbv.utils.getPackId
 import de.herrmann_engel.rbv.utils.putListCollection
@@ -46,45 +43,20 @@ class ViewPack : RBVActivity(), PackActions.Listener {
     // Load the pack again on every resume, as it may have been edited
     public override fun onResume() {
         super.onResume()
-        val settings = AppSettings(this)
-        val increaseFontSize = settings.uiFontSizeBig
         // Close if the pack no longer exists (e.g. deleted in the meantime)
         pack = dbHelperGet.getSinglePack(packId) ?: run {
             finish()
             return
         }
         title = getString(R.string.pack_details)
-        if (pack.emoji.isBlank()) {
-            binding.collectionOrPackEmoji.visibility = View.GONE
-        } else {
-            binding.collectionOrPackEmoji.visibility = View.VISIBLE
-            binding.collectionOrPackEmoji.text = pack.emoji
-        }
-        binding.collectionOrPackName.text = pack.name
-        if (pack.desc.isBlank()) {
-            binding.collectionOrPackDesc.visibility = View.GONE
-        } else {
-            binding.collectionOrPackDesc.visibility = View.VISIBLE
-            binding.collectionOrPackDesc.text = pack.desc
-        }
-        if (increaseFontSize) {
-            binding.collectionOrPackEmoji.setTextSize(
-                TypedValue.COMPLEX_UNIT_PX,
-                resources.getDimension(R.dimen.details_name_size_big)
-            )
-            binding.collectionOrPackName.setTextSize(
-                TypedValue.COMPLEX_UNIT_PX,
-                resources.getDimension(R.dimen.details_name_size_big)
-            )
-            binding.collectionOrPackDesc.setTextSize(
-                TypedValue.COMPLEX_UNIT_PX,
-                resources.getDimension(R.dimen.details_desc_size_big)
-            )
-        }
-        // Format the creation date (stored in seconds)
-        binding.collectionOrPackDate.text = formatDateTime(this, pack.date)
-        resources.colorAt(R.array.pack_color_background, pack.colors)
-            ?.let { binding.root.setBackgroundColor(it) }
+        binding.showDetails(
+            pack.name,
+            pack.emoji,
+            pack.desc,
+            pack.date,
+            pack.colors,
+            AppSettings(this).uiFontSizeBig
+        )
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
