@@ -1,6 +1,7 @@
 package de.herrmann_engel.rbv.adapters
 
 import android.content.Context
+import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.LayerDrawable
 import android.text.Spannable
@@ -11,6 +12,8 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.databinding.RecViewCollectionOrPackBinding
+import de.herrmann_engel.rbv.utils.StringTools
+import de.herrmann_engel.rbv.utils.colorAt
 
 // Text sizes of a row in the collection and pack lists, depending on the font size setting
 fun RecViewCollectionOrPackBinding.applyFontSize(uiFontSizeBig: Boolean) {
@@ -62,4 +65,55 @@ fun iconText(context: Context, text: String, icons: Map<Char, Int>): SpannableSt
         )
     }
     return result
+}
+
+/**
+ * The preview of a row: the emoji, or without one the first character of the name; a check mark
+ * if the row is selected.
+ */
+fun RecViewCollectionOrPackBinding.showPreview(
+    name: String,
+    emoji: String,
+    selected: Boolean = false
+) {
+    recCollectionsPreviewText.text = when {
+        selected -> "✓"
+        emoji.isBlank() -> StringTools.firstCharacter(name)
+        else -> emoji
+    }
+}
+
+// The number of entries of a row (e.g. the cards of a pack), also as text for screen readers
+fun RecViewCollectionOrPackBinding.showCounter(count: Int) {
+    recCollectionsNumberText.text = count.toString()
+    recCollectionsNumberText.contentDescription =
+        root.resources.getQuantityString(R.plurals.items, count, count)
+}
+
+/**
+ * Colors a row like its collection or pack (index into R.array.pack_color_list); the check mark of
+ * a selected row is shown without the colored preview background.
+ */
+fun RecViewCollectionOrPackBinding.applyColors(colors: Int, selected: Boolean = false) {
+    val resources = root.resources
+    val color = resources.colorAt(R.array.pack_color_list, colors)
+    val colorBackground = resources.colorAt(R.array.pack_color_background_light, colors)
+    val colorBackgroundAlpha =
+        resources.colorAt(R.array.pack_color_background_light_alpha, colors)
+    if (color == null || colorBackground == null || colorBackgroundAlpha == null) {
+        return
+    }
+    recCollectionsName.setTextColor(color)
+    recCollectionsPreviewText.setTextColor(
+        if (selected) ContextCompat.getColor(root.context, R.color.default_text) else color
+    )
+    recCollectionsPreviewText.setBackgroundColor(
+        if (selected) Color.TRANSPARENT else colorBackground
+    )
+    val (background, backgroundBehind) = backgroundLayers()
+    background.mutate()
+    background.setStroke(2, color)
+    background.setColor(colorBackgroundAlpha)
+    backgroundBehind.mutate()
+    backgroundBehind.setStroke(1, colorBackground)
 }

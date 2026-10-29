@@ -186,10 +186,11 @@ object StringTools {
     }
 
     /**
-     * Returns the first grapheme of the input (e.g. a single emoji), or an empty string if the
-     * input is empty.
+     * Returns the first character of the input as the user sees it (a grapheme cluster: e.g. a
+     * letter with its accents, or an emoji including skin tone, flag or joined sequence), or an
+     * empty string if the input is empty.
      */
-    fun firstEmoji(input: String): String {
+    fun firstCharacter(input: String): String {
         if (input.isEmpty()) {
             return ""
         }

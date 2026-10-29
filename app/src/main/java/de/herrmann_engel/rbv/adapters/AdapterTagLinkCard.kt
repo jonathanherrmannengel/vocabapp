@@ -145,7 +145,7 @@ class AdapterTagLinkCard(
                             val newTag = DbTag()
                             newTag.uid = currentTag.uid
                             newTag.name = bindingEditDialog.editTagName.text.toString()
-                            newTag.emoji = StringTools.firstEmoji(
+                            newTag.emoji = StringTools.firstCharacter(
                                 bindingEditDialog.editTagEmoji.text.toString()
                             )
                             // Store the color as hex string without alpha (#RRGGBB); if no

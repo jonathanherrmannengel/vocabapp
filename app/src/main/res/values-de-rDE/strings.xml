@@ -25,7 +25,10 @@
     <string name="print">Drucken</string>
     <string name="select_all">Alles auswählen</string>
     <string name="selected">Ausgewählt</string>
-    <string name="items">Einträge</string>
+    <plurals name="items">
+        <item quantity="one">%d Eintrag</item>
+        <item quantity="other">%d Einträge</item>
+    </plurals>
     <string name="welcome_collection">Willkommen. Erstelle einen neuen Karteikasten (+) oder importiere ein Karteikasten-Backup (↓).</string>
     <string name="welcome_pack">Es sind noch keine Kartenstapel in diesem Karteikasten vorhanden.</string>
     <string name="welcome_pack_create">Erstelle einen neuen Kartenstapel (+).</string>

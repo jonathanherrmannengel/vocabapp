@@ -1,7 +1,6 @@
 package de.herrmann_engel.rbv.adapters
 
 import android.content.Intent
-import android.graphics.Color
 import android.graphics.Typeface
 import android.view.LayoutInflater
 import android.view.Menu
@@ -9,7 +8,6 @@ import android.view.View
 import android.view.View.IMPORTANT_FOR_ACCESSIBILITY_NO
 import android.view.View.IMPORTANT_FOR_ACCESSIBILITY_YES
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import de.herrmann_engel.rbv.R
@@ -21,9 +19,7 @@ import de.herrmann_engel.rbv.databinding.RecViewCollectionOrPackBinding
 import de.herrmann_engel.rbv.db.DbPack
 import de.herrmann_engel.rbv.db.PackWithMeta
 import de.herrmann_engel.rbv.utils.StringTools
-import de.herrmann_engel.rbv.utils.colorAt
 import de.herrmann_engel.rbv.utils.putCardSource
-import java.util.Locale
 
 /**
  * Pack list of a collection (or of all collections if collectionId is null). The row for all
@@ -127,7 +123,6 @@ class AdapterPacks(
         viewHolder.binding.recCollectionsPreviewText.importantForAccessibility =
             IMPORTANT_FOR_ACCESSIBILITY_NO
         viewHolder.binding.recCollectionsName.setTypeface(null, Typeface.NORMAL)
-        val (background, backgroundBehind) = viewHolder.binding.backgroundLayers()
         viewHolder.binding.recCollectionsParent.visibility = View.GONE
         val currentPack = packs[position].pack
         val packId = currentPack.uid
@@ -159,55 +154,14 @@ class AdapterPacks(
             viewHolder.binding.recCollectionsDesc.visibility = View.VISIBLE
             viewHolder.binding.recCollectionsDesc.text = StringTools.shorten(desc)
         }
-        viewHolder.binding.recCollectionsPreviewText.text =
-            if (selected) {
-                "✓"
-            } else currentPack.emoji.ifBlank {
-                val pattern = Regex("^(\\P{M}\\p{M}*+).*")
-                currentPack.name.replace(pattern, "$1")
-            }
-        viewHolder.binding.recCollectionsNumberText.text = packs[position].counter.toString()
-        viewHolder.binding.recCollectionsNumberText.contentDescription = String.format(
-            Locale.ROOT, "%d %s",
-            packs[position].counter,
-            context.resources.getString(R.string.items)
-        )
+        viewHolder.binding.showPreview(currentPack.name, currentPack.emoji, selected)
+        viewHolder.binding.showCounter(packs[position].counter)
         // Packs of all collections are listed: show the collection name as well
         if (collectionId == null) {
             viewHolder.binding.recCollectionsParent.visibility = View.VISIBLE
             viewHolder.binding.recCollectionsParent.text = packs[position].collectionName
         }
-        val resources = context.resources
-        val color = resources.colorAt(R.array.pack_color_list, currentPack.colors)
-        val colorBackground =
-            resources.colorAt(R.array.pack_color_background_light, currentPack.colors)
-        val colorBackgroundAlpha =
-            resources.colorAt(R.array.pack_color_background_light_alpha, currentPack.colors)
-        if (color != null && colorBackground != null && colorBackgroundAlpha != null) {
-            viewHolder.binding.recCollectionsName.setTextColor(color)
-            viewHolder.binding.recCollectionsPreviewText.setTextColor(
-                if (selected) {
-                    ContextCompat.getColor(
-                        context,
-                        R.color.default_text
-                    )
-                } else {
-                    color
-                }
-            )
-            viewHolder.binding.recCollectionsPreviewText.setBackgroundColor(
-                if (selected) {
-                    Color.TRANSPARENT
-                } else {
-                    colorBackground
-                }
-            )
-            background.mutate()
-            background.setStroke(2, color)
-            background.setColor(colorBackgroundAlpha)
-            backgroundBehind.mutate()
-            backgroundBehind.setStroke(1, colorBackground)
-        }
+        viewHolder.binding.applyColors(currentPack.colors, selected)
     }
 
     override fun getItemCount(): Int {

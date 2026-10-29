@@ -9,7 +9,6 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.databinding.RecViewCollectionOrPackBinding
-import java.util.Locale
 
 /**
  * First row of the collection and pack lists: an entry for everything in the list (e.g. all
@@ -87,12 +86,7 @@ class AdapterListHeader(
             ContextCompat.getColor(context, R.color.pack_default_item_background)
         )
         binding.recCollectionsNumberText.visibility = View.VISIBLE
-        binding.recCollectionsNumberText.text = counter.toString()
-        binding.recCollectionsNumberText.contentDescription = String.format(
-            Locale.ROOT, "%d %s",
-            counter,
-            context.resources.getString(R.string.items)
-        )
+        binding.showCounter(counter)
         background.setStroke(2, ContextCompat.getColor(context, R.color.pack_default_item_stroke))
         background.setColor(
             ContextCompat.getColor(context, R.color.pack_default_item_background_alpha)

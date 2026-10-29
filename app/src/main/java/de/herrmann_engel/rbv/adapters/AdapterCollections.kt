@@ -6,15 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.activities.ListPacks
 import de.herrmann_engel.rbv.adapters.compare.ListCollectionCompare
 import de.herrmann_engel.rbv.databinding.RecViewCollectionOrPackBinding
 import de.herrmann_engel.rbv.db.CollectionWithMeta
 import de.herrmann_engel.rbv.utils.StringTools
-import de.herrmann_engel.rbv.utils.colorAt
 import de.herrmann_engel.rbv.utils.putListCollection
-import java.util.Locale
 
 /**
  * Collection list of the start screen. The row for all packs and the welcome message are shown by
@@ -68,7 +65,6 @@ class AdapterCollections(
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         val context = viewHolder.binding.root.context
         viewHolder.binding.applyFontSize(uiFontSizeBig)
-        val (background, backgroundBehind) = viewHolder.binding.backgroundLayers()
         val currentCollection = collections[position].collection
         val collectionId = currentCollection.uid
         viewHolder.binding.root.setOnClickListener {
@@ -88,36 +84,9 @@ class AdapterCollections(
             viewHolder.binding.recCollectionsDesc.visibility = View.VISIBLE
             viewHolder.binding.recCollectionsDesc.text = StringTools.shorten(desc)
         }
-        viewHolder.binding.recCollectionsPreviewText.text =
-            currentCollection.emoji.ifBlank {
-                // Without emoji, show the first character of the name (including combining marks)
-                val pattern = Regex("^(\\P{M}\\p{M}*+).*")
-                currentCollection.name.replace(pattern, "$1")
-            }
-        viewHolder.binding.recCollectionsNumberText.text = collections[position].counter.toString()
-        viewHolder.binding.recCollectionsNumberText.contentDescription = String.format(
-            Locale.ROOT, "%d %s",
-            collections[position].counter,
-            context.resources.getString(R.string.items)
-        )
-        val resources = context.resources
-        val color = resources.colorAt(R.array.pack_color_list, currentCollection.colors)
-        val colorBackground =
-            resources.colorAt(R.array.pack_color_background_light, currentCollection.colors)
-        val colorBackgroundAlpha = resources.colorAt(
-            R.array.pack_color_background_light_alpha,
-            currentCollection.colors
-        )
-        if (color != null && colorBackground != null && colorBackgroundAlpha != null) {
-            viewHolder.binding.recCollectionsName.setTextColor(color)
-            viewHolder.binding.recCollectionsPreviewText.setTextColor(color)
-            viewHolder.binding.recCollectionsPreviewText.setBackgroundColor(colorBackground)
-            background.mutate()
-            background.setStroke(2, color)
-            background.setColor(colorBackgroundAlpha)
-            backgroundBehind.mutate()
-            backgroundBehind.setStroke(1, colorBackground)
-        }
+        viewHolder.binding.showPreview(currentCollection.name, currentCollection.emoji)
+        viewHolder.binding.showCounter(collections[position].counter)
+        viewHolder.binding.applyColors(currentCollection.colors)
     }
 
     override fun getItemCount(): Int {

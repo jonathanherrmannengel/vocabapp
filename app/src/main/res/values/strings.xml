@@ -31,7 +31,10 @@
     <string name="print">print</string>
     <string name="select_all">select all</string>
     <string name="selected">selected</string>
-    <string name="items">items</string>
+    <plurals name="items">
+        <item quantity="one">%d item</item>
+        <item quantity="other">%d items</item>
+    </plurals>
     <string name="welcome_collection">Welcome. Create a new filing box (+) or import a filing box backup (↓).</string>
     <string name="welcome_pack">There are no decks in this filing box.</string>
     <string name="welcome_pack_create">Create a new deck (+).</string>
