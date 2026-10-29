@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.R
+import de.herrmann_engel.rbv.actions.CollectionActions
 import de.herrmann_engel.rbv.adapters.AdapterCollections
 import de.herrmann_engel.rbv.adapters.AdapterListHeader
 import de.herrmann_engel.rbv.adapters.iconText
@@ -34,10 +35,11 @@ import kotlinx.coroutines.withContext
 import java.util.Locale
 
 /**
- * Start screen: list of all collections. The menu offers creating collections, import and
- * export of all data, advanced search, media management, settings and app information.
+ * Start screen: list of all collections, of which several can be selected and deleted. The menu
+ * offers creating collections, import and export of all data, advanced search, media management,
+ * settings and app information.
  */
-class ListCollections : RBVActivity() {
+class ListCollections : RBVActivity(), CollectionActions.Listener {
     private val mediaFileManager = MediaFileManager(this)
     private lateinit var binding: ActivityDefaultRecBinding
     private lateinit var dbHelperGet: DbHelperGet
@@ -197,7 +199,11 @@ class ListCollections : RBVActivity() {
             headerAdapter?.update(packCount, collections.isEmpty(), uiFontSizeBig)
             adapter?.updateSettingsAndContent(collections, uiFontSizeBig) ?: run {
                 val header = createHeaderAdapter(packCount, collections.isEmpty(), uiFontSizeBig)
-                val collectionsAdapter = AdapterCollections(collections, uiFontSizeBig)
+                val collectionsAdapter = AdapterCollections(
+                    collections,
+                    uiFontSizeBig,
+                    CollectionActions(this@ListCollections, this@ListCollections)
+                )
                 headerAdapter = header
                 adapter = collectionsAdapter
                 binding.recDefault.adapter = ConcatAdapter(header, collectionsAdapter)
@@ -361,5 +367,9 @@ class ListCollections : RBVActivity() {
             Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION
         intent.type = "text/*"
         launcherImportFile.launch(intent)
+    }
+
+    override fun deletedCollections(collectionIds: ArrayList<Int>) {
+        refreshContent()
     }
 }

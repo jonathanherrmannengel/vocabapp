@@ -23,7 +23,8 @@ import de.herrmann_engel.rbv.utils.putCardSource
 
 /**
  * Pack list of a collection (or of all collections if collectionId is null). The row for all
- * cards and the welcome message are shown by [AdapterListHeader].
+ * cards and the welcome message are shown by [AdapterListHeader]. A long click starts the
+ * selection of several packs to delete or move them.
  */
 class AdapterPacks(
     private val packs: MutableList<PackWithMeta>,

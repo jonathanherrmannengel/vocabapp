@@ -32,7 +32,8 @@ import java.util.Locale
 
 /**
  * Pack list of the collection passed as "listCollection" extra (see putListCollection), or of all
- * collections without it. A single collection can be exported and shared from here.
+ * collections without it. Several packs can be selected and deleted or moved, and a single
+ * collection can be exported and shared from here.
  */
 class ListPacks : RBVActivity(), PackActions.Listener {
     private lateinit var binding: ActivityDefaultRecBinding

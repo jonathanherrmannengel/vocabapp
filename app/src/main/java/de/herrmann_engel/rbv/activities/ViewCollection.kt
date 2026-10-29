@@ -4,21 +4,19 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import de.herrmann_engel.rbv.R
+import de.herrmann_engel.rbv.actions.CollectionActions
 import de.herrmann_engel.rbv.databinding.ActivityViewCollectionOrPackBinding
 import de.herrmann_engel.rbv.db.DbCollection
-import de.herrmann_engel.rbv.db.utils.DbHelperDelete
 import de.herrmann_engel.rbv.db.utils.DbHelperGet
 import de.herrmann_engel.rbv.settings.AppSettings
 import de.herrmann_engel.rbv.ui.showDetails
 import de.herrmann_engel.rbv.utils.getCollectionId
 import de.herrmann_engel.rbv.utils.putCollectionId
-import de.herrmann_engel.rbv.utils.runInBackground
-import de.herrmann_engel.rbv.utils.showConfirmDialog
 
 /**
  * Details of a collection (name, emoji, description, creation date) with options to edit and delete it.
  */
-class ViewCollection : RBVActivity() {
+class ViewCollection : RBVActivity(), CollectionActions.Listener {
     private lateinit var binding: ActivityViewCollectionOrPackBinding
     private lateinit var dbHelperGet: DbHelperGet
     private lateinit var collection: DbCollection
@@ -44,7 +42,7 @@ class ViewCollection : RBVActivity() {
             return@setOnMenuItemClickListener true
         }
         menu.findItem(R.id.menu_view_collection_delete).setOnMenuItemClickListener {
-            deleteCollection(false)
+            CollectionActions(this, this).delete(collection)
             return@setOnMenuItemClickListener true
         }
         return true
@@ -69,31 +67,9 @@ class ViewCollection : RBVActivity() {
         )
     }
 
-    /**
-     * Asks for confirmation and deletes the collection. If it contains packs, a second
-     * confirmation is required (forceDelete is set for the second dialog) and the packs
-     * are deleted with all their cards.
-     */
-    private fun deleteCollection(forceDelete: Boolean) {
-        val hasPacks = dbHelperGet.getAllPacksByCollection(collection.uid).isNotEmpty()
-        val text = if (hasPacks && !forceDelete) {
-            getString(R.string.delete_collection_with_packs)
-        } else null
-        showConfirmDialog(this, getString(R.string.delete), text) {
-            if (dbHelperGet.getAllPacksByCollection(collection.uid).isEmpty() || forceDelete) {
-                val dbHelperDelete = DbHelperDelete(this)
-                val collection = collection
-                runInBackground(this, {
-                    dbHelperDelete.deleteCollection(collection, forceDelete)
-                }) {
-                    val intent = Intent(this, ListCollections::class.java)
-                    intent.flags =
-                        Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-                    startActivity(intent)
-                }
-            } else {
-                deleteCollection(true)
-            }
-        }
+    override fun deletedCollections(collectionIds: ArrayList<Int>) {
+        val intent = Intent(this, ListCollections::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+        startActivity(intent)
     }
 }

@@ -74,7 +74,7 @@ fun iconText(context: Context, text: String, icons: Map<Char, Int>): SpannableSt
 fun RecViewCollectionOrPackBinding.showPreview(
     name: String,
     emoji: String,
-    selected: Boolean = false
+    selected: Boolean
 ) {
     recCollectionsPreviewText.text = when {
         selected -> "✓"
@@ -94,7 +94,7 @@ fun RecViewCollectionOrPackBinding.showCounter(count: Int) {
  * Colors a row like its collection or pack (index into R.array.pack_color_list); the check mark of
  * a selected row is shown without the colored preview background.
  */
-fun RecViewCollectionOrPackBinding.applyColors(colors: Int, selected: Boolean = false) {
+fun RecViewCollectionOrPackBinding.applyColors(colors: Int, selected: Boolean) {
     val resources = root.resources
     val color = resources.colorAt(R.array.pack_color_list, colors)
     val colorBackground = resources.colorAt(R.array.pack_color_background_light, colors)

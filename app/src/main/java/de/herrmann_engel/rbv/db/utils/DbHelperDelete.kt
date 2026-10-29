@@ -12,16 +12,17 @@ class DbHelperDelete(context: Context) {
     private val dbHelper = DbHelper(context)
 
     /**
-     * Deletes a collection. If it still contains packs, these are deleted as well if force is set,
-     * otherwise nothing is deleted and false is returned.
+     * Deletes a collection with its packs. If it still contains cards, these are deleted as well if
+     * force is set, otherwise nothing is deleted and false is returned.
      */
     fun deleteCollection(collection: DbCollection, force: Boolean): Boolean =
         dbHelper.database.runInTransaction<Boolean> {
             val dbHelperGet = DbHelperGet(dbHelper.context)
-            val packs = dbHelperGet.getAllPacksByCollection(collection.uid)
-            if (packs.isNotEmpty() && !force) {
+            val containsCards = dbHelperGet.countCardsInCollection(collection.uid) > 0
+            if (containsCards && !force) {
                 return@runInTransaction false
             }
+            val packs = dbHelperGet.getAllPacksByCollection(collection.uid)
             packs.forEach { pack -> deletePack(pack, true) }
             dbHelper.collectionDao.delete(collection)
             true

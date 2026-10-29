@@ -110,7 +110,11 @@
         <item quantity="other">You are about to delete %1$d decks with %2$d flashcards. Continue?</item>
     </plurals>
     <string name="delete_pack_with_cards">This deck contains flashcards. If you proceed these flashcards will also be deleted. Delete anyway?</string>
-    <string name="delete_collection_with_packs">This filing box contains decks. If you proceed these decks and their flashcards will also be deleted. Delete anyway?</string>
+    <plurals name="delete_multiple_collections">
+        <item quantity="one">You are about to delete %1$d filing boxes with %2$d flashcard. Continue?</item>
+        <item quantity="other">You are about to delete %1$d filing boxes with %2$d flashcards. Continue?</item>
+    </plurals>
+    <string name="delete_collection_with_cards">This filing box contains flashcards. If you proceed its decks and their flashcards will also be deleted. Delete anyway?</string>
     <string name="move">move</string>
     <string name="move_pack">move deck to another filing box</string>
     <string name="move_card">move flashcard to another deck</string>
