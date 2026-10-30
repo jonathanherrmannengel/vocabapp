@@ -7,6 +7,10 @@ import androidx.room.RoomDatabase
 /**
  * Room database of the app. Holds collections, packs, cards, media files, tags and the
  * link tables connecting media files and tags to cards.
+ *
+ * The DAOs are only used by the DbHelper* classes in db.utils; the rest of the app reads and writes
+ * through those helpers. Only transactions spanning several helper calls use runInTransaction of
+ * this database directly.
  */
 @Database(
     entities = [DbPack::class, DbCard::class, DbCollection::class, DbMedia::class, DbMediaLinkCard::class, DbTag::class, DbTagLinkCard::class],

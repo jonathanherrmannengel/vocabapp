@@ -11,7 +11,8 @@ import de.herrmann_engel.rbv.db.TagDao
 import de.herrmann_engel.rbv.db.TagLinkCardDao
 
 /**
- * Bundles all DAOs of the app database. Used by the public DbHelper* classes.
+ * Bundles all DAOs of the app database. Used by the public DbHelper* classes, which are the only
+ * place the DAOs are used (see AppDatabase).
  */
 internal class DbHelper(val context: Context) {
     val database: AppDatabase = AppDatabase.getInstance(context)
