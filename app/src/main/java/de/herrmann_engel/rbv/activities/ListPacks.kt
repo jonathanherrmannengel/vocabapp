@@ -186,8 +186,11 @@ class ListPacks : RBVActivity(), PackActions.Listener {
                 } else {
                     iconText(
                         context,
-                        context.getString(R.string.welcome_pack) + " " +
-                            context.getString(R.string.welcome_pack_create),
+                        context.getString(
+                            R.string.sentences_joined,
+                            context.getString(R.string.welcome_pack),
+                            context.getString(R.string.welcome_pack_create)
+                        ),
                         mapOf('+' to R.drawable.outline_add_24)
                     )
                 }

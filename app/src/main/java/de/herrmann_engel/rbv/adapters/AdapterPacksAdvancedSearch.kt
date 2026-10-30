@@ -8,7 +8,6 @@ import de.herrmann_engel.rbv.databinding.RecViewSmallBinding
 import de.herrmann_engel.rbv.db.PackWithMeta
 import de.herrmann_engel.rbv.utils.StringTools
 import de.herrmann_engel.rbv.utils.colorAt
-import java.util.Locale
 
 /**
  * Pack list with checkboxes in the advanced search, showing the number of cards and the
@@ -41,9 +40,8 @@ class AdapterPacksAdvancedSearch(
         val pack = packs[position].pack
         context.resources.colorAt(R.array.pack_color_list, pack.colors)
             ?.let { viewHolder.binding.recSmallName.setTextColor(it) }
-        viewHolder.binding.recSmallName.text = String.format(
-            Locale.ROOT,
-            "%s (%d)",
+        viewHolder.binding.recSmallName.text = context.getString(
+            R.string.pack_with_count,
             StringTools.shorten(pack.name),
             packs[position].counter
         )

@@ -31,6 +31,7 @@ import de.herrmann_engel.rbv.ui.TagSpan
 import de.herrmann_engel.rbv.utils.StringTools
 import de.herrmann_engel.rbv.utils.colorAt
 import de.herrmann_engel.rbv.utils.formatDateTime
+import de.herrmann_engel.rbv.utils.formatNumber
 import de.herrmann_engel.rbv.utils.getCardId
 import de.herrmann_engel.rbv.utils.getCardSource
 import de.herrmann_engel.rbv.utils.putCardId
@@ -40,7 +41,6 @@ import de.herrmann_engel.rbv.utils.putUpdatedCardId
 import io.noties.markwon.Markwon
 import io.noties.markwon.linkify.LinkifyPlugin
 import me.saket.bettermovementmethod.BetterLinkMovementMethod
-import java.util.Locale
 
 /**
  * Shows a single card with all its details (both sides, tags, notes, dates, progress, media)
@@ -114,8 +114,7 @@ class ViewCard : RBVActivity(), CardActions.Listener {
         if (cardTags.isNotEmpty()) {
             binding.cardTags.visibility = View.VISIBLE
             val builder = SpannableStringBuilder()
-            builder.append(getString(R.string.tags))
-            builder.append(":")
+            builder.append(getString(R.string.tags_label))
             cardTags.forEach {
                 var color = ContextCompat.getColor(
                     this,
@@ -279,9 +278,9 @@ class ViewCard : RBVActivity(), CardActions.Listener {
 
     // Shows the current progress; the minus button is grayed out at 0
     private fun updateCardKnown() {
-        binding.cardKnown.text = known.toString()
+        binding.cardKnown.text = formatNumber(this, known)
         binding.cardKnown.contentDescription =
-            String.format(Locale.ROOT, "%s: %d", resources.getString(R.string.card_known), known)
+            getString(R.string.card_known_value, known)
         binding.cardMinus.setColorFilter(Color.argb(255, 255, 255, 255))
         binding.cardMinus.setColorFilter(
             ContextCompat.getColor(this, if (known > 0) R.color.dark_red else R.color.dark_grey),

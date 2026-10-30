@@ -14,6 +14,7 @@ import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.databinding.RecViewCollectionOrPackBinding
 import de.herrmann_engel.rbv.utils.StringTools
 import de.herrmann_engel.rbv.utils.colorAt
+import de.herrmann_engel.rbv.utils.formatNumber
 
 // Text sizes of a row in the collection and pack lists, depending on the font size setting
 fun RecViewCollectionOrPackBinding.applyFontSize(uiFontSizeBig: Boolean) {
@@ -85,7 +86,7 @@ fun RecViewCollectionOrPackBinding.showPreview(
 
 // The number of entries of a row (e.g. the cards of a pack), also as text for screen readers
 fun RecViewCollectionOrPackBinding.showCounter(count: Int) {
-    recCollectionsNumberText.text = count.toString()
+    recCollectionsNumberText.text = formatNumber(root.context, count)
     recCollectionsNumberText.contentDescription =
         root.resources.getQuantityString(R.plurals.items, count, count)
 }

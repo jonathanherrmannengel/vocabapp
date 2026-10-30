@@ -30,9 +30,9 @@ import de.herrmann_engel.rbv.db.DbCard
 import de.herrmann_engel.rbv.language.inLanguage
 import de.herrmann_engel.rbv.utils.StringTools
 import de.herrmann_engel.rbv.utils.colorAt
+import de.herrmann_engel.rbv.utils.formatNumber
 import de.herrmann_engel.rbv.utils.putCardId
 import de.herrmann_engel.rbv.utils.putCardSource
-import java.util.Locale
 
 /**
  * Card list. Depending on the settings, the front, the back (reverse) or both sides are shown.
@@ -171,13 +171,11 @@ class AdapterCards(
         // Welcome message (with an icon replacing the "+" if cards can be created here)
         if (cards.isEmpty()) {
             if (cardSource is CardSource.Pack) {
-                val text =
-                    String.format(
-                        Locale.ROOT,
-                        "%s %s",
-                        context.resources.getString(R.string.welcome_card),
-                        context.resources.getString(R.string.welcome_card_create)
-                    )
+                val text = context.resources.getString(
+                    R.string.sentences_joined,
+                    context.resources.getString(R.string.welcome_card),
+                    context.resources.getString(R.string.welcome_card_create)
+                )
                 val addText = SpannableString(text)
                 val addTextDrawable = ContextCompat.getDrawable(
                     context,
@@ -212,15 +210,13 @@ class AdapterCards(
         }
         // The welcome item of an empty list cannot be selected
         if (cards.isNotEmpty() && selection.isSelected(cards[position].card.uid)) {
-            viewHolder.binding.recFront.contentDescription = TextUtils.concat(
-                context.resources.getString(R.string.selected),
-                ": ",
+            viewHolder.binding.recFront.contentDescription = TextUtils.expandTemplate(
+                context.getText(R.string.selected_item),
                 viewHolder.binding.recFront.contentDescription
             )
             viewHolder.binding.recFront.setTypeface(null, BOLD)
-            viewHolder.binding.recBack.contentDescription = TextUtils.concat(
-                context.resources.getString(R.string.selected),
-                ": ",
+            viewHolder.binding.recBack.contentDescription = TextUtils.expandTemplate(
+                context.getText(R.string.selected_item),
                 viewHolder.binding.recBack.contentDescription
             )
             viewHolder.binding.recBack.setTypeface(null, BOLD)
@@ -261,18 +257,17 @@ class AdapterCards(
             recText.text = cardTextInLanguage
             recText.contentDescription = cardTextInLanguage
         } else {
-            recText.text = TextUtils.concat(
+            // expandTemplate keeps the language of the card text
+            val known = formatNumber(context, card.card.known)
+            recText.text = TextUtils.expandTemplate(
+                context.getText(R.string.card_with_known),
                 cardTextInLanguage,
-                String.format(Locale.ROOT, " (%d)", card.card.known)
+                known
             )
-            recText.contentDescription = TextUtils.concat(
+            recText.contentDescription = TextUtils.expandTemplate(
+                context.getText(R.string.card_with_known_description),
                 cardTextInLanguage,
-                String.format(
-                    Locale.ROOT,
-                    " (%s: %d)",
-                    context.resources.getString(R.string.card_known),
-                    card.card.known
-                )
+                known
             )
         }
         if (cardSource !is CardSource.Pack) {

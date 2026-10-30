@@ -2,6 +2,7 @@ package de.herrmann_engel.rbv.actions
 
 import android.print.PrintAttributes
 import android.print.PrintManager
+import android.text.TextUtils
 import android.view.View
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
@@ -32,6 +33,7 @@ import de.herrmann_engel.rbv.media.isImage
 import de.herrmann_engel.rbv.settings.AppSettings
 import de.herrmann_engel.rbv.utils.StringTools
 import de.herrmann_engel.rbv.utils.createDialog
+import de.herrmann_engel.rbv.utils.formatNumber
 import de.herrmann_engel.rbv.utils.runInBackground
 import de.herrmann_engel.rbv.utils.showConfirmDialog
 import org.commonmark.node.HtmlBlock
@@ -289,9 +291,14 @@ class CardActions(
                 }
                 val maxTitleLength = 30
                 val shortFront = StringTools.shorten(cardFront.toString(), maxTitleLength)
-                var title = escapeHtml(shortFront)
-                if (options.progress) {
-                    title += " (${card.known})"
+                val title = if (options.progress) {
+                    TextUtils.expandTemplate(
+                        activity.getText(R.string.card_with_known),
+                        escapeHtml(shortFront),
+                        formatNumber(activity, card.known)
+                    ).toString()
+                } else {
+                    escapeHtml(shortFront)
                 }
                 val titleClass = if (index == 0) {
                     "main-title title"
