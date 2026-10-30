@@ -15,6 +15,7 @@ import de.herrmann_engel.rbv.db.CardWithMeta
 import de.herrmann_engel.rbv.db.DbMedia
 import de.herrmann_engel.rbv.db.utils.DbHelperDelete
 import de.herrmann_engel.rbv.db.utils.DbHelperGet
+import de.herrmann_engel.rbv.language.CardLanguages
 import de.herrmann_engel.rbv.media.MediaFileManager
 import de.herrmann_engel.rbv.settings.AppSettings
 import de.herrmann_engel.rbv.utils.createDialog
@@ -74,6 +75,7 @@ class ManageMedia : RBVActivity() {
         if (AppSettings(this).formatCards) {
             fillFormattedTexts(cards)
         }
+        CardLanguages().fill(cards)
         sortCards(cards, CardSort.ALPHABETICAL)
         if (cards.isEmpty()) {
             showConfirmDialog(this, getString(R.string.delete), getString(R.string.media_no_card)) {

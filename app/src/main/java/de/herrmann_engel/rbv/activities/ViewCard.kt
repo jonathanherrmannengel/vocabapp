@@ -23,6 +23,8 @@ import de.herrmann_engel.rbv.databinding.ActivityViewCardBinding
 import de.herrmann_engel.rbv.db.DbCard
 import de.herrmann_engel.rbv.db.utils.DbHelperGet
 import de.herrmann_engel.rbv.db.utils.DbHelperUpdate
+import de.herrmann_engel.rbv.language.CardLanguages
+import de.herrmann_engel.rbv.language.inLanguage
 import de.herrmann_engel.rbv.media.MediaFileManager
 import de.herrmann_engel.rbv.settings.AppSettings
 import de.herrmann_engel.rbv.ui.TagSpan
@@ -93,16 +95,19 @@ class ViewCard : RBVActivity(), CardActions.Listener {
         val formatCards = settings.formatCards
         val increaseFontSize = settings.uiFontSizeBig
         // Close if the card no longer exists (e.g. deleted in the meantime)
-        card = dbHelperGet.getSingleCard(cardId) ?: run {
+        val cardWithMeta = dbHelperGet.getSingleCardWithMeta(cardId) ?: run {
             finish()
             return
         }
+        CardLanguages().fill(cardWithMeta)
+        card = cardWithMeta.card
+        val languages = cardWithMeta.languages
         if (formatCards) {
-            binding.cardFront.text = StringTools.format(card.front)
-            binding.cardBack.text = StringTools.format(card.back)
+            binding.cardFront.text = StringTools.format(card.front).inLanguage(languages.front)
+            binding.cardBack.text = StringTools.format(card.back).inLanguage(languages.back)
         } else {
-            binding.cardFront.text = card.front
-            binding.cardBack.text = card.back
+            binding.cardFront.text = card.front.inLanguage(languages.front)
+            binding.cardBack.text = card.back.inLanguage(languages.back)
         }
         // Tags are drawn as colored pills
         val cardTags = dbHelperGet.getCardTags(card.uid)

@@ -6,6 +6,7 @@ import android.graphics.Typeface.BOLD
 import android.graphics.Typeface.NORMAL
 import android.text.Spannable
 import android.text.SpannableString
+import android.text.TextUtils
 import android.text.style.ImageSpan
 import android.util.TypedValue
 import android.view.LayoutInflater
@@ -26,6 +27,7 @@ import de.herrmann_engel.rbv.cardlist.CardSource
 import de.herrmann_engel.rbv.databinding.RecViewCardBinding
 import de.herrmann_engel.rbv.db.CardWithMeta
 import de.herrmann_engel.rbv.db.DbCard
+import de.herrmann_engel.rbv.language.inLanguage
 import de.herrmann_engel.rbv.utils.StringTools
 import de.herrmann_engel.rbv.utils.colorAt
 import de.herrmann_engel.rbv.utils.putCardId
@@ -210,17 +212,15 @@ class AdapterCards(
         }
         // The welcome item of an empty list cannot be selected
         if (cards.isNotEmpty() && selection.isSelected(cards[position].card.uid)) {
-            viewHolder.binding.recFront.contentDescription = String.format(
-                Locale.ROOT,
-                "%s: %s",
+            viewHolder.binding.recFront.contentDescription = TextUtils.concat(
                 context.resources.getString(R.string.selected),
+                ": ",
                 viewHolder.binding.recFront.contentDescription
             )
             viewHolder.binding.recFront.setTypeface(null, BOLD)
-            viewHolder.binding.recBack.contentDescription = String.format(
-                Locale.ROOT,
-                "%s: %s",
+            viewHolder.binding.recBack.contentDescription = TextUtils.concat(
                 context.resources.getString(R.string.selected),
+                ": ",
                 viewHolder.binding.recBack.contentDescription
             )
             viewHolder.binding.recBack.setTypeface(null, BOLD)
@@ -255,20 +255,25 @@ class AdapterCards(
         } else card.formattedFront ?: card.card.front
         cardText = cardText.replace(System.lineSeparator(), " ")
         cardText = StringTools.shorten(cardText)
+        // Only the card text is marked with its language, not the progress
+        val cardTextInLanguage = cardText.inLanguage(card.languages.of(back))
         if (showBothSides) {
-            recText.text = cardText
-            recText.contentDescription = cardText
+            recText.text = cardTextInLanguage
+            recText.contentDescription = cardTextInLanguage
         } else {
-            recText.text =
-                String.format(Locale.ROOT, "%s (%d)", cardText, card.card.known)
-            recText.contentDescription =
+            recText.text = TextUtils.concat(
+                cardTextInLanguage,
+                String.format(Locale.ROOT, " (%d)", card.card.known)
+            )
+            recText.contentDescription = TextUtils.concat(
+                cardTextInLanguage,
                 String.format(
                     Locale.ROOT,
-                    "%s (%s: %d)",
-                    cardText,
+                    " (%s: %d)",
                     context.resources.getString(R.string.card_known),
                     card.card.known
                 )
+            )
         }
         if (cardSource !is CardSource.Pack) {
             context.resources.colorAt(R.array.pack_color_list, card.packColor)

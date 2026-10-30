@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import de.herrmann_engel.rbv.activities.EditCardMedia
 import de.herrmann_engel.rbv.databinding.RecViewBinding
 import de.herrmann_engel.rbv.db.CardWithMeta
+import de.herrmann_engel.rbv.language.inLanguage
 import de.herrmann_engel.rbv.utils.StringTools
 import de.herrmann_engel.rbv.utils.putCardId
 
@@ -33,7 +34,7 @@ class AdapterMediaManageLinkedCards(
         var cardText = cards[position].formattedFront ?: cards[position].card.front
         cardText = cardText.replace(System.lineSeparator(), " ")
         cardText = StringTools.shorten(cardText)
-        viewHolder.binding.recName.text = cardText
+        viewHolder.binding.recName.text = cardText.inLanguage(cards[position].languages.front)
         val cardId = cards[position].card.uid
         viewHolder.binding.recName.setOnClickListener {
             val intent = Intent(context, EditCardMedia::class.java)

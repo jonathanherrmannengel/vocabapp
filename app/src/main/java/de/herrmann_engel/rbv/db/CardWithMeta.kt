@@ -2,6 +2,7 @@ package de.herrmann_engel.rbv.db
 
 import androidx.room.Embedded
 import androidx.room.Ignore
+import de.herrmann_engel.rbv.language.SideLanguages
 import java.util.Objects
 
 /**
@@ -29,6 +30,10 @@ class CardWithMeta {
     @Ignore
     var mixedWeight: Double = 0.0
 
+    // Languages of the front and back (see CardLanguages)
+    @Ignore
+    var languages: SideLanguages = SideLanguages.UNKNOWN
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is CardWithMeta) return false
@@ -37,7 +42,8 @@ class CardWithMeta {
             card == other.card &&
             tagNames == other.tagNames &&
             formattedFront == other.formattedFront &&
-            formattedBack == other.formattedBack
+            formattedBack == other.formattedBack &&
+            languages == other.languages
     }
 
     override fun hashCode(): Int {
@@ -47,7 +53,8 @@ class CardWithMeta {
             tagNames,
             formattedFront,
             formattedBack,
-            formattingIsInaccurate
+            formattingIsInaccurate,
+            languages
         )
     }
 }

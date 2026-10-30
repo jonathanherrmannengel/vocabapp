@@ -23,6 +23,7 @@ import de.herrmann_engel.rbv.db.CardWithMeta
 import de.herrmann_engel.rbv.db.DbCard
 import de.herrmann_engel.rbv.db.utils.DbHelperGet
 import de.herrmann_engel.rbv.db.utils.DbHelperUpdate
+import de.herrmann_engel.rbv.language.inLanguage
 import de.herrmann_engel.rbv.media.MediaFileManager
 import de.herrmann_engel.rbv.settings.AppSettings
 import de.herrmann_engel.rbv.ui.SwipeEvents
@@ -196,8 +197,8 @@ class QueryMode(
             front = SpannableString(frontString)
             back = SpannableString(backString)
         }
-        binding.queryShow.text = front
-        binding.queryHide.text = back
+        binding.queryShow.text = front.inLanguage(cardWithMeta.languages.of(reverse))
+        binding.queryHide.text = back.inLanguage(cardWithMeta.languages.of(!reverse))
         if (settings.uiFontSizeBig) {
             binding.queryShow.setTextSize(
                 TypedValue.COMPLEX_UNIT_PX,

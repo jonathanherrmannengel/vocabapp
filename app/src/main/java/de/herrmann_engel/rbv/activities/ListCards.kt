@@ -24,6 +24,7 @@ import de.herrmann_engel.rbv.cardlist.QueryMode
 import de.herrmann_engel.rbv.databinding.ActivityDefaultRecBinding
 import de.herrmann_engel.rbv.db.CardWithMeta
 import de.herrmann_engel.rbv.db.utils.DbHelperGet
+import de.herrmann_engel.rbv.language.CardLanguages
 import de.herrmann_engel.rbv.media.MediaFileManager
 import de.herrmann_engel.rbv.settings.AppConfig
 import de.herrmann_engel.rbv.settings.AppSettings
@@ -183,6 +184,7 @@ class ListCards : RBVActivity(), CardActions.Listener {
                     if (settings.formatCards) {
                         fillFormattedText(it, false)
                     }
+                    CardLanguages().fill(it)
                     cardsList?.add(it)
                 } ?: Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show()
             }
@@ -199,6 +201,7 @@ class ListCards : RBVActivity(), CardActions.Listener {
                             cardWithMetaOld.formattingIsInaccurate
                         )
                     }
+                    CardLanguages().fill(cardWithMetaNew)
                     cardsList?.let {
                         val index = it.indexOfFirst { c -> c.card.uid == cardUpdated }
                         if (index != -1) {
@@ -369,6 +372,7 @@ class ListCards : RBVActivity(), CardActions.Listener {
         if (settings.formatCards) {
             fillFormattedTexts(cards)
         }
+        CardLanguages().fill(cards)
         sortCards(cards, sort)
         return cards
     }
