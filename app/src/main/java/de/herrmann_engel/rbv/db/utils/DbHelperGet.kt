@@ -92,6 +92,21 @@ class DbHelperGet(context: Context) {
 
     fun getAllCardsByPackWithMeta(packId: Int): MutableList<CardWithMeta> = dbHelper.cardDao.getAllByPackWithMeta(packId)
 
+    /**
+     * Up to size cards of the pack, spread evenly over its cards in the order of creation: the
+     * sample represents the whole pack (not only its first cards), and the same pack always gives
+     * the same sample (unlike a random one).
+     */
+    fun getCardSampleByPack(packId: Int, size: Int): List<DbCard> {
+        val cardIds = dbHelper.cardDao.getIdsByPack(packId)
+        val sampleIds = if (cardIds.size <= size) {
+            cardIds
+        } else {
+            List(size) { cardIds[it * cardIds.size / size] }
+        }
+        return dbHelper.cardDao.getByIds(sampleIds)
+    }
+
     fun getAllCardsByCollectionWithMeta(collectionId: Int): MutableList<CardWithMeta> = dbHelper.cardDao.getAllByCollectionWithMeta(collectionId)
 
     /**

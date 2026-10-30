@@ -37,6 +37,13 @@ interface CardDao {
     @Query(SELECT_WITH_META + " WHERE pack=:packId")
     fun getAllByPackWithMeta(packId: Int): MutableList<CardWithMeta>
 
+    // Ids of a pack's cards in the order of creation
+    @Query("SELECT uid FROM db_card WHERE pack=:packId ORDER BY uid")
+    fun getIdsByPack(packId: Int): List<Int>
+
+    @Query("SELECT * FROM db_card WHERE uid IN (:cardIds)")
+    fun getByIds(cardIds: List<Int>): List<DbCard>
+
     /**
      * Cards matching the advanced search filters. Each filter can be switched off.
      * 

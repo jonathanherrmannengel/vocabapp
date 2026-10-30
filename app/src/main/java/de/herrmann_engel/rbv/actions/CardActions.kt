@@ -28,6 +28,7 @@ import de.herrmann_engel.rbv.db.PackWithMeta
 import de.herrmann_engel.rbv.db.utils.DbHelperDelete
 import de.herrmann_engel.rbv.db.utils.DbHelperGet
 import de.herrmann_engel.rbv.db.utils.DbHelperUpdate
+import de.herrmann_engel.rbv.language.CardLanguages
 import de.herrmann_engel.rbv.media.MediaFiles
 import de.herrmann_engel.rbv.media.isImage
 import de.herrmann_engel.rbv.settings.AppSettings
@@ -42,6 +43,7 @@ import org.commonmark.node.Node
 import org.commonmark.parser.Parser
 import org.commonmark.renderer.NodeRenderer
 import org.commonmark.renderer.html.HtmlRenderer
+import java.util.Locale
 
 /**
  * Dialogs for actions on one or more cards: delete, move to another pack and print.
@@ -253,6 +255,11 @@ class CardActions(
         val formatCards = settings.formatCards
         val formatCardNotes = settings.formatCardNotes
         val dbHelperGet = DbHelperGet(activity)
+        val cardLanguages = CardLanguages(activity)
+
+        // Attribute with the language of a card side, for hyphenation and screen readers
+        fun langAttribute(locale: Locale?): String =
+            if (locale == null) "" else """ lang="${locale.toLanguageTag()}""""
 
         /**
          * A section of a card: with a heading, or (if headings are left out) separated by a line
@@ -281,9 +288,11 @@ class CardActions(
 
         return buildString {
             val documentTitle = escapeHtml(activity.getString(R.string.print))
-            append("""<!doctype html><html><head><meta charset="utf-8">""")
+            val appLanguage = activity.resources.configuration.locales[0].toLanguageTag()
+            append("""<!doctype html><html lang="$appLanguage"><head><meta charset="utf-8">""")
             append("""<title>$documentTitle</title><style>$PRINT_CSS</style></head>""")
             cards.forEachIndexed { index, card ->
+                val languages = cardLanguages.cached(card.packId)
                 val cardFront = if (formatCards) {
                     StringTools.format(card.front)
                 } else {
@@ -291,14 +300,16 @@ class CardActions(
                 }
                 val maxTitleLength = 30
                 val shortFront = StringTools.shorten(cardFront.toString(), maxTitleLength)
+                val titleFront =
+                    """<span${langAttribute(languages.front)}>${escapeHtml(shortFront)}</span>"""
                 val title = if (options.progress) {
                     TextUtils.expandTemplate(
                         activity.getText(R.string.card_with_known),
-                        escapeHtml(shortFront),
+                        titleFront,
                         formatNumber(activity, card.known)
                     ).toString()
                 } else {
-                    escapeHtml(shortFront)
+                    titleFront
                 }
                 val titleClass = if (index == 0) {
                     "main-title title"
@@ -306,10 +317,14 @@ class CardActions(
                     "main-title title border-top"
                 }
                 append("""<h1 class="$titleClass" dir="auto">$title</h1>""")
-                appendSection(R.string.card_front, separated = false) {
+                appendSection(
+                    R.string.card_front,
+                    langAttribute(languages.front),
+                    separated = false
+                ) {
                     append(cardFront.toHtml())
                 }
-                appendSection(R.string.card_back) {
+                appendSection(R.string.card_back, langAttribute(languages.back)) {
                     val cardBack = if (formatCards) {
                         StringTools.format(card.back)
                     } else {

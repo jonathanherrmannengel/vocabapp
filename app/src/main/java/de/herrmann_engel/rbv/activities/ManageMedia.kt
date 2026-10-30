@@ -20,6 +20,7 @@ import de.herrmann_engel.rbv.media.MediaFileManager
 import de.herrmann_engel.rbv.settings.AppSettings
 import de.herrmann_engel.rbv.utils.createDialog
 import de.herrmann_engel.rbv.utils.fillFormattedTexts
+import de.herrmann_engel.rbv.utils.runInBackground
 import de.herrmann_engel.rbv.utils.showConfirmDialog
 import de.herrmann_engel.rbv.utils.sortCards
 
@@ -68,15 +69,25 @@ class ManageMedia : RBVActivity() {
         binding.recMediaManage.layoutManager = LinearLayoutManager(this)
     }
 
-    // Shows the cards the media entry is linked to; if there are none, offers to delete it
+    /**
+     * Shows the cards the media entry is linked to; if there are none, offers to delete it. The
+     * cards are loaded in the background, as detecting their languages may take a while.
+     */
     private fun showMedia(media: DbMedia) {
-        val cards: MutableList<CardWithMeta> =
-            DbHelperGet(this).getAllCardsByMediaWithMeta(media.uid)
-        if (AppSettings(this).formatCards) {
-            fillFormattedTexts(cards)
+        var cards: MutableList<CardWithMeta> = mutableListOf()
+        runInBackground(this, {
+            cards = DbHelperGet(this).getAllCardsByMediaWithMeta(media.uid)
+            if (AppSettings(this).formatCards) {
+                fillFormattedTexts(cards)
+            }
+            CardLanguages(this).fill(cards)
+            sortCards(cards, CardSort.ALPHABETICAL)
+        }) {
+            showLinkedCards(media, cards)
         }
-        CardLanguages().fill(cards)
-        sortCards(cards, CardSort.ALPHABETICAL)
+    }
+
+    private fun showLinkedCards(media: DbMedia, cards: MutableList<CardWithMeta>) {
         if (cards.isEmpty()) {
             showConfirmDialog(this, getString(R.string.delete), getString(R.string.media_no_card)) {
                 DbHelperDelete(this).deleteMedia(media.uid)

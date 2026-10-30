@@ -184,7 +184,7 @@ class ListCards : RBVActivity(), CardActions.Listener {
                     if (settings.formatCards) {
                         fillFormattedText(it, false)
                     }
-                    CardLanguages().fill(it)
+                    CardLanguages(this).fillCached(it)
                     cardsList?.add(it)
                 } ?: Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show()
             }
@@ -201,7 +201,7 @@ class ListCards : RBVActivity(), CardActions.Listener {
                             cardWithMetaOld.formattingIsInaccurate
                         )
                     }
-                    CardLanguages().fill(cardWithMetaNew)
+                    CardLanguages(this).fillCached(cardWithMetaNew)
                     cardsList?.let {
                         val index = it.indexOfFirst { c -> c.card.uid == cardUpdated }
                         if (index != -1) {
@@ -372,7 +372,7 @@ class ListCards : RBVActivity(), CardActions.Listener {
         if (settings.formatCards) {
             fillFormattedTexts(cards)
         }
-        CardLanguages().fill(cards)
+        CardLanguages(this).fill(cards)
         sortCards(cards, sort)
         return cards
     }

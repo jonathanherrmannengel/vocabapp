@@ -99,7 +99,7 @@ class ViewCard : RBVActivity(), CardActions.Listener {
             finish()
             return
         }
-        CardLanguages().fill(cardWithMeta)
+        CardLanguages(this).fillCached(cardWithMeta)
         card = cardWithMeta.card
         val languages = cardWithMeta.languages
         if (formatCards) {
