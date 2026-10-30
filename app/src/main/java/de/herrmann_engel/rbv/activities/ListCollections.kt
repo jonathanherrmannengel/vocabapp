@@ -32,7 +32,6 @@ import de.herrmann_engel.rbv.utils.showConfirmDialog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.Locale
 
 /**
  * Start screen: list of all collections, of which several can be selected and deleted. The menu
@@ -255,11 +254,7 @@ class ListCollections : RBVActivity(), CollectionActions.Listener {
         val startImportDialog = createDialog(
             this,
             bindingStartImportDialog.root,
-            String.format(
-                Locale.ROOT,
-                getString(R.string.import_export_options),
-                getString(R.string.import_title)
-            )
+            getString(R.string.import_export_options, getString(R.string.import_title))
         )
         // Defaults: merge into existing data; for an empty app, import everything including settings
         if (dbHelperGet.hasCollections()) {
@@ -324,11 +319,7 @@ class ListCollections : RBVActivity(), CollectionActions.Listener {
         val startExportDialog = createDialog(
             this,
             bindingStartExportDialog.root,
-            String.format(
-                Locale.ROOT,
-                getString(R.string.import_export_options),
-                getString(R.string.export_title)
-            )
+            getString(R.string.import_export_options, getString(R.string.export_title))
         )
         bindingStartExportDialog.diaExportIncludeSettings.isChecked = false
         bindingStartExportDialog.diaExportIncludeMedia.isChecked = true

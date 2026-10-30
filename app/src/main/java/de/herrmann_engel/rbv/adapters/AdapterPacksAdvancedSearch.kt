@@ -49,8 +49,8 @@ class AdapterPacksAdvancedSearch(
         )
         val collectionName = StringTools.shorten(packs[position].collectionName ?: "")
         viewHolder.binding.recSmallDesc.text = collectionName
-        viewHolder.binding.recSmallCheckbox.contentDescription = String.format(
-            context.resources.getString(R.string.advanced_search_packs_checkbox_description),
+        viewHolder.binding.recSmallCheckbox.contentDescription = context.resources.getString(
+            R.string.advanced_search_packs_checkbox_description,
             pack.name,
             collectionName
         )

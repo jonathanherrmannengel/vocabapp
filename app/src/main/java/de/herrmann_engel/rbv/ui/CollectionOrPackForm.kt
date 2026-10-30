@@ -58,17 +58,17 @@ class CollectionOrPackForm(
         get() = colors
 
     init {
-        binding.collectionOrPackNameLayout.hint = String.format(
-            activity.getString(R.string.collection_or_pack_name_format),
+        binding.collectionOrPackNameLayout.hint = activity.getString(
+            R.string.collection_or_pack_name_format,
             activity.getString(nameOf),
             activity.getString(R.string.collection_or_pack_name)
         )
-        binding.collectionOrPackDescLayout.hint = String.format(
-            activity.getString(R.string.optional),
+        binding.collectionOrPackDescLayout.hint = activity.getString(
+            R.string.optional,
             activity.getString(R.string.collection_or_pack_desc)
         )
-        binding.collectionOrPackEmojiLayout.hint = String.format(
-            activity.getString(R.string.optional),
+        binding.collectionOrPackEmojiLayout.hint = activity.getString(
+            R.string.optional,
             activity.getString(R.string.collection_or_pack_emoji)
         )
         // Set before the text, so that a stored value that is not an emoji is not shown

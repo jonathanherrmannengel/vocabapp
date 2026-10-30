@@ -39,8 +39,8 @@ class CardForm(
         get() = binding.cardFormNotes.text.toString()
 
     init {
-        binding.cardFormNotesLayout.hint = String.format(
-            activity.getString(R.string.optional),
+        binding.cardFormNotesLayout.hint = activity.getString(
+            R.string.optional,
             activity.getString(R.string.card_notes)
         )
         binding.cardFormFront.setText(initial.front)

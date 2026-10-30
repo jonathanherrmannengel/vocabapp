@@ -187,11 +187,7 @@ class ViewCard : RBVActivity(), CardActions.Listener {
                 resources.getDimension(R.dimen.card_notes_size_big)
             )
         }
-        binding.cardDate.text = String.format(
-            Locale.ROOT,
-            getString(R.string.creation_date),
-            formatDateTime(this, card.date)
-        )
+        binding.cardDate.text = getString(R.string.creation_date, formatDateTime(this, card.date))
         known = card.known
         updateCardKnown()
         binding.cardMinus.setOnClickListener {
@@ -277,11 +273,7 @@ class ViewCard : RBVActivity(), CardActions.Listener {
             if (card.lastRepetition == 0L) {
                 getString(R.string.last_repetition_none)
             } else {
-                String.format(
-                    Locale.ROOT,
-                    getString(R.string.last_repetition_date),
-                    formatDateTime(this, card.lastRepetition)
-                )
+                getString(R.string.last_repetition_date, formatDateTime(this, card.lastRepetition))
             }
     }
 

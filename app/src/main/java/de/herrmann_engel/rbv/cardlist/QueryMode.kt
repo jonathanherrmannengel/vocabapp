@@ -225,8 +225,8 @@ class QueryMode(
         // Reset the dialog for a new card: title, colors, media buttons, hidden back side
         if (!onlyUpdate) {
             dialog.setTitle(
-                String.format(
-                    activity.getString(R.string.query_mode_title),
+                activity.getString(
+                    R.string.query_mode_title,
                     activity.getString(R.string.query_mode),
                     position + 1,
                     cards.size

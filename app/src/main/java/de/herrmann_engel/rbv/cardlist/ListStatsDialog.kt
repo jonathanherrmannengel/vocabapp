@@ -27,23 +27,17 @@ class ListStatsDialog(private val activity: Activity) {
 
         val progress = cards.map { it.card.known }
         binding.listStatCardsTotal.text =
-            String.format(activity.getString(R.string.list_stat_cards_total), cards.size)
+            activity.getString(R.string.list_stat_cards_total, cards.size)
         binding.listStatProgressTotal.text =
-            String.format(activity.getString(R.string.list_stat_progress_total), progress.sum())
+            activity.getString(R.string.list_stat_progress_total, progress.sum())
         binding.listStatProgressMax.text =
-            String.format(
-                activity.getString(R.string.list_stat_progress_max),
-                progress.maxOrNull() ?: 0
-            )
+            activity.getString(R.string.list_stat_progress_max, progress.maxOrNull() ?: 0)
         binding.listStatProgressMin.text =
-            String.format(
-                activity.getString(R.string.list_stat_progress_min),
-                progress.minOrNull() ?: 0
-            )
+            activity.getString(R.string.list_stat_progress_min, progress.minOrNull() ?: 0)
         val average = if (progress.isEmpty()) 0.0 else progress.average()
         binding.listStatProgressAvg.text =
-            String.format(
-                activity.getString(R.string.list_stat_progress_avg),
+            activity.getString(
+                R.string.list_stat_progress_avg,
                 (average * 100.0).roundToInt() / 100.0
             )
 
@@ -87,7 +81,7 @@ class ListStatsDialog(private val activity: Activity) {
                 progress.count { it == value }
             }
             row.label?.text =
-                String.format(activity.getString(R.string.list_stat_progress_counter_known), value)
+                activity.getString(R.string.list_stat_progress_counter_known, value)
             row.number.text = activity.resources.getQuantityString(
                 R.plurals.list_stat_progress_counter_number,
                 count,
@@ -95,7 +89,7 @@ class ListStatsDialog(private val activity: Activity) {
             )
             val percent = if (cards.isEmpty()) 0 else (count / cards.size.toFloat() * 100).roundToInt()
             row.percent.text =
-                String.format(activity.getString(R.string.list_stat_progress_counter_percent), percent)
+                activity.getString(R.string.list_stat_progress_counter_percent, percent)
         }
         listStatsDialog.show()
     }

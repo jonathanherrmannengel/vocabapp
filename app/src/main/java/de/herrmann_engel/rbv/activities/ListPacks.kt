@@ -28,7 +28,6 @@ import de.herrmann_engel.rbv.utils.putCollectionId
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.Locale
 
 /**
  * Pack list of the collection passed as "listCollection" extra (see putListCollection), or of all
@@ -114,11 +113,7 @@ class ListPacks : RBVActivity(), PackActions.Listener {
         val startExportDialog = createDialog(
             this,
             bindingStartExportDialog.root,
-            String.format(
-                Locale.ROOT,
-                getString(R.string.import_export_options),
-                getString(R.string.export_title)
-            )
+            getString(R.string.import_export_options, getString(R.string.export_title))
         )
         bindingStartExportDialog.diaExportIncludeSettings.isChecked = false
         bindingStartExportDialog.diaExportIncludeSettings.visibility = View.GONE

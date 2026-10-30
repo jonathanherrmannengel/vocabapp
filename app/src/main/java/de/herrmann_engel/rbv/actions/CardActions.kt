@@ -40,7 +40,6 @@ import org.commonmark.node.Node
 import org.commonmark.parser.Parser
 import org.commonmark.renderer.NodeRenderer
 import org.commonmark.renderer.html.HtmlRenderer
-import java.util.Locale
 
 /**
  * Dialogs for actions on one or more cards: delete, move to another pack and print.
@@ -63,7 +62,7 @@ class CardActions(
      */
     private fun delete(cards: ArrayList<DbCard>, forceDelete: Boolean) {
         val text = if (cards.size > 1 && !forceDelete) {
-            String.format(activity.getString(R.string.delete_multiple_cards), cards.size)
+            activity.getString(R.string.delete_multiple_cards, cards.size)
         } else null
         showConfirmDialog(activity, activity.getString(R.string.delete), text) {
             if (cards.size <= 1 || forceDelete) {
@@ -329,9 +328,8 @@ class CardActions(
                     appendSection(R.string.image_media) {
                         if (imageList.size > Globals.MAX_SIZE_CARD_IMAGE_PRINT) {
                             append(
-                                String.format(
-                                    Locale.ROOT,
-                                    activity.getString(R.string.image_media_print_number_and_limit),
+                                activity.getString(
+                                    R.string.image_media_print_number_and_limit,
                                     imageList.size,
                                     Globals.MAX_SIZE_CARD_IMAGE_PRINT
                                 )
