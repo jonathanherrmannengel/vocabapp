@@ -16,6 +16,7 @@ import de.herrmann_engel.rbv.db.DbMedia
 import de.herrmann_engel.rbv.db.utils.DbHelperDelete
 import de.herrmann_engel.rbv.db.utils.DbHelperGet
 import de.herrmann_engel.rbv.language.CardLanguages
+import de.herrmann_engel.rbv.language.appLocale
 import de.herrmann_engel.rbv.media.MediaFileManager
 import de.herrmann_engel.rbv.settings.AppSettings
 import de.herrmann_engel.rbv.utils.createDialog
@@ -81,7 +82,7 @@ class ManageMedia : RBVActivity() {
                 fillFormattedTexts(cards)
             }
             CardLanguages(this).fill(cards)
-            sortCards(cards, CardSort.ALPHABETICAL)
+            sortCards(cards, CardSort.ALPHABETICAL, appLocale(this))
         }) {
             showLinkedCards(media, cards)
         }

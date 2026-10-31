@@ -13,10 +13,10 @@ interface MediaDao {
     @Query("SELECT EXISTS (SELECT 1 FROM db_media LIMIT 1)")
     fun hasMedia(): Boolean
 
-    @get:Query("SELECT * FROM db_media ORDER BY file COLLATE NOCASE ASC")
+    @get:Query("SELECT * FROM db_media ORDER BY file COLLATE LOCALIZED ASC")
     val all: List<DbMedia>
 
-    @Query("SELECT * FROM db_media WHERE db_media.uid IN (SELECT fileId FROM db_media_link_card WHERE cardId=:cardId) ORDER BY file COLLATE NOCASE ASC")
+    @Query("SELECT * FROM db_media WHERE db_media.uid IN (SELECT fileId FROM db_media_link_card WHERE cardId=:cardId) ORDER BY file COLLATE LOCALIZED ASC")
     fun getAllByCard(cardId: Int): List<DbMedia>
 
     @Query("SELECT * FROM db_media WHERE file=:file LIMIT 1")

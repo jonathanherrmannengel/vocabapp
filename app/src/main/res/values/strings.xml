@@ -244,6 +244,7 @@
     <string name="warn_inaccurate">This list contains more than %d flashcards.</string>
     <string name="warn_inaccurate_list">List display may be inaccurate.</string>
     <string name="warn_inaccurate_search">Search results may be inaccurate.</string>
+    <string name="warn_inaccurate_sort">Alphabetical order may be inaccurate.</string>
     <string name="warn_inaccurate_note">This warning will not be shown again.</string>
     <string name="language_front">flashcard front language</string>
     <string name="language_back">flashcard back language</string>

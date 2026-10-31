@@ -25,6 +25,7 @@ import de.herrmann_engel.rbv.databinding.ActivityDefaultRecBinding
 import de.herrmann_engel.rbv.db.CardWithMeta
 import de.herrmann_engel.rbv.db.utils.DbHelperGet
 import de.herrmann_engel.rbv.language.CardLanguages
+import de.herrmann_engel.rbv.language.appLocale
 import de.herrmann_engel.rbv.media.MediaFileManager
 import de.herrmann_engel.rbv.settings.AppConfig
 import de.herrmann_engel.rbv.settings.AppSettings
@@ -312,6 +313,7 @@ class ListCards : RBVActivity(), CardActions.Listener {
                         config.showInaccurateWarningNoFormat = false
                     }
                     warnings.add(resources.getString(R.string.warn_inaccurate_search))
+                    warnings.add(resources.getString(R.string.warn_inaccurate_sort))
                     warnings.add(resources.getString(R.string.warn_inaccurate_note))
                     showInfoDialog(
                         this@ListCards,
@@ -374,7 +376,7 @@ class ListCards : RBVActivity(), CardActions.Listener {
             fillFormattedTexts(cards)
         }
         CardLanguages(this).fill(cards)
-        sortCards(cards, sort)
+        sortCards(cards, sort, appLocale(this))
         return cards
     }
 
@@ -507,7 +509,7 @@ class ListCards : RBVActivity(), CardActions.Listener {
 
     private fun sortList() {
         cardsList?.let {
-            sortCards(it, listSort)
+            sortCards(it, listSort, appLocale(this))
         }
     }
 

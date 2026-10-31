@@ -11,7 +11,8 @@ object Globals {
     // Names of the shared preferences files: user settings and internal configuration
     const val SETTINGS_NAME = "rbv_settings"
     const val CONFIG_NAME = "rbv_config"
-    // Size limits; e.g. above MAX_SIZE_CARDS_LIST_ACCURATE cards, faster but less accurate formatting and search is used
+    // Size limits; e.g. above MAX_SIZE_CARDS_LIST_ACCURATE cards, faster but less accurate
+    // formatting, search and alphabetical order are used
     const val MAX_SIZE_CARD_IMAGE_PREVIEW = 9
     const val MAX_SIZE_CARD_IMAGE_PRINT = 12
     const val MAX_SIZE_CARDS_LIST_ACCURATE = 15000

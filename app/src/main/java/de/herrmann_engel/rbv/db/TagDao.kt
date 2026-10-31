@@ -11,10 +11,10 @@ import androidx.room.Update
  */
 @Dao
 interface TagDao {
-    @get:Query("SELECT * FROM db_tag ORDER BY tag_name ASC")
+    @get:Query("SELECT * FROM db_tag ORDER BY tag_name COLLATE LOCALIZED ASC")
     val all: List<DbTag>
 
-    @Query("SELECT * FROM db_tag WHERE db_tag.uid IN (SELECT tagId FROM db_tag_link_card WHERE cardId=:cardId) ORDER BY tag_name ASC")
+    @Query("SELECT * FROM db_tag WHERE db_tag.uid IN (SELECT tagId FROM db_tag_link_card WHERE cardId=:cardId) ORDER BY tag_name COLLATE LOCALIZED ASC")
     fun getAllByCard(cardId: Int): MutableList<DbTag>
 
     @get:Query("SELECT * FROM db_tag")

@@ -18,16 +18,16 @@ interface CollectionDao {
     @Query("SELECT EXISTS (SELECT 1 FROM db_collection WHERE uid=:collectionId LIMIT 1)")
     fun existsCollection(collectionId: Int): Boolean
 
-    @get:Query("SELECT * FROM db_collection ORDER BY name COLLATE NOCASE ASC, uid DESC")
+    @get:Query("SELECT * FROM db_collection ORDER BY name COLLATE LOCALIZED ASC, uid DESC")
     val all: List<DbCollection>
 
-    @Query("SELECT * FROM db_collection WHERE name=:name ORDER BY name COLLATE NOCASE ASC, uid DESC")
+    @Query("SELECT * FROM db_collection WHERE name=:name ORDER BY name COLLATE LOCALIZED ASC, uid DESC")
     fun getAllByName(name: String): List<DbCollection>
 
-    @get:Query("SELECT *, (SELECT COUNT(*) FROM db_pack WHERE collection=db_collection.uid) AS counter FROM db_collection ORDER BY name COLLATE NOCASE ASC, uid DESC")
+    @get:Query("SELECT *, (SELECT COUNT(*) FROM db_pack WHERE collection=db_collection.uid) AS counter FROM db_collection ORDER BY name COLLATE LOCALIZED ASC, uid DESC")
     val allWithMeta: MutableList<CollectionWithMeta>
 
-    @get:Query("SELECT uid FROM db_collection ORDER BY name COLLATE NOCASE ASC, uid DESC")
+    @get:Query("SELECT uid FROM db_collection ORDER BY name COLLATE LOCALIZED ASC, uid DESC")
     val allIds: List<Int>
 
     // Languages chosen for the front or back sides (see DbHelperGet.getUsedLanguageTags)
