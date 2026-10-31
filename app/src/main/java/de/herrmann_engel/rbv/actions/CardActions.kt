@@ -29,6 +29,7 @@ import de.herrmann_engel.rbv.db.utils.DbHelperDelete
 import de.herrmann_engel.rbv.db.utils.DbHelperGet
 import de.herrmann_engel.rbv.db.utils.DbHelperUpdate
 import de.herrmann_engel.rbv.language.CardLanguages
+import de.herrmann_engel.rbv.language.appLocale
 import de.herrmann_engel.rbv.media.MediaFiles
 import de.herrmann_engel.rbv.media.isImage
 import de.herrmann_engel.rbv.settings.AppSettings
@@ -288,7 +289,7 @@ class CardActions(
 
         return buildString {
             val documentTitle = escapeHtml(activity.getString(R.string.print))
-            val appLanguage = activity.resources.configuration.locales[0].toLanguageTag()
+            val appLanguage = appLocale(activity).toLanguageTag()
             append("""<!doctype html><html lang="$appLanguage"><head><meta charset="utf-8">""")
             append("""<title>$documentTitle</title><style>$PRINT_CSS</style></head>""")
             cards.forEachIndexed { index, card ->

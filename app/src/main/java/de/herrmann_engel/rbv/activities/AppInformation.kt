@@ -13,6 +13,7 @@ import de.herrmann_engel.rbv.Globals
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.adapters.AdapterOSS
 import de.herrmann_engel.rbv.databinding.ActivityInformationBinding
+import de.herrmann_engel.rbv.language.appLocale
 import de.herrmann_engel.rbv.oss.OSSLicenses
 import de.herrmann_engel.rbv.oss.OSSProject
 import de.herrmann_engel.rbv.settings.AppSettings
@@ -110,11 +111,11 @@ class AppInformation : RBVActivity() {
                 resources.getDimension(R.dimen.title_size_big)
             )
         }
-        // Open the online help in the language of the device
+        // Open the online help in the app's language
         binding.onlineHelpButton.setOnClickListener {
             val intent = Intent()
             intent.action = Intent.ACTION_VIEW
-            intent.data = String.format(Globals.ONLINE_HELP, resources.configuration.locales.get(0).language).toUri()
+            intent.data = String.format(Globals.ONLINE_HELP, appLocale(this).language).toUri()
             this.startActivity(intent)
         }
         setUpEdgeToEdge(binding.informationContainer)
