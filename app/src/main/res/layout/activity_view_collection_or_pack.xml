@@ -50,6 +50,22 @@
                 android:layout_marginTop="40dp"
                 android:gravity="center"
                 android:textColor="@color/light_black" />
+
+            <TextView
+                android:id="@+id/collection_or_pack_front_language"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:gravity="center"
+                android:textColor="@color/light_black" />
+
+            <TextView
+                android:id="@+id/collection_or_pack_back_language"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:gravity="center"
+                android:textColor="@color/light_black" />
         </LinearLayout>
     </ScrollView>
 </RelativeLayout>

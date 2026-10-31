@@ -87,6 +87,10 @@ class DbHelperGet(context: Context) {
 
     fun getAllPacksWithMetaByCollection(collectionId: Int): MutableList<PackWithMeta> = dbHelper.packDao.getAllByCollectionWithMeta(collectionId)
 
+    // Language tags chosen for packs or collections (see DbPack.frontLanguage)
+    fun getUsedLanguageTags(): Set<String> =
+        dbHelper.packDao.getLanguageTags().toSet() + dbHelper.collectionDao.getLanguageTags()
+
     // Get All: Cards
     fun getAllCardsWithMeta(): MutableList<CardWithMeta> = dbHelper.cardDao.allWithMeta
 

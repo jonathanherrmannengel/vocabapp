@@ -12,7 +12,8 @@ import de.herrmann_engel.rbv.ui.CollectionOrPackForm
 import de.herrmann_engel.rbv.utils.getCollectionId
 
 /**
- * Form to edit the collection passed as "collection" extra: name, description, emoji and color.
+ * Form to edit the collection passed as "collection" extra: name, description, emoji, languages
+ * and color.
  */
 class EditCollection : RBVActivity() {
     private lateinit var form: CollectionOrPackForm
@@ -35,11 +36,14 @@ class EditCollection : RBVActivity() {
             this,
             binding,
             R.string.collection_name,
+            null,
             CollectionOrPackForm.Values(
                 collection.name,
                 collection.desc,
                 collection.emoji,
-                collection.colors
+                collection.colors,
+                collection.frontLanguage,
+                collection.backLanguage
             )
         )
         setUpEdgeToEdge(binding.collectionOrPackLayout)
@@ -52,6 +56,8 @@ class EditCollection : RBVActivity() {
             collection.desc = form.desc
             collection.emoji = form.emoji
             collection.colors = form.selectedColors
+            collection.frontLanguage = form.frontLanguage
+            collection.backLanguage = form.backLanguage
             if (DbHelperUpdate(this).updateCollection(collection)) {
                 finish()
             } else {

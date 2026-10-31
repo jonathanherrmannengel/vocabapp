@@ -12,7 +12,7 @@ import de.herrmann_engel.rbv.ui.CollectionOrPackForm
 import de.herrmann_engel.rbv.utils.getPackId
 
 /**
- * Form to edit the pack passed as "pack" extra: name, description, emoji and color.
+ * Form to edit the pack passed as "pack" extra: name, description, emoji, languages and color.
  */
 class EditPack : RBVActivity() {
     private lateinit var form: CollectionOrPackForm
@@ -26,8 +26,9 @@ class EditPack : RBVActivity() {
             finish()
             return
         }
+        val dbHelperGet = DbHelperGet(this)
         // Close if the pack no longer exists (e.g. deleted in the meantime)
-        pack = DbHelperGet(this).getSinglePack(packId) ?: run {
+        pack = dbHelperGet.getSinglePack(packId) ?: run {
             finish()
             return
         }
@@ -35,7 +36,15 @@ class EditPack : RBVActivity() {
             this,
             binding,
             R.string.pack_name,
-            CollectionOrPackForm.Values(pack.name, pack.desc, pack.emoji, pack.colors)
+            dbHelperGet.getSingleCollection(pack.collectionId),
+            CollectionOrPackForm.Values(
+                pack.name,
+                pack.desc,
+                pack.emoji,
+                pack.colors,
+                pack.frontLanguage,
+                pack.backLanguage
+            )
         )
         setUpEdgeToEdge(binding.collectionOrPackLayout)
     }
@@ -47,6 +56,8 @@ class EditPack : RBVActivity() {
             pack.desc = form.desc
             pack.emoji = form.emoji
             pack.colors = form.selectedColors
+            pack.frontLanguage = form.frontLanguage
+            pack.backLanguage = form.backLanguage
             if (DbHelperUpdate(this).updatePack(pack)) {
                 finish()
             } else {

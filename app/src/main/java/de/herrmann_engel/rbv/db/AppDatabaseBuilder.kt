@@ -229,6 +229,16 @@ class AppDatabaseBuilder {
         }
     }
 
+    // v13: languages of the cards' front and back sides chosen for packs and collections
+    private val MIGRATION_12_13: Migration = object : Migration(12, 13) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            for (table in arrayOf("DB_Collection", "DB_Pack")) {
+                db.execSQL("ALTER TABLE $table ADD COLUMN front_language TEXT")
+                db.execSQL("ALTER TABLE $table ADD COLUMN back_language TEXT")
+            }
+        }
+    }
+
     fun get(context: Context): AppDatabase {
         return databaseBuilder(
             context,
@@ -245,7 +255,8 @@ class AppDatabaseBuilder {
                 MIGRATION_8_9,
                 MIGRATION_9_10,
                 MIGRATION_10_11,
-                MIGRATION_11_12
+                MIGRATION_11_12,
+                MIGRATION_12_13
             )
             .build()
     }

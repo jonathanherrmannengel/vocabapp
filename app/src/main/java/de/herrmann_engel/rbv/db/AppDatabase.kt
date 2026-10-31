@@ -14,7 +14,7 @@ import androidx.room.RoomDatabase
  */
 @Database(
     entities = [DbPack::class, DbCard::class, DbCollection::class, DbMedia::class, DbMediaLinkCard::class, DbTag::class, DbTagLinkCard::class],
-    version = 12
+    version = 13
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun packDAO(): PackDao

@@ -245,4 +245,22 @@
     <string name="warn_inaccurate_list">List display may be inaccurate.</string>
     <string name="warn_inaccurate_search">Search results may be inaccurate.</string>
     <string name="warn_inaccurate_note">This warning will not be shown again.</string>
+    <string name="language_front">flashcard front language</string>
+    <string name="language_back">flashcard back language</string>
+    <string name="language_front_title">Flashcard front language</string>
+    <string name="language_back_title">Flashcard back language</string>
+    <string name="language_front_value">flashcard front language: %1$s</string>
+    <string name="language_back_value">flashcard back language: %1$s</string>
+    <string name="language_like_collection_title">Like filing box</string>
+    <string name="language_like_collection">%1$s (like filing box)</string>
+    <string name="language_automatic_title">Automatic</string>
+    <string name="language_automatic">automatic</string>
+    <string name="language_detected_per_pack">detected per deck</string>
+    <string name="language_detected">%1$s (detected)</string>
+    <string name="language_device_title">Device language</string>
+    <string name="language_device">device language</string>
+    <!-- %1$s language code (e.g. "fr"), shown after the language's own name (e.g. "français");
+         the leading space (\u0020, a plain one would be removed) separates it from the name -->
+    <string name="language_code_after_own_name">\u0020· %1$s</string>
+    <string name="language_choose">choose language</string>
 </resources>

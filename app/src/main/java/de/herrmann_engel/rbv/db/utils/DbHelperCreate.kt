@@ -20,13 +20,15 @@ class DbHelperCreate(context: Context) {
 
     private val dbHelper = DbHelper(context)
 
-    // Creates a collection; by default without color and emoji, dated now
+    // Creates a collection; by default without color, emoji and languages, dated now
     fun createCollection(
         name: String,
         desc: String,
         colors: Int = 0,
         emoji: String = "",
-        date: Long = System.currentTimeMillis() / 1000L
+        date: Long = System.currentTimeMillis() / 1000L,
+        frontLanguage: String? = null,
+        backLanguage: String? = null
     ): Long {
         if (name.isNotEmpty()) {
             val collection = DbCollection()
@@ -35,6 +37,8 @@ class DbHelperCreate(context: Context) {
             collection.date = date
             collection.colors = colors
             collection.emoji = emoji
+            collection.frontLanguage = frontLanguage
+            collection.backLanguage = backLanguage
             return dbHelper.collectionDao.insert(collection)
         }
         throw InvalidEntryException("Collection name is empty")
@@ -46,7 +50,9 @@ class DbHelperCreate(context: Context) {
         collectionId: Int,
         colors: Int,
         emoji: String,
-        date: Long
+        date: Long,
+        frontLanguage: String? = null,
+        backLanguage: String? = null
     ): Long {
         if (name.isNotEmpty()) {
             val pack = DbPack()
@@ -56,6 +62,8 @@ class DbHelperCreate(context: Context) {
             pack.colors = colors
             pack.emoji = emoji
             pack.collectionId = collectionId
+            pack.frontLanguage = frontLanguage
+            pack.backLanguage = backLanguage
             return dbHelper.packDao.insert(pack)
         }
         throw InvalidEntryException("Pack name is empty")

@@ -27,10 +27,26 @@ data class SideLanguages(val front: Locale?, val back: Locale?) {
 }
 
 /**
+ * The language of one side of a pack's cards and where it comes from: chosen for the pack, chosen
+ * for its collection, detected, or none (then the texts are treated as written in the device
+ * language).
+ */
+data class ResolvedLanguage(val locale: Locale?, val source: Source) {
+    enum class Source { PACK, COLLECTION, DETECTED, NONE }
+}
+
+// The languages of the front and back sides of a pack's cards with their sources
+data class ResolvedLanguages(val front: ResolvedLanguage, val back: ResolvedLanguage) {
+    val locales: SideLanguages
+        get() = SideLanguages(front.locale, back.locale)
+}
+
+/**
  * Finds out which languages the cards of packs are written in, so that screen readers can read them
- * with a matching voice. The languages are detected from a sample of each pack's cards (Android
- * 10+; unknown before) and cached for the app's lifetime; a pack is detected again when its number
- * of cards has changed. Choosing the languages per pack or collection will take precedence.
+ * with a matching voice. A language chosen for the pack takes precedence over one chosen for its
+ * collection, which takes precedence over a detected one. Languages are detected from a sample of
+ * each pack's cards (Android 10+) and cached for the app's lifetime; a pack is detected again when
+ * its number of cards has changed.
  */
 class CardLanguages(private val context: Context) {
     // The languages detected for a pack and the number of cards the pack had then
@@ -38,26 +54,60 @@ class CardLanguages(private val context: Context) {
 
     // Sets the languages of the cards' packs; detects them if needed, so not on the main thread
     fun fill(cards: List<CardWithMeta>) {
-        val languages = cards.mapTo(HashSet()) { it.card.packId }.associateWith { forPack(it) }
+        val languages = cards.mapTo(HashSet()) { it.card.packId }
+            .associateWith { resolve(it, detect = true).locales }
         cards.forEach { it.languages = languages.getValue(it.card.packId) }
     }
 
     /**
-     * Sets the languages of the card's pack as far as they have already been detected (usually
-     * when a card list was loaded), else they stay unknown; can be used on the main thread.
+     * Sets the languages of the card's pack, using only already detected languages (usually
+     * detected when a card list was loaded); can be used on the main thread.
      */
     fun fillCached(card: CardWithMeta) {
         card.languages = cached(card.card.packId)
     }
 
-    // The languages of the pack as far as they have already been detected (see fillCached)
-    fun cached(packId: Int): SideLanguages = cache[packId]?.languages ?: SideLanguages.UNKNOWN
+    // The languages of the pack, using only already detected languages (see fillCached)
+    fun cached(packId: Int): SideLanguages = resolve(packId, detect = false).locales
 
-    private fun forPack(packId: Int): SideLanguages {
+    // The languages of the pack with their sources; detects them if needed, so not on the main
+    // thread
+    fun resolve(packId: Int): ResolvedLanguages = resolve(packId, detect = true)
+
+    private fun resolve(packId: Int, detect: Boolean): ResolvedLanguages {
+        val dbHelperGet = DbHelperGet(context)
+        val pack = dbHelperGet.getSinglePack(packId)
+        val collection = pack?.let { dbHelperGet.getSingleCollection(it.collectionId) }
+        val packFront = languageOf(pack?.frontLanguage)
+        val packBack = languageOf(pack?.backLanguage)
+        val collectionFront = languageOf(collection?.frontLanguage)
+        val collectionBack = languageOf(collection?.backLanguage)
+        // Only needed for sides without a chosen language
+        val needsDetection =
+            (packFront ?: collectionFront) == null || (packBack ?: collectionBack) == null
+        val detected = when {
+            !needsDetection -> SideLanguages.UNKNOWN
+            detect -> detected(packId, dbHelperGet)
+            else -> cache[packId]?.languages ?: SideLanguages.UNKNOWN
+        }
+        fun side(packLocale: Locale?, collectionLocale: Locale?, detected: Locale?) = when {
+            packLocale != null -> ResolvedLanguage(packLocale, ResolvedLanguage.Source.PACK)
+            collectionLocale != null ->
+                ResolvedLanguage(collectionLocale, ResolvedLanguage.Source.COLLECTION)
+            detected != null -> ResolvedLanguage(detected, ResolvedLanguage.Source.DETECTED)
+            else -> ResolvedLanguage(null, ResolvedLanguage.Source.NONE)
+        }
+        return ResolvedLanguages(
+            side(packFront, collectionFront, detected.front),
+            side(packBack, collectionBack, detected.back)
+        )
+    }
+
+    // The detected languages of the pack, from the cache if its number of cards has not changed
+    private fun detected(packId: Int, dbHelperGet: DbHelperGet): SideLanguages {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
             return SideLanguages.UNKNOWN
         }
-        val dbHelperGet = DbHelperGet(context)
         val cardCount = dbHelperGet.countCardsInPack(packId)
         cache[packId]?.let {
             if (it.cardCount == cardCount) {

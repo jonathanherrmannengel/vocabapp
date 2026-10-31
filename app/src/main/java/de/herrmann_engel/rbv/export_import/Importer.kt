@@ -8,6 +8,7 @@ import de.herrmann_engel.rbv.db.AppDatabase
 import de.herrmann_engel.rbv.db.utils.DbHelperCreate
 import de.herrmann_engel.rbv.db.utils.DbHelperDelete
 import de.herrmann_engel.rbv.db.utils.DbHelperGet
+import de.herrmann_engel.rbv.language.normalizeLanguageTag
 import de.herrmann_engel.rbv.settings.AppSettings
 import de.herrmann_engel.rbv.utils.StringTools
 import java.io.InputStreamReader
@@ -288,7 +289,8 @@ class Importer(
         markImported()
     }
 
-    // Columns: uid, name, desc, date, colors (optional), emoji (optional)
+    // Columns: uid, name, desc, date, colors (optional), emoji (optional), front and back language
+    // (optional)
     private fun importCollection(line: Array<String?>) {
         markImported()
         val collectionIdOld = (line.column("uid", 1) ?: "0").toInt()
@@ -297,13 +299,23 @@ class Importer(
         val date = parseDate(line.column("date", 4))
         val colors = (line.column("colors", 5) ?: "0").toInt()
         val emoji = StringTools.firstCharacter(line.column("emoji", 6) ?: "")
+        val frontLanguage = normalizeLanguageTag(line.column("front_language", 7))
+        val backLanguage = normalizeLanguageTag(line.column("back_language", 8))
         val sameNamed = findExisting { helperGet.getAllCollectionsByName(name) }
         // Create a new collection unless one with the same name exists; in integrate mode the
         // existing one is used instead, in skip mode its content is skipped
         if (sameNamed.isNullOrEmpty()) {
             val collectionIdNew =
                 helperCreate
-                    .createCollection(name, desc, colors, emoji, date)
+                    .createCollection(
+                        name,
+                        desc,
+                        colors,
+                        emoji,
+                        date,
+                        frontLanguage,
+                        backLanguage
+                    )
                     .toInt()
             collectionIdConverter.insertPair(
                 collectionIdOld,
@@ -317,7 +329,8 @@ class Importer(
         }
     }
 
-    // Columns: uid, name, desc, date, colors, collection (optional), emoji (optional)
+    // Columns: uid, name, desc, date, colors, collection (optional), emoji (optional), front and
+    // back language (optional)
     private fun importPack(line: Array<String?>) {
         // Files from old versions without collections: put the packs into a "_default" collection
         if (collectionIdConverter.getSize() == 0 &&
@@ -356,6 +369,8 @@ class Importer(
         val date = parseDate(line.column("date", 4))
         val colors = (line.column("colors", 5) ?: "0").toInt()
         val emoji = StringTools.firstCharacter(line.column("emoji", 7) ?: "")
+        val frontLanguage = normalizeLanguageTag(line.column("front_language", 8))
+        val backLanguage = normalizeLanguageTag(line.column("back_language", 9))
         val sameNamed = findExisting {
             helperGet.getAllPacksByCollectionAndNameAndDesc(collectionId, name, desc)
         }
@@ -368,7 +383,9 @@ class Importer(
                         collectionId,
                         colors,
                         emoji,
-                        date
+                        date,
+                        frontLanguage,
+                        backLanguage
                     )
                     .toInt()
             packIdConverter.insertPair(packIdOld, packIdNew)

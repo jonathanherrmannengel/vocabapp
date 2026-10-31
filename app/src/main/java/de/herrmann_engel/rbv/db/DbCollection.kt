@@ -28,5 +28,13 @@ data class DbCollection(
     var colors: Int = 0,
 
     @ColumnInfo(name = "emoji")
-    var emoji: String = ""
+    var emoji: String = "",
+
+    // Languages of the cards' front and back sides chosen by the user (BCP 47 language tags,
+    // e.g. "fr"); null if not chosen (see CardLanguages)
+    @ColumnInfo(name = "front_language")
+    var frontLanguage: String? = null,
+
+    @ColumnInfo(name = "back_language")
+    var backLanguage: String? = null
 )

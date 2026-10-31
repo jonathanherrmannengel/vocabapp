@@ -30,6 +30,13 @@ interface CollectionDao {
     @get:Query("SELECT uid FROM db_collection ORDER BY name COLLATE NOCASE ASC, uid DESC")
     val allIds: List<Int>
 
+    // Languages chosen for the front or back sides (see DbHelperGet.getUsedLanguageTags)
+    @Query(
+        "SELECT front_language FROM db_collection WHERE front_language IS NOT NULL"
+                + " UNION SELECT back_language FROM db_collection WHERE back_language IS NOT NULL"
+    )
+    fun getLanguageTags(): List<String>
+
     @Query("SELECT * FROM db_collection WHERE uid=:collectionId LIMIT 1")
     fun getOne(collectionId: Int): DbCollection?
 

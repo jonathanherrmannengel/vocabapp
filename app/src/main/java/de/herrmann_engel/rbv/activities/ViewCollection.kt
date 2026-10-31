@@ -8,13 +8,16 @@ import de.herrmann_engel.rbv.actions.CollectionActions
 import de.herrmann_engel.rbv.databinding.ActivityViewCollectionOrPackBinding
 import de.herrmann_engel.rbv.db.DbCollection
 import de.herrmann_engel.rbv.db.utils.DbHelperGet
+import de.herrmann_engel.rbv.language.collectionLanguageText
 import de.herrmann_engel.rbv.settings.AppSettings
 import de.herrmann_engel.rbv.ui.showDetails
+import de.herrmann_engel.rbv.ui.showLanguages
 import de.herrmann_engel.rbv.utils.getCollectionId
 import de.herrmann_engel.rbv.utils.putCollectionId
 
 /**
- * Details of a collection (name, emoji, description, creation date) with options to edit and delete it.
+ * Details of a collection (name, emoji, description, creation date, languages) with options to edit
+ * and delete it.
  */
 class ViewCollection : RBVActivity(), CollectionActions.Listener {
     private lateinit var binding: ActivityViewCollectionOrPackBinding
@@ -64,6 +67,10 @@ class ViewCollection : RBVActivity(), CollectionActions.Listener {
             collection.date,
             collection.colors,
             AppSettings(this).uiFontSizeBig
+        )
+        binding.showLanguages(
+            collectionLanguageText(this, collection.frontLanguage),
+            collectionLanguageText(this, collection.backLanguage)
         )
     }
 

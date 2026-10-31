@@ -4,20 +4,27 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.actions.PackActions
 import de.herrmann_engel.rbv.databinding.ActivityViewCollectionOrPackBinding
 import de.herrmann_engel.rbv.db.DbPack
 import de.herrmann_engel.rbv.db.utils.DbHelperGet
+import de.herrmann_engel.rbv.language.CardLanguages
+import de.herrmann_engel.rbv.language.resolvedLanguageText
 import de.herrmann_engel.rbv.settings.AppSettings
 import de.herrmann_engel.rbv.ui.showDetails
+import de.herrmann_engel.rbv.ui.showLanguages
 import de.herrmann_engel.rbv.utils.getListCollection
 import de.herrmann_engel.rbv.utils.getPackId
 import de.herrmann_engel.rbv.utils.putListCollection
 import de.herrmann_engel.rbv.utils.putPackId
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
- * Details of a pack (name, emoji, description, creation date) with options to edit,
+ * Details of a pack (name, emoji, description, creation date, languages) with options to edit,
  * delete and move it.
  */
 class ViewPack : RBVActivity(), PackActions.Listener {
@@ -57,6 +64,16 @@ class ViewPack : RBVActivity(), PackActions.Listener {
             pack.colors,
             AppSettings(this).uiFontSizeBig
         )
+        // The languages may have to be detected first
+        lifecycleScope.launch {
+            val languages = withContext(Dispatchers.IO) {
+                CardLanguages(this@ViewPack).resolve(packId)
+            }
+            binding.showLanguages(
+                resolvedLanguageText(this@ViewPack, languages.front),
+                resolvedLanguageText(this@ViewPack, languages.back)
+            )
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

@@ -233,5 +233,22 @@
     <string name="warn_inaccurate_list">Listendarstellung kann ungenau sein.</string>
     <string name="warn_inaccurate_search">Suchergebnisse können ungenau sein.</string>
     <string name="warn_inaccurate_note">Diese Warnung wird nicht erneut angezeigt.</string>
-
+    <string name="language_front">Sprache der Karteikarten-Vorderseite</string>
+    <string name="language_back">Sprache der Karteikarten-Rückseite</string>
+    <string name="language_front_title">Sprache der Karteikarten-Vorderseite</string>
+    <string name="language_back_title">Sprache der Karteikarten-Rückseite</string>
+    <string name="language_front_value">Sprache der Karteikarten-Vorderseite: %1$s</string>
+    <string name="language_back_value">Sprache der Karteikarten-Rückseite: %1$s</string>
+    <string name="language_like_collection_title">Wie Karteikasten</string>
+    <string name="language_like_collection">%1$s (wie Karteikasten)</string>
+    <string name="language_automatic_title">Automatisch</string>
+    <string name="language_automatic">automatisch</string>
+    <string name="language_detected_per_pack">je Kartenstapel erkannt</string>
+    <string name="language_detected">%1$s (erkannt)</string>
+    <string name="language_device_title">Gerätesprache</string>
+    <string name="language_device">Gerätesprache</string>
+    <!-- %1$s language code (e.g. "fr"), shown after the language's own name (e.g. "français");
+         the leading space (\u0020, a plain one would be removed) separates it from the name -->
+    <string name="language_code_after_own_name">\u0020· %1$s</string>
+    <string name="language_choose">Sprache auswählen</string>
 </resources>

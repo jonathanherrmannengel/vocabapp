@@ -38,6 +38,13 @@ interface PackDao {
     @Query("SELECT * FROM db_pack WHERE collection=:collectionId")
     fun getAllExportByCollection(collectionId: Int): Cursor
 
+    // Languages chosen for the front or back sides (see DbHelperGet.getUsedLanguageTags)
+    @Query(
+        "SELECT front_language FROM db_pack WHERE front_language IS NOT NULL"
+                + " UNION SELECT back_language FROM db_pack WHERE back_language IS NOT NULL"
+    )
+    fun getLanguageTags(): List<String>
+
     @Query("SELECT * FROM db_pack WHERE uid=:packId LIMIT 1")
     fun getOne(packId: Int): DbPack?
 

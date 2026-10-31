@@ -40,3 +40,10 @@ fun ActivityViewCollectionOrPackBinding.showDetails(
     context.resources.colorAt(R.array.pack_color_background, colors)
         ?.let { root.setBackgroundColor(it) }
 }
+
+// Shows the texts of the languages of the front and back sides
+fun ActivityViewCollectionOrPackBinding.showLanguages(front: String, back: String) {
+    val context = root.context
+    collectionOrPackFrontLanguage.text = context.getString(R.string.language_front_value, front)
+    collectionOrPackBackLanguage.text = context.getString(R.string.language_back_value, back)
+}

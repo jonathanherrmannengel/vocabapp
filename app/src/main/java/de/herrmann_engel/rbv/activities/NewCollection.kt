@@ -9,7 +9,7 @@ import de.herrmann_engel.rbv.db.utils.DbHelperCreate
 import de.herrmann_engel.rbv.ui.CollectionOrPackForm
 
 /**
- * Form to create a new collection: name, description, emoji and color.
+ * Form to create a new collection: name, description, emoji, languages and color.
  */
 class NewCollection : RBVActivity() {
     private lateinit var form: CollectionOrPackForm
@@ -22,7 +22,8 @@ class NewCollection : RBVActivity() {
             this,
             binding,
             R.string.collection_name,
-            CollectionOrPackForm.Values("", "", "", 0)
+            null,
+            CollectionOrPackForm.Values("", "", "", 0, null, null)
         )
         setUpEdgeToEdge(binding.collectionOrPackLayout)
     }
@@ -35,7 +36,9 @@ class NewCollection : RBVActivity() {
                     form.name,
                     form.desc,
                     form.selectedColors,
-                    form.emoji
+                    form.emoji,
+                    frontLanguage = form.frontLanguage,
+                    backLanguage = form.backLanguage
                 )
                 finish()
             } catch (e: Exception) {

@@ -244,6 +244,7 @@ class ListCards : RBVActivity(), CardActions.Listener {
                 title = pack?.name
                 resources.colorAt(R.array.pack_color_background_list, pack?.colors)
                     ?.let { binding.root.setBackgroundColor(it) }
+                updateLanguages(cardSource.packId)
             }
 
             is CardSource.Collection -> {
@@ -557,6 +558,20 @@ class ListCards : RBVActivity(), CardActions.Listener {
 
     private fun updateContent() {
         updateContent(false)
+    }
+
+    /**
+     * The languages chosen for the pack may have been changed in its details: applies them to the
+     * loaded cards and redraws the rows if they differ (detected languages are already cached).
+     */
+    private fun updateLanguages(packId: Int) {
+        val cards = cardsList ?: return
+        val languages = CardLanguages(this).cached(packId)
+        if (cards.isEmpty() || cards[0].languages == languages) {
+            return
+        }
+        cards.forEach { it.languages = languages }
+        adapter?.let { it.notifyItemRangeChanged(0, it.itemCount) }
     }
 
     // An import may have changed the font size setting: redraw the list (the cards are not reloaded)

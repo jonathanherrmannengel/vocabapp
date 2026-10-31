@@ -13,32 +13,56 @@ import androidx.activity.OnBackPressedCallback
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toDrawable
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import com.vanniktech.emoji.EmojiPopup
 import com.vanniktech.emoji.EmojiTheming
 import com.vanniktech.emoji.inputfilters.OnlyEmojisInputFilter
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.databinding.ActivityCollectionOrPackFormBinding
+import de.herrmann_engel.rbv.db.DbCollection
+import de.herrmann_engel.rbv.language.LanguagePicker
+import de.herrmann_engel.rbv.language.collectionLanguageText
+import de.herrmann_engel.rbv.language.languageOf
+import de.herrmann_engel.rbv.language.packLanguageText
 import de.herrmann_engel.rbv.utils.StringTools
 import de.herrmann_engel.rbv.utils.showConfirmDialog
 import kotlin.math.roundToInt
 
 /**
- * Form for the name, description, emoji and color of a collection or pack, shared by the screens
- * that create and edit them. Shows the given initial values and asks before discarding changes
- * when the user leaves the screen.
+ * Form for the name, description, emoji, languages of the cards' sides and color of a collection
+ * or pack, shared by the screens that create and edit them. Shows the given initial values and
+ * asks before discarding changes when the user leaves the screen.
  *
  * @param nameOf R.string.collection_name or R.string.pack_name, used in the hint of the name field
+ * @param collection for a pack, the collection it belongs to, whose languages apply to sides
+ *                   without a chosen language; null for a collection
  */
 class CollectionOrPackForm(
     private val activity: ComponentActivity,
     private val binding: ActivityCollectionOrPackFormBinding,
     @StringRes nameOf: Int,
+    private val collection: DbCollection?,
     initial: Values
 ) {
-    // The values of a collection or pack as edited in the form
-    data class Values(val name: String, val desc: String, val emoji: String, val colors: Int)
+    // The values of a collection or pack as edited in the form; languages are tags or null
+    data class Values(
+        val name: String,
+        val desc: String,
+        val emoji: String,
+        val colors: Int,
+        val frontLanguage: String?,
+        val backLanguage: String?
+    )
 
     private var colors = initial.colors
+
+    // Language tags chosen for the front and back sides, null if none
+    var frontLanguage = initial.frontLanguage
+        private set
+
+    var backLanguage = initial.backLanguage
+        private set
 
     // The values as shown when the form was opened; leaving the form asks only if they changed
     private val shown: Values
@@ -77,6 +101,7 @@ class CollectionOrPackForm(
         binding.collectionOrPackDesc.setText(initial.desc)
         binding.collectionOrPackEmoji.setText(initial.emoji)
         setUpEmojiField()
+        setUpLanguageFields()
         setUpColorPicker()
         shown = currentValues()
         // Ask before discarding changes
@@ -93,8 +118,14 @@ class CollectionOrPackForm(
         })
     }
 
-    private fun currentValues() =
-        Values(name, desc, binding.collectionOrPackEmoji.text.toString(), colors)
+    private fun currentValues() = Values(
+        name,
+        desc,
+        binding.collectionOrPackEmoji.text.toString(),
+        colors,
+        frontLanguage,
+        backLanguage
+    )
 
     private fun hasChanges(): Boolean = currentValues() != shown
 
@@ -140,6 +171,82 @@ class CollectionOrPackForm(
         })
     }
 
+    // The language fields show the chosen languages; a tap opens the language picker
+    private fun setUpLanguageFields() {
+        for (back in listOf(false, true)) {
+            showLanguage(back)
+            languageField(back).setOnClickListener { pickLanguage(back) }
+            languageLayout(back).setEndIconOnClickListener { pickLanguage(back) }
+        }
+    }
+
+    private fun languageLayout(back: Boolean): TextInputLayout = if (back) {
+        binding.collectionOrPackBackLanguageLayout
+    } else {
+        binding.collectionOrPackFrontLanguageLayout
+    }
+
+    private fun languageField(back: Boolean): TextInputEditText = if (back) {
+        binding.collectionOrPackBackLanguage
+    } else {
+        binding.collectionOrPackFrontLanguage
+    }
+
+    // The language tag chosen for the side, null if none
+    private fun chosenLanguage(back: Boolean): String? = if (back) backLanguage else frontLanguage
+
+    // Shows the language chosen for the side; for a pack, the collection's applies without one
+    private fun showLanguage(back: Boolean) {
+        val tag = chosenLanguage(back)
+        languageField(back).setText(
+            if (collection == null) {
+                collectionLanguageText(activity, tag)
+            } else {
+                packLanguageText(activity, tag, collectionLanguage(back))
+            }
+        )
+    }
+
+    // Opens the language picker for the side and shows the picked language
+    private fun pickLanguage(back: Boolean) {
+        val title = activity.getString(
+            if (back) R.string.language_back_title else R.string.language_front_title
+        )
+        // Packs only differ from collections if the collection has a chosen language
+        val collectionTag = collectionLanguage(back)
+        val noneName: String
+        val noneDesc: String
+        when {
+            languageOf(collectionTag) != null -> {
+                noneName = activity.getString(R.string.language_like_collection_title)
+                noneDesc = collectionLanguageText(activity, collectionTag)
+            }
+
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q -> {
+                noneName = activity.getString(R.string.language_automatic_title)
+                // For a pack it goes without saying
+                noneDesc = if (collection == null) {
+                    activity.getString(R.string.language_detected_per_pack)
+                } else {
+                    ""
+                }
+            }
+
+            else -> {
+                noneName = activity.getString(R.string.language_device_title)
+                noneDesc = ""
+            }
+        }
+        LanguagePicker(activity).show(title, noneName, noneDesc, chosenLanguage(back)) {
+            if (back) backLanguage = it else frontLanguage = it
+            showLanguage(back)
+        }
+    }
+
+    // The language chosen for the side of the pack's collection; null for collections
+    private fun collectionLanguage(back: Boolean): String? =
+        if (back) collection?.backLanguage else collection?.frontLanguage
+
     // One button per available color; the selected color is applied to the form
     private fun setUpColorPicker() {
         val resources = activity.resources
@@ -183,7 +290,9 @@ class CollectionOrPackForm(
         for (layout in listOf(
             binding.collectionOrPackNameLayout,
             binding.collectionOrPackDescLayout,
-            binding.collectionOrPackEmojiLayout
+            binding.collectionOrPackEmojiLayout,
+            binding.collectionOrPackFrontLanguageLayout,
+            binding.collectionOrPackBackLanguageLayout
         )) {
             layout.boxStrokeColor = main
             layout.hintTextColor = mainList

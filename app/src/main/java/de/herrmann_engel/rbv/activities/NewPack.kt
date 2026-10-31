@@ -12,7 +12,7 @@ import de.herrmann_engel.rbv.utils.getCollectionId
 
 /**
  * Form to create a new pack in the collection passed as "collection" extra: name, description,
- * emoji and color. The color of the collection is preselected.
+ * emoji, languages and color. The color of the collection is preselected.
  */
 class NewPack : RBVActivity() {
     private lateinit var form: CollectionOrPackForm
@@ -35,7 +35,8 @@ class NewPack : RBVActivity() {
             this,
             binding,
             R.string.pack_name,
-            CollectionOrPackForm.Values("", "", "", collection.colors)
+            collection,
+            CollectionOrPackForm.Values("", "", "", collection.colors, null, null)
         )
         setUpEdgeToEdge(binding.collectionOrPackLayout)
     }
@@ -50,7 +51,9 @@ class NewPack : RBVActivity() {
                     collectionId,
                     form.selectedColors,
                     form.emoji,
-                    System.currentTimeMillis() / 1000L
+                    System.currentTimeMillis() / 1000L,
+                    form.frontLanguage,
+                    form.backLanguage
                 )
                 finish()
             } catch (e: Exception) {
