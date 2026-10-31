@@ -300,8 +300,9 @@ class ListCards : RBVActivity(), CardActions.Listener {
                 if (warnInaccurateFormat || warnInaccurateNoFormat) {
                     val warnings: MutableList<String> = ArrayList()
                     warnings.add(
-                        resources.getString(
-                            R.string.warn_inaccurate,
+                        resources.getQuantityString(
+                            R.plurals.warn_inaccurate,
+                            Globals.MAX_SIZE_CARDS_LIST_ACCURATE,
                             Globals.MAX_SIZE_CARDS_LIST_ACCURATE
                         )
                     )

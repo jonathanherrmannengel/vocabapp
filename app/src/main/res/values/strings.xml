@@ -64,7 +64,10 @@
     <string name="import_export_include_settings">Include app settings</string>
     <string name="import_export_include_media">Include media links</string>
     <string name="import_export_include_media_warn_no_files">Backup only contains media references, no files. You need to backup and restore them on your own.</string>
-    <string name="import_export_lines_progress">~%d lines.</string>
+    <plurals name="import_export_lines_progress">
+        <item quantity="one">~%d line.</item>
+        <item quantity="other">~%d lines.</item>
+    </plurals>
     <string name="import_export_notification_channel">Import and export</string>
     <string name="import_running">Import running</string>
     <string name="export_running">Export running</string>
@@ -86,7 +89,11 @@
     <string name="media_missing_dialog_text">Abort and review missing files?</string>
     <string name="image_media">image media</string>
     <string name="image_media_file">image: %s</string>
-    <string name="image_media_print_number_and_limit">%1$d images attached. Print limit is: %2$d.</string>
+    <!-- The quantity is the number of attached images (%1$d) -->
+    <plurals name="image_media_print_number_and_limit">
+        <item quantity="one">%1$d image attached. Print limit is: %2$d.</item>
+        <item quantity="other">%1$d images attached. Print limit is: %2$d.</item>
+    </plurals>
     <string name="show_image_media">show images</string>
     <string name="show_all_media">show all media</string>
     <string name="all_media">all media</string>
@@ -105,7 +112,10 @@
     <string name="delete_file_title">delete file</string>
     <string name="delete_file_info">Media deleted from database. Also delete file from disk?</string>
     <string name="delete_file_without_media_info">Delete file from disk?</string>
-    <string name="delete_multiple_cards">You are about to delete %1$d flashcards. Continue?</string>
+    <plurals name="delete_multiple_cards">
+        <item quantity="one">You are about to delete %1$d flashcard. Continue?</item>
+        <item quantity="other">You are about to delete %1$d flashcards. Continue?</item>
+    </plurals>
     <plurals name="delete_multiple_packs">
         <item quantity="one">You are about to delete %1$d decks with %2$d flashcard. Continue?</item>
         <item quantity="other">You are about to delete %1$d decks with %2$d flashcards. Continue?</item>
@@ -241,7 +251,10 @@
     <string name="settings_ui_mode_night">Dark</string>
     <string name="settings_media">Media files</string>
     <string name="settings_media_in_gallery">Show media files in other apps (e.g. gallery)</string>
-    <string name="warn_inaccurate">This list contains more than %d flashcards.</string>
+    <plurals name="warn_inaccurate">
+        <item quantity="one">This list contains more than %d flashcard.</item>
+        <item quantity="other">This list contains more than %d flashcards.</item>
+    </plurals>
     <string name="warn_inaccurate_list">List display may be inaccurate.</string>
     <string name="warn_inaccurate_search">Search results may be inaccurate.</string>
     <string name="warn_inaccurate_sort">Alphabetical order may be inaccurate.</string>

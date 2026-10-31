@@ -67,7 +67,11 @@ class CardActions(
      */
     private fun delete(cards: ArrayList<DbCard>, forceDelete: Boolean) {
         val text = if (cards.size > 1 && !forceDelete) {
-            activity.getString(R.string.delete_multiple_cards, cards.size)
+            activity.resources.getQuantityString(
+                R.plurals.delete_multiple_cards,
+                cards.size,
+                cards.size
+            )
         } else null
         showConfirmDialog(activity, activity.getString(R.string.delete), text) {
             if (cards.size <= 1 || forceDelete) {
@@ -351,8 +355,9 @@ class CardActions(
                     appendSection(R.string.image_media) {
                         if (imageList.size > Globals.MAX_SIZE_CARD_IMAGE_PRINT) {
                             append(
-                                activity.getString(
-                                    R.string.image_media_print_number_and_limit,
+                                activity.resources.getQuantityString(
+                                    R.plurals.image_media_print_number_and_limit,
+                                    imageList.size,
                                     imageList.size,
                                     Globals.MAX_SIZE_CARD_IMAGE_PRINT
                                 )

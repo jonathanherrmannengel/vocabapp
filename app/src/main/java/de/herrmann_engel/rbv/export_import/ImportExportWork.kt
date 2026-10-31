@@ -212,7 +212,10 @@ object ImportExportWork {
             .setSmallIcon(icon)
             .setContentTitle(context.getString(title))
             .setContentText(
-                rows?.let { context.getString(R.string.import_export_lines_progress, it) }
+                rows?.let {
+                    context.resources
+                        .getQuantityString(R.plurals.import_export_lines_progress, it, it)
+                }
             )
             .setProgress(0, 0, true)
             .setOngoing(true)

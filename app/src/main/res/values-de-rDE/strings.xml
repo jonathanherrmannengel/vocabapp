@@ -59,7 +59,10 @@
     <string name="import_export_include_settings">App-Einstellungen einschließen</string>
     <string name="import_export_include_media">Medien-Referenzen einschließen</string>
     <string name="import_export_include_media_warn_no_files">Die Sicherung enthält nur die Medien-Referenzen, nicht die Dateien selbst. Diese musst Du selbstständig sichern und wiederherstellen.</string>
-    <string name="import_export_lines_progress">~%d Zeilen.</string>
+    <plurals name="import_export_lines_progress">
+        <item quantity="one">~%d Zeile.</item>
+        <item quantity="other">~%d Zeilen.</item>
+    </plurals>
     <string name="import_export_notification_channel">Import und Export</string>
     <string name="import_running">Import läuft</string>
     <string name="export_running">Export läuft</string>
@@ -80,7 +83,11 @@
     <string name="media_missing_dialog_text">Abbrechen und fehlende Dateien begutachten?</string>
     <string name="image_media">Bildmedien</string>
     <string name="image_media_file">Bild: %s</string>
-    <string name="image_media_print_number_and_limit">%1$d verknüpfte Bilder. Drucklimit ist: %2$d.</string>
+    <!-- The quantity is the number of attached images (%1$d) -->
+    <plurals name="image_media_print_number_and_limit">
+        <item quantity="one">%1$d verknüpftes Bild. Drucklimit ist: %2$d.</item>
+        <item quantity="other">%1$d verknüpfte Bilder. Drucklimit ist: %2$d.</item>
+    </plurals>
     <string name="show_image_media">Bilder anzeigen</string>
     <string name="show_all_media">Alle Medien anzeigen</string>
     <string name="all_media">Alle Medien</string>
@@ -99,7 +106,10 @@
     <string name="delete_file_title">Datei löschen</string>
     <string name="delete_file_info">Datenbankeintrag gelöscht. Auch Datei vom Dateisystem löschen?</string>
     <string name="delete_file_without_media_info">Datei vom Dateisystem löschen?</string>
-    <string name="delete_multiple_cards">Du bist dabei %1$d Karteikarten zu löschen. Mit Löschen fortfahren?</string>
+    <plurals name="delete_multiple_cards">
+        <item quantity="one">Du bist dabei %1$d Karteikarte zu löschen. Mit Löschen fortfahren?</item>
+        <item quantity="other">Du bist dabei %1$d Karteikarten zu löschen. Mit Löschen fortfahren?</item>
+    </plurals>
     <plurals name="delete_multiple_packs">
         <item quantity="one">Du bist dabei %1$d Kartenstapel mit einer Karteikarte zu löschen. Mit Löschen fortfahren?</item>
         <item quantity="other">Du bist dabei %1$d Kartenstapel mit %2$d Karteikarten zu löschen. Mit Löschen fortfahren?</item>
@@ -229,7 +239,10 @@
     <string name="settings_ui_mode_night">Dunkel</string>
     <string name="settings_media">Mediendateien</string>
     <string name="settings_media_in_gallery">Mediendateien in anderen Apps (etwa Galerie) anzeigen</string>
-    <string name="warn_inaccurate">Mehr als %d Karteikarten in dieser Liste.</string>
+    <plurals name="warn_inaccurate">
+        <item quantity="one">Mehr als %d Karteikarte in dieser Liste.</item>
+        <item quantity="other">Mehr als %d Karteikarten in dieser Liste.</item>
+    </plurals>
     <string name="warn_inaccurate_list">Listendarstellung kann ungenau sein.</string>
     <string name="warn_inaccurate_search">Suchergebnisse können ungenau sein.</string>
     <string name="warn_inaccurate_sort">Alphabetische Sortierung kann ungenau sein.</string>
