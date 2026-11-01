@@ -28,13 +28,19 @@
                 android:textColorHint="@color/light_black"
                 android:theme="@style/material_edit_text">
 
-                <com.google.android.material.textfield.TextInputEditText
+                <!-- Suggests existing tags, so that a tag is not created twice by accident (e.g.
+                     with a different case); the style gives it the padding of the other text
+                     fields; the suggestions have the color of the overflow menu -->
+                <com.google.android.material.textfield.MaterialAutoCompleteTextView
                     android:id="@+id/edit_card_tags_add"
+                    style="@style/Widget.Material3.AutoCompleteTextView.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
+                    android:completionThreshold="1"
                     android:inputType="text"
-                    android:textColor="@color/default_text" />
+                    android:textColor="@color/default_text"
+                    app:dropDownBackgroundTint="@color/background_default" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <Button
