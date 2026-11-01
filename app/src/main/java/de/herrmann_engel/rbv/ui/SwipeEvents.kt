@@ -6,13 +6,18 @@ import android.view.View
 import kotlin.math.abs
 
 /**
- * Touch listener detecting swipes from the edges of a view. Subclasses override the callbacks.
+ * Touch listener detecting swipes on a view. Subclasses override the callbacks.
  *
- * A swipe has to start within SWIPE_START_DISTANCE_MAX pixels of the edge it starts from.
+ * With horizontalFromEdge (left/right) or verticalFromEdge (up/down), a swipe has to start within
+ * SWIPE_START_DISTANCE_MAX pixels of the edge it starts from; otherwise it may start anywhere (for
+ * horizontal swipes starting on child views, see HorizontalSwipeLayout).
  * While moving, onMoveX/onMoveY report the distance; once the distance reaches SWIPE_DISTANCE_MIN,
  * the matching onSwipe* callback is called once.
  */
-open class SwipeEvents : View.OnTouchListener {
+open class SwipeEvents(
+    private val horizontalFromEdge: Boolean = true,
+    private val verticalFromEdge: Boolean = true
+) : View.OnTouchListener {
     private var initialY = 0f
     private var initialX = 0f
     // 0: no direction yet, -1: gesture finished or cancelled, else one of the MOVE_DIRECTION_* constants
@@ -32,11 +37,15 @@ open class SwipeEvents : View.OnTouchListener {
             // Horizontal movement
             if (abs(distanceX) > abs(distanceY)) {
                 if (abs(distanceX) < SWIPE_DISTANCE_MIN) {
-                    // Determine the direction once, only if the gesture started near the corresponding edge
+                    // Determine the direction once (see the class description)
                     if (moveDirection == 0) {
-                        if (distanceX > 0 && initialX < SWIPE_START_DISTANCE_MAX) {
+                        if (distanceX > 0 &&
+                            (!horizontalFromEdge || initialX < SWIPE_START_DISTANCE_MAX)
+                        ) {
                             moveDirection = MOVE_DIRECTION_RIGHT
-                        } else if (distanceX < 0 && initialX > v.width - SWIPE_START_DISTANCE_MAX) {
+                        } else if (distanceX < 0 &&
+                            (!horizontalFromEdge || initialX > v.width - SWIPE_START_DISTANCE_MAX)
+                        ) {
                             moveDirection = MOVE_DIRECTION_LEFT
                         }
                         return true
@@ -55,10 +64,15 @@ open class SwipeEvents : View.OnTouchListener {
                 }
             } else {
                 if (abs(distanceY) < SWIPE_DISTANCE_MIN) {
+                    // Determine the direction once (see the class description)
                     if (moveDirection == 0) {
-                        if (distanceY > 0 && initialY < SWIPE_START_DISTANCE_MAX) {
+                        if (distanceY > 0 &&
+                            (!verticalFromEdge || initialY < SWIPE_START_DISTANCE_MAX)
+                        ) {
                             moveDirection = MOVE_DIRECTION_BOTTOM
-                        } else if (distanceY < 0 && initialY > v.height - SWIPE_START_DISTANCE_MAX) {
+                        } else if (distanceY < 0 &&
+                            (!verticalFromEdge || initialY > v.height - SWIPE_START_DISTANCE_MAX)
+                        ) {
                             moveDirection = MOVE_DIRECTION_TOP
                         }
                         return true

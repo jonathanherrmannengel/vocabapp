@@ -42,10 +42,10 @@ import kotlin.math.abs
  * of a card is shown; after revealing the other side, the user rates the card as known or not
  * known, which updates its progress.
  *
- * Swipe gestures: from the end/start edge (right/left, mirrored in right-to-left layouts) go to
- * the next/previous card, up/down (only after revealing) rate the card as known/not known. While
- * swiping, a colored bar grows from the edge; a completed swipe fills the screen with it shortly
- * before the action is executed.
+ * Swipe gestures: towards the start/end (left/right, mirrored in right-to-left layouts), starting
+ * anywhere, go to the next/previous card; up/down from the bottom/top edge (only after revealing)
+ * rate the card as known/not known. While swiping, a colored bar grows from the edge; a completed
+ * swipe fills the screen with it shortly before the action is executed.
  *
  * The dialog is created once and reused.
  *
@@ -100,7 +100,7 @@ class QueryMode(
 
     @SuppressLint("ClickableViewAccessibility")
     private fun setTouchListener() {
-        binding.root.setOnTouchListener(QuerySwipeEvents())
+        binding.root.swipeEvents = QuerySwipeEvents()
     }
 
     /**
@@ -329,7 +329,9 @@ class QueryMode(
     }
 
     // Swipe gestures of the dialog (see the class description)
-    private inner class QuerySwipeEvents : SwipeEvents() {
+    // Horizontal swipes start anywhere (see HorizontalSwipeLayout), vertical ones at the edges, so
+    // that scrolling a long card does not rate it
+    private inner class QuerySwipeEvents : SwipeEvents(horizontalFromEdge = false) {
         // Blocks further gestures while an animation is running
         private var allowTouchEvent = true
 
