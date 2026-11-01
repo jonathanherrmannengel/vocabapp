@@ -5,8 +5,6 @@ import android.graphics.Typeface
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.View
-import android.view.View.IMPORTANT_FOR_ACCESSIBILITY_NO
-import android.view.View.IMPORTANT_FOR_ACCESSIBILITY_YES
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -120,9 +118,6 @@ class AdapterPacks(
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         val context = viewHolder.binding.root.context
         viewHolder.binding.applyFontSize(uiFontSizeBig)
-        viewHolder.binding.recCollectionsPreviewText.contentDescription = null
-        viewHolder.binding.recCollectionsPreviewText.importantForAccessibility =
-            IMPORTANT_FOR_ACCESSIBILITY_NO
         viewHolder.binding.recCollectionsName.setTypeface(null, Typeface.NORMAL)
         viewHolder.binding.recCollectionsParent.visibility = View.GONE
         val currentPack = packs[position].pack
@@ -141,11 +136,9 @@ class AdapterPacks(
         viewHolder.binding.recCollectionsName.text =
             StringTools.shorten(currentPack.name)
         val selected = selection.isSelected(currentPack.uid)
+        // Screen readers announce the selection of the row
+        viewHolder.binding.root.isSelected = selected
         if (selected) {
-            viewHolder.binding.recCollectionsPreviewText.contentDescription =
-                context.resources.getString(R.string.selected)
-            viewHolder.binding.recCollectionsPreviewText.importantForAccessibility =
-                IMPORTANT_FOR_ACCESSIBILITY_YES
             viewHolder.binding.recCollectionsName.setTypeface(null, Typeface.BOLD)
         }
         val desc = currentPack.desc

@@ -209,16 +209,12 @@ class AdapterCards(
             prepareCardSide(true, cards[position], viewHolder)
         }
         // The welcome item of an empty list cannot be selected
-        if (cards.isNotEmpty() && selection.isSelected(cards[position].card.uid)) {
-            viewHolder.binding.recFront.contentDescription = TextUtils.expandTemplate(
-                context.getText(R.string.selected_item),
-                viewHolder.binding.recFront.contentDescription
-            )
+        val selected = cards.isNotEmpty() && selection.isSelected(cards[position].card.uid)
+        // Screen readers announce the selection of each side (each is clickable on its own)
+        viewHolder.binding.recFront.isSelected = selected
+        viewHolder.binding.recBack.isSelected = selected
+        if (selected) {
             viewHolder.binding.recFront.setTypeface(null, BOLD)
-            viewHolder.binding.recBack.contentDescription = TextUtils.expandTemplate(
-                context.getText(R.string.selected_item),
-                viewHolder.binding.recBack.contentDescription
-            )
             viewHolder.binding.recBack.setTypeface(null, BOLD)
             viewHolder.binding.root.setBackgroundColor(
                 ContextCompat.getColor(
