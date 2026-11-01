@@ -19,4 +19,7 @@
     <dimen name="title_size_default">23sp</dimen>
     <dimen name="title_size_big">26sp</dimen>
     <dimen name="wait_dot_jump">40dp</dimen>
+    <!-- Band at the top and bottom edge of the query mode in which the vertical swipes start; also
+         the vertical margin of the card content, so that the band is the same at both edges -->
+    <dimen name="query_swipe_edge">64dp</dimen>
 </resources>

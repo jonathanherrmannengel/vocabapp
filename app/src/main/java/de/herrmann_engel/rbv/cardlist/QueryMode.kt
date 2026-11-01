@@ -331,7 +331,10 @@ class QueryMode(
     // Swipe gestures of the dialog (see the class description)
     // Horizontal swipes start anywhere (see HorizontalSwipeLayout), vertical ones at the edges, so
     // that scrolling a long card does not rate it
-    private inner class QuerySwipeEvents : SwipeEvents(horizontalFromEdge = false) {
+    private inner class QuerySwipeEvents : SwipeEvents(
+        activity.resources.getDimensionPixelSize(R.dimen.query_swipe_edge),
+        horizontalFromEdge = false
+    ) {
         // Blocks further gestures while an animation is running
         private var allowTouchEvent = true
 

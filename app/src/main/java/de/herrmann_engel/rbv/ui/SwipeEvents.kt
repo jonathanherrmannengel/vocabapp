@@ -9,12 +9,14 @@ import kotlin.math.abs
  * Touch listener detecting swipes on a view. Subclasses override the callbacks.
  *
  * With horizontalFromEdge (left/right) or verticalFromEdge (up/down), a swipe has to start within
- * SWIPE_START_DISTANCE_MAX pixels of the edge it starts from; otherwise it may start anywhere (for
- * horizontal swipes starting on child views, see HorizontalSwipeLayout).
+ * edgeSize pixels of the edge it starts from (e.g. from a dimension resource, so that the band
+ * does not depend on the screen density); otherwise it may start anywhere (for horizontal swipes
+ * starting on child views, see HorizontalSwipeLayout).
  * While moving, onMoveX/onMoveY report the distance; once the distance reaches SWIPE_DISTANCE_MIN,
  * the matching onSwipe* callback is called once.
  */
 open class SwipeEvents(
+    private val edgeSize: Int,
     private val horizontalFromEdge: Boolean = true,
     private val verticalFromEdge: Boolean = true
 ) : View.OnTouchListener {
@@ -40,11 +42,11 @@ open class SwipeEvents(
                     // Determine the direction once (see the class description)
                     if (moveDirection == 0) {
                         if (distanceX > 0 &&
-                            (!horizontalFromEdge || initialX < SWIPE_START_DISTANCE_MAX)
+                            (!horizontalFromEdge || initialX < edgeSize)
                         ) {
                             moveDirection = MOVE_DIRECTION_RIGHT
                         } else if (distanceX < 0 &&
-                            (!horizontalFromEdge || initialX > v.width - SWIPE_START_DISTANCE_MAX)
+                            (!horizontalFromEdge || initialX > v.width - edgeSize)
                         ) {
                             moveDirection = MOVE_DIRECTION_LEFT
                         }
@@ -67,11 +69,11 @@ open class SwipeEvents(
                     // Determine the direction once (see the class description)
                     if (moveDirection == 0) {
                         if (distanceY > 0 &&
-                            (!verticalFromEdge || initialY < SWIPE_START_DISTANCE_MAX)
+                            (!verticalFromEdge || initialY < edgeSize)
                         ) {
                             moveDirection = MOVE_DIRECTION_BOTTOM
                         } else if (distanceY < 0 &&
-                            (!verticalFromEdge || initialY > v.height - SWIPE_START_DISTANCE_MAX)
+                            (!verticalFromEdge || initialY > v.height - edgeSize)
                         ) {
                             moveDirection = MOVE_DIRECTION_TOP
                         }
@@ -109,7 +111,6 @@ open class SwipeEvents(
 
     companion object {
         private const val SWIPE_DISTANCE_MIN = 150
-        private const val SWIPE_START_DISTANCE_MAX = 150
         private const val MOVE_DIRECTION_RIGHT = 1
         private const val MOVE_DIRECTION_LEFT = 2
         private const val MOVE_DIRECTION_BOTTOM = 3
