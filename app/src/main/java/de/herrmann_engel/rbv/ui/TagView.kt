@@ -60,7 +60,15 @@ fun createTagView(context: Context, text: String, backgroundColor: Int): TextVie
     return view
 }
 
-// Same hue as the background, scaled to a brightness that fits day/night mode
+// Distance of the border's highest color value from the background's, so that it stays visible
+private const val BORDER_DISTANCE = 60
+
+// Lowest highest color value of a darker border by day; below it looks black
+private const val BORDER_DARKEST_DAY = 70
+
+// Same hue as the background, scaled to a brightness that fits day/night mode: lighter (at least
+// 220) at night and darker (at least BORDER_DARKEST_DAY) by day, the other way round if there is
+// no room for the distance
 private fun borderColor(context: Context, backgroundColor: Int): Int {
     val red = Color.red(backgroundColor)
     val green = Color.green(backgroundColor)
@@ -69,16 +77,16 @@ private fun borderColor(context: Context, backgroundColor: Int): Int {
     val nightMode = context.resources.configuration.uiMode and
         Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
     val maxColorToFill = if (nightMode) {
-        if (highestColorValue < 220) {
-            (highestColorValue * 1.15).roundToInt().coerceAtLeast(220)
+        if (highestColorValue + BORDER_DISTANCE <= 255) {
+            (highestColorValue + BORDER_DISTANCE).coerceAtLeast(220)
         } else {
-            (highestColorValue / 1.5).roundToInt().coerceAtLeast(180)
+            highestColorValue - BORDER_DISTANCE
         }
     } else {
-        if (highestColorValue < 100) {
-            (highestColorValue * 1.15).roundToInt().coerceAtLeast(100)
+        if (highestColorValue - BORDER_DISTANCE >= BORDER_DARKEST_DAY) {
+            highestColorValue - BORDER_DISTANCE
         } else {
-            (highestColorValue / 1.5).roundToInt()
+            highestColorValue + BORDER_DISTANCE
         }
     }
     return if (highestColorValue == 0) {
