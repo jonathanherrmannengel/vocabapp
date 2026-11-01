@@ -25,7 +25,8 @@
             android:textColor="@color/default_text"
             android:textSize="17sp" />
 
-        <TextView
+        <!-- Emojis (e.g. of tags) in the app's emoji style -->
+        <com.vanniktech.emoji.EmojiTextView
             android:id="@+id/rec_small_desc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

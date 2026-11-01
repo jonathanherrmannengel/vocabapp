@@ -5,9 +5,6 @@ import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
-import android.text.SpannableString
-import android.text.SpannableStringBuilder
-import android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
 import android.text.util.Linkify
 import android.util.TypedValue
 import android.view.Menu
@@ -27,7 +24,7 @@ import de.herrmann_engel.rbv.language.CardLanguages
 import de.herrmann_engel.rbv.language.inLanguage
 import de.herrmann_engel.rbv.media.MediaFileManager
 import de.herrmann_engel.rbv.settings.AppSettings
-import de.herrmann_engel.rbv.ui.TagSpan
+import de.herrmann_engel.rbv.ui.createTagView
 import de.herrmann_engel.rbv.utils.StringTools
 import de.herrmann_engel.rbv.utils.colorAt
 import de.herrmann_engel.rbv.utils.formatDateTime
@@ -109,12 +106,11 @@ class ViewCard : RBVActivity(), CardActions.Listener {
             binding.cardFront.text = card.front.inLanguage(languages.front)
             binding.cardBack.text = card.back.inLanguage(languages.back)
         }
-        // Tags are drawn as colored pills
+        // Tags are shown as colored pills
         val cardTags = dbHelperGet.getCardTags(card.uid)
+        binding.cardTagsList.removeAllViews()
         if (cardTags.isNotEmpty()) {
             binding.cardTags.visibility = View.VISIBLE
-            val builder = SpannableStringBuilder()
-            builder.append(getString(R.string.tags_label))
             cardTags.forEach {
                 var color = ContextCompat.getColor(
                     this,
@@ -132,19 +128,8 @@ class ViewCard : RBVActivity(), CardActions.Listener {
                 if (it.emoji.isNotBlank()) {
                     tagText = it.emoji + " " + tagText
                 }
-                val spannableString = SpannableString(tagText)
-                spannableString.setSpan(
-                    TagSpan(
-                        this,
-                        color
-                    ),
-                    0,
-                    spannableString.length,
-                    SPAN_EXCLUSIVE_EXCLUSIVE
-                )
-                builder.append(spannableString)
+                binding.cardTagsList.addView(createTagView(this, tagText, color))
             }
-            binding.cardTags.text = builder
         } else {
             binding.cardTags.visibility = View.GONE
         }

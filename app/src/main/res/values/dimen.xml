@@ -19,6 +19,11 @@
     <dimen name="title_size_default">23sp</dimen>
     <dimen name="title_size_big">26sp</dimen>
     <dimen name="wait_dot_jump">40dp</dimen>
+    <!-- Tags in the card view (see createTagView) -->
+    <dimen name="tag_padding_horizontal">13dp</dimen>
+    <dimen name="tag_padding_vertical">4dp</dimen>
+    <dimen name="tag_margin_horizontal">10dp</dimen>
+    <dimen name="tag_border">1dp</dimen>
     <!-- Band at the top and bottom edge of the query mode in which the vertical swipes start; also
          the vertical margin of the card content, so that the band is the same at both edges -->
     <dimen name="query_swipe_edge">64dp</dimen>

@@ -116,16 +116,30 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent">
 
-                <TextView
+                <!-- The label and one view per tag (see createTagView) -->
+                <LinearLayout
                     android:id="@+id/card_tags"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
                     android:layout_marginBottom="20dp"
-                    android:gravity="center"
-                    android:textColor="@color/light_black"
-                    android:textIsSelectable="true"
-                    android:textSize="@dimen/card_notes_size_default" />
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/tags_label"
+                        android:textColor="@color/light_black"
+                        android:textSize="@dimen/card_notes_size_default" />
+
+                    <LinearLayout
+                        android:id="@+id/card_tags_list"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal" />
+                </LinearLayout>
             </HorizontalScrollView>
 
             <Button
