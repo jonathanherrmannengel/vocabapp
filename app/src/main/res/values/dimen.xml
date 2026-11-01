@@ -22,4 +22,6 @@
     <!-- Band at the top and bottom edge of the query mode in which the vertical swipes start; also
          the vertical margin of the card content, so that the band is the same at both edges -->
     <dimen name="query_swipe_edge">64dp</dimen>
+    <!-- Distance a finger has to move in the query mode for a swipe -->
+    <dimen name="query_swipe_distance">56dp</dimen>
 </resources>

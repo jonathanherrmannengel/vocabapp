@@ -12,11 +12,12 @@ import kotlin.math.abs
  * edgeSize pixels of the edge it starts from (e.g. from a dimension resource, so that the band
  * does not depend on the screen density); otherwise it may start anywhere (for horizontal swipes
  * starting on child views, see HorizontalSwipeLayout).
- * While moving, onMoveX/onMoveY report the distance; once the distance reaches SWIPE_DISTANCE_MIN,
+ * While moving, onMoveX/onMoveY report the distance; once the distance reaches distanceMin pixels,
  * the matching onSwipe* callback is called once.
  */
 open class SwipeEvents(
     private val edgeSize: Int,
+    private val distanceMin: Int,
     private val horizontalFromEdge: Boolean = true,
     private val verticalFromEdge: Boolean = true
 ) : View.OnTouchListener {
@@ -38,7 +39,7 @@ open class SwipeEvents(
             val distanceY = event.y - initialY
             // Horizontal movement
             if (abs(distanceX) > abs(distanceY)) {
-                if (abs(distanceX) < SWIPE_DISTANCE_MIN) {
+                if (abs(distanceX) < distanceMin) {
                     // Determine the direction once (see the class description)
                     if (moveDirection == 0) {
                         if (distanceX > 0 &&
@@ -65,7 +66,7 @@ open class SwipeEvents(
                     return true
                 }
             } else {
-                if (abs(distanceY) < SWIPE_DISTANCE_MIN) {
+                if (abs(distanceY) < distanceMin) {
                     // Determine the direction once (see the class description)
                     if (moveDirection == 0) {
                         if (distanceY > 0 &&
@@ -110,7 +111,6 @@ open class SwipeEvents(
     open fun onSwipeBottom() {}
 
     companion object {
-        private const val SWIPE_DISTANCE_MIN = 150
         private const val MOVE_DIRECTION_RIGHT = 1
         private const val MOVE_DIRECTION_LEFT = 2
         private const val MOVE_DIRECTION_BOTTOM = 3

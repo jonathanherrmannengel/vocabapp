@@ -333,6 +333,7 @@ class QueryMode(
     // that scrolling a long card does not rate it
     private inner class QuerySwipeEvents : SwipeEvents(
         activity.resources.getDimensionPixelSize(R.dimen.query_swipe_edge),
+        activity.resources.getDimensionPixelSize(R.dimen.query_swipe_distance),
         horizontalFromEdge = false
     ) {
         // Blocks further gestures while an animation is running
