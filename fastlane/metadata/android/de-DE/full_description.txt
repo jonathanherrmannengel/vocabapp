@@ -1,4 +1,6 @@
-📣 Einfache App zum Verwalten Deiner Karteikarten.
+📣 Einfache Open-Source-App zum Verwalten Deiner Karteikarten.
+
+🔒 Deine Karteikarten bleiben auf Deinem Gerät: kein Konto, keine Werbung, kein Internetzugriff.
 
 
 🏛️ App-Aufbau: Karteikästen -> Kartenstapel -> Karteikarten
@@ -11,11 +13,13 @@
 🌈 Du kannst vier Farbvarianten für Karteikästen und Kartenstapel nutzen.
 
 
-📇 Die Karteikarten eines Kartenstapels bieten eine Vorderseite und eine Rückseite sowie optional Notizen. Der Lernfortschritt wird als Zahlenwert gespeichert.
+📇 Karteikarten bieten eine Vorder- sowie Rückseite, optionale Notizen und den Lernfortschritt.
 
-🖌️ Du kannst Formatierungsoptionen für die Karteikarten in den App-Einstellungen aktivieren.
+🌐 Du kannst die Sprache von Vorder- sowie Rückseite je Karteikasten und / oder Kartenstapel festlegen.
 
-📎 Du kannst Karteikarten mit Medien verknüpfen.
+🖌️ Du kannst Formatierungsoptionen für die Karteikarten und / oder Markdown für die Notizen in den App-Einstellungen aktivieren.
+
+📎 Du kannst Karteikarten mit Bildern und anderen Dateien verknüpfen.
 
 🏷️ Du kannst Karteikarten Schlagworte zuweisen.
 
@@ -25,6 +29,9 @@
 ▶️ Aus jeder Karteikartenliste kann ein Abfragemodus gestartet werden.
 
 🔍 Karteikartenlisten können die gesamte Sammlung sowie einzelne Karteikästen bzw. Kartenstapel umfassen. Über die „Erweiterte Abfrage“-Option können Listen aller oder mehrerer Kartenstapel nach Schlagworten, Lernfortschritt und / oder letzter Wiederholung generiert werden.
+
+
+📥 Du kannst eine einfache CSV-Datei im festgelegten Format importieren (z.B. exportiert aus einer Tabellenkalkulation).
 
 
 ❗ Sichere Deine Inhalte bitte regelmäßig in einem Backup.
