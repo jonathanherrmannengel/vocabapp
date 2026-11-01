@@ -9,6 +9,7 @@ import de.herrmann_engel.rbv.databinding.ActivityCardFormBinding
 import de.herrmann_engel.rbv.db.DbCard
 import de.herrmann_engel.rbv.db.utils.DbHelperGet
 import de.herrmann_engel.rbv.db.utils.DbHelperUpdate
+import de.herrmann_engel.rbv.language.CardLanguages
 import de.herrmann_engel.rbv.ui.CardForm
 import de.herrmann_engel.rbv.utils.getBackToList
 import de.herrmann_engel.rbv.utils.getCardId
@@ -42,6 +43,7 @@ class EditCard : RBVActivity() {
             this,
             binding,
             dbHelperGet.getSinglePack(card.packId)?.colors,
+            CardLanguages(this).cached(card.packId),
             CardForm.Values(card.front, card.back, card.notes),
             ::close
         )

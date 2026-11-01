@@ -8,6 +8,7 @@ import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.databinding.ActivityCardFormBinding
 import de.herrmann_engel.rbv.db.utils.DbHelperCreate
 import de.herrmann_engel.rbv.db.utils.DbHelperGet
+import de.herrmann_engel.rbv.language.CardLanguages
 import de.herrmann_engel.rbv.ui.CardForm
 import de.herrmann_engel.rbv.utils.getPackId
 import de.herrmann_engel.rbv.utils.putAddedCardId
@@ -36,6 +37,7 @@ class NewCard : RBVActivity() {
             this,
             binding,
             pack.colors,
+            CardLanguages(this).cached(packId),
             CardForm.Values("", "", ""),
             ::finish
         )

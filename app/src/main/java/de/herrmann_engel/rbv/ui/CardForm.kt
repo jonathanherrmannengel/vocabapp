@@ -1,13 +1,17 @@
 package de.herrmann_engel.rbv.ui
 
 import android.content.res.ColorStateList
+import android.os.LocaleList
 import android.text.InputType
+import android.widget.EditText
 import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.databinding.ActivityCardFormBinding
+import de.herrmann_engel.rbv.language.SideLanguages
 import de.herrmann_engel.rbv.utils.colorAt
 import de.herrmann_engel.rbv.utils.showConfirmDialog
+import java.util.Locale
 
 /**
  * Form for the front, back and notes of a card, shared by the screens that create and edit cards.
@@ -15,11 +19,14 @@ import de.herrmann_engel.rbv.utils.showConfirmDialog
  * discarding changes when the user leaves the screen; onClose then closes the screen.
  *
  * @param packColors index of the pack's color (see R.array.pack_color_main)
+ * @param languages languages of the pack's front and back sides (see CardLanguages): the keyboard
+ *                  is asked to use them and the typed text is shown in them; notes have none
  */
 class CardForm(
     private val activity: ComponentActivity,
     private val binding: ActivityCardFormBinding,
     packColors: Int?,
+    languages: SideLanguages,
     initial: Values,
     onClose: () -> Unit
 ) {
@@ -46,6 +53,8 @@ class CardForm(
         binding.cardFormFront.setText(initial.front)
         binding.cardFormBack.setText(initial.back)
         binding.cardFormNotes.setText(initial.notes)
+        languages.front?.let { setLanguage(binding.cardFormFront, it) }
+        languages.back?.let { setLanguage(binding.cardFormBack, it) }
         // Allow multiple lines in the input field if the text already has multiple lines
         for (field in listOf(binding.cardFormFront, binding.cardFormBack)) {
             if (field.text.toString().contains(System.lineSeparator())) {
@@ -74,6 +83,12 @@ class CardForm(
     }
 
     private fun currentValues() = Values(front, back, notes)
+
+    // Keyboards that support it switch to the language (e.g. suggestions, autocorrection)
+    private fun setLanguage(field: EditText, locale: Locale) {
+        field.imeHintLocales = LocaleList(locale)
+        field.textLocale = locale
+    }
 
     private fun hasChanges(): Boolean = currentValues() != shown
 
