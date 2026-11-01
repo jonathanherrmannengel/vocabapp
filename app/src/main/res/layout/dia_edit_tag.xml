@@ -78,15 +78,6 @@
                 app:icon="@drawable/round_save_24"
                 app:iconGravity="textStart"
                 app:iconTint="@color/ijblue" />
-
-            <Button
-                android:id="@+id/edit_tag_cancel"
-                style="@style/material_button"
-                android:text="@string/discard_changes"
-                android:textSize="14sp"
-                app:icon="@drawable/round_cancel_24"
-                app:iconGravity="textStart"
-                app:iconTint="@color/ijblue" />
         </LinearLayout>
     </ScrollView>
 </RelativeLayout>

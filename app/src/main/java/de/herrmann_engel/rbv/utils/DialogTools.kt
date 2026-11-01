@@ -5,6 +5,7 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
+import androidx.activity.ComponentDialog
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.databinding.DiaConfirmBinding
 import de.herrmann_engel.rbv.databinding.DiaInfoBinding
@@ -15,10 +16,10 @@ import kotlinx.coroutines.launch
 
 /**
  * Creates a dialog in the app's dialog style that fills the screen and shows the given view.
- * The dialog is not shown yet.
+ * The dialog is not shown yet. Its onBackPressedDispatcher can take over the back button.
  */
-fun createDialog(context: Context, view: View, title: CharSequence): Dialog {
-    val dialog = Dialog(context, R.style.dia_view)
+fun createDialog(context: Context, view: View, title: CharSequence): ComponentDialog {
+    val dialog = ComponentDialog(context, R.style.dia_view)
     dialog.setContentView(view)
     dialog.setTitle(title)
     dialog.window?.setLayout(

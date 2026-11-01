@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.toColorInt
 import androidx.recyclerview.widget.RecyclerView
@@ -20,6 +21,7 @@ import de.herrmann_engel.rbv.db.DbTag
 import de.herrmann_engel.rbv.utils.StringTools
 import de.herrmann_engel.rbv.utils.createDialog
 import de.herrmann_engel.rbv.utils.findActivity
+import de.herrmann_engel.rbv.utils.showConfirmDialog
 
 /**
  * List of the tags of a card (in the card's tag settings). Tags can be removed from the card
@@ -140,21 +142,26 @@ class AdapterTagLinkCard(
                     bindingEditDialog.editTagColor.setOnColorChangeListener { _, newColor ->
                         color = newColor
                     }
+                    // The tag as currently entered in the dialog
+                    fun tagFromDialog(): DbTag {
+                        val editedTag = DbTag()
+                        editedTag.uid = currentTag.uid
+                        editedTag.name = bindingEditDialog.editTagName.text.toString()
+                        editedTag.emoji = StringTools.firstCharacter(
+                            bindingEditDialog.editTagEmoji.text.toString()
+                        )
+                        // Store the color as hex string without alpha (#RRGGBB); if no
+                        // color was picked, the tag keeps its color
+                        editedTag.color =
+                            color?.let { "#" + Integer.toHexString(it).substring(2) }
+                                ?: currentTag.color
+                        return editedTag
+                    }
                     bindingEditDialog.editTagSave.setOnClickListener {
                         if (!bindingEditDialog.editTagName.text.isNullOrBlank()) {
-                            val newTag = DbTag()
-                            newTag.uid = currentTag.uid
-                            newTag.name = bindingEditDialog.editTagName.text.toString()
-                            newTag.emoji = StringTools.firstCharacter(
-                                bindingEditDialog.editTagEmoji.text.toString()
-                            )
-                            // Store the color as hex string without alpha (#RRGGBB); if no
-                            // color was picked, the tag keeps its color
-                            newTag.color =
-                                color?.let { it1 -> "#" + Integer.toHexString(it1).substring(2) }
-                                    ?: currentTag.color
-                            if (onSave(newTag)) {
-                                tags[tags.indexOf(currentTag)] = newTag
+                            val editedTag = tagFromDialog()
+                            if (onSave(editedTag)) {
+                                tags[tags.indexOf(currentTag)] = editedTag
                                 notifyItemChanged(viewHolder.bindingAdapterPosition)
                                 editDialog.dismiss()
                             } else {
@@ -168,11 +175,28 @@ class AdapterTagLinkCard(
                             Toast.makeText(context, R.string.error_values, Toast.LENGTH_LONG).show()
                         }
                     }
-                    bindingEditDialog.editTagCancel.setOnClickListener {
-                        editDialog.dismiss()
-                    }
-                    editDialog.setCancelable(false)
-                    editDialog.setCanceledOnTouchOutside(false)
+                    // Ask before discarding changes, like the forms of filing boxes and decks
+                    editDialog.onBackPressedDispatcher.addCallback(
+                        editDialog,
+                        object : OnBackPressedCallback(true) {
+                            override fun handleOnBackPressed() {
+                                val editedTag = tagFromDialog()
+                                if (editedTag.name != currentTag.name ||
+                                    editedTag.emoji != currentTag.emoji ||
+                                    editedTag.color != currentTag.color
+                                ) {
+                                    showConfirmDialog(
+                                        context,
+                                        context.getString(R.string.discard_changes)
+                                    ) {
+                                        editDialog.dismiss()
+                                    }
+                                } else {
+                                    editDialog.dismiss()
+                                }
+                            }
+                        }
+                    )
                     editDialog.show()
                 } else {
                     Toast.makeText(context, R.string.error, Toast.LENGTH_SHORT).show()
