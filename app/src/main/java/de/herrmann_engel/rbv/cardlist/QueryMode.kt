@@ -42,9 +42,10 @@ import kotlin.math.abs
  * of a card is shown; after revealing the other side, the user rates the card as known or not
  * known, which updates its progress.
  *
- * Swipe gestures: left/right go to the next/previous card, up/down (only after revealing) rate
- * the card as known/not known. While swiping, a colored bar grows from the edge; a completed
- * swipe fills the screen with it shortly before the action is executed.
+ * Swipe gestures: from the end/start edge (right/left, mirrored in right-to-left layouts) go to
+ * the next/previous card, up/down (only after revealing) rate the card as known/not known. While
+ * swiping, a colored bar grows from the edge; a completed swipe fills the screen with it shortly
+ * before the action is executed.
  *
  * The dialog is created once and reused.
  *
@@ -68,8 +69,8 @@ class QueryMode(
 
     // The colored edges of the dialog hint at the available swipe directions
     private val rootBackground = binding.root.background as LayerDrawable
-    private val rootBackgroundLeft =
-        rootBackground.findDrawableByLayerId(R.id.dia_query_root_background_left) as GradientDrawable
+    private val rootBackgroundStart =
+        rootBackground.findDrawableByLayerId(R.id.dia_query_root_background_start) as GradientDrawable
     private val rootBackgroundTop =
         rootBackground.findDrawableByLayerId(R.id.dia_query_root_background_top) as GradientDrawable
     private val rootBackgroundBottom =
@@ -220,7 +221,7 @@ class QueryMode(
             }
         }
 
-        rootBackgroundLeft.alpha = if (position > 0) 255 else 0
+        rootBackgroundStart.alpha = if (position > 0) 255 else 0
 
         // Reset the dialog for a new card: title, colors, media buttons, hidden back side
         if (!onlyUpdate) {
@@ -332,9 +333,14 @@ class QueryMode(
         // Blocks further gestures while an animation is running
         private var allowTouchEvent = true
 
+        // In right-to-left layouts the next card comes from the left, as the layout is mirrored
+        private val rtl: Boolean
+            get() = binding.root.layoutDirection == View.LAYOUT_DIRECTION_RTL
+
         override fun onMoveX(distance: Float) {
             if (allowTouchEvent) {
-                if (distance < 0) {
+                // Towards the start edge: next card
+                if ((distance < 0) != rtl) {
                     binding.querySwipeNext.layoutParams.width = (2 * abs(distance)).toInt()
                     binding.querySwipeNext.requestLayout()
                 } else if (position > 0) {
@@ -370,7 +376,11 @@ class QueryMode(
             }
         }
 
-        override fun onSwipeLeft() {
+        override fun onSwipeLeft() = if (rtl) swipePrevious() else swipeNext()
+
+        override fun onSwipeRight() = if (rtl) swipeNext() else swipePrevious()
+
+        private fun swipeNext() {
             if (allowTouchEvent) {
                 completeSwipe(binding.querySwipeNext, true) { nextAction() }
             } else {
@@ -378,7 +388,7 @@ class QueryMode(
             }
         }
 
-        override fun onSwipeRight() {
+        private fun swipePrevious() {
             if (allowTouchEvent && position > 0) {
                 completeSwipe(binding.querySwipePrevious, true) { previousAction() }
             } else {

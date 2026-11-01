@@ -5,11 +5,12 @@
             <solid android:color="@color/background_default" />
         </shape>
     </item>
+    <!-- Start and end are mirrored in right-to-left layouts, like the swipe directions -->
     <item
-        android:id="@+id/dia_query_root_background_left"
+        android:id="@+id/dia_query_root_background_start"
         android:bottom="-6dp"
-        android:left="0dp"
-        android:right="-6dp"
+        android:end="-6dp"
+        android:start="0dp"
         android:top="-6dp">
         <shape android:shape="rectangle">
             <stroke
@@ -18,10 +19,10 @@
         </shape>
     </item>
     <item
-        android:id="@+id/dia_query_root_background_right"
+        android:id="@+id/dia_query_root_background_end"
         android:bottom="-6dp"
-        android:left="-6dp"
-        android:right="0dp"
+        android:end="0dp"
+        android:start="-6dp"
         android:top="-6dp">
         <shape android:shape="rectangle">
             <stroke
