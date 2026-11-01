@@ -1,4 +1,4 @@
-# Really Basic Vocab (RBV)
+# ReallyBasicVocab (RBV)
 
 *Simple Android app to manage your flashcards.*
 
