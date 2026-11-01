@@ -10,7 +10,6 @@ import android.webkit.WebViewClient
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.annotation.StringRes
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.text.htmlEncode
 import androidx.core.text.toHtml
 import androidx.core.text.toSpanned
@@ -187,8 +186,7 @@ class CardActions(
         bindingPrintDialog.diaPrintStart.setOnClickListener {
             Toast.makeText(activity, R.string.wait, Toast.LENGTH_LONG).show()
             printDialog.dismiss()
-            val printManager =
-                activity.getSystemService(AppCompatActivity.PRINT_SERVICE) as PrintManager
+            val printManager = activity.getSystemService(PrintManager::class.java)
             val builder = PrintAttributes.Builder()
             builder.setMediaSize(PrintAttributes.MediaSize.ISO_A4)
             val attributes = builder.build()
