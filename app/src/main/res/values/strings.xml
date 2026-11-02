@@ -50,6 +50,7 @@
     <string name="import_title">Import</string>
     <string name="import_cards">Import filing box(es) from backup</string>
     <string name="import_warn">import incomplete: not all entries could be imported</string>
+    <string name="import_not_utf8">The file is not UTF-8 encoded. Please save it with the encoding UTF-8 (in Excel: “CSV UTF-8”).</string>
     <string name="import_mode">Same-named filing boxes handling:</string>
     <string name="import_mode_skip">Do not import</string>
     <string name="import_mode_duplicates">Add new same-named entry</string>

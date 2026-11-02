@@ -2,7 +2,10 @@ package de.herrmann_engel.rbv.export_import
 
 import android.content.Context
 import android.net.Uri
+import com.opencsv.CSVParserBuilder
 import com.opencsv.CSVReader
+import com.opencsv.CSVReaderBuilder
+import com.opencsv.ICSVParser
 import de.herrmann_engel.rbv.R
 import de.herrmann_engel.rbv.db.AppDatabase
 import de.herrmann_engel.rbv.db.utils.DbHelperCreate
@@ -11,7 +14,11 @@ import de.herrmann_engel.rbv.db.utils.DbHelperGet
 import de.herrmann_engel.rbv.language.normalizeLanguageTag
 import de.herrmann_engel.rbv.settings.AppSettings
 import de.herrmann_engel.rbv.utils.StringTools
+import java.io.BufferedReader
 import java.io.InputStreamReader
+import java.io.Reader
+import java.nio.charset.CharacterCodingException
+import java.nio.charset.CodingErrorAction
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -20,7 +27,8 @@ import java.util.TimeZone
 
 /**
  * Imports a CSV file, either in the format written by [Exporter] or as a simple list
- * of cards (front, back, optional notes per row).
+ * of cards (front, back, optional notes per row). A simple list may also be separated by
+ * semicolons (as spreadsheets write it in many languages), tabs or pipes (see detectSeparator).
  *
  * The uids in the file are translated to new uids via [ImportIdConverter], so packs, cards
  * and links end up assigned to the right (newly created or existing) entries. How existing
@@ -120,9 +128,17 @@ class Importer(
     // Imports the file and returns how well it went
     fun execute(): ImportErrorLevel {
         try {
-            val inputStream = context.contentResolver.openInputStream(uri)
-                ?: return ImportErrorLevel.ERROR
-            CSVReader(InputStreamReader(inputStream)).use { csvReader ->
+            if (!isUtf8()) {
+                return ImportErrorLevel.ERROR_NOT_UTF8
+            }
+            val reader = openReader() ?: return ImportErrorLevel.ERROR
+            // Backups are always written by the app, with the default separator
+            val separator = if (mode == ImportMode.SIMPLE_LIST) {
+                detectSeparator()
+            } else {
+                ICSVParser.DEFAULT_SEPARATOR
+            }
+            createCsvReader(reader, separator).use { csvReader ->
                 importRows(csvReader)
             }
             applySettings()
@@ -132,6 +148,70 @@ class Importer(
             hadProblems = true
         }
         return resultLevel()
+    }
+
+    /**
+     * False if the file contains bytes that are not valid UTF-8, e.g. a spreadsheet saved in an
+     * older encoding such as Windows-1252, whose special characters would become "�". The file is
+     * read completely, before anything is imported; true if it cannot be opened (left to
+     * openReader).
+     */
+    private fun isUtf8(): Boolean {
+        val decoder = Charsets.UTF_8.newDecoder()
+            .onMalformedInput(CodingErrorAction.REPORT)
+            .onUnmappableCharacter(CodingErrorAction.REPORT)
+        return try {
+            context.contentResolver.openInputStream(uri)?.use { inputStream ->
+                val reader = InputStreamReader(inputStream, decoder)
+                val buffer = CharArray(DEFAULT_BUFFER_SIZE)
+                while (reader.read(buffer) != -1) {
+                    // Only decoded to find invalid bytes
+                }
+            }
+            true
+        } catch (_: CharacterCodingException) {
+            false
+        }
+    }
+
+    // Opens the file, without a byte order mark at the start (e.g. from a spreadsheet's
+    // "CSV UTF-8"): it only marks the encoding and would otherwise end up in the first value.
+    // Android's decoder removed it already on API 25 and 37, but that is not documented.
+    private fun openReader(): Reader? {
+        val inputStream = context.contentResolver.openInputStream(uri) ?: return null
+        val reader = BufferedReader(InputStreamReader(inputStream, Charsets.UTF_8))
+        reader.mark(1)
+        if (reader.read() != BYTE_ORDER_MARK) {
+            reader.reset()
+        }
+        return reader
+    }
+
+    private fun createCsvReader(reader: Reader, separator: Char): CSVReader =
+        CSVReaderBuilder(reader)
+            .withCSVParser(CSVParserBuilder().withSeparator(separator).build())
+            .build()
+
+    /**
+     * The first of SEPARATORS with which the first rows of the file all have a number of columns
+     * in SIMPLE_LIST_COLUMNS, else the default separator (comma). The default separator comes
+     * first, so files that fit it are read as before; a single row could fit several separators
+     * (e.g. "a, b;c"), so several rows are compared.
+     */
+    private fun detectSeparator(): Char {
+        fun fitsSimpleList(separator: Char): Boolean = try {
+            val reader = openReader() ?: return false
+            createCsvReader(reader, separator).use { csvReader ->
+                val sizes = generateSequence { csvReader.readNext() }
+                    .take(SEPARATOR_SAMPLE_ROWS)
+                    .map { it.size }
+                    .toList()
+                sizes.isNotEmpty() && sizes.all { it in SIMPLE_LIST_COLUMNS }
+            }
+        } catch (_: Exception) {
+            false
+        }
+        return SEPARATORS.firstOrNull { fitsSimpleList(it) } ?: ICSVParser.DEFAULT_SEPARATOR
     }
 
     // An error if nothing was imported, a warning if something could not be imported
@@ -270,7 +350,7 @@ class Importer(
 
     // Columns: front, back, notes (optional)
     private fun importSimpleListCard(line: Array<String?>) {
-        if (line.size != 2 && line.size != 3) {
+        if (line.size !in SIMPLE_LIST_COLUMNS) {
             hadProblems = true
             return
         }
@@ -506,6 +586,17 @@ class Importer(
     companion object {
         // Number of rows written per transaction
         private const val ROWS_PER_TRANSACTION = 500
+
+        // Columns of a simple list row: front, back and optional notes
+        private val SIMPLE_LIST_COLUMNS = 2..3
+
+        // Separators of usual CSV variants of a simple list, in order of preference
+        private val SEPARATORS = listOf(ICSVParser.DEFAULT_SEPARATOR, ';', '\t', '|')
+
+        // Number of rows from the start of a simple list compared to detect the separator
+        private const val SEPARATOR_SAMPLE_ROWS = 20
+
+        private const val BYTE_ORDER_MARK = 0xFEFF
     }
 
     /**

@@ -44,6 +44,7 @@
     <string name="import_title">Import</string>
     <string name="import_cards">Karteikasten/-kästen von Backup importieren</string>
     <string name="import_warn">Import unvollständig: Nicht alle Einträge konnten importiert werden</string>
+    <string name="import_not_utf8">Die Datei ist nicht UTF-8-kodiert. Bitte speichere sie mit der Kodierung UTF-8 (in Excel: „CSV UTF-8“).</string>
     <string name="edit_collection">Karteikasten bearbeiten</string>
     <string name="import_mode">Handhabung von gleichnamigen Karteikästen:</string>
     <string name="import_mode_skip">Nicht importieren</string>

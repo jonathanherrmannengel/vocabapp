@@ -6,7 +6,10 @@ package de.herrmann_engel.rbv.export_import
 enum class ImportErrorLevel(val value: Int) {
     OKAY(0),
     WARN(1),
-    ERROR(2);
+    ERROR(2),
+
+    // Nothing imported: the file is not UTF-8 encoded
+    ERROR_NOT_UTF8(3);
 
     companion object {
         // Unknown values (e.g. from a newer app version) count as ERROR

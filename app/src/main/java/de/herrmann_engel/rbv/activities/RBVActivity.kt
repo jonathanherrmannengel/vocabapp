@@ -117,6 +117,9 @@ abstract class RBVActivity : AppCompatActivity() {
             ImportErrorLevel.ERROR ->
                 Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show()
 
+            ImportErrorLevel.ERROR_NOT_UTF8 ->
+                Toast.makeText(this, R.string.import_not_utf8, Toast.LENGTH_LONG).show()
+
             ImportErrorLevel.OKAY ->
                 Toast.makeText(this, R.string.success, Toast.LENGTH_SHORT).show()
 
