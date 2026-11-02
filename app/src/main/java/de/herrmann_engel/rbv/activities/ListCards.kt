@@ -564,8 +564,9 @@ class ListCards : RBVActivity(), CardActions.Listener {
     }
 
     /**
-     * The languages chosen for the pack may have been changed in its details: applies them to the
-     * loaded cards and redraws the rows if they differ (detected languages are already cached).
+     * The languages of the pack may have changed in its details (chosen there, or detected again
+     * because cards were added or deleted): applies them to the loaded cards and redraws the rows
+     * if they differ (detected languages are already cached).
      */
     private fun updateLanguages(packId: Int) {
         val cards = cardsList ?: return

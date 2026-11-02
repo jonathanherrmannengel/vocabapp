@@ -7,7 +7,7 @@ import android.text.Spanned
 import android.text.style.LocaleSpan
 import android.view.textclassifier.TextClassificationManager
 import android.view.textclassifier.TextLanguage
-import androidx.annotation.RequiresApi
+import androidx.annotation.WorkerThread
 import de.herrmann_engel.rbv.db.CardWithMeta
 import de.herrmann_engel.rbv.db.utils.DbHelperGet
 import de.herrmann_engel.rbv.utils.StringTools
@@ -52,10 +52,11 @@ class CardLanguages(private val context: Context) {
     // The languages detected for a pack and the number of cards the pack had then
     private data class Detection(val cardCount: Int, val languages: SideLanguages)
 
-    // Sets the languages of the cards' packs; detects them if needed, so not on the main thread
+    // Sets the languages of the cards' packs; detects them if needed
+    @WorkerThread
     fun fill(cards: List<CardWithMeta>) {
         val languages = cards.mapTo(HashSet()) { it.card.packId }
-            .associateWith { resolve(it, detect = true).locales }
+            .associateWith { resolve(it).locales }
         cards.forEach { it.languages = languages.getValue(it.card.packId) }
     }
 
@@ -68,13 +69,19 @@ class CardLanguages(private val context: Context) {
     }
 
     // The languages of the pack, using only already detected languages (see fillCached)
-    fun cached(packId: Int): SideLanguages = resolve(packId, detect = false).locales
+    fun cached(packId: Int): SideLanguages =
+        resolveWith(packId) { cache[packId]?.languages ?: SideLanguages.UNKNOWN }.locales
 
-    // The languages of the pack with their sources; detects them if needed, so not on the main
-    // thread
-    fun resolve(packId: Int): ResolvedLanguages = resolve(packId, detect = true)
+    // The languages of the pack with their sources; detects them if needed
+    @WorkerThread
+    fun resolve(packId: Int): ResolvedLanguages =
+        resolveWith(packId) { detectPackLanguages(packId, it) }
 
-    private fun resolve(packId: Int, detect: Boolean): ResolvedLanguages {
+    // The chosen languages, completed by fallback for sides without one (only called if needed)
+    private fun resolveWith(
+        packId: Int,
+        fallback: (DbHelperGet) -> SideLanguages
+    ): ResolvedLanguages {
         val dbHelperGet = DbHelperGet(context)
         val pack = dbHelperGet.getSinglePack(packId)
         val collection = pack?.let { dbHelperGet.getSingleCollection(it.collectionId) }
@@ -85,11 +92,7 @@ class CardLanguages(private val context: Context) {
         // Only needed for sides without a chosen language
         val needsDetection =
             (packFront ?: collectionFront) == null || (packBack ?: collectionBack) == null
-        val detected = when {
-            !needsDetection -> SideLanguages.UNKNOWN
-            detect -> detected(packId, dbHelperGet)
-            else -> cache[packId]?.languages ?: SideLanguages.UNKNOWN
-        }
+        val detected = if (needsDetection) fallback(dbHelperGet) else SideLanguages.UNKNOWN
         fun side(packLocale: Locale?, collectionLocale: Locale?, detected: Locale?) = when {
             packLocale != null -> ResolvedLanguage(packLocale, ResolvedLanguage.Source.PACK)
             collectionLocale != null ->
@@ -103,11 +106,37 @@ class CardLanguages(private val context: Context) {
         )
     }
 
-    // The detected languages of the pack, from the cache if its number of cards has not changed
-    private fun detected(packId: Int, dbHelperGet: DbHelperGet): SideLanguages {
+    // Detects the languages of the pack; from the cache if its number of cards has not changed
+    @WorkerThread
+    private fun detectPackLanguages(packId: Int, dbHelperGet: DbHelperGet): SideLanguages {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
             return SideLanguages.UNKNOWN
         }
+
+        // The language of the texts taken together; null if it is not clear enough
+        fun detectLanguage(texts: List<String>): Locale? {
+            // Formatting markup is no part of the language
+            val text =
+                texts.joinToString(System.lineSeparator()) { StringTools.unformat(it, false) }
+            if (text.isBlank()) {
+                return null
+            }
+            return try {
+                val classifier = context.getSystemService(TextClassificationManager::class.java)
+                    ?.textClassifier ?: return null
+                val result = classifier.detectLanguage(TextLanguage.Request.Builder(text).build())
+                if (result.localeHypothesisCount == 0) {
+                    return null
+                }
+                // The hypotheses are ordered by confidence
+                val locale = result.getLocale(0)
+                if (result.getConfidenceScore(locale) >= MIN_CONFIDENCE) locale.toLocale() else null
+            } catch (e: Exception) {
+                e.printStackTrace()
+                null
+            }
+        }
+
         val cardCount = dbHelperGet.countCardsInPack(packId)
         cache[packId]?.let {
             if (it.cardCount == cardCount) {
@@ -115,34 +144,12 @@ class CardLanguages(private val context: Context) {
             }
         }
         val sample = dbHelperGet.getCardSampleByPack(packId, SAMPLE_SIZE)
-        val languages =
-            SideLanguages(detect(sample.map { it.front }), detect(sample.map { it.back }))
+        val languages = SideLanguages(
+            detectLanguage(sample.map { it.front }),
+            detectLanguage(sample.map { it.back })
+        )
         cache[packId] = Detection(cardCount, languages)
         return languages
-    }
-
-    // The language of the texts taken together; null if it is not clear enough
-    @RequiresApi(Build.VERSION_CODES.Q)
-    private fun detect(texts: List<String>): Locale? {
-        // Formatting markup is no part of the language
-        val text = texts.joinToString(System.lineSeparator()) { StringTools.unformat(it, false) }
-        if (text.isBlank()) {
-            return null
-        }
-        return try {
-            val classifier = context.getSystemService(TextClassificationManager::class.java)
-                ?.textClassifier ?: return null
-            val result = classifier.detectLanguage(TextLanguage.Request.Builder(text).build())
-            if (result.localeHypothesisCount == 0) {
-                return null
-            }
-            // The hypotheses are ordered by confidence
-            val locale = result.getLocale(0)
-            if (result.getConfidenceScore(locale) >= MIN_CONFIDENCE) locale.toLocale() else null
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null
-        }
     }
 
     companion object {
