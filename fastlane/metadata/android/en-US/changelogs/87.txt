@@ -1,4 +1,9 @@
 Select and delete several filing boxes at once.
 Animated GIF and WebP images (WebP from Android 9).
+Choose the language of flashcard fronts and backs, detected automatically from Android 10.
+Alphabetical order follows the language.
+Query mode: swipe to the next or previous flashcard from anywhere on the card.
+Existing tags are suggested while typing.
+Simple CSV import: semicolons, tabs and Excel's "CSV UTF-8".
 Improved accessibility.
 Bugfixes.

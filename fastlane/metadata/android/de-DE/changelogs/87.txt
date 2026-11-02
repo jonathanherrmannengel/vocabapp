@@ -1,4 +1,9 @@
 Mehrere Karteikästen auf einmal auswählen und löschen.
 Animierte GIF- und WebP-Bilder (WebP ab Android 9).
+Sprache der Vorder- und Rückseiten wählbar, ab Android 10 automatisch erkannt.
+Alphabetische Sortierung folgt der Sprache.
+Abfrage-Modus: Von überall auf der Karteikarte zur nächsten oder vorherigen wischen.
+Vorhandene Schlagworte werden beim Tippen vorgeschlagen.
+Einfacher CSV-Import: Semikola, Tabulatoren und „CSV UTF-8“ aus Excel.
 Verbesserte Barrierefreiheit.
 Fehlerkorrekturen.
