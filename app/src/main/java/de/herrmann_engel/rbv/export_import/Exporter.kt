@@ -46,7 +46,7 @@ class Exporter(
      * Writes all rows of the cursor to the file, prefixed by name. Writes the schema row first
      * if isFirst is set. Closes the cursor. Returns false on errors.
      */
-    private fun exportCSV(
+    private fun exportCsv(
         name: String,
         filename: String,
         cursor: Cursor,
@@ -122,18 +122,18 @@ class Exporter(
             var isFirst = true
             for (i in collectionIds.indices) {
                 val currentCollectionId = collectionIds[i]
-                if (!exportCSV(
+                if (!exportCsv(
                         "collection",
                         file.name,
                         dbHelperExport.getSingleCollection(currentCollectionId),
                         isFirst,
                         !isFirst
                     )
-                    || !exportCSV(
+                    || !exportCsv(
                         "packs", file.name,
                         dbHelperExport.getAllPacksByCollection(currentCollectionId), isFirst
                     )
-                    || !exportCSV(
+                    || !exportCsv(
                         "cards", file.name,
                         dbHelperExport.getAllCardsByCollection(currentCollectionId), isFirst
                     )
@@ -143,7 +143,7 @@ class Exporter(
                 isFirst = false
             }
             if (includeMedia) {
-                if (!exportCSV(
+                if (!exportCsv(
                         "media",
                         file.name,
                         if (singleCollection) {
@@ -151,7 +151,7 @@ class Exporter(
                         } else dbHelperExport.getAllMedia(),
                         true
                     )
-                    || !exportCSV(
+                    || !exportCsv(
                         "media_link_card",
                         file.name,
                         if (singleCollection) {
@@ -163,7 +163,7 @@ class Exporter(
                     return null
                 }
             }
-            if (!exportCSV(
+            if (!exportCsv(
                     "tags",
                     file.name,
                     if (singleCollection) {
@@ -171,7 +171,7 @@ class Exporter(
                     } else dbHelperExport.getAllTags(),
                     true
                 )
-                || !exportCSV(
+                || !exportCsv(
                     "tags_link_card",
                     file.name,
                     if (singleCollection) {
