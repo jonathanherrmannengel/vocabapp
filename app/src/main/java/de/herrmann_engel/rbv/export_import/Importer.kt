@@ -193,25 +193,24 @@ class Importer(
             .build()
 
     /**
-     * The first of SEPARATORS with which the first rows of the file all have a number of columns
-     * in SIMPLE_LIST_COLUMNS, else the default separator (comma). The default separator comes
-     * first, so files that fit it are read as before; a single row could fit several separators
-     * (e.g. "a, b;c"), so several rows are compared.
+     * The one of SEPARATORS with which the most of the first rows of the file have a number of
+     * columns in SIMPLE_LIST_COLUMNS, so a few rows that fit none (e.g. a title or an empty row,
+     * skipped by the import) do not decide it. On a tie the earlier one: the default separator
+     * (comma) comes first, so files that fit it are read as before; a single row could fit
+     * several separators (e.g. "a, b;c"), so several rows are compared.
      */
     private fun detectSeparator(): Char {
-        fun fitsSimpleList(separator: Char): Boolean = try {
-            val reader = openReader() ?: return false
+        fun fittingRows(separator: Char): Int = try {
+            val reader = openReader() ?: return 0
             createCsvReader(reader, separator).use { csvReader ->
-                val sizes = generateSequence { csvReader.readNext() }
+                generateSequence { csvReader.readNext() }
                     .take(SEPARATOR_SAMPLE_ROWS)
-                    .map { it.size }
-                    .toList()
-                sizes.isNotEmpty() && sizes.all { it in SIMPLE_LIST_COLUMNS }
+                    .count { it.size in SIMPLE_LIST_COLUMNS }
             }
         } catch (_: Exception) {
-            false
+            0
         }
-        return SEPARATORS.firstOrNull { fitsSimpleList(it) } ?: ICSVParser.DEFAULT_SEPARATOR
+        return SEPARATORS.maxBy { fittingRows(it) }
     }
 
     // An error if nothing was imported, a warning if something could not be imported
