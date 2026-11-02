@@ -99,10 +99,10 @@ class ListPacks : RBVActivity(), PackActions.Listener {
             binding.backgroundImage.visibility = View.GONE
         }
         refreshContent()
-        collectionId?.let {
+        collectionId?.let { id ->
             resources.colorAt(
                 R.array.pack_color_background_list,
-                dbHelperGet.getSingleCollection(it)?.colors
+                dbHelperGet.getSingleCollection(id)?.colors
             )?.let { binding.root.setBackgroundColor(it) }
         }
     }
