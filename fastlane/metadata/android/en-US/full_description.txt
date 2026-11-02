@@ -34,4 +34,4 @@
 📥 You may import a simple CSV file in the specified format (e.g. exported from a spreadsheet).
 
 
-❗ Please backup your content on a regular basis.
+❗ Please back up your content on a regular basis.

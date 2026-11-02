@@ -63,7 +63,7 @@
     <string name="import_simple_list_pack_desc">Now you can edit this deck or move the flashcards elsewhere by opening this deck from “%1$s”.</string>
     <string name="import_export_include_settings">Include app settings</string>
     <string name="import_export_include_media">Include media links</string>
-    <string name="import_export_include_media_warn_no_files">Backup only contains media references, no files. You need to backup and restore them on your own.</string>
+    <string name="import_export_include_media_warn_no_files">Backup only contains media references, no files. You need to back up and restore them on your own.</string>
     <plurals name="import_export_lines_progress">
         <item quantity="one">~%d line.</item>
         <item quantity="other">~%d lines.</item>

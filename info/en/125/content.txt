@@ -1,6 +1,6 @@
 You can choose the language of the flashcard fronts and backs for each filing box and deck. A deck without a chosen language uses the one of its filing box.
 
-If no language is chosen, the app detects it per deck from its flashcards (on Android 10 and newer, on your device, only if the result is clear). Otherwise the device language is used.
+If no language is chosen, the app detects it per deck from its flashcards (on Android 10 and newer, on your device, only if the result is clear). Otherwise, the device language is used.
 
 The language is used:
 
