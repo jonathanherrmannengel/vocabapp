@@ -2,4 +2,6 @@ Du kannst Karteikarten in einer einfachen CSV-Datei erstellen und die wesentlich
 
 Die Karteikarten werden in einem automatisch erstellten Karteikasten und Kartenstapel gespeichert und können von dort aus in Deine bestehenden Karteikästen integriert werden.
 
-Das einfache Format hat zwei Varianten, die Du nutzen und kombinieren kannst wie Du willst (aber das Hinzufügen weiterer Spalten lässt den Import fehlschlagen):
+Die Datei muss UTF-8-kodiert sein (in Excel: „CSV UTF-8“); andere Dateien werden abgelehnt. Außer durch Kommata können die Werte auch durch Semikola, Tabulatoren oder senkrechte Striche (|) getrennt sein; die App wählt das Trennzeichen, das zu den ersten Zeilen passt.
+
+Das einfache Format hat zwei Varianten, die Du nutzen und kombinieren kannst wie Du willst (Zeilen mit einer anderen Anzahl an Spalten werden nicht importiert):

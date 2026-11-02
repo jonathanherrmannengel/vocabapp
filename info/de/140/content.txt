@@ -1,9 +1,9 @@
-Sortierung nach Lernfortschritt: Sortierung nach Lernfortschritt aufsteigend, dann nach Zeitpunkt der Erstellung absteigend
+Sortierung nach Lernfortschritt: Sortierung nach Lernfortschritt aufsteigend, dann nach Zeitpunkt der Erstellung absteigend.
 
-Zufallssortierung: Karteikarten mischen
+Zufallssortierung: Karteikarten mischen.
 
-Alphabetische Sortierung nach Karteikarten-Vorderseite: Alphabetische Sortierung nach Karteikarten-Vorderseite aufsteigend, dann alphabetische Sortierung nach Karteikarten-Rückseite aufsteigend
+Alphabetische Sortierung nach Karteikarten-Vorderseite: Alphabetische Sortierung nach Karteikarten-Vorderseite aufsteigend, dann alphabetische Sortierung nach Karteikarten-Rückseite aufsteigend. Die Sortierung folgt den Regeln der Sprache der Karteikarten-Seite, wenn alle Karteikarten der Liste sie teilen (etwa ä: im Deutschen wie a, im Schwedischen nach z), sonst denen der App-Sprache.
 
-Sortierung nach letzter Wiederholung: Sortierung nach Zeitpunkt letzter Wiederholung absteigend, dann nach Zeitpunkt der Erstellung absteigend
+Sortierung nach letzter Wiederholung: Sortierung nach Zeitpunkt letzter Wiederholung absteigend, dann nach Zeitpunkt der Erstellung absteigend.
 
-Sortierung nach gemischten Lernkriterien: Sortierung nach drei Kriterien: Geringer Lernfortschritt, Lernfortschritt / Wiederholungszähler Verhältnis, Zufall
+Sortierung nach gemischten Lernkriterien: Sortierung nach drei Kriterien: Geringer Lernfortschritt, Lernfortschritt / Wiederholungszähler Verhältnis, Zufall.

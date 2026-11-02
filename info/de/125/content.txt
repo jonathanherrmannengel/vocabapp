@@ -1,0 +1,13 @@
+Du kannst für jeden Karteikasten und Kartenstapel die Sprache der Vorder- und Rückseiten der Karteikarten auswählen. Ein Kartenstapel ohne ausgewählte Sprache nutzt die seines Karteikastens.
+
+Ist keine Sprache ausgewählt, erkennt die App sie je Kartenstapel anhand seiner Karteikarten (ab Android 10, auf Deinem Gerät, nur bei eindeutigem Ergebnis). Andernfalls wird die Gerätesprache verwendet.
+
+Die Sprache wird verwendet:
+
+- von Screenreadern (etwa TalkBack), die die Karteikarten mit passender Aussprache vorlesen;
+- für die passende Schriftart, etwa für chinesische oder japanische Schriftzeichen;
+- für die Tastatursprache beim Bearbeiten von Karteikarten (wenn die Sprache in Deiner Tastatur aktiviert ist);
+- für die alphabetische Sortierung von Karteikarten-Listen;
+- beim Drucken, etwa für die Silbentrennung.
+
+Backups enthalten die ausgewählten Sprachen, nicht die erkannten.

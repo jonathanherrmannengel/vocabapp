@@ -1,7 +1,7 @@
-"collection_schema","uid","name","desc","date","colors","emoji"
-"collection","1","ReallyBasicFilingBox","This is a filing box","954540062","1","📣"
-"packs_schema","uid","name","desc","date","colors","collection","emoji"
-"packs","1","ReallyBasicDeck","This is a deck.","954540062","2","1","📣"
+"collection_schema","uid","name","desc","date","colors","emoji","front_language","back_language"
+"collection","1","ReallyBasicFilingBox","This is a filing box","954540062","1","📣","en","en"
+"packs_schema","uid","name","desc","date","colors","collection","emoji","front_language","back_language"
+"packs","1","ReallyBasicDeck","This is a deck.","954540062","2","1","📣",,
 "cards_schema","uid","front","back","pack","known","date","notes","last_repetition","count_repetitions"
 "cards","1","ReallyBasicFront","ReallyBasicBack","1","7","954540062","ReallyBasicNote","1012615383","0"
 "media_schema","uid","file","mime"

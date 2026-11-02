@@ -1,0 +1,13 @@
+You can choose the language of the flashcard fronts and backs for each filing box and deck. A deck without a chosen language uses the one of its filing box.
+
+If no language is chosen, the app detects it per deck from its flashcards (on Android 10 and newer, on your device, only if the result is clear). Otherwise the device language is used.
+
+The language is used:
+
+- by screen readers (e.g. TalkBack), which read the flashcards with the matching pronunciation;
+- for the matching font, e.g. for Chinese or Japanese characters;
+- for the keyboard language when editing flashcards (if the language is enabled in your keyboard);
+- for the alphabetical order of flashcard lists;
+- when printing, e.g. for hyphenation.
+
+Backups contain the chosen languages, not the detected ones.

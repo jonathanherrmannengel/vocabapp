@@ -5,3 +5,5 @@ Wenn eine Liste aus Karteikarten mehr als 15000 Karteikarten enthält werden die
 Beispiel: „*1* * 1“ würde normalerweise als „1 * 1“ in der Liste dargestellt, wird nun aber als „1  1“ angezeigt.
 
 - Nicht-lateinische Schriftzeichen: Suche kann ungenau sein, da der Text in Kleinbuchstaben umgewandelt wird anstatt ohne Berücksichtigung von Groß- und Kleinschreibung verglichen zu werden.
+
+- Alphabetische Sortierung: Karteikarten werden Zeichen für Zeichen ohne Berücksichtigung von Groß- und Kleinschreibung verglichen, anstatt den Regeln einer Sprache zu folgen (etwa ä nach z, auch im Deutschen).

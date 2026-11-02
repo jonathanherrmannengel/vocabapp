@@ -1,6 +1,11 @@
-Zur Mitte wischen…
+Überall auf der Karteikarte wischen…
 
-…von links: Vorherige Karteikarte.
-…von rechts: Nächste Karteikarte.
+…nach rechts: Vorherige Karteikarte.
+…nach links: Nächste Karteikarte.
+
+Vom Rand zur Mitte wischen…
+
 …von oben: Als nicht gewusst markieren (nach Aufdecken der Lösung verfügbar).
 …von unten: Als gewusst markieren (nach Aufdecken der Lösung verfügbar).
+
+Bei einer Gerätesprache, die von rechts nach links geschrieben wird (etwa Arabisch), sind links und rechts vertauscht.

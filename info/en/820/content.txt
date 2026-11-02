@@ -5,3 +5,5 @@ If a list of flashcards contains more than 15000 flashcards the following limita
 Example: “*1* * 1” would normally display as “1 * 1” in the list, but now is shown as “1  1”.
 
 - Non-Latin scripts: Search may be inaccurate as the text is converted to lower case instead of being compared case-insensitive.
+
+- Alphabetical order: Flashcards are compared character by character, ignoring case, instead of following the rules of a language (e.g. ä after z, also in German).

@@ -2,4 +2,6 @@ You may create flashcards with a simple CSV file and import the core flashcards 
 
 The flashcards are stored in an automatically created filing box and deck and may be integrated into your existing filing boxes from there.
 
-The simple format has two variants you may use and combine as you please (if you add more columns the import fails):
+The file must be UTF-8 encoded (in Excel: “CSV UTF-8”); other files are rejected. Besides commas, the values may be separated by semicolons, tabs or vertical bars (|); the app chooses the separator that fits the first rows.
+
+The simple format has two variants you may use and combine as you please (rows with other numbers of columns are not imported):

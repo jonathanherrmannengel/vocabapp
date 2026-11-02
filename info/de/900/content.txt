@@ -1,1 +1,1 @@
-Das Backup stellt eine CSV-Datei in folgendem Format dar:
+Das Backup stellt eine UTF-8-kodierte CSV-Datei in folgendem Format dar:

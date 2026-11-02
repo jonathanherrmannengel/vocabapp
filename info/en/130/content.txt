@@ -1,6 +1,11 @@
-Swipe to center…
+Swipe anywhere on the flashcard…
 
-…from the left: previous flashcard.
-…from the right: next flashcard.
+…to the right: previous flashcard.
+…to the left: next flashcard.
+
+Swipe from the edge to center…
+
 …from the top: mark as not known (available after displaying solution).
 …from the bottom: mark as known (available after displaying solution).
+
+With a device language written from right to left (e.g. Arabic), left and right are swapped.
