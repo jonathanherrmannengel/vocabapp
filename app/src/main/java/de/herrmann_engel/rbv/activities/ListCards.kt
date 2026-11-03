@@ -1,6 +1,5 @@
 package de.herrmann_engel.rbv.activities
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
@@ -381,7 +380,6 @@ class ListCards : RBVActivity(), CardActions.Listener {
         return cards
     }
 
-    @SuppressLint("SetTextI18n")
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_list_cards, menu)
         val startNewCardMenuItem = menu.findItem(R.id.start_new_card)
