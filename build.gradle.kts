@@ -9,7 +9,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:9.4.1")
+        classpath("com.android.tools.build:gradle:9.5.0")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
         classpath("com.google.devtools.ksp:symbol-processing-gradle-plugin:2.3.12")
         // NOTE: Do not place your application dependencies here; they belong
