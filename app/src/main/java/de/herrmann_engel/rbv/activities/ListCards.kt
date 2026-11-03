@@ -388,8 +388,8 @@ class ListCards : RBVActivity(), CardActions.Listener {
         val startPackDetailsMenuItem = menu.findItem(R.id.pack_details)
         val cardSource = cardSource
         if (cardSource !is CardSource.Pack || !dbHelperGet.existsPack(cardSource.packId)) {
-            startNewCardMenuItem.isVisible = false
-            startPackDetailsMenuItem.isVisible = false
+            menu.removeItem(R.id.start_new_card)
+            menu.removeItem(R.id.pack_details)
         } else {
             startNewCardMenuItem.setOnMenuItemClickListener {
                 val intent = Intent(this, NewCard::class.java)
@@ -497,6 +497,9 @@ class ListCards : RBVActivity(), CardActions.Listener {
     }
 
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
+        // Removed outside packs; shown once the list is loaded, even if empty
+        menu.findItem(R.id.start_new_card)?.isVisible = cardsList != null
+        menu.findItem(R.id.pack_details)?.isVisible = cardsList != null
         showCardSideMenuItem.isVisible = !cardsListFiltered.isNullOrEmpty()
         changeListSortMenuItem.isVisible = (cardsListFiltered?.size ?: 0) > 1
         showQueryModeMenuItem.isVisible = !cardsListFiltered.isNullOrEmpty()
